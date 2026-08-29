@@ -1,1 +1,6 @@
-.cache
+/output/
+/work/
+*.deb
+*.buildinfo
+*.changes
+__pycache__/
