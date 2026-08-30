@@ -37,6 +37,9 @@ Successful builds contain a PsyCachy-local-version `linux-image` package,
 matching headers, and a uniquely named `linux-libc-dev-psycachy` package.
 Use `dpkg-deb --info` to inspect them before any later VM or hardware testing.
 
+For physical-machine installation, Secure Boot considerations, hardware testing,
+and rollback steps, see [docs/INSTALL-HARDWARE.md](docs/INSTALL-HARDWARE.md).
+
 ## Verification scope
 
 The repository validates shell syntax, Python syntax, source identities,
