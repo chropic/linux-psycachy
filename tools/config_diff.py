@@ -33,10 +33,15 @@ def main() -> int:
     parser.add_argument("--fragment", type=Path, required=True)
     parser.add_argument("--final", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--migration-allowlist", type=Path, required=True)
     args = parser.parse_args()
 
     base, fragment, final = map(parse, (args.base, args.fragment, args.final))
     allowed = set(fragment)
+    migrations = {
+        line.strip() for line in args.migration_allowlist.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
+    }
     changed = []
     violations = []
     for key in sorted(set(base) | set(final)):
@@ -45,7 +50,7 @@ def main() -> int:
             continue
         # A symbol added or removed by Kconfig is a migration. Existing symbols
         # may differ only when the reviewed policy fragment names them.
-        reason = "fragment" if key in allowed else "kconfig-migration" if (
+        reason = "fragment" if key in allowed else "approved-migration" if key in migrations else "kconfig-migration" if (
             before is None or after is None
         ) else "unapproved"
         item = {"symbol": key, "before": before, "after": after, "reason": reason}
@@ -72,6 +77,7 @@ def main() -> int:
         "final": str(args.final),
         "final_sha256": digest(args.final),
         "fragment_allowlist": sorted(allowed),
+        "migration_allowlist": sorted(migrations),
         "changed": changed,
         "violations": violations,
     }

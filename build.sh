@@ -8,7 +8,7 @@ readonly CACHY_RELEASE=cachyos-7.2.2-1
 readonly CACHY_URL="https://github.com/CachyOS/linux/releases/download/${CACHY_RELEASE}/${CACHY_RELEASE}.tar.gz"
 readonly CACHY_SHA256=b69413e1941bc9f08d0f5bdf576b4e31ebd948a235d8b8a24a81ba7583e36d77
 readonly CACHY_SIGNER=E8B9AA39F054E30E8290D492C3C4820857F654FE
-readonly BORE_SHA256=1809a4d4d6508a2a3f92cd8b3b385640583f90bd6cee46584f4bf105affd24a0
+readonly BORE_SHA256=cb669cf8b6441879e6c276a445b12092874626a512b8f9e755c25b75e3e229d9
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 version=$DEFAULT_VERSION
@@ -96,13 +96,13 @@ base_config="$root/config/ubuntu-7.0.0-30-generic.config"
 fragment="$root/config/psycachy.fragment"
 cp "$base_config" "$source_dir/.config"
 make -C "$source_dir" CC=gcc olddefconfig
-"$source_dir/scripts/kconfig/merge_config.sh" -m "$source_dir/.config" "$fragment"
+(cd "$source_dir" && scripts/kconfig/merge_config.sh -m .config "$fragment")
 make -C "$source_dir" CC=gcc olddefconfig
 final_config="$output_dir/psycachy-${version}.config"
 report="$output_dir/config-diff.json"
 cp "$source_dir/.config" "$final_config"
 python3 "$root/tools/config_diff.py" --base "$base_config" --fragment "$fragment" \
-  --final "$final_config" --report "$report"
+  --final "$final_config" --report "$report"   --migration-allowlist "$root/config/kconfig-migration-allowlist.txt"
 
 if $prepare_only; then
   echo "Preparation passed: $final_config"
@@ -113,7 +113,7 @@ fi
 # LOCALVERSION makes image and header package names unique. bindeb-pkg still
 # calls the libc package linux-libc-dev, so it is safely renamed below.
 pkg_version="${version}-1psycachy1"
-make -C "$source_dir" CC=gcc -j"$jobs" bindeb-pkg \
+DEBFULLNAME=chropic DEBEMAIL=12cs4.tech@proton.me make -C "$source_dir" CC=gcc -j"$jobs" bindeb-pkg \
   LOCALVERSION=-psycachy KDEB_PKGVERSION="$pkg_version"
 
 shopt -s nullglob
@@ -129,7 +129,7 @@ for package in "${headers[@]}"; do cp "$package" "$output_dir/"; done
 stage="$work/libc-control"
 dpkg-deb --raw-extract "${libcs[0]}" "$stage"
 sed -i 's/^Package: linux-libc-dev$/Package: linux-libc-dev-psycachy/' "$stage/DEBIAN/control"
-dpkg-deb --build "$stage" "$output_dir/linux-libc-dev-psycachy_${pkg_version}_amd64.deb" >/dev/null
+dpkg-deb --root-owner-group --build "$stage" "$output_dir/linux-libc-dev-psycachy_${pkg_version}_amd64.deb" >/dev/null
 
 for package in "$output_dir"/*.deb; do dpkg-deb --info "$package" >/dev/null; done
 echo "Packages written to $output_dir"

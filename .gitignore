@@ -4,3 +4,4 @@
 *.buildinfo
 *.changes
 __pycache__/
+*.log

@@ -1,0 +1,2076 @@
+{
+  "base": "/home/charlie/linux-psycachy/config/ubuntu-7.0.0-30-generic.config",
+  "base_sha256": "b07d3cb0d53236b021d73038e315018801fa6b843529d53129ad94a2a5233bf6",
+  "final": "/home/charlie/linux-psycachy/output/prepare/psycachy-7.2.2.config",
+  "final_sha256": "2c1a13038d1c6d9dfe7943805897deb406a799e80512ef626cd83b23ecdd64af",
+  "fragment_allowlist": [
+    "CONFIG_BPF_EVENTS",
+    "CONFIG_BPF_JIT",
+    "CONFIG_BPF_SYSCALL",
+    "CONFIG_CACHY",
+    "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE",
+    "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3",
+    "CONFIG_CONTEXT_TRACKING",
+    "CONFIG_DEBUG_INFO_BTF",
+    "CONFIG_DEBUG_INFO_BTF_MODULES",
+    "CONFIG_DEFAULT_BBR3",
+    "CONFIG_DEFAULT_CUBIC",
+    "CONFIG_DEFAULT_TCP_CONG",
+    "CONFIG_GENERIC_CPU",
+    "CONFIG_HZ",
+    "CONFIG_HZ_1000",
+    "CONFIG_HZ_300",
+    "CONFIG_HZ_PERIODIC",
+    "CONFIG_LTO_NONE",
+    "CONFIG_MODULE_SIG",
+    "CONFIG_MODULE_SIG_ALL",
+    "CONFIG_MZEN4",
+    "CONFIG_NET_SCH_FQ",
+    "CONFIG_NET_SCH_FQ_CODEL",
+    "CONFIG_NO_HZ",
+    "CONFIG_NO_HZ_COMMON",
+    "CONFIG_NO_HZ_FULL",
+    "CONFIG_PREEMPT",
+    "CONFIG_PREEMPT_DYNAMIC",
+    "CONFIG_PREEMPT_LAZY",
+    "CONFIG_SCHED_BORE",
+    "CONFIG_SCHED_CLASS_EXT",
+    "CONFIG_SYSTEM_REVOCATION_KEYS",
+    "CONFIG_SYSTEM_TRUSTED_KEYS",
+    "CONFIG_TCP_CONG_BBR3",
+    "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS",
+    "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE",
+    "CONFIG_X86_64_VERSION",
+    "CONFIG_X86_NATIVE_CPU"
+  ],
+  "migration_allowlist": [
+    "CONFIG_ACPI_PLATFORM_PROFILE",
+    "CONFIG_ANDROID_BINDER_IPC",
+    "CONFIG_CC_VERSION_TEXT",
+    "CONFIG_CRYPTO_LIB_GF128MUL",
+    "CONFIG_CRYPTO_LZ4",
+    "CONFIG_LZ4_COMPRESS",
+    "CONFIG_MULTIPLEXER",
+    "CONFIG_NETFILTER_NETLINK",
+    "CONFIG_SND_SOC_ACPI_AMD_SDCA_QUIRKS"
+  ],
+  "changed": [
+    {
+      "symbol": "CONFIG_6PACK",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ACENIC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ACENIC_OMIT_TIGON_I",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ACPI_APEI_GHES_NVIDIA",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ACPI_PLATFORM_PROFILE",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_AD4691",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AD5706R",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AIR_AN8801_PHY",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AIR_NET_PHYLIB",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ALIBABA_EEA",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AMD_PRIVATE_COLOR",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ANDROID_BINDERFS",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ANDROID_BINDER_DEVICES",
+      "before": "\"\"",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ANDROID_BINDER_IPC",
+      "before": "m",
+      "after": "n",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_APDS9999",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_APPLICOM",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCH_MEMORY_ORDER_TSO",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCH_SUPPORTS_AUTOFDO_CLANG",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCH_SUPPORTS_PROPELLER_CLANG",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCH_WANTS_CLOCKSOURCE_READ_INLINE",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCNET_COM20020_CS",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCNET_COM90xx",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCNET_COM90xxIO",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ARCNET_RIM_I",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATALK",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_CLIP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_CLIP_NO_ICMP",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_DUMMY",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_ENI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_ENI_DEBUG",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_ENI_TUNE_BURST",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_FORE200E",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_FORE200E_DEBUG",
+      "before": "0",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_FORE200E_TX_RETRY",
+      "before": "16",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_FORE200E_USE_TASKLET",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_HE",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_HE_USE_SUNI",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IA",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IA_DEBUG",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IDT77252",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IDT77252_DEBUG",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IDT77252_RCV_ALL",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_IDT77252_USE_SUNI",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_LANAI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_LANE",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_MPOA",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_NICSTAR",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_NICSTAR_USE_IDT77105",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_NICSTAR_USE_SUNI",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ATM_TCP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AX25",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_AX25_DAMA_SLAVE",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BACKLIGHT_MAX25014",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BATTERY_CHARGER_SURFACE_RT",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BATTERY_S2MU005",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BAYCOM_PAR",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BAYCOM_SER_FDX",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BAYCOM_SER_HDX",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BITLAND_MIFS_WMI",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BLK_ERROR_INJECTION",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BPQETHER",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BT_HCIBLUECARD",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BT_HCIBT3C",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_BT_HCIDTL1",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CACHY",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_CAIF",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_DEBUG",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_DRIVERS",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_NETDEV",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_TTY",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_USB",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAIF_VIRTIO",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CAN_VIRTIO_CAN",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CC_MS_EXTENSIONS",
+      "before": null,
+      "after": "\"-fms-extensions\"",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_CC_VERSION_TEXT",
+      "before": "\"x86_64-linux-gnu-gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0\"",
+      "after": "\"gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0\"",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_CLOCKSOURCE_WATCHDOG_MAX_SKEW_US",
+      "before": "100",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CMA_SIZE_PERNUMA",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_ACOMP",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DES3_EDE_X86_64",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DF80090A",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DRBG_CTR",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DRBG_HASH",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DRBG_HMAC",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_DRBG_MENU",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_FCRYPT",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_GHASH",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_GHASH_CLMUL_NI_INTEL",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_HKDF",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_AES_CBC_MACS",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_GF128HASH",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_GF128HASH_ARCH",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_GF128MUL",
+      "before": "y",
+      "after": "m",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_POLYVAL",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_POLYVAL_ARCH",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LIB_SM3",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_LZ4",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_MICHAEL_MIC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_PCBC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_RNG_DEFAULT",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_SM3",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_SM3_AVX_X86_64",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_CRYPTO_SM3_GENERIC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DEFAULT_BBR3",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_DEFAULT_CUBIC",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_DEFAULT_TCP_CONG",
+      "before": "\"cubic\"",
+      "after": "\"bbr3\"",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_DELL_DW5826E_RESET",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DEV_DAX_FSDEV",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DEV_SYNC_PROBE",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DMABUF_HEAPS_SYSTEM_CC_SHARED",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DMABUF_MOVE_NOTIFY",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DMABUF_SELFTESTS",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DM_INLINECRYPT",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DRIVER_DEFERRED_PROBE_TIMEOUT",
+      "before": null,
+      "after": "10",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DRM_ANALOGIX_ANX78XX",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DRM_ANALOGIX_DP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DRM_PANEL_FOCALTECH_OTA7290B",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_DRM_RAS",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_EROFS_FS_ONDEMAND",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_EROFS_FS_ZIP_LZMA_DEFAULT_MAX_STREAMS",
+      "before": null,
+      "after": "16",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_EXT_SUB_SCHED",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_EZX_PCAP",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_FB_HGA",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_FPGA_MGR_EFINIX_SPI",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_FUTEX_ROBUST_UNLOCK",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_FWCTL_BNXT",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GENERIC_BITREVERSE",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GENERIC_CLOCKEVENTS_COUPLED",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GENERIC_CLOCKEVENTS_COUPLED_INLINE",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GENERIC_CPU",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_GENERIC_TIME_VSYSCALL",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_AAEON",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_BY_PINCTRL",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_NOVALAKE",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_WATCHDOG",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_WAVESHARE_DSI_TOUCH",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPIO_WCD934X",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_GPU_BUDDY",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HAMACHI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HAMRADIO",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HAVE_ARCH_GET_SECUREBOOT",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HAVE_FUTEX_ROBUST_UNLOCK",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HAVE_TRUSTED_KEYS_DEBUG",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HID_HUAWEI",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HID_LENOVO_GO",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HID_LENOVO_GO_S",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HID_OXP",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HID_RAKK",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HRTIMER_REARM_DEFERRED",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HYPERV_IOMMU",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HZ_500",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HZ_600",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_HZ_750",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_I82092",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IGH_ECAT",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IGH_ECAT_ENABLE_EOE",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IGH_ECAT_GENERIC_DEVICE",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IIO_INTERRUPT_TRIGGER",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IMA_STAGING",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_INFINIBAND_OPA_VNIC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_INFINIBAND_USER_ACCESS_CORE",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_INPUT_PCAP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_INTEL_MEI_CSC",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_INTEL_PMC_PWRM_TELEMETRY",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IOMMU_PT_RISCV64",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_IO_URING_BPF_OPS",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ISDN",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ISDN_CAPI",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_KEYBOARD_CHARLIEPLEX",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_KMALLOC_PARTITION_CACHES",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_KMALLOC_PARTITION_RANDOM",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_LEDS_AAEON",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_IN_SECURE_BOOT",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_LZ4_COMPRESS",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_MACHZ_WDT",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MDIO_BUS",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MFD_AAEON",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MIN_BASE_SLICE_NS",
+      "before": null,
+      "after": "2000000",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_AVMFRITZ",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_DSP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_HDLC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_HFCMULTI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_HFCPCI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_HFCUSB",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_INFINEON",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_IPAC",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_ISAR",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_L1OIP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_NETJET",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_SPEEDFAX",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MISDN_W6692",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MKISS",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MMC5983",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MQ_IOSCHED_ADIOS",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MTD_NETtel",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MULTIPLEXER",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_MUX_CORE",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_MZEN4",
+      "before": null,
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_NETFILTER_NETLINK",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_NETROM",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NET_DSA_TAG_NETC",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NET_SCH_FQ",
+      "before": "m",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_NET_SCH_FQ_CODEL",
+      "before": "m",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_NET_VENDOR_ALIBABA",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NET_VENDOR_ALTEON",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NET_VENDOR_FUJITSU",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NET_VENDOR_PACKET_ENGINES",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NFSD_V4_DELEG_TIMESTAMPS",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NF_CT_PROTO_UDPLITE",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NTFS_DEBUG",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NTFS_FS_POSIX_ACL",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NUMA_MIGRATION",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_NVME_TARGET_AUTH_DEBUG",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCIE_BUS_DEFAULT",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCIE_BUS_PEER2PEER",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCIE_BUS_PERFORMANCE",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCIE_BUS_SAFE",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCIE_BUS_TUNE_OFF",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCI_PWRCTRL_GENERIC",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCI_PWRCTRL_SLOT",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_3C574",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_3C589",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_AXNET",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_FMVJ18X",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_NMCLAN",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PCMCIA_SMC91C92",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PHY_NXP_TJA1145",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_POWER_RESET_QEMU_VIRT_CTRL",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PPPOX",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_PREEMPT",
+      "before": "n",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_PREEMPT_LAZY",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_PREFIX_SYMBOLS",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_QCOM_SPMI_ADC5_GEN3",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RAID6_PQ_ARCH",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RANDOM_KMALLOC_CACHES",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_READ_ONLY_THP_FOR_FS",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_REGULATOR_PCAP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RING_BUFFER_PERSISTENT_INJECT",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_ROSE",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA1",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_AES_SHA2",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RPCSEC_GSS_KRB5_ENCTYPES_CAMELLIA",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RTC_DRV_PCAP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RTW89_8922AU",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RUSTC_HAS_COERCE_POINTEE",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RUSTC_HAS_SLICE_AS_FLATTENED",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RUSTC_LLVM_MAJOR_VERSION",
+      "before": null,
+      "after": "21",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RV_MON_DEADLINE",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_RV_MON_STALL",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SCHED_BORE",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_SCHED_CACHE",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SCHED_POC_SELECTOR",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SECURITY_APPARMOR_PACKET_MEDIATION_ENABLED",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SECURITY_APPARMOR_RESTRICT_USERNS",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SECURITY_PERF_EVENTS_RESTRICT",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_AAEON",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_APDS990X",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_APPLESMC_T2",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_APS_379",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_ARCTIC_FAN_CONTROLLER",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_D1U74T",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_E50SN12051",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_EMC1812",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_GPIO_FAN",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_LATTEPANDA_SIGMA_EC",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_LTC4283",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_LX1308",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MAX20830",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MAX20860A",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MCP9982",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MP2985",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_PROM21_XHCI",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_XDP720",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_XDPE1A2G7B",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_YOGAFAN",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SERIO_CT82C710",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SMBDIRECT",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_HDA_SCODEC_AW88399_I2C",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_HDA_SCODEC_MAX98390_I2C",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_ACPI_AMD_SDCA_QUIRKS",
+      "before": "m",
+      "after": "y",
+      "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_AMD_ACP7X",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_AMD_RPL_ACP6x",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_AW88399_LIB",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_CS35L56_CAL_PERFORM_CTRL",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_CS42XX8_SPI",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_ES9356",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_TAC5XX2_SDW",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_TAS675X",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SND_SOC_UDA1380",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SWITCHTEC_DMA",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_SYSTEM_REVOCATION_KEYS",
+      "before": "\"debian/canonical-revoked-certs.pem\"",
+      "after": "\"\"",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_SYSTEM_TRUSTED_KEYS",
+      "before": "\"debian/canonical-certs.pem\"",
+      "after": "\"\"",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_T2BCE_CORE",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TCP_CONG_BBR3",
+      "before": null,
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_TCP_SIGPOOL",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TDX_HOST_SERVICES",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TEST_WORKQUEUE",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TIME_NS_VDSO",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TLS_TOE",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TOUCHSCREEN_PCAP",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TOUCHSCREEN_WACOM_W9000",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TRACE_REMOTE_TEST",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_TRANSPARENT_HUGEPAGE_ALWAYS",
+      "before": "n",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_TRANSPARENT_HUGEPAGE_MADVISE",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_TRUSTED_KEYS_DEBUG",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_UBUNTU_HOST",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_UBUNTU_ODM_DRIVERS",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_USB4_CONFIGFS",
+      "before": null,
+      "after": "m",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_USB4_STREAM",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_USB_CDNSP_GADGET",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_USB_CDNSP_HOST",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_USB_CDNS_HOST",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_V4L2_LOOPBACK",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VEML3328",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VERSION_SIGNATURE",
+      "before": "\"Ubuntu 7.0.0-30.30-generic 7.0.12\"",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VHBA",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_HWS",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_INTEL_CVS",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_ISL7998X",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_MAX9286",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_MAX96712",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VIDEO_T4KA3",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_VL53L1X_I2C",
+      "before": null,
+      "after": "n",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_WIZNET_BUS_ANY",
+      "before": "y",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_WIZNET_BUS_DIRECT",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_WIZNET_BUS_INDIRECT",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_WIZNET_W5100_SPI",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_WIZNET_W5300",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_X86_64_VERSION",
+      "before": null,
+      "after": "1",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_XEN_DEBUG_FS",
+      "before": "n",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_XOR_BLOCKS_ARCH",
+      "before": null,
+      "after": "y",
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_YAM",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    },
+    {
+      "symbol": "CONFIG_YELLOWFIN",
+      "before": "m",
+      "after": null,
+      "reason": "kconfig-migration"
+    }
+  ],
+  "violations": []
+}
