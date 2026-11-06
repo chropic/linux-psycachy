@@ -1,50 +1,52 @@
 # PsyCachy kernel builder
 
-PsyCachy builds an amd64, noninteractive Debian kernel package set for the
-pinned Linux/CachyOS 7.2.2 release. It never installs a kernel or removes
-packages.
+PsyCachy builds a custom Linux kernel for Ubuntu 26.10 on 64-bit x86
+computers. It uses CachyOS 7.3.1-1 as its starting point. The build creates
+two Debian packages: the kernel image and its matching headers. The headers
+are files needed to build drivers for that kernel.
 
-## Source and policy
+**The packages are not yet tested on the target computer.** A virtual machine
+has passed boot and driver-build tests, but the RTX 4070, graphics, and
+suspend tests still need physical hardware. See the [test results](docs/VALIDATION.md).
 
-The builder downloads CachyOS's signed `cachyos-7.2.2-1` source release,
-verifies its published SHA-256 digest,
-verifies its detached OpenPGP signature in an isolated keyring, verifies the
-kernel version, then uses the vendored current 7.2 BORE patch. Details of the
-archived queue review are in [PATCH-AUDIT.md](PATCH-AUDIT.md).
+The builder does not install the kernel or change boot settings. It creates
+packages for the CPU used to build them. A package built on a different CPU
+may not work on your computer.
 
-The baseline is Ubuntu 26.04.1 amd64 kernel 7.0.0-30. Its exact config and
-source provenance are in [config/README.md](config/README.md). The builder
-applies only [config/psycachy.fragment](config/psycachy.fragment), records a
-machine-readable final diff, and fails on every unapproved non-migration
-change.
+## Build the packages
 
-## Ubuntu 26.04.1 setup
-
-In a clean Ubuntu 26.04.1 amd64 environment, run:
+Use Ubuntu 26.10 and enable its `universe` software repository. Run these
+commands from the repository directory:
 
 ```bash
-./bootstrap/ubuntu-26.04.1.sh
-./tests/static-check.sh
-./build.sh --prepare-only --output-dir output/prepare
-./build.sh --jobs 8 --output-dir output/packages
+bash bootstrap/ubuntu-26.10.sh
+bash tests/static-check.sh
+bash build.sh --prepare-only --output-dir output/prepare
+bash build.sh --jobs 4 --output-dir output/packages
 ```
 
-The manifest is [bootstrap/ubuntu-26.04.1-packages.txt](bootstrap/ubuntu-26.04.1-packages.txt).
-`build.sh` does not call APT, `dpkg --install`, `apt remove`, or any bootloader
-command.
+The first command installs the build tools listed in the
+[dependency list](bootstrap/ubuntu-26.10-packages.txt). The third checks the
+source and prepares the configuration without building the kernel. The last
+command builds the packages; `--jobs 4` allows four jobs at once.
 
-Successful builds contain a PsyCachy-local-version `linux-image` package,
-matching headers, and a uniquely named `linux-libc-dev-psycachy` package.
-Use `dpkg-deb --info` to inspect them before any later VM or hardware testing.
+The builder checks the source signature and the saved checksums. It saves a
+build log, configuration files, CPU and tool versions, packages, and package
+checksums in the output directory. Choose an output directory without old
+`.deb` packages. Temporary build files use `/var/tmp` by default; set `TMPDIR`
+to another location if you need more space.
 
-For physical-machine installation, Secure Boot considerations, hardware testing,
-and rollback steps, see [docs/INSTALL-HARDWARE.md](docs/INSTALL-HARDWARE.md).
+The build uses the EEVDF scheduler, Clang ThinLTO, O2 optimization, and the
+build computer's CPU settings. Linux 7.3 disables Rust support when ThinLTO
+and BTF are both enabled, so this configuration does not include Rust kernel
+features. The build does not provide `linux-libc-dev` or debug-symbol packages.
 
-## Verification scope
+## Next steps
 
-The repository validates shell syntax, Python syntax, source identities,
-detached signature, patch checksum, exact patch preflight/application, config
-allowlist, and package structure. VM/hardware testing remains a separate phase:
-keep `linux-generic`, test rollback, DKMS (NVIDIA/VirtualBox/ZFS where
-applicable), networking, suspend/resume, and Secure Boot/MOK behavior before a
-release is declared ready.
+- Read the [installation and recovery guide](docs/INSTALL-HARDWARE.md) before
+  installing the packages or setting up NVIDIA and Secure Boot.
+- Read the [test instructions](tests/README.md) to repeat the checks in a
+  disposable virtual machine.
+- See the [source details](config/cachyos-7.3-provenance.txt),
+  [configuration notes](config/README.md), and [patch audit](PATCH-AUDIT.md)
+  for technical background.

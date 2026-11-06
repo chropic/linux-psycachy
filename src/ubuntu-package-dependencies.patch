@@ -1,0 +1,20 @@
+diff --git a/scripts/package/mkdebian b/scripts/package/mkdebian
+--- a/scripts/package/mkdebian
++++ b/scripts/package/mkdebian
+@@ -216,6 +216,8 @@ Homepage: https://www.kernel.org/
+ 
+ Package: $packagename-${KERNELRELEASE}
+ Architecture: $debarch
++Depends: kmod, linux-base, linux-headers-${KERNELRELEASE} (= ${packageversion})
++Recommends: initramfs-tools | dracut-core
+ Description: Linux kernel, version ${KERNELRELEASE}
+  This package contains the Linux kernel, modules and corresponding other
+  files, version: ${KERNELRELEASE}.
+@@ -240,6 +242,7 @@ cat <<EOF >> debian/control
+ 
+ Package: linux-headers-${KERNELRELEASE}
+ Architecture: $debarch
++Depends: build-essential, clang-22, llvm-22, lld-22, pahole, libelf1t64, libssl4
+ Build-Profiles: <!pkg.${sourcename}.nokernelheaders>
+ Description: Linux kernel headers for ${KERNELRELEASE} on $debarch
+  This package provides kernel header files for ${KERNELRELEASE} on $debarch

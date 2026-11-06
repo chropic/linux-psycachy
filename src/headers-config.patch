@@ -1,0 +1,13 @@
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -137,6 +137,9 @@ install_kernel_headers () {
+ 		"${srctree}/scripts/package/install-extmod-build" "${pdir}/usr/src/linux-headers-${version}"
+ 	fi
+ 
++	# External modules (including DKMS) need the effective kernel config.
++	cp -p "${KCONFIG_CONFIG}" "${pdir}/usr/src/linux-headers-${version}/.config"
++
+ 	mkdir -p $pdir/lib/modules/$version/
+ 	ln -s /usr/src/linux-headers-$version $pdir/lib/modules/$version/build
+ }

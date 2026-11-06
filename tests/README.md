@@ -1,0 +1,96 @@
+# How to test PsyCachy
+
+Run these commands from the repository directory on Ubuntu 26.10. They install
+build tools, check the files, prepare the kernel source, build packages, and
+test that the builder rejects bad inputs:
+
+```bash
+bash bootstrap/ubuntu-26.10.sh
+bash tests/static-check.sh
+bash build.sh --prepare-only --output-dir output/prepare
+bash build.sh --jobs 8 --output-dir output/packages
+PSYCACHY_TEST_ARCHIVE="$HOME/.cache/psycachy/cachyos-7.3.1-1.tar.gz" bash tests/builder-negative.sh
+```
+
+The rejection tests cover invalid arguments, missing tools, damaged source,
+invalid signatures, failed patch checks, and the wrong Clang major version.
+The signature and compiler tests need the downloaded archive and its `.asc`
+signature file. The static checks also check the saved configuration report
+and file checksums.
+
+## Test in a disposable Ubuntu 26.10 VM
+
+The following tests install packages or load kernel modules. Run them only in
+a disposable Ubuntu 26.10 virtual machine (VM) or container that you can erase.
+Do not run them on a production system.
+
+To test Secure Boot and module loading, use a VM with UEFI Secure Boot
+enabled. A container or WSL cannot test the firmware boot process. The VM's
+CPU must be compatible with the CPU used to build the packages. Copy this
+repository and the checked `output/packages` directory into the VM.
+
+On an Ubuntu 26.10 computer with KVM, the included helper creates a separate
+VM. It uses Canonical's signed October 25, 2026 cloud image and OVMF firmware
+set up with Microsoft keys:
+
+```bash
+sudo apt-get install qemu-system-x86 ovmf cloud-image-utils openssh-client
+bash tests/uefi-vm.sh init output/uefi
+bash tests/uefi-vm.sh run output/uefi
+```
+
+Keep that terminal open. Connect a VNC viewer to `127.0.0.1:5902` to see
+the VM and use MOK Manager. The VM also accepts SSH connections on port 2223.
+After the VM starts for the first time, open another terminal and copy the
+repository and the two checked packages into it:
+
+```bash
+tar --exclude='./output' --exclude='./.git' -czf output/uefi/psycachy-repo.tar.gz .
+scp -i output/uefi/id_ed25519 -P 2223 output/uefi/psycachy-repo.tar.gz \
+  output/packages/linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
+  output/packages/linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
+  output/packages/SHA256SUMS tester@127.0.0.1:/home/tester/
+ssh -i output/uefi/id_ed25519 -p 2223 tester@127.0.0.1
+```
+
+The helper stores the VM disk, firmware settings, and SSH key in
+`output/uefi`. Keep the private key private. In the VM, unpack the repository
+and put the packages where the tests expect them:
+
+```bash
+mkdir -p ~/psycachy/output/packages
+tar -xzf ~/psycachy-repo.tar.gz -C ~/psycachy
+mv ~/linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
+  ~/linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
+  ~/SHA256SUMS ~/psycachy/output/packages/
+cd ~/psycachy
+```
+
+Use the VM's VNC display to answer MOK Manager prompts. These prompts change
+only the VM's firmware settings.
+
+```bash
+sudo apt-get update
+sudo apt-get install --no-install-recommends clang-22 lld-22 openssl mokutil sbsigntool
+sudo env PSYCACHY_DISPOSABLE_TEST=1 bash tests/signing-integration.sh
+sudo env PSYCACHY_DISPOSABLE_TEST=1 bash tests/nvidia-dkms-integration.sh output/packages
+```
+
+The signing test creates test keys and signs a test EFI program. The DKMS
+test installs Ubuntu's NVIDIA 615 open driver source first. It then installs
+the headers and image and checks that the driver builds for
+`7.3.1-psycachy`. It records the driver version and checks who signed the
+module. It does not load the GPU driver or test GPU hardware.
+
+To test Secure Boot, follow the [hardware guide](../docs/INSTALL-HARDWARE.md)
+inside the VM: enroll its test keys, enable MOK-list trust if needed, sign the
+VM kernel, and boot it with Secure Boot enabled. In the VM, run `uname -r`
+and check that it says `7.3.1-psycachy`. Then, from the repository directory:
+
+```bash
+sudo env PSYCACHY_DISPOSABLE_TEST=1 bash tests/secureboot-module-test.sh
+```
+
+This test needs the matching headers and test MOK key. It checks that an
+unsigned module is rejected and the signed module loads. It does not replace
+tests of the physical GPU, display, suspend, or fallback boot.

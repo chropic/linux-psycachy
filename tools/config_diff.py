@@ -38,21 +38,16 @@ def main() -> int:
 
     base, fragment, final = map(parse, (args.base, args.fragment, args.final))
     allowed = set(fragment)
-    migrations = {
-        line.strip() for line in args.migration_allowlist.read_text(encoding="utf-8").splitlines()
-        if line.strip() and not line.startswith("#")
-    }
+    migrations = json.loads(args.migration_allowlist.read_text(encoding="utf-8"))
     changed = []
     violations = []
     for key in sorted(set(base) | set(final)):
         before, after = base.get(key), final.get(key)
         if before == after:
             continue
-        # A symbol added or removed by Kconfig is a migration. Existing symbols
-        # may differ only when the reviewed policy fragment names them.
-        reason = "fragment" if key in allowed else "approved-migration" if key in migrations else "kconfig-migration" if (
-            before is None or after is None
-        ) else "unapproved"
+        # Newly added and removed symbols need review just like changed values.
+        approved = migrations.get(key) == {"before": before, "after": after}
+        reason = "fragment" if key in allowed else "approved-migration" if approved else "unapproved"
         item = {"symbol": key, "before": before, "after": after, "reason": reason}
         changed.append(item)
         if reason == "unapproved":
@@ -72,9 +67,9 @@ def main() -> int:
             )
 
     report = {
-        "base": str(args.base),
+        "base": args.base.name,
         "base_sha256": digest(args.base),
-        "final": str(args.final),
+        "final": args.final.name,
         "final_sha256": digest(args.final),
         "fragment_allowlist": sorted(allowed),
         "migration_allowlist": sorted(migrations),

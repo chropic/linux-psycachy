@@ -1,19 +1,18 @@
-# Applied by bootstrap/ubuntu-26.04.1.sh after: apt-get build-dep linux
 build-essential
-gcc
 binutils
-make
-wget
-curl
-ca-certificates
-gnupg
+clang-22
+llvm-22
+lld-22
+rustc
+rust-src
+bindgen
+libclang-22-dev
 bc
 bison
 flex
 fakeroot
 dpkg-dev
 debhelper
-devscripts
 libssl-dev
 libelf-dev
 libdw-dev
@@ -21,7 +20,6 @@ libncurses-dev
 libudev-dev
 libpci-dev
 libiberty-dev
-dwarves
 pahole
 cpio
 rsync
@@ -31,4 +29,7 @@ gettext
 xz-utils
 zstd
 git
-lintian
+curl
+ca-certificates
+gnupg
+openssl

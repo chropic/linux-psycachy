@@ -1,0 +1,154 @@
+{
+  "CONFIG_BINDGEN_VERSION_TEXT": {
+    "before": "\"bindgen 0.72.1\"",
+    "after": null
+  },
+  "CONFIG_BLK_DEV_RUST_NULL": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_CC_HAS_KCFI_ARITY": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_DRM_NOVA": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_DRM_PANIC_SCREEN_QR_CODE": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_FIND_BIT_BENCHMARK_RUST": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_HAVE_IMA_KEXEC": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_APPRAISE_BOOTPARAM": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_APPRAISE_MODSIG": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_BLACKLIST_KEYRING": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_DEFAULT_HASH_SHA512": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_DEFAULT_TEMPLATE": {
+    "before": null,
+    "after": "\"ima-ng\""
+  },
+  "CONFIG_IMA_DISABLE_HTABLE": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_INIT_LATE_SYNC": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_KEXEC": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_KEYRINGS_PERMIT_SIGNED_BY_BUILTIN_OR_SECONDARY": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_LOAD_X509": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_LSM_RULES": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_MEASURE_PCR_IDX": {
+    "before": null,
+    "after": "10"
+  },
+  "CONFIG_IMA_NG_TEMPLATE": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_IMA_READ_POLICY": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_SIG_TEMPLATE": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_STAGING": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_IMA_WRITE_POLICY": {
+    "before": null,
+    "after": "n"
+  },
+  "CONFIG_LTO": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_LTO_CLANG": {
+    "before": null,
+    "after": "y"
+  },
+  "CONFIG_NOVA_CORE": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_RUST": {
+    "before": "y",
+    "after": null
+  },
+  "CONFIG_RUSTC_VERSION_TEXT": {
+    "before": "\"rustc 1.97.1 (8bab26f4f 2026-07-14) (built from a source tarball)\"",
+    "after": null
+  },
+  "CONFIG_RUST_BITMAP_HARDENED": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_RUST_BUILD_ASSERT_ALLOW": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_RUST_DEBUG_ASSERTIONS": {
+    "before": "n",
+    "after": null
+  },
+  "CONFIG_RUST_FW_LOADER_ABSTRACTIONS": {
+    "before": "y",
+    "after": null
+  },
+  "CONFIG_RUST_OVERFLOW_CHECKS": {
+    "before": "y",
+    "after": null
+  },
+  "CONFIG_RUST_SERIAL_DEV_BUS_ABSTRACTIONS": {
+    "before": "y",
+    "after": null
+  },
+  "CONFIG_X86_64_VERSION": {
+    "before": "1",
+    "after": null
+  }
+}

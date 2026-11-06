@@ -1,0 +1,20 @@
+CachyOS source release: cachyos-7.3.1-1
+Release list checked: 2026-11-05. The newer 7.4-rc1 tag is a release
+candidate, so it is excluded even though GitHub does not mark it as one.
+Source: https://github.com/CachyOS/linux/releases/download/cachyos-7.3.1-1/cachyos-7.3.1-1.tar.gz
+SHA-256: 3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f
+BLAKE2b-512: b744477e1202ae7c63020645fdd923625da6edd2bde61d01d9c7755e6d9628fc3fb00e615261f02a5c503d5c890cb9f8e1e9f068aea7ed01fda45b2d64e7216a
+The BLAKE2b checksum matches the packaging recipe below. The separate
+signature was verified with primary fingerprint
+E8B9AA39F054E30E8290D492C3C4820857F654FE.
+
+Recipe and configuration repository: https://github.com/CachyOS/linux-cachyos
+Commit: febabbd37b47dbe9b2db0b921a8257271063b9ed
+Recipe path: linux-cachyos/PKGBUILD
+Configuration path: linux-cachyos/config
+Configuration SHA-256: 81fb56fe326612a0dc4705fc5ec309d04bcfffb487db0cb5843918fe92951927
+
+DKMS patch repository: https://github.com/CachyOS/kernel-patches
+Commit: 80025b20b36932be71b240949d7e904bbb0017d1
+Patch path: 7.3/misc/dkms-clang.patch
+Patch SHA-256: 6f45ef083841792e88fbadbfefb0630abd738a131f9782333fbc61f8b6712b4b
