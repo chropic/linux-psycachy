@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Sign an updated PsyCachy kernel only after NVIDIA DKMS has succeeded.
+set -Eeuo pipefail
+kernel=${1:-}
+[[ $kernel == *-psycachy ]] || exit 0
+helper=/usr/local/lib/psycachy/psycachy-secureboot.sh
+cert=/var/lib/psycachy/secureboot/kernel.pem
+[[ -f $helper && -f $cert ]] || { echo 'PsyCachy signing material is missing.' >&2; exit 1; }
+dkms status -m nvidia -v 615.71.09 -k "$kernel" | grep -q ': installed' || {
+  echo "PsyCachy: NVIDIA DKMS failed for $kernel." >&2; exit 1;
+}
+for module in nvidia nvidia-modeset nvidia-drm nvidia-uvm nvidia-peermem; do
+  [[ $(modinfo -k "$kernel" -F signer "$module") == 'PsyCachy DKMS Module Signing' ]] || {
+    echo "PsyCachy: NVIDIA module $module signer is incorrect for $kernel." >&2; exit 1;
+  }
+done
+bash "$helper" sign-installed "$kernel"
+sbverify --cert "$cert" "/boot/vmlinuz-$kernel" >/dev/null
+update-initramfs -u -k "$kernel"
+tmp=$(mktemp /var/lib/psycachy/pending-kernel.XXXXXXXX)
+trap 'rm -f -- "$tmp"' EXIT
+printf '%s\n' "$kernel" > "$tmp"
+mv -f -- "$tmp" /var/lib/psycachy/pending-kernel
+echo 'PsyCachy signed; Ubuntu remains the default until activation succeeds.'

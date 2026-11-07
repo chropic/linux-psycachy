@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Activate PsyCachy
+Comment=Enroll signing keys and test the PsyCachy kernel
+Exec=/usr/local/lib/psycachy/activate-launcher.sh
+Terminal=false
+Categories=System;
+X-GNOME-Autostart-enabled=true

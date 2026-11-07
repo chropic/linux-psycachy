@@ -8,11 +8,19 @@ cd "$root"
 for script in build.sh bootstrap/ubuntu-26.10.sh secureboot/psycachy-secureboot.sh tests/static-check.sh \
   tools/nvidia-diagnostics.sh tools/configure-nvidia-dkms.sh tests/nvidia-dkms-integration.sh \
   tests/nvidia-override-test.sh tests/builder-negative.sh tests/signing-integration.sh \
-  tests/secureboot-module-test.sh tests/mokutil-check-test.sh tests/uefi-vm.sh; do
+  tests/secureboot-module-test.sh tests/mokutil-check-test.sh tests/uefi-vm.sh \
+  iso/build.sh iso/verify-kernel-packages.sh iso/verify-ubuntu-iso.sh iso/verify-archive-packages.sh iso/download-packages.sh \
+  iso/check-offline-packages.sh iso/late-install.sh iso/install-target.sh iso/activate.sh iso/activate-launcher.sh \
+  iso/kernel-preinst iso/kernel-postinst iso/offline-install.sh tests/iso-inputs.sh \
+  tests/iso-offline-inputs.sh tests/iso-vm.sh tests/iso-unsigned-module.sh \
+  tests/iso-signing-failure.sh tests/iso-update-fallback.sh tests/iso-offline-policy.sh; do
   bash -n "$script"
 done
-python3 -m py_compile tools/config_diff.py
+python3 -m py_compile tools/config_diff.py iso/select-disk.py tests/iso-no-io-uring.py
 python3 tests/test_config_diff.py
+python3 tests/test_archive_packages.py
+python3 tests/test_iso_late_logging.py
+python3 tests/test_iso_select_disk.py
 bash tests/mokutil-check-test.sh
 report=$(mktemp "${TMPDIR:-/tmp}/psycachy-static-config.XXXXXX")
 trap 'rm -f "$report"' EXIT

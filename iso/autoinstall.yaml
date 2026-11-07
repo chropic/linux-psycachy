@@ -1,0 +1,15 @@
+version: 1
+early-commands:
+  - [bash, /cdrom/psycachy/offline-install.sh]
+  - [python3, /cdrom/psycachy/select-disk.py]
+interactive-sections:
+  - '*'
+refresh-installer:
+  update: false
+source:
+  id: ubuntu-desktop
+apt:
+  fallback: offline-install
+  geoip: false
+late-commands:
+  - [bash, /cdrom/psycachy/late-install.sh]

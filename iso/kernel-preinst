@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Fall back to Ubuntu while a PsyCachy image is being replaced.
+set -Eeuo pipefail
+IFS=$'\n\t'
+kernel=${1:-}
+[[ $kernel == *-psycachy ]] || exit 0
+fallback=$(find /boot -maxdepth 1 -type f -name 'vmlinuz-*-generic' -printf '%f\n' | sort -V | tail -n 1)
+[[ -n $fallback ]] || { echo 'PsyCachy: no Ubuntu fallback kernel found.' >&2; exit 1; }
+fallback=${fallback#vmlinuz-}
+uuid=$(grub-probe --target=fs_uuid /)
+[[ $uuid =~ ^[A-Za-z0-9-]+$ ]] || { echo 'PsyCachy: invalid root filesystem UUID.' >&2; exit 1; }
+submenu="gnulinux-advanced-$uuid"
+entry="gnulinux-$fallback-advanced-$uuid"
+grep -Fq "$submenu" /boot/grub/grub.cfg || { echo 'PsyCachy: Ubuntu GRUB submenu is missing.' >&2; exit 1; }
+grep -Fq "$entry" /boot/grub/grub.cfg || { echo 'PsyCachy: Ubuntu fallback entry is missing.' >&2; exit 1; }
+grub-set-default "$submenu>$entry"
+grub-editenv list | grep -Fxq "saved_entry=$submenu>$entry" || {
+  echo 'PsyCachy: could not select the Ubuntu fallback.' >&2; exit 1;
+}
+rm -f /var/lib/psycachy/installer-activated

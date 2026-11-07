@@ -1,0 +1,8 @@
+# Disposable VM probe: retain interactive questions and record late-command execution.
+version: 1
+interactive-sections:
+  - '*'
+refresh-installer:
+  update: false
+late-commands:
+  - [touch, /target/var/lib/psycachy-installer-probe]
