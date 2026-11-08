@@ -71,7 +71,7 @@ done
 install -m 755 "$root/iso/late-install.sh" "$work/payload/late-install.sh"
 install -m 755 "$root/iso/offline-install.sh" "$work/payload/offline-install.sh"
 install -m 755 "$root/iso/select-disk.py" "$work/payload/select-disk.py"
-install -m 755 "$root/secureboot/psycachy-secureboot.sh" "$work/payload/helpers/psycachy-secureboot.sh"
+install -m 755 "$root/tools/psycachy-secureboot.sh" "$work/payload/helpers/psycachy-secureboot.sh"
 install -m 755 "$root/tools/configure-nvidia-dkms.sh" "$work/payload/helpers/configure-nvidia-dkms.sh"
 install -m 644 "$root/iso/psycachy-activation.desktop" "$work/payload/helpers/psycachy-activation.desktop"
 printf -v payload_quoted '%q' "$work/payload"
@@ -100,7 +100,7 @@ grep -Eq 'El Torito boot img :[[:space:]]+[0-9]+[[:space:]]+UEFI[[:space:]]+y' "
   for input in "$root"/iso/*; do
     if [[ -f $input ]]; then sha256sum "$input"; fi
   done
-  sha256sum "$root/secureboot/psycachy-secureboot.sh" "$root/tools/configure-nvidia-dkms.sh"
+  sha256sum "$root/tools/psycachy-secureboot.sh" "$root/tools/configure-nvidia-dkms.sh"
   for deb in "$repo"/*.deb; do
     dpkg-deb -f "$deb" Package Version Architecture | tr '\n' '\t'
     printf '%s\n' "${deb##*/}"

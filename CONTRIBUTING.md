@@ -1,7 +1,7 @@
 # Contributing to PsyCachy
 
 This guide is for people and coding agents working in this repository. Read
-[the current handoff](docs/HANDOFF.md) first, then the relevant documentation
+the relevant documentation
 linked from the [README](README.md). For kernel or Ubuntu upgrades, follow
 [UPDATING.md](UPDATING.md).
 
@@ -23,7 +23,7 @@ Run commands from the repository root in Ubuntu 26.10 amd64. Bootstrap installs
 host packages, so use an appropriate development environment:
 
 ```bash
-bash bootstrap/ubuntu-26.10.sh
+bash tools/ubuntu-26.10.sh
 bash tests/static-check.sh
 ```
 
@@ -39,8 +39,7 @@ in [.github/workflows/ubuntu-2610.yml](.github/workflows/ubuntu-2610.yml).
 For documentation-only changes, check the affected links, commands, and
 `git diff --check`; run additional tests when the changes warrant them. Record
 what passed, what failed, and what could not be run. VM results are not proof of
-physical hardware behavior. Update [docs/VALIDATION.md](docs/VALIDATION.md) and
-[docs/HANDOFF.md](docs/HANDOFF.md) when new evidence or next steps change.
+physical hardware behavior. Update [docs/VALIDATION.md](docs/VALIDATION.md) when new evidence or next steps change.
 
 ## Finish
 

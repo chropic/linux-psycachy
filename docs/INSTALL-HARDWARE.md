@@ -1,14 +1,11 @@
 # Manual package installation and recovery
 
-**PsyCachy has not yet been tested on the target computer.** The intended
-test system has an MSI motherboard, Ryzen 7 5800X3D processor,
-RTX 4070 graphics card, and Windows with BitLocker. A virtual machine test
-does not prove that this computer will boot or that its graphics will work.
-This guide describes manually installing kernel packages into an existing
-Ubuntu system. The user's current plan is the separate desktop ISO; follow
-[HANDOFF.md](HANDOFF.md) for that installation and its recovery checks.
-For the manual package route, run commands from the repository directory
-unless a step says otherwise. Package commands use `output/packages`.
+A user reports successful regular use on a physical system, but individual
+hardware and recovery checks remain unverified. VM results do not establish that a
+computer will boot or its graphics will work. This guide covers manual package
+installation into an existing Ubuntu system; see [INSTALLER.md](INSTALLER.md)
+for the desktop ISO. Run commands from the repository root unless noted.
+Package commands use `output/packages`.
 
 When Secure Boot is active, this kernel requires signed kernel modules and
 signed kernels loaded through kexec. A kernel module is code that can be
@@ -46,7 +43,7 @@ cd ../..
 
 ## NVIDIA and Secure Boot
 
-Ubuntu 26.10 provides the NVIDIA 615 open driver series for the RTX 4070.
+Ubuntu 26.10 provides the NVIDIA 615 open driver series for supported GPUs.
 DKMS is a tool that builds drivers for an installed kernel. Use Ubuntu's
 driver and DKMS packages: its prebuilt generic-kernel modules will not match
 PsyCachy. Before changing drivers, read the package changes APT proposes.
@@ -77,15 +74,15 @@ kernel and its modules. The helper needs `mokutil`, `sbsigntool`, and
 Keep the private keys secure and back them up. On the target computer, run:
 
 ```bash
-sudo bash secureboot/psycachy-secureboot.sh init
-sudo bash secureboot/psycachy-secureboot.sh enroll
+sudo bash tools/psycachy-secureboot.sh init
+sudo bash tools/psycachy-secureboot.sh enroll
 ```
 
 At the next reboot, use MOK Manager to approve the keys. MOK means Machine
 Owner Key: a key you choose to trust for Secure Boot. Then verify both keys:
 
 ```bash
-sudo bash secureboot/psycachy-secureboot.sh check
+sudo bash tools/psycachy-secureboot.sh check
 ```
 
 Linux 7.3 also needs the MOK list marked as trusted before it can use those
@@ -94,7 +91,7 @@ PsyCachy key. First review the list with
 `sudo mokutil --list-enrolled --short`, then request trust:
 
 ```bash
-sudo bash secureboot/psycachy-secureboot.sh trust-mok
+sudo bash tools/psycachy-secureboot.sh trust-mok
 ```
 
 If the helper says trust is already enabled, continue to the check below.
@@ -111,7 +108,7 @@ fallback kernel. Ubuntu and PsyCachy may load trusted keys differently, so
 check PsyCachy's trusted keys after booting it. Then configure DKMS signing:
 
 ```bash
-sudo bash secureboot/psycachy-secureboot.sh configure-dkms
+sudo bash tools/psycachy-secureboot.sh configure-dkms
 ```
 
 The DKMS configuration affects all DKMS builds on that system. It refuses
@@ -131,7 +128,7 @@ sudo apt install ./output/packages/linux-image-7.3.1-psycachy_7.3.1-1psycachy1_a
 If Secure Boot is enabled, sign the installed image before rebooting:
 
 ```bash
-sudo bash secureboot/psycachy-secureboot.sh sign-installed 7.3.1-psycachy
+sudo bash tools/psycachy-secureboot.sh sign-installed 7.3.1-psycachy
 ```
 
 Confirm that DKMS built and installed the NVIDIA module for

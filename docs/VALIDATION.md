@@ -1,6 +1,6 @@
 # Test results
 
-The kernel was built in Ubuntu 26.10 using an AMD Ryzen 7 5800X3D (`znver3`).
+The kernel was built in Ubuntu 26.10 using native CPU optimization.
 Use these CPU-specific packages only on compatible CPUs. The package tests
 below ran on November 5, 2026; installer tests ran on November 7.
 
@@ -80,10 +80,16 @@ generated module indexes, and symlinks matched. The originals contained extra
 filesystem and storage modules. The cause of the transient replacement and its
 effect on physical hardware are not proven.
 
+## Physical use
+
+A user reports running PsyCachy on a physical system in regular use, with
+everything working as expected so far. This is a user-reported result; no
+individual hardware, Secure Boot, recovery, or disk-preservation test results
+were supplied. Results may differ on other systems.
+
 ## What has not been tested
 
-These checks do not validate physical GPU initialization, `nvidia-smi`,
-graphics, suspend/resume, or fallback boot on the B550 / Ryzen 7 5800X3D /
-RTX 4070 machine. They also do not verify its physical network restoration,
-Ventoy boot, or preservation of the Windows disk. See the
-[current hardware handoff](HANDOFF.md) and [test instructions](TESTING.md).
+The VM checks and general physical-use report do not establish individual
+results for GPU initialization, suspend/resume, fallback boot, networking,
+Secure Boot, or preservation of other physical disks. See the [test
+instructions](TESTING.md).

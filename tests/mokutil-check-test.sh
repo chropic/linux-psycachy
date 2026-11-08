@@ -15,8 +15,8 @@ case $1 in
 esac
 EOF
 chmod +x "$work/mokutil"
-if PATH="$work:$PATH" TEST_MOK_STATE=missing bash "$root/secureboot/psycachy-secureboot.sh" check > "$work/log" 2>&1; then
+if PATH="$work:$PATH" TEST_MOK_STATE=missing bash "$root/tools/psycachy-secureboot.sh" check > "$work/log" 2>&1; then
   echo 'Unenrolled MOK was accepted.' >&2; exit 1
 fi
-PATH="$work:$PATH" TEST_MOK_STATE=enrolled bash "$root/secureboot/psycachy-secureboot.sh" check > "$work/log" 2>&1
+PATH="$work:$PATH" TEST_MOK_STATE=enrolled bash "$root/tools/psycachy-secureboot.sh" check > "$work/log" 2>&1
 echo 'MOK enrollment status checks passed.'

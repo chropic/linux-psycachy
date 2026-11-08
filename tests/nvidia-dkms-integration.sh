@@ -23,8 +23,8 @@ if ! dpkg-query -W -f='${Status}' initramfs-tools 2>/dev/null | grep -q '^instal
 fi
 if [[ ! -e /etc/dkms/nvidia.conf ]]; then bash "$root/tools/configure-nvidia-dkms.sh"; fi
 bash "$root/tests/nvidia-override-test.sh" /etc/dkms/nvidia.conf
-if [[ ! -e /var/lib/psycachy/secureboot/module.key ]]; then bash "$root/secureboot/psycachy-secureboot.sh" init; fi
-if [[ ! -e /etc/dkms/framework.conf.d/psycachy.conf ]]; then bash "$root/secureboot/psycachy-secureboot.sh" configure-dkms; fi
+if [[ ! -e /var/lib/psycachy/secureboot/module.key ]]; then bash "$root/tools/psycachy-secureboot.sh" init; fi
+if [[ ! -e /etc/dkms/framework.conf.d/psycachy.conf ]]; then bash "$root/tools/psycachy-secureboot.sh" configure-dkms; fi
 grep -Fq 'mok_signing_key="/var/lib/psycachy/secureboot/module.key"' /etc/dkms/framework.conf.d/psycachy.conf
 grep -Fq 'mok_certificate="/var/lib/psycachy/secureboot/module.der"' /etc/dkms/framework.conf.d/psycachy.conf
 # Exercise the common driver-first path: the image's post-install hook must

@@ -5,7 +5,7 @@ build tools, check the files, prepare the kernel source, build packages, and
 test that the builder rejects bad inputs:
 
 ```bash
-bash bootstrap/ubuntu-26.10.sh
+bash tools/ubuntu-26.10.sh
 bash tests/static-check.sh
 bash build.sh --prepare-only --output-dir output/prepare
 bash build.sh --jobs 8 --output-dir output/packages
@@ -20,14 +20,13 @@ and file checksums.
 
 ## Repeat the current installer VM test
 
-The tested candidate v13 is local to the `PsyCachy-ubuntu2610` WSL
-distribution; its exact path and checksum are in [HANDOFF.md](HANDOFF.md).
-From this repository in that distribution, these commands create a **new**
-disposable two-disk VM with Secure Boot disabled and no network:
+Use a locally built or otherwise verified installer image. The following commands
+create a **new** disposable two-disk VM with Secure Boot disabled and no network.
+Replace the example image path with your verified ISO path.
 
 ```bash
-bash tests/iso-vm.sh init-insecure /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
-PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+bash tests/iso-vm.sh init-insecure /var/tmp/psycachy-validation-next /path/to/psycachy.iso
+PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run /var/tmp/psycachy-validation-next /path/to/psycachy.iso
 ```
 
 The helper refuses to reuse an existing VM directory. Complete the interactive
@@ -35,8 +34,8 @@ installation to `psycachy-linux`; shut the VM down before checking the other
 disk and booting without the ISO:
 
 ```bash
-bash tests/iso-vm.sh verify-other /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
-PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run-disk /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+bash tests/iso-vm.sh verify-other /var/tmp/psycachy-validation-next /path/to/psycachy.iso
+PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run-disk /var/tmp/psycachy-validation-next /path/to/psycachy.iso
 ```
 
 Use `init` instead of `init-insecure` when creating a separate VM with

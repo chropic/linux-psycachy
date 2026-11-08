@@ -17,4 +17,6 @@ Configuration SHA-256: 81fb56fe326612a0dc4705fc5ec309d04bcfffb487db0cb5843918fe9
 DKMS patch repository: https://github.com/CachyOS/kernel-patches
 Commit: 80025b20b36932be71b240949d7e904bbb0017d1
 Patch path: 7.3/misc/dkms-clang.patch
-Patch SHA-256: 6f45ef083841792e88fbadbfefb0630abd738a131f9782333fbc61f8b6712b4b
+Upstream patch SHA-256: 6f45ef083841792e88fbadbfefb0630abd738a131f9782333fbc61f8b6712b4b
+The local patch contains the same diff with identifying mail headers removed.
+Local patch SHA-256: 1e543f84690f7935c7dcd927d785b032561e7caa789d5d114e91b3798b1b1663

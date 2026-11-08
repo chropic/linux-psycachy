@@ -28,7 +28,7 @@ if [[ -n ${PSYCACHY_TEST_ARCHIVE:-} ]]; then
   grep -Eq 'no valid OpenPGP data|verify signatures|signature' "$work/log"
   tar -xzf "$PSYCACHY_TEST_ARCHIVE" -C "$work" 'cachyos-7.3.1-1/scripts/package/builddeb'
   sed 's@a/scripts/package/builddeb@a/scripts/package/missing@; s@b/scripts/package/builddeb@b/scripts/package/missing@' \
-    "$root/src/headers-config.patch" > "$work/bad.patch"
+    "$root/config/patches/headers-config.patch" > "$work/bad.patch"
   fail_if_success git -C "$work/cachyos-7.3.1-1" apply --check --no-index "$work/bad.patch"
   if [[ -s ${PSYCACHY_TEST_ARCHIVE}.asc ]]; then
     mkdir -p "$work/version-cache/psycachy" "$work/fake-toolchain"

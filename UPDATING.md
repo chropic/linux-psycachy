@@ -4,7 +4,7 @@ This is the maintenance procedure for agents; it does not perform an update.
 The current baseline is CachyOS 7.3.1-1 on Ubuntu 26.10 amd64. The installer,
 fallback kernel, NVIDIA modules, Secure Boot, and offline repository are coupled
 to that baseline. A version string change alone does not establish support.
-Start with [the handoff](docs/HANDOFF.md), preserve local artifacts, and agree
+Review the documentation, preserve local artifacts, and agree
 on the requested target versions before making changes.
 
 ## 1. Inventory and verify upstream inputs
@@ -31,8 +31,8 @@ trust before changing the ISO name or release.
 
 1. Update the source release, version, verified hashes, signer if legitimately
    changed, config and patch paths/hashes, and any toolchain checks in
-   [build.sh](build.sh). Refresh the pinned upstream recipe and configuration
-   in `config/`; check and adapt all three `src/` patches against the new source.
+   [build.sh](build.sh). Refresh the pinned upstream configuration
+   in `config/`; check and adapt all three `config/patches/` patches against the new source.
    Review package names, versions, and dependencies in the builder and patches.
 2. Review `config/psycachy.fragment` against the new Kconfig and the intended
    CPU, security, driver, and compiler settings. Update the bootstrap package
@@ -48,8 +48,7 @@ trust before changing the ISO name or release.
    fragment, normalizes again, and checks the resulting differences. If Kconfig
    migration checks fail, inspect each change and update
    `config/kconfig-migration-allowlist.json` only after review; rerun preparation.
-   Refresh the tracked normalized and final configs, diff report, and build
-   metadata from the successful output, and update their references and checks
+   Refresh the tracked normalized and final configs and diff report from the successful output, and update their references and checks
    in the tests and documentation. Update the pinned checks in
    `tests/static-check.sh`, then run it. See
    [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
@@ -60,7 +59,7 @@ trust before changing the ISO name or release.
 
 ## 3. Update Ubuntu and installer together
 
-Review the release checks and names in `build.sh`, `bootstrap/`, `iso/`, and
+Review the release checks and names in `build.sh`, `tools/`, `iso/`, and
 the GitHub Actions workflow. Update package availability and dependency names,
 the LLVM toolchain, and the CI container and commands for the target release.
 Recheck the installer live environment and Ubuntu installer behavior rather

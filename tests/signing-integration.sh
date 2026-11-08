@@ -10,7 +10,7 @@ test_image=/boot/vmlinuz-test-psycachy
 work=$(mktemp -d)
 trap 'rm -rf "$work"; rm -f "$test_image"' EXIT
 if [[ ! -e /var/lib/psycachy/secureboot/module.key ]]; then
-  bash "$root/secureboot/psycachy-secureboot.sh" init
+  bash "$root/tools/psycachy-secureboot.sh" init
 fi
 keydir=/var/lib/psycachy/secureboot
 openssl x509 -in "$keydir/module.pem" -noout -ext extendedKeyUsage | grep -Fq '1.3.6.1.4.1.2312.16.1.2'
@@ -22,6 +22,6 @@ clang-22 --target=x86_64-pc-win32-coff -ffreestanding -c "$work/efi.c" -o "$work
 lld-link-22 /entry:efi_main /subsystem:efi_application /nodefaultlib /out:"$work/test.efi" "$work/efi.o"
 mkdir -p /boot
 ( set -o noclobber; cat "$work/test.efi" > "$test_image" )
-bash "$root/secureboot/psycachy-secureboot.sh" sign-installed test-psycachy
+bash "$root/tools/psycachy-secureboot.sh" sign-installed test-psycachy
 sbverify --cert "$keydir/kernel.pem" "$test_image"
 echo 'Synthetic EFI signing checks passed; firmware boot remains untested.'

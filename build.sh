@@ -7,7 +7,7 @@ readonly KERNEL_VERSION=7.3.1 RELEASE=cachyos-7.3.1-1
 readonly SOURCE_SHA256=3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f
 readonly SIGNER=E8B9AA39F054E30E8290D492C3C4820857F654FE
 readonly CONFIG_SHA256=81fb56fe326612a0dc4705fc5ec309d04bcfffb487db0cb5843918fe92951927
-readonly DKMS_PATCH_SHA256=6f45ef083841792e88fbadbfefb0630abd738a131f9782333fbc61f8b6712b4b
+readonly DKMS_PATCH_SHA256=1e543f84690f7935c7dcd927d785b032561e7caa789d5d114e91b3798b1b1663
 readonly HEADER_PATCH_SHA256=3fbfe37888f961f1cc3cd8278600851b56047b791270fc66f0b3d8fab33d60d9
 readonly DEPENDENCIES_PATCH_SHA256=d938c88ddd54d285b44b0b0a7c352e0d77f568343edde9bd5b6708edbc842b55
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -70,9 +70,9 @@ gpg --batch --status-fd 1 --verify "$signature" "$archive" > "$work/signature-st
 grep -q "^\\[GNUPG:\\] VALIDSIG $SIGNER " "$work/signature-status" || die 'signature does not match pinned signer'
 unset GNUPGHOME
 printf '%s  %s\n' "$CONFIG_SHA256" "$root/config/cachyos-7.3.config" | sha256sum --check --status || die 'config checksum mismatch'
-printf '%s  %s\n' "$DKMS_PATCH_SHA256" "$root/src/dkms-clang.patch" | sha256sum --check --status || die 'DKMS patch checksum mismatch'
-printf '%s  %s\n' "$HEADER_PATCH_SHA256" "$root/src/headers-config.patch" | sha256sum --check --status || die 'header patch checksum mismatch'
-printf '%s  %s\n' "$DEPENDENCIES_PATCH_SHA256" "$root/src/ubuntu-package-dependencies.patch" | sha256sum --check --status || die 'package dependencies patch checksum mismatch'
+printf '%s  %s\n' "$DKMS_PATCH_SHA256" "$root/config/patches/dkms-clang.patch" | sha256sum --check --status || die 'DKMS patch checksum mismatch'
+printf '%s  %s\n' "$HEADER_PATCH_SHA256" "$root/config/patches/headers-config.patch" | sha256sum --check --status || die 'header patch checksum mismatch'
+printf '%s  %s\n' "$DEPENDENCIES_PATCH_SHA256" "$root/config/patches/ubuntu-package-dependencies.patch" | sha256sum --check --status || die 'package dependencies patch checksum mismatch'
 tar -xzf "$archive" -C "$work"
 source_dir="$work/$RELEASE"
 [[ -f $source_dir/Makefile && $(make -s -C "$source_dir" kernelversion) == "$KERNEL_VERSION" ]] || die 'source version mismatch'
@@ -84,8 +84,8 @@ ld_info=$("$source_dir/scripts/ld-version.sh" ld.lld-22) || die 'linker does not
 [[ $ld_info =~ ^LLD[[:space:]]22[0-9]{4}$ ]] || die "expected LLD 22, got: $ld_info"
 echo "Kernel tool checks passed: $cc_info; $ld_info"
 for patch in dkms-clang.patch headers-config.patch ubuntu-package-dependencies.patch; do
-  git -C "$source_dir" apply --check --no-index "$root/src/$patch"
-  git -C "$source_dir" apply --no-index "$root/src/$patch"
+  git -C "$source_dir" apply --check --no-index "$root/config/patches/$patch"
+  git -C "$source_dir" apply --no-index "$root/config/patches/$patch"
 done
 cp "$root/config/cachyos-7.3.config" "$source_dir/.config"
 make -C "$source_dir" LLVM=-22 olddefconfig
@@ -114,7 +114,7 @@ if $prepare_only; then echo "Preparation passed: $output_dir"; exit 0; fi
 pkg_version="${KERNEL_VERSION}-1psycachy1"
 kernel_release=$(make -s -C "$source_dir" LLVM=-22 LOCALVERSION=-psycachy kernelrelease)
 [[ $kernel_release == "$KERNEL_VERSION-psycachy" ]] || die "unexpected kernel release $kernel_release"
-DEB_BUILD_PROFILES=pkg.linux-upstream.nokerneldbg DEBFULLNAME=chropic DEBEMAIL=12cs4.tech@proton.me make -C "$source_dir" LLVM=-22 -j"$jobs" bindeb-pkg \
+DEB_BUILD_PROFILES=pkg.linux-upstream.nokerneldbg DEBFULLNAME="PsyCachy Builder" DEBEMAIL="builder@example.invalid" make -C "$source_dir" LLVM=-22 -j"$jobs" bindeb-pkg \
   LOCALVERSION=-psycachy KDEB_PKGVERSION="$pkg_version"
 images=("$work"/linux-image-*psycachy_*.deb)
 headers=("$work"/linux-headers-*psycachy_*.deb)

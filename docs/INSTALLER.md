@@ -1,8 +1,8 @@
 # Experimental desktop installer
 
-For the current target, ISO, and physical test sequence, use [HANDOFF.md](HANDOFF.md).
 The installer erases the selected disk. Candidate v13 passed the VM checks in
-[VALIDATION.md](VALIDATION.md), but physical hardware remains untested.
+[VALIDATION.md](VALIDATION.md), and a user reports successful regular use on physical hardware. Individual
+hardware and recovery checks remain unverified.
 
 ## Build inputs and output
 

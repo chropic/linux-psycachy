@@ -10,8 +10,8 @@ the result with the updated CachyOS configuration. Any other changed, added,
 or removed setting must match the before and after values in
 `kconfig-migration-allowlist.json`.
 
-The saved configurations, difference report, and `build-metadata-2610.txt`
-come from preparation on Ubuntu 26.10 with a Ryzen 7 5800X3D. They document
+The saved configurations and difference report come from preparation on Ubuntu
+26.10. They document
 that preparation; they are not, by themselves, proof of a completed build.
 
 Linux 7.3 disables `CONFIG_RUST` when ThinLTO and BTF are both enabled. The
