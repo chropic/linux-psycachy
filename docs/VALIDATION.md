@@ -1,8 +1,8 @@
 # Test results
 
-These tests ran on November 5, 2026. The kernel was built in Ubuntu 26.10
-and tested in a disposable virtual machine (VM). The build used an AMD Ryzen
-7 5800X3D CPU (`znver3`). Use these packages only on compatible CPUs.
+The kernel was built in Ubuntu 26.10 using an AMD Ryzen 7 5800X3D (`znver3`).
+Use these CPU-specific packages only on compatible CPUs. The package tests
+below ran on November 5, 2026; installer tests ran on November 7.
 
 ## Build and driver tests
 
@@ -52,9 +52,38 @@ order before that script was run. After the final installation, a one-time
 GRUB selection booted `7.3.0-9-generic` with Secure Boot enabled; DKMS still
 reported NVIDIA installed for both kernels and `dpkg --audit` was empty.
 
+## Candidate v13 desktop installer
+
+The tested ISO SHA-256 is
+`8caac7f32e750566c5676940364b40ce37d765f6a945feb5ad2ae43baf4b0870`.
+A fresh, offline two-disk VM installation completed. The untouched virtual disk
+passed its full-image checksum and sentinel checks; Ubuntu booted without the
+installer media. `dpkg --audit` and `dpkg -V debianutils` were clean, and
+NVIDIA 615.71.09 DKMS was installed for PsyCachy and both Ubuntu kernels.
+Signing-failure and kernel-update fallback tests passed.
+
+On an isolated overlay using software-emulated Secure Boot, both installation
+certificates enrolled, the signed PsyCachy trial booted, and an unsigned
+NVIDIA module was rejected. Activation stopped because the VM had no NVIDIA GPU,
+left Ubuntu saved as default, and the next boot returned to Ubuntu. An earlier
+KVM/SMM Secure Boot attempt stalled; software emulation worked, but the cause
+of the KVM stall was not established.
+
+During installation, `/usr/bin/ischroot` was temporarily hard-linked to the
+Rust coreutils binary and emitted a usage error. `dpkg -V debianutils` reported
+a mismatch during installation, but the correct binary and package verification
+were restored by completion. `update-initramfs` uses the detector for its
+read-only `/boot` check. Both installer-generated initramfs images booted in
+the VM. Compared with images regenerated after boot, their unpacked main images
+contained every regenerated regular file; common file hashes matched except
+generated module indexes, and symlinks matched. The originals contained extra
+filesystem and storage modules. The cause of the transient replacement and its
+effect on physical hardware are not proven.
+
 ## What has not been tested
 
 These checks do not validate physical GPU initialization, `nvidia-smi`,
 graphics, suspend/resume, or fallback boot on the B550 / Ryzen 7 5800X3D /
-RTX 4070 machine. The GitHub Actions workflow has not been observed running
-remotely. See [test instructions](../tests/README.md) for reproduction.
+RTX 4070 machine. They also do not verify its physical network restoration,
+Ventoy boot, or preservation of the Windows disk. See the
+[current hardware handoff](HANDOFF.md) and [test instructions](TESTING.md).

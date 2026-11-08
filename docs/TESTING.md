@@ -18,6 +18,35 @@ The signature and compiler tests need the downloaded archive and its `.asc`
 signature file. The static checks also check the saved configuration report
 and file checksums.
 
+## Repeat the current installer VM test
+
+The tested candidate v13 is local to the `PsyCachy-ubuntu2610` WSL
+distribution; its exact path and checksum are in [HANDOFF.md](HANDOFF.md).
+From this repository in that distribution, these commands create a **new**
+disposable two-disk VM with Secure Boot disabled and no network:
+
+```bash
+bash tests/iso-vm.sh init-insecure /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+```
+
+The helper refuses to reuse an existing VM directory. Complete the interactive
+installation to `psycachy-linux`; shut the VM down before checking the other
+disk and booting without the ISO:
+
+```bash
+bash tests/iso-vm.sh verify-other /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+PSYCACHY_VM_IOURING=off bash tests/iso-vm.sh run-disk /var/tmp/psycachy-validation-next /var/tmp/psycachy-candidate-v13/psycachy-ubuntu-26.10-desktop-amd64.iso
+```
+
+Use `init` instead of `init-insecure` when creating a separate VM with
+Microsoft-key OVMF variables for Secure Boot. In this WSL environment KVM/SMM
+stalled during one Secure Boot attempt; `PSYCACHY_VM_ACCEL=tcg` worked. The
+VM helper prints its VNC and monitor ports. The installation, signing-failure,
+update-fallback, and unsigned-module tests are destructive to the disposable
+guest and must never run on an existing system. See their script comments for
+preconditions. The real hardware test is separate from this VM workflow.
+
 ## Test in a disposable Ubuntu 26.10 VM
 
 The following tests install packages or load kernel modules. Run them only in
@@ -82,7 +111,7 @@ the headers and image and checks that the driver builds for
 `7.3.1-psycachy`. It records the driver version and checks who signed the
 module. It does not load the GPU driver or test GPU hardware.
 
-To test Secure Boot, follow the [hardware guide](../docs/INSTALL-HARDWARE.md)
+To test Secure Boot, follow the [hardware guide](INSTALL-HARDWARE.md)
 inside the VM: enroll its test keys, enable MOK-list trust if needed, sign the
 VM kernel, and boot it with Secure Boot enabled. In the VM, run `uname -r`
 and check that it says `7.3.1-psycachy`. Then, from the repository directory:

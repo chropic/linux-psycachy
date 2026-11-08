@@ -1,7 +1,7 @@
 # Kernel configuration
 
 The kernel configuration chooses which features and drivers to build. The
-[source details](cachyos-7.3-provenance.txt) identify the exact CachyOS
+[source details](../config/cachyos-7.3-provenance.txt) identify the exact CachyOS
 configuration, source, signing key, and patch used by this project.
 
 The builder first updates the CachyOS configuration using the Ubuntu 26.10

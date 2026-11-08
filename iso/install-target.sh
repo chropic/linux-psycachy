@@ -59,6 +59,13 @@ apt-get "${apt_opts[@]}" -y --no-install-recommends install \
   nvidia-driver-615-open=615.71.09-0ubuntu1 nvidia-dkms-615-open=615.71.09-0ubuntu1 \
   linux-headers-7.3.1-psycachy linux-image-7.3.1-psycachy
 bash "$helper" sign-installed 7.3.1-psycachy
+# The target's package hooks can skip GRUB regeneration in the installer
+# chroot. Generate entries after all kernels are installed, before activation.
+update-grub
+grep -Fq "'gnulinux-7.3.1-psycachy-advanced-$uuid'" /boot/grub/grub.cfg || \
+  die 'PsyCachy GRUB entry is missing after update-grub'
+grep -Fq "'$entry'" /boot/grub/grub.cfg || die 'Ubuntu fallback GRUB entry is missing after update-grub'
+grub-editenv list | grep -Fxq "saved_entry=$submenu>$entry" || die 'Ubuntu fallback changed during installation'
 kernels=(7.3.1-psycachy)
 for image in /boot/vmlinuz-*-generic; do
   [[ -f $image ]] || continue

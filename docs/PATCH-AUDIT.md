@@ -2,7 +2,7 @@
 
 Patches are files that change the kernel source before it is built. This
 project uses the signed CachyOS source and the fixed versions listed in
-[source details](config/cachyos-7.3-provenance.txt). Each patch has a saved
+[source details](../config/cachyos-7.3-provenance.txt). Each patch has a saved
 checksum and must pass `git apply --check` before the builder applies it.
 
 | Change | Status |
@@ -17,5 +17,5 @@ checksum and must pass `git apply --check` before the builder applies it.
 | Archived `0005-fixes.patch` | The build uses the 7.3.1 AMD, Intel display, and packaging code. We have not established that each old fix is equivalent. |
 
 The patch checks passed against the verified 7.3.1 archive. See the
-[test results](docs/VALIDATION.md) for package, NVIDIA DKMS, and Secure Boot
+[test results](VALIDATION.md) for package, NVIDIA DKMS, and Secure Boot
 VM tests. Testing on physical hardware is still needed.

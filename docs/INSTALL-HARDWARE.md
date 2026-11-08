@@ -1,12 +1,14 @@
-# Install PsyCachy and recover from problems
+# Manual package installation and recovery
 
 **PsyCachy has not yet been tested on the target computer.** The intended
-test system has an MSI MPG B550I motherboard, Ryzen 7 5800X3D processor,
+test system has an MSI motherboard, Ryzen 7 5800X3D processor,
 RTX 4070 graphics card, and Windows with BitLocker. A virtual machine test
 does not prove that this computer will boot or that its graphics will work.
-Run the commands in this guide from the repository directory unless a step
-says otherwise. The package commands use the default `output/packages`
-directory from the build instructions.
+This guide describes manually installing kernel packages into an existing
+Ubuntu system. The user's current plan is the separate desktop ISO; follow
+[HANDOFF.md](HANDOFF.md) for that installation and its recovery checks.
+For the manual package route, run commands from the repository directory
+unless a step says otherwise. Package commands use `output/packages`.
 
 When Secure Boot is active, this kernel requires signed kernel modules and
 signed kernels loaded through kexec. A kernel module is code that can be
