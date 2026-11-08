@@ -12,6 +12,8 @@ Samsung 990 PRO. **No physical result has been reported.** Start with the
 
 ## Documentation
 
+- [Contributing and agent workflow](CONTRIBUTING.md)
+- [Updating the kernel and Ubuntu](UPDATING.md)
 - [Installer build and VM workflow](docs/INSTALLER.md)
 - [Test results and limitations](docs/VALIDATION.md)
 - [Build and test commands](docs/TESTING.md)
