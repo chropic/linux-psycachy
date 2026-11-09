@@ -27,9 +27,14 @@ to the ESP; a follow-up check confirmed byte-for-byte payload matches, a
 retained recovery copy, and the ESP remounted read-only. The device has not
 rebooted since apply, so the restored boot path and recovery-panel entry remain
 untested. Candidate package installation/removal and physical fallback boot
-also remain open. See the [recovery snapshot and apply report](validation/phase1-sp12-recovery-snapshot-20261109.md)
-and [SP12 inventory report](validation/phase2-sp121-inventory-20261109.md);
-raw machine-specific files remain under ignored `output/`.
+also remain open. A read-only firmware inspection found Secure Boot disabled,
+a vendor-specific current boot entry, and a root-level EFI staging file outside
+the saved `EFI/BOOT` tree; the file was copied to ignored `output/` and left
+untouched. The recovery-panel kernel and DTB match installed `/boot` files,
+but its protected initrd was not compared. See the [recovery snapshot and apply report](validation/phase1-sp12-recovery-snapshot-20261109.md),
+[EFI inventory](validation/phase1-sp12-efi-inventory-20261109.md), and
+[SP12 inventory report](validation/phase2-sp121-inventory-20261109.md); raw
+machine-specific files remain under ignored `output/`.
 
 ARM64 QEMU system emulation is now installed on the SP12. QEMU 11.0.3 lists
 TCG and KVM accelerators, but this session has no `/dev/kvm`; a diskless TCG
