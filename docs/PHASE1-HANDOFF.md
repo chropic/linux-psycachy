@@ -158,11 +158,12 @@ remain experimental; this is not a release approval.
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
    the Surface device tree or hardware. The host QEMU package is absent, but
    the unpacked temporary QEMU bundle above works for smoke tests.
-2. Have a reviewer approve the candidate config and policies, especially
-   module signature enforcement, lockdown, kexec, hibernation and BPF JIT
-   settings. The ARM64 candidate config audit reports 17 declared removals and
-   20 newly enabled unreviewed symbols with zero unexpected changes; see
-   `docs/validation/sp121-candidate-config-audit.json`.
+2. Have a reviewer approve the candidate config and policies. The ARM64 package
+   has hibernation disabled; module acceptance, lockdown default, kexec
+   verification/handover, and BPF JIT policy need review. See
+   [`PHASE1-CONFIG-REVIEW.md`](PHASE1-CONFIG-REVIEW.md) and the audit report at
+   `docs/validation/sp121-candidate-config-audit.json` (17 declared removals,
+   20 newly enabled symbols, zero unexpected changes).
 3. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
    boot and recovery on physical Surface Pro 12 hardware before any deployment
    claim. Existing AMD64 physical installation evidence is still user-owned.
