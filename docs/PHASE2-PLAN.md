@@ -35,8 +35,9 @@ The sanitized summary and Phase 1 access limitations are recorded in
 This is a device inventory only: no timed sample, workload, energy measurement,
 or policy change occurred. In the current shell, `/` is mounted read-write but
 the process is unprivileged and sudo requires interactive authentication; the
-ESP remains read-only. A verified recovery snapshot and bootable fallback are
-not yet established.
+ESP remains read-only. The current ESP payload and EFI loader are now copied
+to the root filesystem and checksum-compared, but restore and fallback boot
+have not been tested.
 
 ## Readiness checks
 

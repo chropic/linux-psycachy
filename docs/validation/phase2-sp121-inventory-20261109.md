@@ -28,16 +28,25 @@ The initial inventory session was unprivileged and found system and boot
 storage mounted read-only. In the current session the root filesystem is
 mounted read-write, while the ESP remains read-only; the shell is still
 unprivileged and sudo requires interactive authentication. No package changes,
-boot-storage writes, recovery apply, or reboot were attempted. The live system
-does not contain the project's recovery checksum record or installed restore
-utility.
+boot-storage writes, recovery apply, or reboot were attempted during inventory.
+The live system does not contain the project's installed restore utility.
+
+After the inventory, an operator used the repository helper to save and verify
+the active payload set under the root filesystem, and copied the EFI boot
+directory there. The snapshot report is recorded in
+[`phase1-sp12-recovery-snapshot-20261109.md`](phase1-sp12-recovery-snapshot-20261109.md).
+The snapshot has not been applied, and no fallback or recovery boot has been
+tested.
 
 A read-only hash comparison showed that the active ESP kernel and DTB match the
 running kernel. The recovery-panel kernel matches an installed older kernel;
 its DTB matches the system's unversioned DTB. The corresponding system initrds
-were unreadable to this session, so complete payload sets could not be verified.
-File matches do not establish that either ESP entry boots. No fallback or
-recovery route was tested; physical Phase 1 gates remain open.
+were unreadable to the inventory process, so complete payload sets could not
+be verified at capture time. The later privileged preflight compared the
+active ESP payload with the files for the running kernel and verified the
+root-filesystem copy. File matches and a saved copy do not establish that
+either ESP entry or the recovery route boots; physical Phase 1 gates remain
+open.
 
 ## VM feasibility
 

@@ -19,13 +19,15 @@ authentication; the ESP remains read-only. The running kernel predates the
 branch's 7.3.1 candidate. Hash checks show the active ESP kernel and DTB match
 the running kernel; the separate recovery-panel kernel matches an installed
 older kernel. The system-side initrds are not readable by the unprivileged
-shell, so the complete payload sets could not be compared. No package
-installation or removal, recovery apply, or reboot was attempted. Neither ESP
-entry has been proven to boot, and the live system has no recovery checksum or
-installed restore helper. The recovery-panel payload is a candidate, not a
-verified recovery path. Read-only details are recorded in [the SP12 inventory
-report](validation/phase2-sp121-inventory-20261109.md); raw machine-specific
-files remain under ignored `output/`.
+shell, so the initial inventory could not compare complete payload sets. The
+operator has since preserved the active kernel, initramfs, and DTB under the
+root filesystem and verified their checksums. The existing EFI boot directory
+was copied and compared with the ESP. This preserves current boot files, but
+the restore path and recovery-panel entry have not been boot-tested. No
+candidate package installation/removal, recovery apply, or reboot has been
+attempted. See the [recovery snapshot report](validation/phase1-sp12-recovery-snapshot-20261109.md)
+and [SP12 inventory report](validation/phase2-sp121-inventory-20261109.md);
+raw machine-specific files remain under ignored `output/`.
 
 ARM64 QEMU system emulation is now installed on the SP12. QEMU 11.0.3 lists
 TCG and KVM accelerators, but this session has no `/dev/kvm`; a diskless TCG
@@ -35,11 +37,14 @@ sanitized summary in the [TCG preflight report](validation/phase1-tcg-host-prefl
 The candidate ARM64 package pair and disposable guest disk used for the earlier
 VM lifecycle checks are not present in this checkout, so no package lifecycle
 rerun was possible in this session. The pinned builder also lacks `clang-22`,
-`ld.lld-22`, and `libc6-dev-arm64-cross`; this session cannot install them.
-A generic `virt` guest would not validate the Surface device tree, firmware
-boot path, or physical recovery behavior. With the build tools and package
-pair staged, QEMU TCG can repeat disposable generic checks; the physical
-recovery and boot gates still require the SP12 itself.
+`ld.lld-22`, and `libc6-dev-arm64-cross`; an operator must install them before
+the local build. The pinned source archive, detached signature, and signer key
+are staged under ignored `output/phase1/source/`; the archive matches the
+manifest hash and the signature verifies with the pinned key. A generic `virt`
+guest would not validate the Surface device tree, firmware boot path, or
+physical recovery behavior. With the toolchain installed, QEMU TCG can repeat
+disposable generic checks; physical recovery and boot gates still require the
+SP12 itself. See the [source authentication report](validation/phase1-source-authentication-20261109.md).
 
 The earlier disposable ARM64 guest already passed dependency-resolved
 candidate installation/configuration and package-managed fallback removal with
