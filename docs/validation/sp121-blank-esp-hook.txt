@@ -1,0 +1,40 @@
+SP12 blank-ESP post-update hook validation
+Date: 2026-11-09
+
+Scope
+-----
+Ran the installed initramfs post-update hook from the updated ARM64 candidate
+kernel in a persistent Ubuntu 26.10 ARM64 virt guest. The guest root disk and
+blank 512 MiB FAT ESP were attached through disposable QEMU qcow2 overlays.
+The hook was invoked after staging the updated sp12-save-recovery helper into
+the guest; the helper SHA-256 matched the checked-in file:
+
+cb29c9e3f9358793cfe13e6395588530ebb97e451e78aa527ce022507de8217f
+
+Result
+------
+The hook exited 0 and reported:
+
+  sp12-save-recovery: no previous payload directory; nothing to preserve
+  sp12-sync-boot: installed 7.3.1-psycachy-sp121 with /boot/dtb-7.3.1-psycachy-sp121
+
+After promotion, the following source/ESP hashes matched exactly, and each
+cmp returned success:
+
+  vmlinuz   91b0e460d80ce5d2929eb078ca3d2c6abf9578cf55064fee4b965dc403158947
+  initrd.img 11abd45e513e7ce6222d1195aa21875688564e9bed8ce4d0cb18eeb40e88062a
+  dtb       5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc
+
+The SP12BOOT marker was present, and /boot/efi was mounted vfat read-only
+after the hook completed. The preserved base ESP image was not modified; its
+SHA-256 remained
+7de210e3711c078c83b7704ab0b399c8255c2c4f0c6a015ecf8d5e262fcfcda9.
+
+The serial transcript and both COW overlays are retained outside Git under
+/tmp for this session. Transcript SHA-256:
+189a1830ce661d2e96f71ee49bd8164ac3690c741e9b5a8b9ff4576a351cc0c4
+
+This closes the blank-ESP post-update hook and promoted-payload verification
+check only. Dependency-resolved package lifecycle, hook execution across a
+normal reboot, target installer application, FAT fault/power-loss behavior,
+and physical SP12 validation remain separate gates.

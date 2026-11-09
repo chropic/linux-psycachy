@@ -7,7 +7,8 @@ remain experimental; this is not a release approval.
 ## Revised objective
 
 Finish and verify Phase 1 for AMD64 and SP12 ARM64, then start Phase 2
-preliminary planning. Push the completed work to `main` when it is ready.
+preliminary planning. Push incremental changes to the feature branch; consider
+`main` only after the remaining Phase 1 and Phase 2 review gates are closed.
 
 ## Current checkpoint
 
@@ -34,6 +35,10 @@ preliminary planning. Push the completed work to `main` when it is ready.
   snapshot/restore commands, first-install fallback ordering, and a GRUB
   overwrite guard. Recovery code documents that file-by-file promotion on FAT
   is not an atomic or power-loss guarantee.
+- Fixed the blank-ESP first-install state in `sp12-save-recovery`; the updated
+  post-update hook has now run successfully in the persistent ARM64 guest, and
+  kernel, initrd, DTB, and marker contents were verified on the FAT-backed ESP.
+  See [`validation/sp121-blank-esp-hook.txt`](validation/sp121-blank-esp-hook.txt).
 - Added static, package, config, module, installer and fault-injection tests,
   plus generic ARM64 QEMU smoke-test tooling.
 - Added the common Ubuntu 26.10 packages required by the unchanged AMD64
@@ -41,7 +46,7 @@ preliminary planning. Push the completed work to `main` when it is ready.
 
 ## Verification so far
 
-- `bash tests/static-check.sh`: passed 94 test cases across 17 unittest groups in the current
+- `bash tests/static-check.sh`: passed 96 test cases across 17 unittest groups in the current
   worktree; root-only `mokutil` check skipped. Python unittest discovery is not
   used and finds no tests.
 - `bash tests/builder-negative.sh`: passed with an authenticated local source
@@ -169,8 +174,9 @@ preliminary planning. Push the completed work to `main` when it is ready.
   blank test ESP had no `/boot/efi/sp12` directory. The helper now treats a
   missing payload directory as an empty first-install state and the host
   regression test verifies that sync creates the kernel, initramfs, DTB and
-  `SP12BOOT` marker. The post-update hook still needs to be rerun in the
-  persistent FAT-backed guest and its files checked on the FAT image.
+  `SP12BOOT` marker. The persistent FAT-backed guest rerun and byte-level
+  payload comparison passed; evidence is recorded in
+  [`validation/sp121-blank-esp-hook.txt`](validation/sp121-blank-esp-hook.txt).
 - The guest's first boot-sync installer attempt used the pre-fix script and
   failed at the GRUB guard because the live guest lacks `grub2-common`; it left
   hooks active before a config existed. Commit `3aa85df` reorders setup to
@@ -184,12 +190,11 @@ preliminary planning. Push the completed work to `main` when it is ready.
 
 ## Remaining gates
 
-1. Rerun the post-update hook on the persistent FAT-backed guest and verify
-   kernel, initramfs, DTB and marker contents on the FAT image. Then run a
-   dependency-resolved package
-   install/removal in a guest with `grub2-common` and normal initramfs-tools,
-   exercise package hooks across reboot, and rerun the updated installer.
-   Forced-dependency install evidence above does not provide those guarantees.
+1. Run a dependency-resolved package install/removal in a guest with
+   `grub2-common` and normal initramfs-tools, exercise package hooks across a
+   normal reboot, and rerun the updated installer. The blank-ESP post-update
+   hook and payload verification are complete, but the earlier forced-dependency
+   package install does not provide these lifecycle guarantees.
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
    the Surface device tree or hardware. The owner approved the config for VM
@@ -224,10 +229,10 @@ handoff was written; verify its final result.
 The owner reports Harrison Van der Byl (GitHub) as author/source of the SP12
 patch series. The patch-to-author association and redistribution terms remain
 under review; see [`PATCH-PROVENANCE.md`](../targets/sp121-arm64/PATCH-PROVENANCE.md).
-Commits through `3aa85df` are pushed to `chropic/linux-psycachy`, branch
-`feature/linux-chropic-psycachy-b550i-sp121`. This handoff update is local and
-uncommitted. The configured local `origin` is a filesystem mirror, not GitHub.
-Do not push to `main` until Phase 1 is complete and the Phase 2 preliminary
+The configured local `origin` is a filesystem mirror, not GitHub. Push updates
+to `chropic/linux-psycachy`, branch
+`feature/linux-chropic-psycachy-b550i-sp121`, and verify the resulting GitHub
+commit. Keep `main` gated until Phase 1 is complete and Phase 2 preliminary
 work is ready.
 
 ## Useful commands

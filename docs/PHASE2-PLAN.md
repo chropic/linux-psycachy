@@ -20,9 +20,10 @@ the collector should not change system policy or start experiments.
 
 ## Readiness checks
 
-- Close Phase 1 software gates documented in [the handoff](PHASE1-HANDOFF.md):
-  blank-ESP first-install/update behavior, dependency-resolved package install
-  and removal, maintainer hooks across reboot, and target installer application.
+- Close the remaining Phase 1 software gates documented in [the
+  handoff](PHASE1-HANDOFF.md): dependency-resolved package install/removal,
+  maintainer hooks across normal reboot, and target installer application.
+  The blank-ESP first-install hook and FAT payload comparison have passed.
 - Keep physical SP12 installation, suspend/resume, display, storage, Wi-Fi,
   fallback boot, and recovery as separate hardware validation gates. Generic
   QEMU `virt` boot evidence does not validate the SP12 device tree or hardware.

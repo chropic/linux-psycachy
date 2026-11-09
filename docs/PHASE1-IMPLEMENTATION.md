@@ -156,7 +156,7 @@ Automated coverage includes:
   - Rejects missing, non-ARM64, non-Ubuntu, and wrong-version targets.
 - [`tests/static-check.sh`](../tests/static-check.sh) passes in the current
   worktree with the target-inspection tests included; its root-only `mokutil`
-  check is skipped. The suite runs 94 test cases across 17 unittest groups; Python
+  check is skipped. The suite runs 96 test cases across 17 unittest groups; Python
   unittest discovery is not the test runner and discovers no tests.
   ShellCheck passed earlier on the Phase 1 shell entry points using the
   isolated local tool bundle.
