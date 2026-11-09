@@ -52,6 +52,36 @@ payload was not evidence of a working fallback. No normal reboot or candidate
 boot was attempted. The flash-kernel removal-trigger failure and fallback
 behavior need another disposable guest run.
 
+## Removal-trigger diagnosis
+
+A follow-up read-only inspection used nested COW overlays over the preserved
+post-removal guest. `flash-kernel` 3.110's `get_kernel_status()` looks up the
+owner of each kernel path emitted by `linux-version list --paths`, then asks
+`dpkg-query` for that package's status. The selected remaining
+`7.3.0-sp12-v7.3-platform` kernel was present under `/boot`, but
+`dpkg-query -S /boot/vmlinuz-7.3.0-sp12-v7.3-platform` returned no owner. The
+same check for `/usr/lib/modules/7.3.0-sp12-v7.3-platform/vmlinuz` also found
+no owner. With an empty package name, the status query produces the blank
+`dpkg-query: no packages found matching ` error seen during removal. The
+generic `7.3.0-9-generic` kernel path in this fixture was also unowned. Thus the
+removal failure is explained by the guest fixture's unmanaged fallback kernel;
+it does not demonstrate a failure in the candidate package's removal script.
+
+The symptom also matches a known `flash-kernel` 3.110 issue reported for Linux
+7.2+ split kernel packaging, where `vmlinuz` moved under
+`/usr/lib/modules/$ver` and ownership changed to `linux-binary-$ver`:
+[Debian bug #1148115](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1148115),
+[proposed flash-kernel change](https://salsa.debian.org/installer-team/flash-kernel/-/merge_requests/86).
+The local fixture's fallback paths had no package owner, so the guest result
+does not establish whether the upstream split-kernel issue also affects a
+properly package-managed SP12 fallback.
+
+For a conclusive repeat, start from a guest with an installed, package-managed
+fallback kernel. Record the kernel package status and ownership of the paths
+returned by `linux-version list --paths` before removing the candidate. Then
+require clean removal, an empty `dpkg --audit`, restored fallback payloads, and
+a fallback boot.
+
 ## Evidence retained locally
 
 The serial transcript is retained in the ignored output directory at

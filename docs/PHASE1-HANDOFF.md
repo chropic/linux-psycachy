@@ -197,12 +197,15 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 ## Remaining gates
 
-1. Repeat package removal in a disposable guest and resolve the pending
-   `flash-kernel` trigger, then verify fallback payload restoration and boot.
-   Exercise the installed package hooks across a normal reboot.
-   The dependency-resolved install/configure, installer application, blank-ESP
-   first-install hook, and FAT payload comparison passed; the removal trigger
-   failure and absent normal reboot leave lifecycle behavior open. See
+1. Repeat package removal in a disposable guest with an installed,
+   package-managed fallback kernel; the previous guest's fallback files had no
+   dpkg owner, which caused `flash-kernel`'s status lookup to fail. Record
+   package ownership for the paths from `linux-version list --paths`, then
+   verify clean removal, fallback payload restoration, and boot. Exercise the
+   installed package hooks across a normal reboot. The dependency-resolved
+   install/configure, installer application, blank-ESP first-install hook, and
+   FAT payload comparison passed; fallback removal/reboot behavior remains
+   open. See
    [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
