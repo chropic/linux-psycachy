@@ -12,7 +12,7 @@ INSTALLER = ROOT / "targets/sp121-arm64/installer/install-boot-sync.sh"
 class BootSyncInstallerTests(unittest.TestCase):
     def test_installs_sync_and_recovery_tools(self):
         script = INSTALLER.read_text()
-        for name in ("sp12-sync-boot", "sp12-save-recovery", "sp12-restore-recovery"):
+        for name in ("sp12-sync-boot", "sp12-save-recovery", "sp12-restore-recovery", "sp12-select-fallback"):
             self.assertIn(
                 f'cp -f "$system_dir/usr-local-sbin/{name}" "$target/usr/local/sbin/{name}"',
                 script,
@@ -67,6 +67,7 @@ class BootSyncInstallerTests(unittest.TestCase):
             self.assertTrue((target / "usr/lib/grub/grub-multi-install.sp12-original").is_file())
             self.assertTrue((target / "usr/lib/grub/grub-multi-install").is_symlink())
             self.assertTrue((target / "etc/sp12-linux/boot.conf").is_file())
+            self.assertTrue((target / "etc/kernel/prerm.d/zzzz-sp12-fallback").is_file())
 
     def test_guard_failure_does_not_leave_active_hooks(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -104,6 +105,7 @@ class BootSyncInstallerTests(unittest.TestCase):
             self.assertTrue((target / "etc/sp12-linux/boot.conf").is_file())
             self.assertFalse((target / "etc/kernel/postinst.d/zzzz-sp12-sync").exists())
             self.assertFalse((target / "etc/initramfs/post-update.d/zzzz-sp12-sync").exists())
+            self.assertFalse((target / "etc/kernel/prerm.d/zzzz-sp12-fallback").exists())
 
 
 if __name__ == "__main__":

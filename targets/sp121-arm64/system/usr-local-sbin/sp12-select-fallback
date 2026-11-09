@@ -1,0 +1,97 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+config=/etc/sp12-linux/boot.conf
+root=${SP12_TEST_ROOT:-}
+sync_helper=${SP12_TEST_SYNC_HELPER:-/usr/local/sbin/sp12-sync-boot}
+removed=${1-}
+
+case "$removed" in
+    ''|*[!A-Za-z0-9._+~-]*)
+        printf 'sp12-select-fallback: invalid removed kernel release\n' >&2
+        exit 2
+        ;;
+esac
+
+config_file=$root$config
+[ -f "$config_file" ] && [ ! -L "$config_file" ] || {
+    printf 'sp12-select-fallback: missing or unsafe %s\n' "$config" >&2
+    exit 1
+}
+[ -d "$root/boot" ] && [ ! -L "$root/boot" ] || {
+    printf 'sp12-select-fallback: refusing missing or symlinked /boot\n' >&2
+    exit 1
+}
+[ -d "$root/etc/sp12-linux" ] && [ ! -L "$root/etc/sp12-linux" ] || {
+    printf 'sp12-select-fallback: refusing missing or symlinked configuration directory\n' >&2
+    exit 1
+}
+configured=$(sed -n 's/^KVER=//p' "$config_file" | tail -n 1)
+[ "$configured" = "$removed" ] || exit 0
+
+owned_and_installed() {
+    path=$1
+    [ -f "$root$path" ] || return 1
+    owner_line=$(dpkg-query -S "$path" 2>/dev/null) || return 1
+    package=${owner_line%%: *}
+    [ "$owner_line" = "$package: $path" ] || return 1
+    status=$(dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null) || return 1
+    case "$status" in ii*) return 0 ;; esac
+    return 1
+}
+
+while read -r candidate image; do
+    case "$image" in /boot/vmlinuz-*) ;; *) continue ;; esac
+    [ "$candidate" != "$removed" ] || continue
+    [ "$image" = "/boot/vmlinuz-$candidate" ] || continue
+    initrd=/boot/initrd.img-$candidate
+    dtb_source=/usr/lib/firmware/$candidate/device-tree/qcom/x1p42100-microsoft-sp12in.dtb
+    owned_and_installed "$image" || continue
+    [ -f "$root$initrd" ] || continue
+    owned_and_installed "$dtb_source" || continue
+
+    dtb=/boot/dtb-$candidate
+    dtb_tmp=$(mktemp "$root/boot/.dtb-$candidate.XXXXXX")
+    config_tmp=
+    config_backup=$(mktemp "$root/etc/sp12-linux/boot.conf.rollback.XXXXXX")
+    cp -- "$config_file" "$config_backup"
+    config_changed=0
+    cleanup() {
+        if [ "$config_changed" -eq 1 ] && [ -n "$config_backup" ]; then
+            mv -f -- "$config_backup" "$config_file" && chmod 0644 "$config_file" || :
+        fi
+        [ -z "$dtb_tmp" ] || rm -f -- "$dtb_tmp"
+        [ -z "$config_tmp" ] || rm -f -- "$config_tmp"
+        [ -z "$config_backup" ] || rm -f -- "$config_backup"
+    }
+    trap cleanup EXIT
+    trap 'exit 1' HUP INT TERM
+    cp -- "$root$dtb_source" "$dtb_tmp"
+    cmp -s "$root$dtb_source" "$dtb_tmp"
+    chmod 0644 "$dtb_tmp"
+    mv -f -- "$dtb_tmp" "$root$dtb"
+    dtb_tmp=
+
+    config_tmp=$(mktemp "$root/etc/sp12-linux/boot.conf.XXXXXX")
+    {
+        printf 'KVER=%s\n' "$candidate"
+        printf 'DTB=%s\n' "$dtb"
+    } > "$config_tmp"
+    chmod 0644 "$config_tmp"
+    mv -f -- "$config_tmp" "$config_file"
+    config_tmp=
+    config_changed=1
+
+    printf 'sp12-select-fallback: selected package-owned kernel %s\n' "$candidate"
+    "$sync_helper"
+    rm -f -- "$config_backup"
+    config_backup=
+    trap - EXIT HUP INT TERM
+    exit 0
+done <<EOF
+$(linux-version list --paths)
+EOF
+
+printf 'sp12-select-fallback: no package-owned SP12 fallback is installed\n' >&2
+exit 1

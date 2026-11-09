@@ -12,12 +12,18 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 ## Current checkpoint
 
-- Latest pushed commit: `34eb65a`, which records ARM64 candidate direct-boot
-  evidence. Incremental documentation commits use `[skip ci]` as requested.
-- The latest ARM64 fallback-removal test is running in a disposable QEMU
-  `virt` guest on copy-on-write root and ESP disks. The base images remain
-  unchanged; do not treat the run as complete until package removal, audit,
-  payload, fallback, and shutdown checks are recorded.
+- Latest pushed documentation checkpoint: `7c6ba12`. It records Phase 2
+  preflight and adds an exact-pair AMD64 disposable-VM recipe. Incremental
+  commits use `[skip ci]` as requested.
+- Existing GitHub Actions run 11 (`42642272202`) is still at `Build and
+  package`; its earlier prerequisite, static/policy, and lint steps passed. No
+  later run was started for these incremental updates.
+- The package-managed ARM64 fallback removal test passed in a disposable QEMU
+  `virt` guest on copy-on-write root and ESP disks. Candidate removal returned
+  0, `dpkg --audit` was empty, and the ESP payload hashes matched the installed
+  Ubuntu fallback kernel, initrd, and SP12 DTB. The generic fallback was not
+  booted through UEFI/GRUB in this run; normal ESP/GRUB reboot and physical
+  SP12 validation remain open.
 - The exact latest AMD64 image/headers packages remain uninstalled and
   unbooted. Wait for an accessible disposable x86_64 VM with a CPU compatible
   with the build's `znver3` target; do not install them on the active B550I
@@ -198,18 +204,14 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 ## Remaining gates
 
-1. Repeat package removal in a disposable guest with an installed,
-   package-managed fallback kernel; the previous guest's fallback files had no
-   dpkg owner, which caused `flash-kernel`'s status lookup to fail. A fresh
-   copy-on-write guest is currently installing Ubuntu's packaged 7.3.0-9
-   fallback before retrying removal. Record ownership for paths from
-   `linux-version list --paths`, then verify clean removal, fallback payload
-   restoration, and boot. Exercise the
-   installed package hooks across a normal reboot. The dependency-resolved
-   install/configure, installer application, blank-ESP first-install hook, and
-   FAT payload comparison passed, and the installed candidate kernel reached a
-   shell in generic QEMU. The initrd-based multi-user boot did not reach
-   systemd; fallback removal/reboot behavior remains open. See
+1. The dependency-resolved install/configure, installer application,
+   blank-ESP first-install hook, FAT payload comparison, and package-managed
+   fallback removal/payload update have passed in disposable QEMU. The
+   pre-remove hook now validates fallback package ownership and matching SP12
+   DTB before changing boot configuration. A generic fallback boot through
+   UEFI/GRUB and a normal installed-system reboot remain open. Earlier
+   candidate initrd boot reached the live-media `casper-premount` hook but did
+   not reach systemd; the direct candidate kernel reached a shell. See
    [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate

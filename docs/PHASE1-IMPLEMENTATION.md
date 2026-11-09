@@ -44,9 +44,11 @@ System templates and hooks are staged in [`targets/sp121-arm64/system/`](../targ
 | `usr-local-sbin/sp12-esp-space` | ESP capacity and recognized staging inspection; safe stale-file cleanup (`--apply-stale-only`) |
 | `usr-local-sbin/sp12-save-recovery` | Saves the previous complete payload set under `/var/lib/sp12-linux/recovery` with SHA-256 checksums before replacement |
 | `usr-local-sbin/sp12-restore-recovery` | Verifies and reports the saved set; explicit `--apply` restores it to the mounted ESP and retains the backup |
+| `usr-local-sbin/sp12-select-fallback` | Before removing the active kernel, selects an installed package-owned fallback with its package-owned SP12 DTB, switches boot configuration, and syncs through the existing rollback-safe path |
 | `usr-local-sbin/sp12-grub-multi-install-guard` | Fails closed if standard GRUB tries to overwrite the removable ARM64 loader |
 | `etc/kernel/postinst.d/zzzz-sp12-sync` | Hook triggered by kernel package updates |
 | `etc/initramfs/post-update.d/zzzz-sp12-sync` | Hook triggered by initramfs updates |
+| `etc/kernel/prerm.d/zzzz-sp12-fallback` | Before removing the configured kernel, requires a package-owned image, generated initrd, and matching package-owned SP12 DTB for the fallback; aborts removal if validation or payload sync fails |
 | `etc/sp12-linux/boot.conf.example` | Target boot configuration selecting `KVER=7.3.1-psycachy-sp121` and `DTB=/boot/dtb-7.3.1-psycachy-sp121` |
 
 The target-aware `installer/install-grub-fallback-guard.sh` records the

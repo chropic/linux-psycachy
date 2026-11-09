@@ -62,8 +62,10 @@ for template in \
     "$system_dir/usr-local-sbin/sp12-esp-space" \
     "$system_dir/usr-local-sbin/sp12-save-recovery" \
     "$system_dir/usr-local-sbin/sp12-restore-recovery" \
+    "$system_dir/usr-local-sbin/sp12-select-fallback" \
     "$system_dir/etc/kernel/postinst.d/zzzz-sp12-sync" \
-    "$system_dir/etc/initramfs/post-update.d/zzzz-sp12-sync"; do
+    "$system_dir/etc/initramfs/post-update.d/zzzz-sp12-sync" \
+    "$system_dir/etc/kernel/prerm.d/zzzz-sp12-fallback"; do
     [ -f "$template" ] || { printf 'Missing SP12 boot template: %s\n' "$template" >&2; exit 1; }
 done
 
@@ -91,17 +93,20 @@ fi
 mkdir -p "$target/etc/sp12-linux" \
          "$target/usr/local/sbin" \
          "$target/etc/kernel/postinst.d" \
+         "$target/etc/kernel/prerm.d" \
          "$target/etc/initramfs/post-update.d"
 
 cp -f "$system_dir/usr-local-sbin/sp12-sync-boot" "$target/usr/local/sbin/sp12-sync-boot"
 cp -f "$system_dir/usr-local-sbin/sp12-esp-space" "$target/usr/local/sbin/sp12-esp-space"
 cp -f "$system_dir/usr-local-sbin/sp12-save-recovery" "$target/usr/local/sbin/sp12-save-recovery"
 cp -f "$system_dir/usr-local-sbin/sp12-restore-recovery" "$target/usr/local/sbin/sp12-restore-recovery"
+cp -f "$system_dir/usr-local-sbin/sp12-select-fallback" "$target/usr/local/sbin/sp12-select-fallback"
 
 chmod 0755 "$target/usr/local/sbin/sp12-sync-boot" \
            "$target/usr/local/sbin/sp12-esp-space" \
            "$target/usr/local/sbin/sp12-save-recovery" \
-           "$target/usr/local/sbin/sp12-restore-recovery"
+           "$target/usr/local/sbin/sp12-restore-recovery" \
+           "$target/usr/local/sbin/sp12-select-fallback"
 
 config_tmp=$(mktemp "$target/etc/sp12-linux/boot.conf.XXXXXX")
 {
@@ -120,10 +125,13 @@ chmod 0755 "$target/usr/local/sbin/sp12-grub-multi-install-guard"
 # only after their helper and boot.conf are ready.
 postinst_tmp=$(mktemp "$target/etc/kernel/postinst.d/zzzz-sp12-sync.XXXXXX")
 postupdate_tmp=$(mktemp "$target/etc/initramfs/post-update.d/zzzz-sp12-sync.XXXXXX")
+prerm_tmp=$(mktemp "$target/etc/kernel/prerm.d/zzzz-sp12-fallback.XXXXXX")
 cp -f "$system_dir/etc/kernel/postinst.d/zzzz-sp12-sync" "$postinst_tmp"
 cp -f "$system_dir/etc/initramfs/post-update.d/zzzz-sp12-sync" "$postupdate_tmp"
-chmod 0755 "$postinst_tmp" "$postupdate_tmp"
+cp -f "$system_dir/etc/kernel/prerm.d/zzzz-sp12-fallback" "$prerm_tmp"
+chmod 0755 "$postinst_tmp" "$postupdate_tmp" "$prerm_tmp"
 mv -f "$postinst_tmp" "$target/etc/kernel/postinst.d/zzzz-sp12-sync"
 mv -f "$postupdate_tmp" "$target/etc/initramfs/post-update.d/zzzz-sp12-sync"
+mv -f "$prerm_tmp" "$target/etc/kernel/prerm.d/zzzz-sp12-fallback"
 
 printf 'Installed boot synchronization helper and hooks into %s\n' "$target"

@@ -8,10 +8,12 @@ cd "$root"
 for script in build.sh config/source-pin.sh targets/sp121-arm64/prepare.sh targets/sp121-arm64/build.sh \
   targets/sp121-arm64/system/usr-local-sbin/sp12-sync-boot targets/sp121-arm64/system/usr-local-sbin/sp12-esp-space \
   targets/sp121-arm64/system/usr-local-sbin/sp12-save-recovery targets/sp121-arm64/system/usr-local-sbin/sp12-restore-recovery \
+  targets/sp121-arm64/system/usr-local-sbin/sp12-select-fallback \
   targets/sp121-arm64/system/usr-local-sbin/sp12-grub-multi-install-guard \
   targets/sp121-arm64/installer/install-boot-sync.sh targets/sp121-arm64/installer/install-fallback-target.sh \
   targets/sp121-arm64/installer/install-grub-fallback-guard.sh \
-  targets/sp121-arm64/system/etc/kernel/postinst.d/zzzz-sp12-sync targets/sp121-arm64/system/etc/initramfs/post-update.d/zzzz-sp12-sync \
+  targets/sp121-arm64/system/etc/kernel/postinst.d/zzzz-sp12-sync targets/sp121-arm64/system/etc/kernel/prerm.d/zzzz-sp12-fallback \
+  targets/sp121-arm64/system/etc/initramfs/post-update.d/zzzz-sp12-sync \
   tools/ubuntu-26.10.sh tools/ubuntu-26.10-sp12-cross.sh tools/psycachy-secureboot.sh tests/static-check.sh \
   tools/nvidia-diagnostics.sh tools/configure-nvidia-dkms.sh tests/nvidia-dkms-integration.sh \
   tests/nvidia-override-test.sh tests/builder-negative.sh tests/signing-integration.sh \
@@ -35,6 +37,7 @@ python3 tests/test_arm64_report_verification.py
 python3 tests/test_arm64_package_verification.py
 python3 tests/test_sp121_boot_sync.py
 python3 tests/test_sp121_boot_sync_installer.py
+python3 tests/test_sp12_select_fallback.py
 python3 tests/test_sp121_grub_guard_installer.py
 python3 tests/test_sp121_fallback_installer.py
 python3 tests/test_sp121_target_inspection.py

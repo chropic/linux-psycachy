@@ -1,0 +1,8 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+action=${DEB_MAINT_PARAMS%% *}
+[ "$action" = remove ] || exit 0
+[ "$#" -ge 1 ] || exit 0
+exec /usr/local/sbin/sp12-select-fallback "$1"

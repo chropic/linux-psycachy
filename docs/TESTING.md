@@ -215,3 +215,10 @@ lists used by both package validators. Foreign-architecture, inactive, and
 `:any` qualifiers do not satisfy native runtime dependencies.
 
 Target boot synchronization tests in `tests/test_sp121_boot_sync.py` verify locked execution, insufficient-space refusal, staged per-file promotion, idempotency, stale-file handling, durable recovery checksums, and manual restore after injected interruption. `SP12BOOT` is removed and synced before update promotion, restored after handled rollback, and recreated after manual recovery; the marker remains absent after an injected hard interruption. The fallback installer also invalidates the marker on repeat installs and rejects target `/boot` symlinks that escape the target root. The rescue procedure is documented in [`SP12-RECOVERY.md`](SP12-RECOVERY.md); FAT power-loss behavior remains unverified.
+
+The target boot-sync installer also installs a pre-removal hook. When the
+configured kernel is removed, it requires an installed package-owned fallback
+image and the matching package-owned SP12 DTB, syncs that fallback payload,
+and updates `boot.conf` before package removal proceeds. See the disposable
+guest results in
+[`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
