@@ -178,23 +178,32 @@ preliminary planning. Push incremental changes to the feature branch; consider
   payload comparison passed; evidence is recorded in
   [`validation/sp121-blank-esp-hook.txt`](validation/sp121-blank-esp-hook.txt).
 - The guest's first boot-sync installer attempt used the pre-fix script and
-  failed at the GRUB guard because the live guest lacks `grub2-common`; it left
+  failed at the GRUB guard because the live guest lacked `grub2-common`; it left
   hooks active before a config existed. Commit `3aa85df` reorders setup to
   write `boot.conf`, install the guard, then stage/activate hooks, with a test
-  for guard failure. Rerun the updated installer on a guest with `grub2-common`
-  before claiming an end-to-end installer pass.
-- Dependency resolution was forced, and package removal has not yet been
-  tested in this persistent guest.
+  for guard failure. The updated installer was later applied successfully to
+  the guest target after installing `grub2-common`; it used a `/mnt/target`
+  bind alias because the script rejects `/` as its target. This verifies the
+  installer changes were applied, not a normal boot of the installed system.
+- The latest disposable guest run resolved package dependencies through local
+  APT, configured the image and headers packages successfully, and exercised
+  the initramfs and boot synchronization hooks. Package removal deleted the
+  candidate packages but returned 100 on a pending `flash-kernel` trigger;
+  `dpkg --audit` then reported flash-kernel half-configured. Details and payload
+  hashes are in
+  [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
 - Preserve failed logs and retain previous package attempts separately from
   the `final-arm64-packages` directory.
 
 ## Remaining gates
 
-1. Run a dependency-resolved package install/removal in a guest with
-   `grub2-common` and normal initramfs-tools, exercise package hooks across a
-   normal reboot, and rerun the updated installer. The blank-ESP post-update
-   hook and payload verification are complete, but the earlier forced-dependency
-   package install does not provide these lifecycle guarantees.
+1. Repeat package removal in a disposable guest and resolve the pending
+   `flash-kernel` trigger, then verify fallback payload restoration and boot.
+   Exercise the installed package hooks across a normal reboot.
+   The dependency-resolved install/configure, installer application, blank-ESP
+   first-install hook, and FAT payload comparison passed; the removal trigger
+   failure and absent normal reboot leave lifecycle behavior open. See
+   [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
    the Surface device tree or hardware. The owner approved the config for VM

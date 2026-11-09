@@ -1,0 +1,61 @@
+# SP12 ARM64 package lifecycle check — 2026-11-09
+
+The candidate image and headers packages (`7.3.1-1psycachy1`) were installed
+in a disposable ARM64 QEMU guest from a local APT repository with dependency
+resolution. The persistent root and ESP backing images were unchanged; this
+run used `root4.qcow2` and `esp4.qcow2` copy-on-write overlays. No host package
+or physical device was changed.
+
+Before package configuration, the updated target installer was applied to the
+mounted guest target through `/mnt/target`; it installed the GRUB helper
+diversion, SP12 guard, boot synchronization helper, and hooks. The live image's
+`update-initramfs` was a disabled stub, so the disposable guest was directed to
+the distribution `update-initramfs.distrib` implementation. This was a guest
+only workaround.
+
+## Install and configure
+
+The retry of `dpkg --configure -a` returned 0. `flash-kernel`,
+`initramfs-tools`, and both candidate packages reported installed status, and
+`dpkg --audit` was empty. The kernel post-install hook initially reported no
+previous payload directory; a later trigger preserved the complete payload
+set. The initramfs was generated, and `sp12-sync-boot` completed. The initramfs
+generator warned that it could not resolve `/dev/root` or identify the overlay
+root filesystem in this init=/bin/bash guest; those warnings do not establish
+normal boot behavior.
+
+The ESP was mounted read-only after hook completion. Payload hashes matched the
+kernel, initrd, and DTB source files at that point:
+
+| Payload | Size (bytes) | SHA-256 |
+| --- | ---: | --- |
+| `vmlinuz` | 17,170,944 | `91b0e460d80ce5d2929eb078ca3d2c6abf9578cf55064fee4b965dc403158947` |
+| `initrd.img` | 166,615,008 | `605abc9d5cd4dfd08b87b73bfb44fefe338c111017a5e2c0e3ad3497673cfded` |
+| `dtb` | 201,937 | `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc` |
+
+`SP12BOOT` was present. These hashes verify the ESP payload contents, not a
+boot of the candidate from that ESP.
+
+## Removal attempt
+
+APT removed the candidate image and headers. The image package's removal hook
+deleted its root initrd, and flash-kernel reported selecting the remaining
+`7.3.0-sp12-v7.3-platform` kernel. The removal command returned 100 when the
+pending flash-kernel trigger failed: `dpkg-query: no packages found matching `
+followed by a flash-kernel post-install failure. The final package states were
+candidate image `rc`, candidate headers `un`, and flash-kernel half-configured;
+`dpkg --audit` reported flash-kernel as the only incomplete package.
+
+The ESP remained read-only and retained the same kernel/initrd/DTB bytes after
+removal, while the candidate root initrd was absent. Therefore the retained ESP
+payload was not evidence of a working fallback. No normal reboot or candidate
+boot was attempted. The flash-kernel removal-trigger failure and fallback
+behavior need another disposable guest run.
+
+## Evidence retained locally
+
+The serial transcript is retained in the ignored output directory at
+`output/phase1-lifecycle-vm/serial-transcript.log` (SHA-256
+`7f7dd182b65110ba2204082179c18aca1b83af7cb685ea38e09bb1139f70a17e`). The
+`root4.qcow2` and `esp4.qcow2` overlays are also retained there. QEMU powered
+off cleanly; the immutable backing images were not modified.
