@@ -4,6 +4,12 @@ The SP12 was not rebooted and no boot files, firmware variables, package state,
 or performance policy were changed during these checks. `/boot/efi` remained
 mounted `vfat` read-only.
 
+A second read-only recovery check at 2026-11-09T23:58:02Z verified that all
+three active SP12 payload files still match the retained recovery copies and
+that the saved EFI/BOOT tree is unchanged. The raw check is in ignored
+`output/phase1/phase1-recovery-readonly-recheck-20261109.log` (SHA-256
+`ee2f2eb1b98acb44c51deb91bb80ca112175b383e0db69d09dc91ab5d0929213`).
+
 ## Refreshed read-only inventory
 
 The Phase 2 collector captured another sanitized inventory while the device
