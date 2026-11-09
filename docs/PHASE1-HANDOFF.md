@@ -34,20 +34,28 @@ TCG and KVM accelerators, but this session has no `/dev/kvm`; a diskless TCG
 preflight stayed running for two seconds and shut down cleanly. Its raw log is
 in ignored `output/phase1/qemu-tcg-host-preflight-20261109.log`, with a
 sanitized summary in the [TCG preflight report](validation/phase1-tcg-host-preflight-20261109.md).
-The candidate ARM64 package pair and guest disk from the earlier VM lifecycle
-run are not present in this checkout. A fresh Ubuntu ARM64 cloud image and
-copy-on-write guest disk are now staged, but the guest has not booted because
-its seed ISO and the candidate packages are not ready. See the [VM testbed
-staging report](validation/phase1-arm64-vm-testbed-staging-20261109.md). The
-pinned builder also lacks `clang-22`,
-`ld.lld-22`, and `libc6-dev-arm64-cross`; an operator must install them before
-the local build. The pinned source archive, detached signature, and signer key
-are staged under ignored `output/phase1/source/`; the archive matches the
-manifest hash and the signature verifies with the pinned key. A generic `virt`
-guest would not validate the Surface device tree, firmware boot path, or
-physical recovery behavior. With the toolchain installed, QEMU TCG can repeat
-disposable generic checks; physical recovery and boot gates still require the
-SP12 itself. See the [source authentication report](validation/phase1-source-authentication-20261109.md).
+The ARM64 builder prerequisites `clang-22`, `ld.lld-22`, `libc6-dev-arm64-cross`,
+and the target's ARM64 development libraries are installed. A fresh Ubuntu
+ARM64 cloud guest booted through AAVMF/UEFI under QEMU TCG and was reachable
+over host-loopback SSH. In a disposable overlay, `initramfs-tools` installed,
+the package-owned fallback kernel's initrd was regenerated, and a subsequent
+UEFI/GRUB reboot reached Ubuntu userspace on that fallback kernel with an empty
+`dpkg --audit`. See the [VM testbed staging report](validation/phase1-arm64-vm-testbed-staging-20261109.md).
+
+The candidate ARM64 package pair has not yet been built for this run. A new
+source/config preparation authenticated the pinned source and platform inputs,
+but produced config SHA-256
+`569ce4c4c0c940e1c54096521c7ed9476222caa22a05d1fb086dd07ecdd440ad`, which
+does not match the approved VM-test config
+`e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`. The host
+lacks `rustc` and `bindgen`, which changed the normalized config; no package
+build was started. Install those two tools, then repeat preparation and require
+the exact approved hash before building. The pinned source archive, detached
+signature, and signer key are staged under ignored `output/phase1/source/`;
+the archive matches the manifest hash and its signature verifies with the
+pinned key. Generic QEMU does not validate Surface firmware, the physical
+device tree, or recovery behavior. Physical boot and recovery gates still
+require the SP12 itself. See the [source authentication report](validation/phase1-source-authentication-20261109.md).
 
 The earlier disposable ARM64 guest already passed dependency-resolved
 candidate installation/configuration and package-managed fallback removal with

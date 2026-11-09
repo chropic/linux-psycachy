@@ -60,9 +60,13 @@ its raw JSON is retained at
 `a04c4ee713ffa5e2fa0c41dd51b92c767eb10e8c52d8735e8253d56a9027c69f`).
 
 The exact candidate ARM64 package pair and the previous lifecycle guest disk
-are not present. A fresh Ubuntu ARM64 cloud image and copy-on-write guest disk
-are staged, but the guest is not bootable until its seed ISO and candidate
-packages are prepared. See the
+are not present. A fresh Ubuntu ARM64 cloud image now boots through AAVMF/UEFI
+under TCG and has a package-owned fallback kernel and SP12 DTB. The test overlay
+has `initramfs-tools` and a regenerated fallback initrd; candidate package
+installation and boot remain untested. A post-toolchain read-only inventory
+was captured at
+`output/phase2/sp121-arm64-inventory-post-toolchain-20261109.json` (SHA-256
+`945547c0f6af1098088f73dac522e7f26b88be63ff62e5b927acf1146e0372a2`). See the
 [VM testbed staging report](phase1-arm64-vm-testbed-staging-20261109.md). A
 generic guest cannot validate Surface-specific firmware, device-tree, device,
 or recovery behavior.
