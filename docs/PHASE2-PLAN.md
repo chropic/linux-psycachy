@@ -29,6 +29,15 @@ only; it is not a B550I workload baseline, energy measurement, or hardware
 validation result. The generated machine-specific files are ignored under
 `output/phase2-prep-smoke/` and are not committed.
 
+A read-only schema-v1 inventory has now been captured on the physical SP12.
+The sanitized summary and Phase 1 access limitations are recorded in
+[`validation/phase2-sp121-inventory-20261109.md`](validation/phase2-sp121-inventory-20261109.md).
+This is a device inventory only: no timed sample, workload, energy measurement,
+or policy change occurred. In the current shell, `/` is mounted read-write but
+the process is unprivileged and sudo requires interactive authentication; the
+ESP remains read-only. A verified recovery snapshot and bootable fallback are
+not yet established.
+
 ## Readiness checks
 
 - The AMD64 candidate's dependency-resolved install, candidate boot, package
@@ -46,8 +55,10 @@ validation result. The generated machine-specific files are ignored under
   per-target results separate and include a known-good fallback boot path.
 - The read-only AMD64 preflight inventory is recorded in
   [`validation/phase2-amd64-inventory-20261109.md`](validation/phase2-amd64-inventory-20261109.md).
-  It does not include performance or energy measurements and is not a baseline
-  result. The SP12 inventory still requires physical target access.
+  The first physical SP12 inventory is recorded in
+  [`validation/phase2-sp121-inventory-20261109.md`](validation/phase2-sp121-inventory-20261109.md).
+  Neither includes performance or energy measurements or qualifies as a
+  baseline.
 - Thermal-zone visibility differed between inventory sessions; sensor
   availability and starting temperatures remain unverified.
 - On SP12, inspect running and installed kernel identities, boot hooks, config,
