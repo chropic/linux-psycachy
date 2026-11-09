@@ -5,6 +5,43 @@ saved by the SP12 boot installer or update hook. It requires a bootable rescue
 environment and the ESP mounted at the installed system's `/boot/efi` path.
 It has not been validated on physical Surface hardware.
 
+## Create and verify an initial snapshot
+
+Before installing or removing a candidate package, confirm that `/boot/efi` is
+the intended ESP and that the active `/boot/efi/sp12` directory contains the
+kernel, initramfs, and DTB. Run these commands from the repository root. The
+snapshot helper writes the payload copy under the installed root's
+`/var/lib/sp12-linux/recovery`; it does not write to the ESP. The read-only
+restore invocation verifies the saved checksums without applying the payload.
+
+```bash
+uname -r
+findmnt --mountpoint /boot/efi -o TARGET,SOURCE,FSTYPE,OPTIONS
+test -f /boot/efi/sp12/vmlinuz
+test -f /boot/efi/sp12/initrd.img
+test -f /boot/efi/sp12/dtb
+sudo test ! -e /var/lib/sp12-linux
+sudo ./targets/sp121-arm64/system/usr-local-sbin/sp12-save-recovery \
+  --root / --payload-dir /boot/efi/sp12
+sudo ./targets/sp121-arm64/system/usr-local-sbin/sp12-restore-recovery --root /
+```
+
+Require the save helper's “preserved” result and the restore helper's verified
+three-file report before proceeding. If `/var/lib/sp12-linux` already exists,
+inspect it and its prior snapshot instead of replacing it. Preserve the active
+EFI loader separately because the payload restore helper does not restore it:
+
+```bash
+sudo install -d -m 0700 /var/lib/sp12-linux/efi-recovery
+sudo cp -a /boot/efi/EFI/BOOT/. /var/lib/sp12-linux/efi-recovery/
+sudo diff -r /boot/efi/EFI/BOOT /var/lib/sp12-linux/efi-recovery
+```
+
+This records the current loader files but does not prove that the loader or
+recovery-panel entry boots. Keep the ESP read-only during this snapshot step.
+Stop if the mount source or filesystem is unexpected, a payload is missing, or
+either checksum verification fails.
+
 Before changing mounts, identify the installed Ubuntu root filesystem and its
 ESP from the rescue environment. Do not guess device names. In the commands
 below, `/mnt/sp12-root` is the mounted Ubuntu root filesystem; mount that
