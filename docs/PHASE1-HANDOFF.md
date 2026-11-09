@@ -12,22 +12,23 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 ## Current checkpoint
 
-- Latest pushed documentation checkpoint: `7c6ba12`. It records Phase 2
-  preflight and adds an exact-pair AMD64 disposable-VM recipe. Incremental
-  commits use `[skip ci]` as requested.
-- Existing GitHub Actions run 11 (`42642272202`) is still at `Build and
-  package`; its earlier prerequisite, static/policy, and lint steps passed. No
-  later run was started for these incremental updates.
+- Latest pushed documentation checkpoint before the current VM result:
+  `199c037`. Incremental commits use `[skip ci]` as requested.
+- GitHub Actions run 11 (`42642272202`, head `3aa85df`) completed successfully.
+  No workflow was started for the later `[skip ci]` documentation commits.
 - The package-managed ARM64 fallback removal test passed in a disposable QEMU
   `virt` guest on copy-on-write root and ESP disks. Candidate removal returned
   0, `dpkg --audit` was empty, and the ESP payload hashes matched the installed
   Ubuntu fallback kernel, initrd, and SP12 DTB. The generic fallback was not
   booted through UEFI/GRUB in this run; normal ESP/GRUB reboot and physical
   SP12 validation remain open.
-- The exact latest AMD64 image/headers packages remain uninstalled and
-  unbooted. Wait for an accessible disposable x86_64 VM with a CPU compatible
-  with the build's `znver3` target; do not install them on the active B550I
-  host.
+- The exact latest AMD64 image/headers packages now pass dependency-resolved
+  installation, UEFI/GRUB boot with Secure Boot disabled, removal, and Ubuntu
+  generic fallback boot in a disposable TCG VM on the B550I host. Its emulated
+  `EPYC-Milan-v2` CPU does not provide exact `znver3` hardware-equivalent
+  evidence. Microsoft-key Secure Boot rejected the unsigned image as expected;
+  signing and a signed Secure Boot boot of this exact package remain open. See
+  [`validation/amd64-package-lifecycle-20261109.txt`](validation/amd64-package-lifecycle-20261109.txt).
 
 ## Implemented
 
@@ -221,11 +222,9 @@ preliminary planning. Push incremental changes to the feature branch; consider
    [`PHASE1-CONFIG-REVIEW.md`](PHASE1-CONFIG-REVIEW.md) and the audit report at
    `docs/validation/sp121-candidate-config-audit.json` (17 declared removals,
    20 newly enabled symbols, zero unexpected changes).
-2. Install and boot the latest AMD64 image/headers pair in a compatible
-   disposable VM and verify package removal/fallback. The 2026-11-09 native
-   build and structural receipt are recorded in [`VALIDATION.md`](VALIDATION.md),
-   but that exact package pair has not been installed or booted. Earlier VM
-   evidence covers different package hashes.
+2. Sign the latest AMD64 kernel with the enrolled test key and verify that
+   signed exact package boots with Secure Boot enabled. Test physical B550I
+   operation separately; the TCG CPU model is only smoke evidence.
 3. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
    boot and recovery on physical Surface Pro 12 hardware before any deployment
    claim. Existing AMD64 physical installation evidence is still user-owned.

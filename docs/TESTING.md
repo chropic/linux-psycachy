@@ -101,7 +101,10 @@ sudo reboot
 Confirm the fallback kernel boots and the PsyCachy packages are removed. Record
 the VM CPU model, firmware mode, package checksums, command output, and any
 maintainer-script errors. This checks the current AMD64 package pair's install,
-boot, and removal path; it does not replace hardware validation.
+boot, and removal path; it does not replace hardware validation. The
+2026-11-09 TCG run and its Secure Boot rejection of the unsigned package are
+recorded in
+[`validation/amd64-package-lifecycle-20261109.txt`](validation/amd64-package-lifecycle-20261109.txt).
 
 To test Secure Boot and module loading, use a VM with UEFI Secure Boot
 enabled. A container or WSL cannot test the firmware boot process. The VM's

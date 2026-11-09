@@ -20,9 +20,10 @@ the collector should not change system policy or start experiments.
 
 ## Readiness checks
 
-- Close the remaining Phase 1 software gates documented in [the
-  handoff](PHASE1-HANDOFF.md): dependency-resolved package install/removal,
-  maintainer hooks across normal reboot, and target installer application.
+- The AMD64 candidate's dependency-resolved install, candidate boot, package
+  removal, and generic fallback reboot have passed in a disposable TCG VM. For
+  ARM64, close the remaining generic UEFI/GRUB fallback reboot and normal
+  installed-system checks documented in [the handoff](PHASE1-HANDOFF.md).
   The blank-ESP first-install hook and FAT payload comparison have passed.
 - Keep physical SP12 installation, suspend/resume, display, storage, Wi-Fi,
   fallback boot, and recovery as separate hardware validation gates. Generic
@@ -103,7 +104,7 @@ the collector should not change system policy or start experiments.
   completion, and suspend as distinct workload outcomes; intrusive traces are
   separate runs.
 
-No Phase 2 performance or power tuning is started by this plan. First complete
-the outstanding Phase 1 checks and agree on the target workloads and acceptance
-thresholds. These proposed thresholds and workloads need owner review before
-they become experiment gates.
+No Phase 2 performance or power tuning is started by this plan. Complete the
+outstanding Phase 1 checks and agree on the target workloads and acceptance
+thresholds first. These proposed thresholds and workloads need owner review
+before they become experiment gates.

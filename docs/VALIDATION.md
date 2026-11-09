@@ -16,11 +16,17 @@ include the matching config, build symlink, and 11 executable tools identified
 as x86-64 ELF. Checksums and structural package verification passed.
 
 These packages were built on a Ryzen 7 5800X3D host with native `znver3`
-optimization. They are CPU-specific. This latest package pair has not been
-installed or booted; prior AMD64 Secure Boot and NVIDIA VM results below refer
-to earlier package checksums and do not close this candidate's install/boot
-gate. Build logs, package files, and the receipt are retained outside Git in
-the task's package-artifact directory.
+optimization. They are CPU-specific. The exact pair passed dependency-resolved
+installation, UEFI/GRUB boot with Secure Boot disabled, removal, and fallback
+boot in a disposable Ubuntu 26.10 VM using QEMU TCG and an emulated
+`EPYC-Milan-v2` CPU. The Microsoft-key Secure Boot attempt rejected the
+unsigned image with `bad shim lock signature`; signing and Secure Boot boot of
+this exact pair remain open. See the
+[AMD64 package lifecycle record](validation/amd64-package-lifecycle-20261109.txt)
+for hashes, results, and limits. This VM smoke test does not establish
+znver3-equivalent CPU compatibility or physical B550I operation. Build logs,
+package files, and the receipt are retained outside Git in the task's
+package-artifact directory.
 
 The kernel was built in Ubuntu 26.10 using native CPU optimization.
 Use these CPU-specific packages only on compatible CPUs. The package tests

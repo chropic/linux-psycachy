@@ -1,0 +1,56 @@
+# AMD64 candidate package install, boot, and removal — 2026-11-09
+
+## Packages
+
+Candidate version: `7.3.1-1psycachy1`, built for `amd64` with `znver3`
+optimization on the Ryzen 7 5800X3D B550I host.
+
+| Package | SHA-256 |
+| --- | --- |
+| `linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb` | `c1e3403460d136d1b0aca498f5de51a23eabc0a3b074a028971ccf265782c7c1` |
+| `linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb` | `85ab822c398f8899e28d369f6bf42930e0b984111688eda28f1578e8796027f8` |
+
+The hashes were checked before and after transfer. The package structure
+receipt is `7388473c8502ec521d5bd57c8e7a329b41bfe38dce216f090319cf4db37ed53d`.
+
+## Disposable VM result
+
+The packages were installed on an isolated Ubuntu 26.10 qcow2 guest on the
+B550I host. QEMU 11.0.3 used TCG software emulation and a virtual
+`EPYC-Milan-v2` CPU because `/dev/kvm` was unavailable. The guest disk was a
+20 GiB copy-on-write overlay. The signed Ubuntu cloud image checksum was
+verified against its detached signature and the Ubuntu cloud image keyring.
+VM networking was user-mode with SSH forwarded only on host loopback.
+
+With Microsoft-key Secure Boot OVMF variables, UEFI/GRUB rejected the unsigned
+candidate with `bad shim lock signature`. This is the expected unsigned-kernel
+gate; no Secure Boot boot of this package was established. With standard OVMF
+and Secure Boot disabled, GRUB selected `7.3.1-psycachy`, which booted and
+reported that exact `uname -r`. The guest reported `dpkg --audit` clean and the
+kernel log had no `BUG`, `Oops`, or panic. TCG emitted warnings for CPU features
+it does not implement. This is install and boot smoke evidence, not a
+znver3-equivalent CPU test or physical B550I validation.
+
+The image and headers packages were then removed while the candidate was
+running. `apt-get remove` returned 0; GRUB was regenerated with the Ubuntu
+`7.3.0-9-generic` kernel as its primary entry. After reboot, `uname -r`
+reported `7.3.0-9-generic`, `dpkg --audit` was clean, and package states were:
+
+```text
+un  linux-headers-7.3.1-psycachy
+rc  linux-image-7.3.1-psycachy 7.3.1-1psycachy1
+```
+
+The guest was cleanly powered off after the checks. The VM image, SSH key,
+package copies, and serial output are retained only under the ignored
+`output/amd64-phase1-vm/` directory; no guest or kernel package was installed
+on the host.
+
+## Limits and follow-up
+
+The emulated CPU is not an exact representation of the build host, and TCG
+does not expose all requested Milan features. Physical B550I operation remains
+to be tested. To use this unsigned kernel with Secure Boot enabled, sign and
+enroll it as described in `INSTALL-HARDWARE.md`, then test that signed image in
+a Secure Boot VM or on hardware. The Secure Boot rejection above confirms the
+unsigned package itself cannot boot through the Microsoft-key chain.
