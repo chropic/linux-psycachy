@@ -48,6 +48,12 @@ over host-loopback SSH. In a disposable overlay, `initramfs-tools` installed,
 the package-owned fallback kernel's initrd was regenerated, and a subsequent
 UEFI/GRUB reboot reached Ubuntu userspace on that fallback kernel with an empty
 `dpkg --audit`. See the [VM testbed staging report](validation/phase1-arm64-vm-testbed-staging-20261109.md).
+While awaiting a reboot window, a refreshed read-only inventory confirmed the
+same running kernel and device class. A QEMU environment check confirmed
+AAVMF files and ARM `virt` support are available, with TCG as the usable
+accelerator because `/dev/kvm` is absent. The recovery-panel initrd and GRUB
+state still need privileged read-only inspection; exact commands and results
+are tracked in the [waiting checks report](validation/phase1-sp12-waiting-checks-20261109.md).
 
 The candidate ARM64 package pair has not yet been built for this run. A config
 reproduction using the pinned, authenticated source, all six SP12 patches, the
