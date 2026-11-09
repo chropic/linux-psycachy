@@ -29,4 +29,6 @@ under ignored `output/phase1/vm-guest/`; the fallback boot audit has SHA-256
 This confirms a generic Ubuntu fallback reboot only. The SP12 candidate
 package pair has not yet been built or installed in this guest. The guest does
 not validate Surface firmware, candidate boot, physical device behavior, or
-recovery on the SP12.
+recovery on the SP12. The package build is waiting on reproduction or separate
+approval of the exact ARM64 candidate config; see the
+[config reproduction report](phase1-config-reproduction-20261109.md).

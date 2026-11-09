@@ -42,20 +42,22 @@ the package-owned fallback kernel's initrd was regenerated, and a subsequent
 UEFI/GRUB reboot reached Ubuntu userspace on that fallback kernel with an empty
 `dpkg --audit`. See the [VM testbed staging report](validation/phase1-arm64-vm-testbed-staging-20261109.md).
 
-The candidate ARM64 package pair has not yet been built for this run. A new
-source/config preparation authenticated the pinned source and platform inputs,
-but produced config SHA-256
-`569ce4c4c0c940e1c54096521c7ed9476222caa22a05d1fb086dd07ecdd440ad`, which
-does not match the approved VM-test config
-`e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`. The host
-lacks `rustc` and `bindgen`, which changed the normalized config; no package
-build was started. Install those two tools, then repeat preparation and require
-the exact approved hash before building. The pinned source archive, detached
-signature, and signer key are staged under ignored `output/phase1/source/`;
-the archive matches the manifest hash and its signature verifies with the
-pinned key. Generic QEMU does not validate Surface firmware, the physical
-device tree, or recovery behavior. Physical boot and recovery gates still
-require the SP12 itself. See the [source authentication report](validation/phase1-source-authentication-20261109.md).
+The candidate ARM64 package pair has not yet been built for this run. A config
+reproduction using the pinned, authenticated source, all six SP12 patches, the
+three packaging patches, and a local extracted Rust toolchain passed the config
+audit (17 declared exceptions, zero unexpected changes, 20 new symbols). Its
+hash is `04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659`,
+which differs from the exact config approved for VM testing,
+`e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`. No
+package build was started. Continuing requires the previously approved config
+artifact to reproduce its hash or a separate review and approval of the new
+config. The pinned source archive, detached signature, and signer key are
+staged under ignored `output/phase1/source/`; the archive matches the manifest
+hash and its signature verifies with the pinned key. Generic QEMU does not
+validate Surface firmware, the physical device tree, or recovery behavior.
+Physical boot and recovery gates still require the SP12 itself. See the
+[config reproduction report](validation/phase1-config-reproduction-20261109.md)
+and the [source authentication report](validation/phase1-source-authentication-20261109.md).
 
 The earlier disposable ARM64 guest already passed dependency-resolved
 candidate installation/configuration and package-managed fallback removal with
