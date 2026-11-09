@@ -59,10 +59,13 @@ its raw JSON is retained at
 `output/phase2/sp121-arm64-inventory-refresh-20261109.json` (SHA-256
 `a04c4ee713ffa5e2fa0c41dd51b92c767eb10e8c52d8735e8253d56a9027c69f`).
 
-The exact candidate ARM64 package pair and a disposable guest disk are not
-present in the current checkout, so no local package/boot lifecycle rerun was
-possible. A generic guest cannot validate Surface-specific firmware,
-device-tree, device, or recovery behavior.
+The exact candidate ARM64 package pair and the previous lifecycle guest disk
+are not present. A fresh Ubuntu ARM64 cloud image and copy-on-write guest disk
+are staged, but the guest is not bootable until its seed ISO and candidate
+packages are prepared. See the
+[VM testbed staging report](phase1-arm64-vm-testbed-staging-20261109.md). A
+generic guest cannot validate Surface-specific firmware, device-tree, device,
+or recovery behavior.
 
 The repository already records disposable ARM64 guest package installation,
 configuration, package-managed fallback removal, and payload verification. Its

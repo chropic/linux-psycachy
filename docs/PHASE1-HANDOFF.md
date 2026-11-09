@@ -34,9 +34,12 @@ TCG and KVM accelerators, but this session has no `/dev/kvm`; a diskless TCG
 preflight stayed running for two seconds and shut down cleanly. Its raw log is
 in ignored `output/phase1/qemu-tcg-host-preflight-20261109.log`, with a
 sanitized summary in the [TCG preflight report](validation/phase1-tcg-host-preflight-20261109.md).
-The candidate ARM64 package pair and disposable guest disk used for the earlier
-VM lifecycle checks are not present in this checkout, so no package lifecycle
-rerun was possible in this session. The pinned builder also lacks `clang-22`,
+The candidate ARM64 package pair and guest disk from the earlier VM lifecycle
+run are not present in this checkout. A fresh Ubuntu ARM64 cloud image and
+copy-on-write guest disk are now staged, but the guest has not booted because
+its seed ISO and the candidate packages are not ready. See the [VM testbed
+staging report](validation/phase1-arm64-vm-testbed-staging-20261109.md). The
+pinned builder also lacks `clang-22`,
 `ld.lld-22`, and `libc6-dev-arm64-cross`; an operator must install them before
 the local build. The pinned source archive, detached signature, and signer key
 are staged under ignored `output/phase1/source/`; the archive matches the
@@ -51,8 +54,8 @@ candidate installation/configuration and package-managed fallback removal with
 payload verification. Its UEFI fallback smoke loaded the fallback kernel and
 initrd and mounted root, but stopped in the copied live-media initramfs before
 systemd/login. The package-produced ESP had no EFI loader. Repeating the guest
-when its package pair and disk image are staged could fill that generic guest
-boot gap; it would not close the physical-device gates. Details are in the
+once the candidate packages and seed image are prepared could fill that generic
+guest boot gap; it would not close the physical-device gates. Details are in the
 [package lifecycle record](validation/sp121-arm64-package-lifecycle-20261109.txt).
 
 Current-session isolated regression checks passed for boot synchronization and

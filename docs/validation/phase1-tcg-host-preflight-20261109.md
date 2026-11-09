@@ -13,16 +13,18 @@ ignored `output/phase1/qemu-tcg-host-preflight-20261109.log` (SHA-256
 checks that QEMU can start a TCG machine; it does not boot a guest kernel or
 exercise package hooks.
 
-The exact candidate ARM64 image and headers packages and the disposable guest
-disk used for the earlier lifecycle run were not present in the current
-checkout's `output/`. As a result, no package install/removal or guest boot
-check was repeated in this session. The prior disposable-guest results remain
-documented in the [package lifecycle record](sp121-arm64-package-lifecycle-20261109.txt).
+The exact candidate ARM64 image and headers packages and the guest disk from
+the earlier lifecycle run are not present in this checkout's `output/`. A
+fresh official Ubuntu cloud image and copy-on-write guest disk are staged, but
+the guest has not booted because its seed ISO and candidate packages are not
+ready. See the [VM testbed staging report](phase1-arm64-vm-testbed-staging-20261109.md).
+The prior disposable-guest results remain documented in the
+[package lifecycle record](sp121-arm64-package-lifecycle-20261109.txt).
 
 The pinned ARM64 builder also cannot run in this session: `clang-22`,
 `ld.lld-22`, and `libc6-dev-arm64-cross` are missing. APT metadata lists
-candidate versions, but this session cannot elevate to install them. No package
-build was attempted.
+candidate versions, but installation requires an operator. No package build
+was attempted.
 
 At the time of the TCG preflight, the SP12 root filesystem and EFI system
 partition were mounted read-only. The current shell remains unprivileged; root
