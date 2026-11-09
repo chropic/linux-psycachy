@@ -9,6 +9,11 @@ All six source paths and patch hashes are recorded in [`inputs.json`](inputs.jso
 and pinned to source repository commit
 `f496b50a8c471bcb11e889f06c440b2734963348`.
 
+The owner identifies Harrison Van der Byl (GitHub) as the author/source of the
+SP12 patch series. This owner-provided attribution has not yet been matched to
+each retained patch or its original commit. It does not resolve license,
+copyright, DCO, or redistribution questions.
+
 | Patch | Available provenance | Remaining review |
 | --- | --- | --- |
 | `01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch` | Source path identifies the retained vendor patch. The patch has no author or mail header. | Recover author, originating commit/message, and applicable attribution/license terms. |

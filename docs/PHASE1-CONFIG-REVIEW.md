@@ -30,6 +30,8 @@ key's deployment and rotation plan.
 
 ## Decision status
 
-This is a review aid, not approval. The candidate remains an experimental build
-until the owner or an independent reviewer accepts the policy choices and the
-runtime boot-trust behavior is tested.
+The owner approved this exact candidate config for Phase 1 VM testing on
+2026-11-09. That approval is limited to disposable VM testing; it does not
+approve hardware deployment or release. The candidate remains experimental
+until runtime boot-trust behavior is tested and the policies are reviewed for
+the intended hardware use.

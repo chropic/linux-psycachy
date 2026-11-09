@@ -33,6 +33,9 @@ remain experimental; this is not a release approval.
   `bash build.sh --target sp121-arm64 --dry-run`: passed after documentation
   updates. The dry run shows the correct cross compiler and target library
   prerequisites.
+- The owner approved the ARM64 candidate config with SHA-256
+  `e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c` for
+  disposable Phase 1 VM testing only. This is not hardware or release approval.
 - Source/documentation whitespace checks pass. Verbatim imported kernel patch
   files and captured kernel logs contain upstream/context whitespace and are
   excluded from that check.
@@ -81,8 +84,9 @@ remain experimental; this is not a release approval.
   `30fe2760d7def0f860b69a3ce219f8c90c936c7b229bc184f54753b3674c7884`.
   It validates the SP12 DTB FDT magic and checksum, dependencies, headers
   config/build link, and AArch64 architecture for every executable ELF in the
-  headers package. This is structural validation; neither candidate has been
-  installed or booted in this turn.
+  headers package. At this point, this was structural validation only; later
+  installation and generic boot evidence for the integrated ARM64 candidate
+  is recorded below.
 - The clean native AMD64 builder exited 0. Its log is
   `/home/charlie/.codex/visualizations/2026/11/09/01a1bdb7-6c8d-74e0-9e6f-c30d838101d1/phase1-package-tmp-20261109/amd64-packages-final2/build.mbVpWZX3.log`;
   the top-level receipt is
@@ -120,9 +124,9 @@ remain experimental; this is not a release approval.
   update paths remove and sync `SP12BOOT` before payload promotion. Focused regression
   tests passed, including apply-mode installer tests and interrupted update
   recovery.
-- The host QEMU package is not installed, but a previously unpacked QEMU 11.0.3,
-  AAVMF and ARM64 GRUB bundle at `/tmp/psycachy-source-audit/toolroot` works
-  with its library directory in `LD_LIBRARY_PATH`. The final packaged ARM64
+- The user reports that QEMU ARM is installed. A previously unpacked QEMU
+  11.0.3, AAVMF and ARM64 GRUB bundle at `/tmp/psycachy-source-audit/toolroot`
+  also works with its library directory in `LD_LIBRARY_PATH`. The final ARM64
   kernel image (SHA-256
   `91b0e460d80ce5d2929eb078ca3d2c6abf9578cf55064fee4b965dc403158947`)
   passed generic direct-kernel boot and generic UEFI/GRUB boot. Full logs are
@@ -133,34 +137,35 @@ remain experimental; this is not a release approval.
   `bc9eb917fb161f9d6ad4e448f6a40931205fe255b3b9dac01f7c3ce994e77a23`).
   These generic boots do not install the `.deb` packages or exercise the SP12
   device tree and hardware.
-- A separate disposable generic `virt` guest booted an existing Ubuntu 26.10
-  ARM64 live ISO and received the two candidate `.deb` files on a read-only
-  package ISO. `dpkg --force-depends` unpacked both packages; the image package
-  initially stopped at the live ISO's unrelated `kdump-tools` hook because
-  `mkinitramfs` could not identify a block device for the overlay root. After
-  temporarily moving that hook inside the disposable guest, retrying package
-  configuration succeeded and `dpkg` reported both candidate packages
-  installed. Removing both packages removed the candidate kernel image and
-  module tree. The live system disables initramfs updates on read-only media,
-  and its `flash-kernel` removal trigger ended half-configured. This is a
-  maintainer-script smoke test only: dependency resolution was forced, the
-  temporary kdump hook was skipped, no persistent ext4 guest was used, and the
-  boot-sync installer was not installed in the guest.
+- A separate persistent ext4 Ubuntu 26.10 ARM64 `virt` guest booted the final
+  candidate kernel directly and mounted its root disk. The image and headers
+  packages were installed with `dpkg --force-depends`; both reached `ii` and
+  `dpkg --audit` was empty. Missing dependencies were the offline header-build
+  tools (`build-essential`, `clang-22`, `llvm-22`, `lld-22`, and `pahole`). The
+  image's `kdump-tools` hook completed and generated its kdump initrd, with
+  warnings caused by the live-root `overlay` configuration. The copied live
+  system replaces `update-initramfs` with a stub that reports updates disabled
+  on read-only media, so no normal `/boot/initrd.img-$kver` was generated.
+  Applying the old boot-sync installer then failed because the live guest lacks
+  `grub2-common`; this exposed that it left active hooks before the guard check.
+  The installer now writes `boot.conf` and installs the GRUB guard before
+  activating staged hooks, with a regression test for guard failure. Package
+  removal, dependency-resolved installation, normal initramfs update hooks, and
+  a full boot-sync apply in the guest remain unverified.
 - Preserve failed logs and retain previous package attempts separately from
   the `final-arm64-packages` directory.
 
 ## Remaining gates
 
-1. Run a clean dependency-resolved package install/removal in a persistent
-   disposable ARM64 Ubuntu guest, then install the boot-sync integration and
-   exercise package hooks across reboot. The forced-dependency live-media test
-   above did not provide those guarantees. The final packaged image has passed
+1. Run a dependency-resolved package install/removal in the persistent ARM64
+   Ubuntu guest, then install boot-sync on a guest with `grub2-common` and a
+   normal initramfs-tools setup and exercise package hooks across reboot. The
+   forced-dependency package install above does not provide those guarantees.
+   The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
-   the Surface device tree or hardware. The host QEMU package is absent, but
-   the unpacked temporary QEMU bundle above works for smoke tests.
-2. Have a reviewer approve the candidate config and policies. The ARM64 package
-   has hibernation disabled; module acceptance, lockdown default, kexec
-   verification/handover, and BPF JIT policy need review. See
+   the Surface device tree or hardware. The owner approved the config for VM
+   testing only; module acceptance, lockdown default, kexec
+   verification/handover, and BPF JIT policy still need runtime review. See
    [`PHASE1-CONFIG-REVIEW.md`](PHASE1-CONFIG-REVIEW.md) and the audit report at
    `docs/validation/sp121-candidate-config-audit.json` (17 declared removals,
    20 newly enabled symbols, zero unexpected changes).
@@ -171,6 +176,19 @@ remain experimental; this is not a release approval.
    the branch as a distributable release. The per-patch evidence and open
    questions are listed in
    [`PATCH-PROVENANCE.md`](../targets/sp121-arm64/PATCH-PROVENANCE.md).
+
+## CI investigation
+
+GitHub Actions runs 7–10 on this branch all passed static checks and
+ShellCheck, then failed at `Build and package` during prerequisite checking
+with `error: missing required command: gpgv`. The bootstrap installs `gnupg`
+with `--no-install-recommends`, so it did not install `gpgv`; the package is
+now listed explicitly in `tools/ubuntu-26.10-packages.txt`. A new run is
+needed to confirm the fix and reveal any later build-stage failures.
+
+The owner reports Harrison Van der Byl (GitHub) as author/source of the SP12
+patch series. The patch-to-author association and redistribution terms remain
+under review; see [`PATCH-PROVENANCE.md`](../targets/sp121-arm64/PATCH-PROVENANCE.md).
 The implementation and handoff have been committed and pushed to
 `chropic/linux-psycachy`, branch
 `feature/linux-chropic-psycachy-b550i-sp121`. The configured local `origin` is

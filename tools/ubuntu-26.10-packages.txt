@@ -38,4 +38,5 @@ git
 curl
 ca-certificates
 gnupg
+gpgv
 openssl

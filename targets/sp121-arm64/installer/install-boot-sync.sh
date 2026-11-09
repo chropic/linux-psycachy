@@ -97,18 +97,11 @@ cp -f "$system_dir/usr-local-sbin/sp12-sync-boot" "$target/usr/local/sbin/sp12-s
 cp -f "$system_dir/usr-local-sbin/sp12-esp-space" "$target/usr/local/sbin/sp12-esp-space"
 cp -f "$system_dir/usr-local-sbin/sp12-save-recovery" "$target/usr/local/sbin/sp12-save-recovery"
 cp -f "$system_dir/usr-local-sbin/sp12-restore-recovery" "$target/usr/local/sbin/sp12-restore-recovery"
-cp -f "$system_dir/etc/kernel/postinst.d/zzzz-sp12-sync" "$target/etc/kernel/postinst.d/zzzz-sp12-sync"
-cp -f "$system_dir/etc/initramfs/post-update.d/zzzz-sp12-sync" "$target/etc/initramfs/post-update.d/zzzz-sp12-sync"
 
 chmod 0755 "$target/usr/local/sbin/sp12-sync-boot" \
            "$target/usr/local/sbin/sp12-esp-space" \
            "$target/usr/local/sbin/sp12-save-recovery" \
-           "$target/usr/local/sbin/sp12-restore-recovery" \
-           "$target/etc/kernel/postinst.d/zzzz-sp12-sync" \
-           "$target/etc/initramfs/post-update.d/zzzz-sp12-sync"
-
-"$installer_dir/install-grub-fallback-guard.sh" --target "$target" --apply
-chmod 0755 "$target/usr/local/sbin/sp12-grub-multi-install-guard"
+           "$target/usr/local/sbin/sp12-restore-recovery"
 
 config_tmp=$(mktemp "$target/etc/sp12-linux/boot.conf.XXXXXX")
 {
@@ -117,5 +110,20 @@ config_tmp=$(mktemp "$target/etc/sp12-linux/boot.conf.XXXXXX")
 } > "$config_tmp"
 chmod 0644 "$config_tmp"
 mv -f "$config_tmp" "$target/etc/sp12-linux/boot.conf"
+
+# Install the GRUB guard before activating package hooks. A failed guard check
+# must not leave hooks that call a helper without a completed configuration.
+"$installer_dir/install-grub-fallback-guard.sh" --target "$target" --apply
+chmod 0755 "$target/usr/local/sbin/sp12-grub-multi-install-guard"
+
+# Stage both hook files before making either one active, then activate them
+# only after their helper and boot.conf are ready.
+postinst_tmp=$(mktemp "$target/etc/kernel/postinst.d/zzzz-sp12-sync.XXXXXX")
+postupdate_tmp=$(mktemp "$target/etc/initramfs/post-update.d/zzzz-sp12-sync.XXXXXX")
+cp -f "$system_dir/etc/kernel/postinst.d/zzzz-sp12-sync" "$postinst_tmp"
+cp -f "$system_dir/etc/initramfs/post-update.d/zzzz-sp12-sync" "$postupdate_tmp"
+chmod 0755 "$postinst_tmp" "$postupdate_tmp"
+mv -f "$postinst_tmp" "$target/etc/kernel/postinst.d/zzzz-sp12-sync"
+mv -f "$postupdate_tmp" "$target/etc/initramfs/post-update.d/zzzz-sp12-sync"
 
 printf 'Installed boot synchronization helper and hooks into %s\n' "$target"
