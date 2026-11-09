@@ -120,27 +120,56 @@ remain experimental; this is not a release approval.
   update paths remove and sync `SP12BOOT` before payload promotion. Focused regression
   tests passed, including apply-mode installer tests and interrupted update
   recovery.
-- QEMU is not installed. A rootless package download failed because this
-  sandbox could not resolve `archive.ubuntu.com`; sudo requires a local terminal
-  password prompt. Run `sudo apt-get install -y qemu-system-arm` locally to
-  enable disposable ARM64 package-install and boot checks.
+- The host QEMU package is not installed, but a previously unpacked QEMU 11.0.3,
+  AAVMF and ARM64 GRUB bundle at `/tmp/psycachy-source-audit/toolroot` works
+  with its library directory in `LD_LIBRARY_PATH`. The final packaged ARM64
+  kernel image (SHA-256
+  `91b0e460d80ce5d2929eb078ca3d2c6abf9578cf55064fee4b965dc403158947`)
+  passed generic direct-kernel boot and generic UEFI/GRUB boot. Full logs are
+  retained outside Git at
+  `/home/charlie/.codex/visualizations/2026/11/09/01a1bdb7-6c8d-74e0-9e6f-c30d838101d1/phase1-package-tmp-20261109/final-arm64-package-qemu-direct.log`
+  (SHA-256 `d58b20a45fef48e533e4a519f97c385eb4f4ccc4f0be8e54745b865c8db0d9d9`)
+  and `final-arm64-package-qemu-uefi.log` (SHA-256
+  `bc9eb917fb161f9d6ad4e448f6a40931205fe255b3b9dac01f7c3ce994e77a23`).
+  These generic boots do not install the `.deb` packages or exercise the SP12
+  device tree and hardware.
+- A separate disposable generic `virt` guest booted an existing Ubuntu 26.10
+  ARM64 live ISO and received the two candidate `.deb` files on a read-only
+  package ISO. `dpkg --force-depends` unpacked both packages; the image package
+  initially stopped at the live ISO's unrelated `kdump-tools` hook because
+  `mkinitramfs` could not identify a block device for the overlay root. After
+  temporarily moving that hook inside the disposable guest, retrying package
+  configuration succeeded and `dpkg` reported both candidate packages
+  installed. Removing both packages removed the candidate kernel image and
+  module tree. The live system disables initramfs updates on read-only media,
+  and its `flash-kernel` removal trigger ended half-configured. This is a
+  maintainer-script smoke test only: dependency resolution was forced, the
+  temporary kdump hook was skipped, no persistent ext4 guest was used, and the
+  boot-sync installer was not installed in the guest.
 - Preserve failed logs and retain previous package attempts separately from
   the `final-arm64-packages` directory.
 
 ## Remaining gates
 
-1. Install the ARM64 packages in a disposable ARM64 VM and test package
-   removal/rollback and the boot synchronization path. `qemu-system-aarch64`
-   is not installed on the host; QEMU installation needs local sudo. Generic
-   `virt` testing does not validate the Surface device tree or hardware. Neither ARM64 nor AMD64
-   candidates have been installed or booted in this turn.
+1. Run a clean dependency-resolved package install/removal in a persistent
+   disposable ARM64 Ubuntu guest, then install the boot-sync integration and
+   exercise package hooks across reboot. The forced-dependency live-media test
+   above did not provide those guarantees. The final packaged image has passed
+   generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
+   the Surface device tree or hardware. The host QEMU package is absent, but
+   the unpacked temporary QEMU bundle above works for smoke tests.
 2. Have a reviewer approve the candidate config and policies, especially
-   module signature enforcement, lockdown and kexec settings.
+   module signature enforcement, lockdown, kexec, hibernation and BPF JIT
+   settings. The ARM64 candidate config audit reports 17 declared removals and
+   20 newly enabled unreviewed symbols with zero unexpected changes; see
+   `docs/validation/sp121-candidate-config-audit.json`.
 3. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
    boot and recovery on physical Surface Pro 12 hardware before any deployment
    claim. Existing AMD64 physical installation evidence is still user-owned.
 4. Review platform-patch attribution and redistribution terms before treating
-   the branch as a distributable release.
+   the branch as a distributable release. The per-patch evidence and open
+   questions are listed in
+   [`PATCH-PROVENANCE.md`](../targets/sp121-arm64/PATCH-PROVENANCE.md).
 The implementation and handoff have been committed and pushed to
 `chropic/linux-psycachy`, branch
 `feature/linux-chropic-psycachy-b550i-sp121`. The configured local `origin` is
