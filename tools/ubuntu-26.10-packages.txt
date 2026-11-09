@@ -10,10 +10,14 @@ libclang-22-dev
 bc
 bison
 flex
+gawk
+m4
 fakeroot
 dpkg-dev
 debhelper
+gcc-aarch64-linux-gnu
 libssl-dev
+pkg-config
 libelf-dev
 libdw-dev
 libncurses-dev

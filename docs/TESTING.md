@@ -18,6 +18,26 @@ The signature and compiler tests need the downloaded archive and its `.asc`
 signature file. The static checks also check the saved configuration report
 and file checksums.
 
+## Build the experimental SP12 ARM64 packages
+
+On an amd64 Ubuntu 26.10 build host, install the common toolchain and the ARM64
+cross compiler plus target OpenSSL libraries before building:
+
+```bash
+bash tools/ubuntu-26.10.sh
+bash tools/ubuntu-26.10-sp12-cross.sh
+bash tests/static-check.sh
+bash build.sh --target sp121-arm64 --prepare-only --output-dir output/sp121-prepare
+bash build.sh --target sp121-arm64 --jobs 8 --output-dir output/sp121-packages
+```
+
+The cross setup enables Ubuntu's arm64 package architecture and installs target
+OpenSSL, libdw, libelf, and zlib development files. The builder uses them to
+produce AArch64 helper binaries in the headers package, including the BTF and
+DWARF tools. The package verifier rejects any executable ELF in the headers
+package whose machine type is not AArch64. Keep the arm64 package architecture
+enabled for later package builds.
+
 ## Repeat the current installer VM test
 
 Use a locally built or otherwise verified installer image. The following commands
@@ -122,3 +142,40 @@ sudo env PSYCACHY_DISPOSABLE_TEST=1 bash tests/secureboot-module-test.sh
 This test needs the matching headers and test MOK key. It checks that an
 unsigned module is rejected and the signed module loads. It does not replace
 tests of the physical GPU, display, suspend, or fallback boot.
+
+## Experimental ARM64 kernel smoke test
+
+For an already-built ARM64 `Image`, `python3 tests/arm64-kernel-smoke.py /path/to/Image`
+uses Clang 22, LLD 22 and `qemu-system-aarch64` to boot a disk-free generic
+QEMU `virt` guest. `--qemu` selects a different QEMU binary. The script prints
+the kernel SHA-256, requires its test init's marker and a clean QEMU exit, and
+times out on failure. For a generic UEFI boot through a temporary ARM64 GRUB
+loader and virtual FAT disk, add `--uefi --firmware-code CODE.fd --firmware-vars
+VARS.fd --grub-directory /path/to/arm64-efi`. The variables file is copied;
+the original and physical disks are not modified. Both modes use QEMU's generic
+device tree and do not validate Surface hardware, its device tree, installer,
+Secure Boot or recovery.
+
+Pass `--module /path/to/probe.ko` to load the matching signed test module
+from `tests/fixtures/arm64-module` in the guest. This enables kernel module
+signature enforcement and requires both the module's log marker and the init
+marker. An unsigned copy should fail the check. This exercises a single module,
+not the completeness of the Surface module set or packaged headers.
+
+After a full ARM64 module build, inspect the ordered build-tree outputs with
+`python3 tools/audit-arm64-modules.py --tree BUILD_DIR --release RELEASE --output REPORT.json`.
+It requires a complete-looking symbol table, reconstructs `Image` from the
+current `vmlinux` with `llvm-objcopy-22`, checks each ordered module's ELF
+architecture and vermagic, and records checksums. It does not independently
+verify module BTF linkage, package contents, module signatures, initramfs,
+hardware or the installer.
+
+## ARM64 package verification and boot synchronization tests
+
+For built ARM64 kernel Debian packages, run:
+`python3 tools/verify-arm64-packages.py PATH --release 7.3.1-psycachy-sp121 --output-report REPORT.json`
+to verify package architecture (`arm64`), version consistency, runtime dependencies (`kmod`, `linux-base`), kernel boot image, headers layout, build symlinks, AArch64 ELF machine type for every executable ELF in the headers package, and packaged DTB (`qcom/x1p42100-microsoft-sp12in.dtb`) including FDT magic verification (`0xd00dfeed`).
+
+Unit tests in `tests/test_arm64_package_verification.py` test this verification against valid and invalid mock deb packages, including rejection of host-architecture ELF tools at arbitrary paths within headers.
+
+Target boot synchronization tests in `tests/test_sp121_boot_sync.py` verify locked execution, insufficient-space refusal, staged per-file promotion, idempotency, stale-file handling, durable recovery checksums, and manual restore after injected interruption. The rescue procedure is documented in [`SP12-RECOVERY.md`](SP12-RECOVERY.md); FAT power-loss behavior remains unverified.

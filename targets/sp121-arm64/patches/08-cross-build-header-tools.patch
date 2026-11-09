@@ -1,0 +1,74 @@
+diff --git a/scripts/package/install-extmod-build b/scripts/package/install-extmod-build
+--- a/scripts/package/install-extmod-build
++++ b/scripts/package/install-extmod-build
+@@ -56,5 +56,5 @@
+ 	cat "${destdir}/scripts/Makefile" - <<-'EOF' > "${destdir}/scripts/Kbuild"
+ 	subdir-y += basic
+-	hostprogs-always-y += mod/modpost
++	hostprogs-always-y += mod/modpost sign-file
+ 	mod/modpost-objs := $(addprefix mod/, modpost.o file2alias.o sumversion.o symsearch.o)
+ 	EOF
+@@ -69,4 +69,14 @@
+ 	# shellcheck disable=SC2016 # $(MAKE) and $(build) will be expanded by Make
+-	"${MAKE}" run-command KBUILD_RUN_COMMAND='+$(MAKE) HOSTCC="'"${CC}"'" VPATH= srcroot=. $(build)='"$(realpath --relative-to=. "${destdir}")"/scripts
++	"${MAKE}" run-command KBUILD_RUN_COMMAND='+$(MAKE) HOSTCC="'"${CC}"'" KBUILD_HOSTLDFLAGS= VPATH= srcroot=. $(build)='"$(realpath --relative-to=. "${destdir}")"/scripts
+ 
++	# resolve_btfids is installed for CONFIG_DEBUG_INFO_BTF_MODULES and must
++	# run on the target when external ARM64 modules are linked.
++	if [ -x "${destdir}/tools/bpf/resolve_btfids/resolve_btfids" ]; then
++		"${MAKE}" -C "${srctree}/tools/bpf/resolve_btfids" \
++			OUTPUT="$(realpath "${destdir}/tools/bpf/resolve_btfids")/" \
++			HOSTCC="${CC}" HOSTLD="${CC}" KBUILD_HOSTLDFLAGS= \
++			REALHOSTCC="${HOSTCC}" REALHOSTLD=ld.lld-22 \
++			HOSTPKG_CONFIG="${HOSTPKG_CONFIG:-pkg-config}"
++	fi
++	rm -f "${destdir}/tools/bpf/resolve_btfids/fixdep"
+ 	rm -f "${destdir}/scripts/Kbuild"
+@@ -73,2 +82,3 @@
+ fi
++find "${destdir}/tools/bpf/resolve_btfids" -type f -name fixdep -delete
+ 
+diff --git a/tools/build/Makefile.include b/tools/build/Makefile.include
+--- a/tools/build/Makefile.include
++++ b/tools/build/Makefile.include
+@@ -12,7 +12,10 @@ else
+ endif
+ 
+ fixdep:
+-	$(SILENT_MAKE) -C $(srctree)/tools/build CFLAGS= LDFLAGS= $(OUTPUT)fixdep
++	$(SILENT_MAKE) -C $(srctree)/tools/build \
++		$(if $(REALHOSTCC),HOSTCC=$(REALHOSTCC) KBUILD_HOSTCFLAGS=) \
++		$(if $(REALHOSTLD),HOSTLD=$(REALHOSTLD) KBUILD_HOSTLDFLAGS=) \
++		CFLAGS= LDFLAGS= $(OUTPUT)fixdep
+ 
+ fixdep-clean:
+ 	$(Q)$(MAKE) -C $(srctree)/tools/build clean
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -147,3 +147,3 @@
+ 	echo "Warning: Kernel ABI header at 'tools/include/uapi/linux/if_xdp.h' differs from latest version at 'include/uapi/linux/if_xdp.h'" >&2 )) || true
+-	$(SILENT_MAKE) -C $(srctree)/tools/build CFLAGS= LDFLAGS= OUTPUT=$(SHARED_OBJDIR) $(SHARED_OBJDIR)fixdep
++	$(SILENT_MAKE) -C $(srctree)/tools/build $(if $(REALHOSTCC),HOSTCC=$(REALHOSTCC) KBUILD_HOSTCFLAGS=) $(if $(REALHOSTLD),HOSTLD=$(REALHOSTLD) KBUILD_HOSTLDFLAGS=) CFLAGS= LDFLAGS= OUTPUT=$(SHARED_OBJDIR) $(SHARED_OBJDIR)fixdep
+ 	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(SHARED_OBJDIR) CFLAGS="$(CFLAGS) $(SHLIB_FLAGS)"
+@@ -151,3 +151,3 @@
+ $(BPF_IN_STATIC): force $(BPF_GENERATED) | $(STATIC_OBJDIR)
+-	$(SILENT_MAKE) -C $(srctree)/tools/build CFLAGS= LDFLAGS= OUTPUT=$(STATIC_OBJDIR) $(STATIC_OBJDIR)fixdep
++	$(SILENT_MAKE) -C $(srctree)/tools/build $(if $(REALHOSTCC),HOSTCC=$(REALHOSTCC) KBUILD_HOSTCFLAGS=) $(if $(REALHOSTLD),HOSTLD=$(REALHOSTLD) KBUILD_HOSTLDFLAGS=) CFLAGS= LDFLAGS= OUTPUT=$(STATIC_OBJDIR) $(STATIC_OBJDIR)fixdep
+ 	$(Q)$(MAKE) $(build)=libbpf OUTPUT=$(STATIC_OBJDIR)
+diff --git a/scripts/package/builddeb b/scripts/package/builddeb
+--- a/scripts/package/builddeb
++++ b/scripts/package/builddeb
+@@ -142,5 +142,6 @@
+ 	# Override $CC only for cross-compiles, to not unnecessarily rebuild
+ 	# scripts/ including plugins, which may lead to a full kernel rebuild.
+ 	if [ -n "${CROSS_COMPILE}" ]; then
+-		CC="${DEB_HOST_GNU_TYPE}-gcc" "${srctree}/scripts/package/install-extmod-build" "${pdir}/usr/src/linux-headers-${version}"
++		PKG_CONFIG_LIBDIR="/usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig:/usr/share/pkgconfig" \
++		CC="${DEB_HOST_GNU_TYPE}-gcc" "${srctree}/scripts/package/install-extmod-build" "${pdir}/usr/src/linux-headers-${version}"
+ 	else
+@@ -149,3 +150,4 @@
+ 	fi
++	cp .config "${pdir}/usr/src/linux-headers-${version}/.config"
+ 
+ 	mkdir -p $pdir/lib/modules/$version/

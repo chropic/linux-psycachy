@@ -18,6 +18,18 @@ jobs:
         run: bash tools/ubuntu-26.10.sh
       - name: Static and policy tests
         run: bash tests/static-check.sh
+      - name: Lint target entry points
+        run: |
+          apt-get install -y --no-install-recommends shellcheck
+          shellcheck -x build.sh config/source-pin.sh targets/sp121-arm64/prepare.sh targets/sp121-arm64/build.sh \
+            targets/sp121-arm64/installer/install-grub-fallback-guard.sh \
+            targets/sp121-arm64/installer/install-boot-sync.sh targets/sp121-arm64/installer/install-fallback-target.sh \
+            targets/sp121-arm64/installer/inspect-install-target.sh \
+            targets/sp121-arm64/system/usr-local-sbin/sp12-sync-boot targets/sp121-arm64/system/usr-local-sbin/sp12-esp-space \
+            targets/sp121-arm64/system/usr-local-sbin/sp12-grub-multi-install-guard \
+            targets/sp121-arm64/system/etc/kernel/postinst.d/zzzz-sp12-sync \
+            targets/sp121-arm64/system/etc/initramfs/post-update.d/zzzz-sp12-sync \
+            tests/static-check.sh
       - name: Build and package
         run: bash build.sh --jobs 2 --output-dir output/ci
       - name: Reject invalid source, signature, and patch inputs

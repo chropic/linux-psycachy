@@ -1,0 +1,129 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+root=/
+apply=0
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --root) [ "$#" -ge 2 ] || { printf '%s\n' 'Usage: sp12-restore-recovery [--root ROOT] [--apply]' >&2; exit 2; }; root=$2; shift 2 ;;
+        --apply) apply=1; shift ;;
+        -h|--help)
+            printf '%s\n' 'Usage: sp12-restore-recovery [--root ROOT] [--apply]'
+            printf '%s\n' 'Default: verify and report the preserved previous boot set.'
+            printf '%s\n' 'Apply: restore its kernel, initramfs and DTB to the mounted ESP.'
+            exit 0 ;;
+        *) printf 'Unknown argument: %s\n' "$1" >&2; exit 2 ;;
+    esac
+done
+[ "$(id -u)" -eq 0 ] || { printf 'sp12-restore-recovery: must run as root\n' >&2; exit 1; }
+root=$(readlink -f "$root")
+[ -d "$root" ] && [ ! -L "$root" ] || { printf 'sp12-restore-recovery: target root is missing or unsafe\n' >&2; exit 1; }
+esp=$root/boot/efi
+dest=$esp/sp12
+recovery_root=$root/var/lib/sp12-linux
+recovery=$recovery_root/recovery
+recovery_previous=$recovery_root/.recovery.previous
+if [ "$apply" -eq 1 ]; then
+    mountpoint -q "$esp" || { printf 'sp12-restore-recovery: ESP must already be mounted at %s\n' "$esp" >&2; exit 1; }
+    mkdir -p /run/lock
+    exec 9>/run/lock/sp12-boot.lock
+    flock -n 9 || { printf 'sp12-restore-recovery: another boot operation is running\n' >&2; exit 1; }
+    finish() {
+        result=$?
+        trap - EXIT HUP INT TERM
+        sync || result=1
+        mount -o remount,ro "$esp" || result=1
+        exit "$result"
+    }
+    trap finish EXIT
+    trap 'exit 1' HUP INT TERM
+fi
+[ ! -L "$root/var" ] && [ ! -L "$root/var/lib" ] && [ ! -L "$recovery_root" ] || {
+    printf 'sp12-restore-recovery: refusing symlinked recovery path\n' >&2
+    exit 1
+}
+fstab=$root/etc/fstab
+if [ -f "$fstab" ]; then
+    for mount_path in /var /var/lib /var/lib/sp12-linux; do
+        if awk -v target="$mount_path" '$1 !~ /^#/ && $2 == target { found=1 } END { exit !found }' "$fstab"; then
+            mountpoint -q "$root$mount_path" || {
+                printf 'sp12-restore-recovery: configured %s filesystem is not mounted under target root\n' "$mount_path" >&2
+                exit 1
+            }
+        fi
+    done
+fi
+if [ -L "$recovery" ]; then
+    printf 'sp12-restore-recovery: refusing symlinked recovery set\n' >&2
+    exit 1
+fi
+if [ ! -e "$recovery" ] && [ -d "$recovery_previous" ] && [ ! -L "$recovery_previous" ]; then
+    recovery=$recovery_previous
+fi
+[ -d "$recovery" ] && [ ! -L "$recovery" ] || {
+    printf 'sp12-restore-recovery: recovery set is missing or unsafe: %s\n' "$recovery" >&2
+    exit 1
+}
+[ -f "$recovery/SHA256SUMS" ] && [ ! -L "$recovery/SHA256SUMS" ] || {
+    printf 'sp12-restore-recovery: recovery checksums are missing or unsafe\n' >&2
+    exit 1
+}
+[ "$(wc -l < "$recovery/SHA256SUMS")" -eq 3 ] || {
+    printf 'sp12-restore-recovery: unexpected checksum manifest\n' >&2
+    exit 1
+}
+for name in vmlinuz initrd.img dtb; do
+    count=$(awk -v name="$name" '$2 == name { count++ } END { print count + 0 }' "$recovery/SHA256SUMS")
+    [ "$count" -eq 1 ] || { printf 'sp12-restore-recovery: checksum missing for %s\n' "$name" >&2; exit 1; }
+    checksum=$(awk -v name="$name" '$2 == name { print $1 }' "$recovery/SHA256SUMS")
+    case "$checksum" in
+        *[!0123456789abcdef]*|'') printf 'sp12-restore-recovery: invalid checksum for %s\n' "$name" >&2; exit 1 ;;
+    esac
+    [ "${#checksum}" -eq 64 ] || { printf 'sp12-restore-recovery: invalid checksum for %s\n' "$name" >&2; exit 1; }
+    [ -f "$recovery/$name" ] && [ ! -L "$recovery/$name" ] || {
+        printf 'sp12-restore-recovery: recovery payload is missing or unsafe: %s\n' "$name" >&2
+        exit 1
+    }
+    actual=$(sha256sum "$recovery/$name" | awk '{ print $1 }')
+    [ "$actual" = "$checksum" ] || { printf 'sp12-restore-recovery: checksum mismatch: %s\n' "$name" >&2; exit 1; }
+done
+printf 'Verified preserved SP12 recovery set:\n'
+(cd "$recovery" && sha256sum vmlinuz initrd.img dtb)
+if [ "$apply" -ne 1 ]; then
+    printf 'Read-only report. Restore with: sudo sp12-restore-recovery --apply\n'
+    exit 0
+fi
+[ -d "$dest" ] && [ ! -L "$dest" ] || {
+    printf 'sp12-restore-recovery: active payload directory is missing or unsafe\n' >&2
+    exit 1
+}
+[ ! -L "$dest/SP12BOOT" ] || { printf 'sp12-restore-recovery: refusing symlinked boot marker\n' >&2; exit 1; }
+if [ -e "$dest/SP12BOOT" ] && [ ! -f "$dest/SP12BOOT" ]; then
+    printf 'sp12-restore-recovery: refusing non-regular boot marker\n' >&2
+    exit 1
+fi
+if findmnt -n -o OPTIONS --mountpoint "$esp" | tr ',' '\n' | grep -qx ro; then
+    mount -o remount,rw "$esp"
+fi
+for name in vmlinuz initrd.img dtb; do
+    active=$dest/$name
+    stage=$dest/$name.restore.new
+    [ ! -L "$active" ] || { printf 'sp12-restore-recovery: refusing symlink: %s\n' "$active" >&2; exit 1; }
+    if [ -e "$active" ] && [ ! -f "$active" ]; then
+        printf 'sp12-restore-recovery: refusing non-regular payload: %s\n' "$active" >&2
+        exit 1
+    fi
+    [ ! -L "$stage" ] || { printf 'sp12-restore-recovery: refusing symlink: %s\n' "$stage" >&2; exit 1; }
+    cp -f "$recovery/$name" "$stage"
+    cmp -s "$recovery/$name" "$stage"
+done
+for name in vmlinuz initrd.img dtb; do
+    mv -f "$dest/$name.restore.new" "$dest/$name"
+done
+touch "$dest/SP12BOOT"
+for name in vmlinuz initrd.img dtb; do
+    rm -f -- "$dest/$name.new"
+done
+sync
+printf 'Restored the verified previous SP12 boot set. The recovery copy was retained.\n'

@@ -5,7 +5,14 @@ IFS=$'\n\t'
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$root"
 
-for script in build.sh tools/ubuntu-26.10.sh tools/psycachy-secureboot.sh tests/static-check.sh \
+for script in build.sh config/source-pin.sh targets/sp121-arm64/prepare.sh targets/sp121-arm64/build.sh \
+  targets/sp121-arm64/system/usr-local-sbin/sp12-sync-boot targets/sp121-arm64/system/usr-local-sbin/sp12-esp-space \
+  targets/sp121-arm64/system/usr-local-sbin/sp12-save-recovery targets/sp121-arm64/system/usr-local-sbin/sp12-restore-recovery \
+  targets/sp121-arm64/system/usr-local-sbin/sp12-grub-multi-install-guard \
+  targets/sp121-arm64/installer/install-boot-sync.sh targets/sp121-arm64/installer/install-fallback-target.sh \
+  targets/sp121-arm64/installer/install-grub-fallback-guard.sh \
+  targets/sp121-arm64/system/etc/kernel/postinst.d/zzzz-sp12-sync targets/sp121-arm64/system/etc/initramfs/post-update.d/zzzz-sp12-sync \
+  tools/ubuntu-26.10.sh tools/ubuntu-26.10-sp12-cross.sh tools/psycachy-secureboot.sh tests/static-check.sh \
   tools/nvidia-diagnostics.sh tools/configure-nvidia-dkms.sh tests/nvidia-dkms-integration.sh \
   tests/nvidia-override-test.sh tests/builder-negative.sh tests/signing-integration.sh \
   tests/secureboot-module-test.sh tests/mokutil-check-test.sh tests/uefi-vm.sh \
@@ -16,8 +23,21 @@ for script in build.sh tools/ubuntu-26.10.sh tools/psycachy-secureboot.sh tests/
   tests/iso-signing-failure.sh tests/iso-update-fallback.sh tests/iso-offline-policy.sh; do
   bash -n "$script"
 done
-python3 -m py_compile tools/config_diff.py iso/select-disk.py tests/iso-no-io-uring.py
+python3 -m py_compile tools/config_diff.py iso/select-disk.py tests/iso-no-io-uring.py tests/arm64-kernel-smoke.py tools/verify-arm64-packages.py
 python3 tests/test_config_diff.py
+python3 tests/test_target_selection.py
+python3 tools/verify-sp121-inputs.py
+python3 tests/test_sp121_inputs.py
+python3 tests/test_sp121_config_audit.py
+python3 tests/test_arm64_module_audit.py
+python3 tests/test_arm64_report_verification.py
+python3 tests/test_arm64_package_verification.py
+python3 tests/test_sp121_boot_sync.py
+python3 tests/test_sp121_boot_sync_installer.py
+python3 tests/test_sp121_grub_guard_installer.py
+python3 tests/test_sp121_fallback_installer.py
+python3 tests/test_sp121_target_inspection.py
+python3 tests/test_source_tree_hash.py
 python3 tests/test_archive_packages.py
 python3 tests/test_iso_late_logging.py
 python3 tests/test_iso_select_disk.py

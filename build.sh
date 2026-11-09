@@ -3,37 +3,88 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
-readonly KERNEL_VERSION=7.3.1 RELEASE=cachyos-7.3.1-1
-readonly SOURCE_SHA256=3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f
-readonly SIGNER=E8B9AA39F054E30E8290D492C3C4820857F654FE
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source=config/source-pin.sh
+. "$root/config/source-pin.sh"
 readonly CONFIG_SHA256=81fb56fe326612a0dc4705fc5ec309d04bcfffb487db0cb5843918fe92951927
 readonly DKMS_PATCH_SHA256=1e543f84690f7935c7dcd927d785b032561e7caa789d5d114e91b3798b1b1663
 readonly HEADER_PATCH_SHA256=3fbfe37888f961f1cc3cd8278600851b56047b791270fc66f0b3d8fab33d60d9
 readonly DEPENDENCIES_PATCH_SHA256=d938c88ddd54d285b44b0b0a7c352e0d77f568343edde9bd5b6708edbc842b55
-root=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# Target selection is explicit when requested. Preserve the legacy AMD64
+# invocation while the Surface implementation is under development.
+target=b550i-amd64
+target_seen=false
+dry_run=false
+remaining=()
+while (($#)); do
+  case $1 in
+    --target)
+      (($# >= 2)) || { echo 'error: --target requires a value' >&2; exit 1; }
+      $target_seen && { echo 'error: --target may be specified only once' >&2; exit 1; }
+      target=$2; target_seen=true; shift 2 ;;
+    --dry-run) dry_run=true; shift ;;
+    *) remaining+=("$1"); shift ;;
+  esac
+done
+set -- "${remaining[@]}"
+case $target in
+  b550i-amd64|sp121-arm64|all) ;;
+  *) echo "error: unknown target: $target" >&2; exit 1 ;;
+esac
 jobs=$(getconf _NPROCESSORS_ONLN)
 output_dir="$root/output/packages"
+output_seen=false
 prepare_only=false
 version_seen=false
 die() { echo "error: $*" >&2; exit 1; }
 usage() {
-  echo "Usage: ./build.sh [7.3.1] [--prepare-only] [--jobs N] [--output-dir PATH]"
+  echo "Usage: ./build.sh [--target b550i-amd64|sp121-arm64|all] [--dry-run] [7.3.1] [--prepare-only] [--jobs N] [--output-dir PATH]"
 }
 while (($#)); do
   case $1 in
     --prepare-only) prepare_only=true ;;
     --jobs) (($# >= 2)) && [[ $2 =~ ^[1-9][0-9]*$ ]] || die '--jobs requires a positive integer'; jobs=$2; shift ;;
-    --output-dir) (($# >= 2)) && [[ -n $2 ]] || die '--output-dir requires a path'; output_dir=$2; shift ;;
+    --output-dir) (($# >= 2)) && [[ -n $2 ]] || die '--output-dir requires a path'; output_dir=$2; output_seen=true; shift ;;
     --help|-h) usage; exit 0 ;;
     --*) die "unknown option: $1" ;;
     *) ! $version_seen && [[ $1 == "$KERNEL_VERSION" ]] || die "only version $KERNEL_VERSION is supported"; version_seen=true ;;
   esac
   shift
 done
+if [[ $target == sp121-arm64 ]] && ! $output_seen; then
+  if $prepare_only; then
+    output_dir="$root/output/sp121-prepare"
+  else
+    output_dir="$root/output/sp121-packages"
+  fi
+fi
+if $dry_run; then
+  printf 'Target: %s\n' "$target"
+  if [[ $target == b550i-amd64 || $target == all ]]; then
+    printf '%s\n' 'AMD64: existing Ubuntu 26.10 AMD64 kernel package builder.' \
+      'Prerequisites: Ubuntu 26.10 AMD64, pinned source verification, Clang/LLVM 22 and build dependencies.' \
+      'Packages are specific to the build CPU; review hardware before building.'
+  fi
+  if [[ $target == sp121-arm64 || $target == all ]]; then
+    printf '%s\n' 'SP12 ARM64: experimental source/config preparation and candidate package build path.' \
+      'Candidate packages were generated and pass structural verification; configuration, package-install, and hardware gates remain open.' \
+      'Prerequisites: pinned source/signature, Clang/LLVM 22, AArch64 GCC, flex, bison, m4, make, Git, GnuPG, Python 3, pahole, fakeroot, cpio, rsync, dpkg-dev, debhelper, and ARM64 OpenSSL/libdw/libelf/zlib development files.'
+  fi
+  printf 'Prepare only: %s\nJobs: %s\nOutput directory: %s\n' "$prepare_only" "$jobs" "$output_dir"
+  exit 0
+fi
+if [[ $target == sp121-arm64 ]]; then
+  if $prepare_only; then
+    exec bash "$root/targets/sp121-arm64/prepare.sh" "$output_dir" "$jobs"
+  else
+    exec bash "$root/targets/sp121-arm64/build.sh" "$output_dir" "$jobs"
+  fi
+fi
+[[ $target == b550i-amd64 ]] || die "target $target is not implemented; no build was started"
 [[ $(uname -m) == x86_64 ]] || die 'amd64 is required'
 . /etc/os-release
 [[ ${ID:-} == ubuntu && ${VERSION_ID:-} == 26.10 ]] || die 'Ubuntu 26.10 is required'
-for command in curl gpg git make python3 sha256sum tar clang-22 ld.lld-22 \
+for command in curl gpg gpgv git make python3 sha256sum tar flex bison m4 gawk clang-22 ld.lld-22 \
   llvm-ar-22 llvm-nm-22 llvm-objcopy-22 llvm-objdump-22 llvm-readelf-22 \
   llvm-strip-22 rustc bindgen pahole; do
   command -v "$command" >/dev/null || die "missing required command: $command"
@@ -61,14 +112,17 @@ url="https://github.com/CachyOS/linux/releases/download/$RELEASE/$RELEASE.tar.gz
 [[ -s $archive ]] || curl --fail --location --retry 3 -o "$archive" "$url"
 [[ -s $signature ]] || curl --fail --location --retry 3 -o "$signature" "$url.asc"
 printf '%s  %s\n' "$SOURCE_SHA256" "$archive" | sha256sum --check --status || die 'source checksum mismatch'
-export GNUPGHOME="$work/gnupg"
-mkdir -m 700 "$GNUPGHOME"
-curl --fail --location --retry 3 --get --data-urlencode op=get --data-urlencode "search=0x$SIGNER" \
-  -o "$work/key.asc" https://keyserver.ubuntu.com/pks/lookup
-gpg --batch --import "$work/key.asc"
-gpg --batch --status-fd 1 --verify "$signature" "$archive" > "$work/signature-status"
+if [[ -n ${PSYCACHY_SIGNER_KEY:-} ]]; then
+  [[ -r $PSYCACHY_SIGNER_KEY ]] || die 'PSYCACHY_SIGNER_KEY is not readable'
+  cp -- "$PSYCACHY_SIGNER_KEY" "$work/key.asc"
+else
+  curl --fail --location --retry 3 --get --data-urlencode op=get --data-urlencode "search=0x$SIGNER" \
+    -o "$work/key.asc" https://keyserver.ubuntu.com/pks/lookup
+fi
+gpg --batch --yes --dearmor --output "$work/signer-keyring.gpg" "$work/key.asc"
+gpgv --keyring "$work/signer-keyring.gpg" --status-fd 1 \
+  "$signature" "$archive" > "$work/signature-status"
 grep -q "^\\[GNUPG:\\] VALIDSIG $SIGNER " "$work/signature-status" || die 'signature does not match pinned signer'
-unset GNUPGHOME
 printf '%s  %s\n' "$CONFIG_SHA256" "$root/config/cachyos-7.3.config" | sha256sum --check --status || die 'config checksum mismatch'
 printf '%s  %s\n' "$DKMS_PATCH_SHA256" "$root/config/patches/dkms-clang.patch" | sha256sum --check --status || die 'DKMS patch checksum mismatch'
 printf '%s  %s\n' "$HEADER_PATCH_SHA256" "$root/config/patches/headers-config.patch" | sha256sum --check --status || die 'header patch checksum mismatch'
@@ -87,11 +141,14 @@ for patch in dkms-clang.patch headers-config.patch ubuntu-package-dependencies.p
   git -C "$source_dir" apply --check --no-index "$root/config/patches/$patch"
   git -C "$source_dir" apply --no-index "$root/config/patches/$patch"
 done
+# Use the extracted source as the inherited PWD for recursive Kbuild commands.
+cd "$source_dir"
 cp "$root/config/cachyos-7.3.config" "$source_dir/.config"
 make -C "$source_dir" LLVM=-22 olddefconfig
 cp "$source_dir/.config" "$work/normalized.config"
 cp "$work/normalized.config" "$output_dir/cachyos-$KERNEL_VERSION-normalized.config"
-(cd "$source_dir" && scripts/kconfig/merge_config.sh -m .config "$root/config/psycachy.fragment")
+cp "$root/config/psycachy.fragment" "$work/psycachy.fragment"
+(cd "$source_dir" && scripts/kconfig/merge_config.sh -m .config "$work/psycachy.fragment")
 make -C "$source_dir" LLVM=-22 olddefconfig
 cp "$source_dir/.config" "$output_dir/psycachy-$KERNEL_VERSION.config"
 python3 "$root/tools/config_diff.py" --base "$output_dir/cachyos-$KERNEL_VERSION-normalized.config" --fragment "$root/config/psycachy.fragment" \

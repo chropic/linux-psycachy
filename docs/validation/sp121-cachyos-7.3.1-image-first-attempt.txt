@@ -1,0 +1,48 @@
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/arch/arm64/kernel/signal.c:1132:1: warning: stack frame size (1312) exceeds limit (1024) in '__arm64_sys_rt_sigreturn' [-Wframe-larger-than]
+ 1132 | SYSCALL_DEFINE0(rt_sigreturn)
+      | ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/arch/arm64/include/asm/syscall_wrapper.h:76:18: note: expanded from macro 'SYSCALL_DEFINE0'
+   76 |         asmlinkage long __arm64_sys_##sname(const struct pt_regs *__unused)
+      |                         ^
+<scratch space>:89:1: note: expanded from here
+   89 | __arm64_sys_rt_sigreturn
+      | ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/fs/select.c:974:12: warning: stack frame size (1104) exceeds limit (1024) in 'do_sys_poll' [-Wframe-larger-than]
+  974 | static int do_sys_poll(struct pollfd __user *ufds, unsigned int nfds,
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/fs/binfmt_elf.c:772:12: warning: stack frame size (1088) exceeds limit (1024) in 'parse_elf_properties' [-Wframe-larger-than]
+  772 | static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+      |            ^
+1 warning generated.
+In file included from /tmp/psycachy-source-audit/cachyos-7.3.1-1/fs/compat_binfmt_elf.c:154:
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/fs/binfmt_elf.c:772:12: warning: stack frame size (1088) exceeds limit (1024) in 'parse_elf_properties' [-Wframe-larger-than]
+  772 | static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/kernel/bpf/bpf_struct_ops.c:358:5: warning: stack frame size (1072) exceeds limit (1024) in 'bpf_struct_ops_desc_init' [-Wframe-larger-than]
+  358 | int bpf_struct_ops_desc_init(struct bpf_struct_ops_desc *st_ops_desc,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2601:13: warning: stack frame size (1216) exceeds limit (1024) in '__arm_smmu_domain_inv_range' [-Wframe-larger-than]
+ 2601 | static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
+      |             ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:2422:12: warning: stack frame size (1152) exceeds limit (1024) in 'arm_smmu_atc_inv_master' [-Wframe-larger-than]
+ 2422 | static int arm_smmu_atc_inv_master(struct arm_smmu_master *master,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1495:13: warning: stack frame size (1168) exceeds limit (1024) in 'arm_smmu_sync_cd' [-Wframe-larger-than]
+ 1495 | static void arm_smmu_sync_cd(struct arm_smmu_master *master,
+      |             ^
+3 warnings generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/clk/zynqmp/clkc.c:779:12: warning: stack frame size (1040) exceeds limit (1024) in 'zynqmp_clock_probe' [-Wframe-larger-than]
+  779 | static int zynqmp_clock_probe(struct platform_device *pdev)
+      |            ^
+1 warning generated.
+/bin/sh: 1: gawk: not found
+make[3]: *** [/tmp/psycachy-source-audit/cachyos-7.3.1-1/scripts/Makefile.vmlinux:153: modules.builtin.ranges] Error 127
+make[3]: *** Deleting file 'modules.builtin.ranges'
+make[3]: *** Waiting for unfinished jobs....
+make[2]: *** [/tmp/psycachy-source-audit/cachyos-7.3.1-1/Makefile:1396: vmlinux] Error 2
+make[1]: *** [/tmp/psycachy-source-audit/cachyos-7.3.1-1/Makefile:248: __sub-make] Error 2
+make: *** [Makefile:248: __sub-make] Error 2

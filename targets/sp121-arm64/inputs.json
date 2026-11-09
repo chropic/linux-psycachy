@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "status": "audit-only-not-build-ready",
+  "source_repository": "https://github.com/chropic/sp121-ubuntu-install",
+  "source_commit": "f496b50a8c471bcb11e889f06c440b2734963348",
+  "config": {
+    "path": "config.seed",
+    "source_path": "kernel/config/config-7.3-sp12-platform",
+    "sha256": "45e3ccb2dbfc4f9e34ab9089f3e1880651ee0b2effbf64efa8f8a250158df530"
+  },
+  "series": [
+    {
+      "id": "volume-gpio-correction",
+      "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+      "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+      "source_path": "kernel/patches/vendor/mias/surface/0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch"
+    },
+    {
+      "id": "surface-rtc-driver",
+      "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+      "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+      "source_path": "kernel/ports/v7.3/patches/0002-rtc-surface-port-reference-driver.patch"
+    },
+    {
+      "id": "sp12-rtc-registration",
+      "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+      "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+      "source_path": "kernel/ports/v7.3/patches/0003-surface-register-sp12-rtc.patch"
+    },
+    {
+      "id": "sp12-suspend-quirk",
+      "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+      "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+      "source_path": "kernel/ports/v7.3/patches/0004-surface-scope-sp12-suspend-workaround.patch"
+    },
+    {
+      "id": "displayport-audio",
+      "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+      "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+      "source_path": "kernel/patches/vendor/mias/surface/0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch"
+    },
+    {
+      "id": "charge-limit-nvmem",
+      "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+      "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+      "source_path": "kernel/patches/vendor/mias/surface/0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch"
+    }
+  ],
+  "note": "Verbatim platform inputs; attribution, redistribution, source reconciliation and hardware validation remain open. Camera profile excluded pending separate validation."
+}

@@ -1,0 +1,16 @@
+diff --git a/scripts/package/mkdebian b/scripts/package/mkdebian
+--- a/scripts/package/mkdebian
++++ b/scripts/package/mkdebian
+@@ -203,10 +203,11 @@
+ # Generate a control file
++printf '12\n' > debian/compat
+ cat <<EOF > debian/control
+ Source: $sourcename
+ Section: kernel
+ Priority: optional
+ Maintainer: $maintainer
+ Rules-Requires-Root: no
+-Build-Depends: debhelper-compat (= 12)
++Build-Depends: debhelper (>= 12)
+ Build-Depends-Arch: bc, bison, flex,
+  gcc-${host_gnu} <!pkg.${sourcename}.nokernelheaders>,

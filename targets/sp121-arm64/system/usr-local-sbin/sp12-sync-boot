@@ -1,0 +1,174 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+config=/etc/sp12-linux/boot.conf
+esp=/boot/efi
+dest=$esp/sp12
+
+[ "$(id -u)" -eq 0 ] || { printf 'sp12-sync-boot: must run as root\n' >&2; exit 1; }
+[ -f "$config" ] || { printf 'sp12-sync-boot: missing %s\n' "$config" >&2; exit 1; }
+exec 9>/run/lock/sp12-boot.lock
+flock -n 9 || { printf 'sp12-sync-boot: another boot operation is running\n' >&2; exit 1; }
+
+kver=$(sed -n 's/^KVER=//p' "$config" | tail -n 1)
+dtb=$(sed -n 's/^DTB=//p' "$config" | tail -n 1)
+
+case "$kver" in
+    ''|*[!A-Za-z0-9._+~-]*)
+        printf 'sp12-sync-boot: invalid KVER in %s\n' "$config" >&2
+        exit 1
+        ;;
+esac
+case "$dtb" in
+    /boot/*) ;;
+    *) printf 'sp12-sync-boot: DTB must be an absolute path below /boot\n' >&2; exit 1 ;;
+esac
+dtb_name=${dtb#/boot/}
+case "$dtb_name" in
+    ''|*/*|.|..) printf 'sp12-sync-boot: DTB must name a direct child of /boot\n' >&2; exit 1 ;;
+esac
+real_dtb=$(readlink -f "$dtb")
+real_boot=$(readlink -f /boot)
+case "$real_dtb" in
+    "$real_boot"/*) ;;
+    *) printf 'sp12-sync-boot: DTB resolves outside /boot\n' >&2; exit 1 ;;
+esac
+
+kernel=/boot/vmlinuz-$kver
+initrd=/boot/initrd.img-$kver
+
+dtb=$real_dtb
+for source in "$kernel" "$initrd" "$dtb"; do
+    [ -f "$source" ] || { printf 'sp12-sync-boot: missing required source: %s\n' "$source" >&2; exit 1; }
+done
+
+mountpoint -q "$esp" || mount "$esp"
+[ ! -L "$dest" ] || { printf 'sp12-sync-boot: refusing symlinked payload directory\n' >&2; exit 1; }
+[ ! -L "$dest/SP12BOOT" ] || { printf 'sp12-sync-boot: refusing symlinked boot marker\n' >&2; exit 1; }
+if [ -e "$dest/SP12BOOT" ] && [ ! -f "$dest/SP12BOOT" ]; then
+    printf 'sp12-sync-boot: refusing non-regular boot marker\n' >&2
+    exit 1
+fi
+
+# FAT needs room for the staged replacement while the active file still exists.
+# Stage only changed files; a full ESP can still be verified without any writes.
+changes=
+required=1048576
+block=$(stat -f -c %S "$esp")
+for name in vmlinuz initrd.img dtb; do
+    case "$name" in
+        vmlinuz) source=$kernel ;;
+        initrd.img) source=$initrd ;;
+        dtb) source=$dtb ;;
+    esac
+    if [ -e "$dest/$name.new" ] || [ -L "$dest/$name.new" ]; then
+        printf 'sp12-sync-boot: existing staging file: %s\n' "$dest/$name.new" >&2
+        printf 'Inspect with sp12-esp-space; explicit cleanup: sudo sp12-esp-space --apply-stale-only\n' >&2
+        exit 1
+    fi
+    [ ! -L "$dest/$name" ] || { printf 'sp12-sync-boot: refusing symlink: %s\n' "$dest/$name" >&2; exit 1; }
+    if ! cmp -s "$source" "$dest/$name"; then
+        changes="$changes $name"
+        size=$(wc -c < "$source")
+        required=$((required + (size + block - 1) / block * block))
+    fi
+done
+if [ -z "$changes" ] && [ -f "$dest/SP12BOOT" ]; then
+    printf 'sp12-sync-boot: %s already matches the ESP; no writes needed\n' "$kver"
+    exit 0
+fi
+available_kib=$(df -Pk "$esp" | awk 'NR == 2 { print $4 }')
+case "$available_kib" in
+    ''|*[!0-9]*) printf 'sp12-sync-boot: cannot determine ESP free space\n' >&2; exit 1 ;;
+esac
+available=$((available_kib * 1024))
+if [ "$available" -lt "$required" ]; then
+    printf 'sp12-sync-boot: insufficient ESP space: need %s bytes, available %s bytes\n' "$required" "$available" >&2
+    printf 'Active boot files were not changed. Inspect usage with sp12-esp-space.\n' >&2
+    exit 1
+fi
+
+umask 077
+rollback=$(mktemp -d /var/tmp/sp12-sync-boot.XXXXXX)
+staged=
+promoted=
+writable=0
+committed=0
+had_marker=0
+[ ! -f "$dest/SP12BOOT" ] || had_marker=1
+cleanup() {
+    result=$?
+    trap - EXIT HUP INT TERM
+    restore_failed=0
+    if [ "$committed" -eq 0 ]; then
+        for name in $promoted; do
+            if [ -f "$rollback/$name" ]; then
+                if ! cmp -s "$rollback/$name" "$dest/$name"; then
+                    cp -f "$rollback/$name" "$dest/$name" &&
+                        cmp -s "$rollback/$name" "$dest/$name" || restore_failed=1
+                fi
+            else
+                rm -f "$dest/$name" || restore_failed=1
+            fi
+        done
+        if [ "$writable" -eq 1 ] && [ "$had_marker" -eq 0 ]; then
+            rm -f "$dest/SP12BOOT" || restore_failed=1
+        fi
+    fi
+    if [ "$restore_failed" -eq 0 ]; then
+        for name in $staged; do
+            rm -f "$dest/$name.new" || result=1
+        done
+        for name in vmlinuz initrd.img dtb; do
+            rm -f "$rollback/$name" || result=1
+        done
+        rmdir "$rollback" || result=1
+    else
+        printf 'sp12-sync-boot: restoration failed; retain recovery copies in %s\n' "$rollback" >&2
+        result=1
+    fi
+    if [ "$writable" -eq 1 ]; then
+        sync || result=1
+        mount -o remount,ro "$esp" || result=1
+    fi
+    exit "$result"
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
+
+# Keep a verified copy of the previously active set on the root filesystem.
+# A hard power loss can bypass the EXIT rollback below, so this copy must live
+# beyond a successful sync and remain usable by sp12-restore-recovery.
+save_recovery=/usr/local/sbin/sp12-save-recovery
+"$save_recovery" --root / --payload-dir "$dest"
+
+# Keep rollback copies on the Linux filesystem, not the capacity-limited ESP.
+for name in $changes; do
+    if [ -f "$dest/$name" ]; then
+        cp "$dest/$name" "$rollback/$name"
+        cmp -s "$dest/$name" "$rollback/$name"
+    fi
+done
+writable=1
+mount -o remount,rw "$esp"
+mkdir -p "$dest"
+for name in $changes; do
+    case "$name" in
+        vmlinuz) source=$kernel ;;
+        initrd.img) source=$initrd ;;
+        dtb) source=$dtb ;;
+    esac
+    staged="$staged $name"
+    cp -f "$source" "$dest/$name.new"
+    cmp -s "$source" "$dest/$name.new"
+done
+for name in $changes; do
+    promoted="$promoted $name"
+    mv -f "$dest/$name.new" "$dest/$name"
+done
+touch "$dest/SP12BOOT"
+sync
+committed=1
+
+printf 'sp12-sync-boot: installed %s with %s\n' "$kver" "$dtb"

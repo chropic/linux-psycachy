@@ -1,0 +1,127 @@
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/lib/crypto/curve25519-hacl64.c:757:6: warning: stack frame size (1088) exceeds limit (1024) in 'curve25519_generic' [-Wframe-larger-than]
+  757 | void curve25519_generic(u8 mypublic[CURVE25519_KEY_SIZE],
+      |      ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/char/ipmi/ipmi_msghandler.c:5329:13: warning: stack frame size (1104) exceeds limit (1024) in '_ipmi_panic_request_and_wait' [-Wframe-larger-than]
+ 5329 | static void _ipmi_panic_request_and_wait(struct ipmi_smi *intf,
+      |             ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/block/ublk_drv.c:5581:12: warning: stack frame size (1504) exceeds limit (1024) in 'ublk_shmem_remove_ranges' [-Wframe-larger-than]
+ 5581 | static int ublk_shmem_remove_ranges(struct ublk_device *ub, int buf_index)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/gpu/drm/radeon/radeon_cs.c:668:5: warning: stack frame size (1200) exceeds limit (1024) in 'radeon_cs_ioctl' [-Wframe-larger-than]
+  668 | int radeon_cs_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/spi/spi-loopback-test.c:1005:5: warning: stack frame size (1104) exceeds limit (1024) in 'spi_test_run_test' [-Wframe-larger-than]
+ 1005 | int spi_test_run_test(struct spi_device *spi, const struct spi_test *test,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/scsi/lpfc/lpfc_attr.c:276:1: warning: stack frame size (1072) exceeds limit (1024) in 'lpfc_vmid_info_show' [-Wframe-larger-than]
+  276 | lpfc_vmid_info_show(struct device *dev, struct device_attribute *attr,
+      | ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/gpu/drm/amd/amdgpu/../display/dc/link/accessories/link_dp_cts.c:65:13: warning: stack frame size (1120) exceeds limit (1024) in 'dp_retrain_link_dp_test' [-Wframe-larger-than]
+   65 | static void dp_retrain_link_dp_test(struct dc_link *link,
+      |             ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/wireless/ath/ath9k/ar9003_paprd.c:916:5: warning: stack frame size (1040) exceeds limit (1024) in 'ar9003_paprd_create_curve' [-Wframe-larger-than]
+  916 | int ar9003_paprd_create_curve(struct ath_hw *ah,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/marvell/octeontx2/nic/otx2_tc.c:1418:5: warning: stack frame size (1072) exceeds limit (1024) in 'otx2_setup_tc_cls_flower' [-Wframe-larger-than]
+ 1418 | int otx2_setup_tc_cls_flower(struct otx2_nic *nic,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c:1737:5: warning: stack frame size (1088) exceeds limit (1024) in 'rvu_mbox_handler_npc_install_flow' [-Wframe-larger-than]
+ 1737 | int rvu_mbox_handler_npc_install_flow(struct rvu *rvu,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/marvell/octeontx2/af/rvu_switch.c:156:6: warning: stack frame size (1056) exceeds limit (1024) in 'rvu_switch_enable' [-Wframe-larger-than]
+  156 | void rvu_switch_enable(struct rvu *rvu)
+      |      ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c:1327:5: warning: stack frame size (1136) exceeds limit (1024) in 'mlx5e_create_ttc_table' [-Wframe-larger-than]
+ 1327 | int mlx5e_create_ttc_table(struct mlx5e_flow_steering *fs,
+      |     ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c:1337:5: warning: stack frame size (1184) exceeds limit (1024) in 'mlx5e_create_flow_steering' [-Wframe-larger-than]
+ 1337 | int mlx5e_create_flow_steering(struct mlx5e_flow_steering *fs,
+      |     ^
+2 warnings generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c:549:5: warning: stack frame size (1200) exceeds limit (1024) in 'mlx5_lag_port_sel_create' [-Wframe-larger-than]
+  549 | int mlx5_lag_port_sel_create(struct mlx5_lag *ldev,
+      |     ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:1083:12: warning: stack frame size (1136) exceeds limit (1024) in 'mlx5e_init_rep_rx' [-Wframe-larger-than]
+ 1083 | static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c:901:1: warning: stack frame size (1232) exceeds limit (1024) in 'mlx5e_hairpin_create' [-Wframe-larger-than]
+  901 | mlx5e_hairpin_create(struct mlx5e_priv *priv, struct mlx5_hairpin_params *params,
+      | ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/staging/fbtft/fbtft-core.c:842:12: warning: stack frame size (1040) exceeds limit (1024) in 'fbtft_init_display_from_property' [-Wframe-larger-than]
+  842 | static int fbtft_init_display_from_property(struct fbtft_par *par)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/staging/fbtft/fb_hx8353d.c:20:12: warning: stack frame size (1040) exceeds limit (1024) in 'init_display' [-Wframe-larger-than]
+   20 | static int init_display(struct fbtft_par *par)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/staging/fbtft/fb_ssd1331.c:131:12: warning: stack frame size (1376) exceeds limit (1024) in 'set_gamma' [-Wframe-larger-than]
+  131 | static int set_gamma(struct fbtft_par *par, u32 *curves)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/staging/fbtft/fb_ssd1351.c:120:12: warning: stack frame size (1376) exceeds limit (1024) in 'set_gamma' [-Wframe-larger-than]
+  120 | static int set_gamma(struct fbtft_par *par, u32 *curves)
+      |            ^
+1 warning generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/wireguard/allowedips.c:64:13: warning: stack frame size (1104) exceeds limit (1024) in 'root_remove_peer_lists' [-Wframe-larger-than]
+   64 | static void root_remove_peer_lists(struct allowedips_node *root)
+      |             ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/net/wireguard/allowedips.c:51:13: warning: stack frame size (1120) exceeds limit (1024) in 'root_free_rcu' [-Wframe-larger-than]
+   51 | static void root_free_rcu(struct rcu_head *rcu)
+      |             ^
+2 warnings generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1171:12: warning: stack frame size (1088) exceeds limit (1024) in 'nldev_set_doit' [-Wframe-larger-than]
+ 1171 | static int nldev_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1818:12: warning: stack frame size (1104) exceeds limit (1024) in 'nldev_newlink' [-Wframe-larger-than]
+ 1818 | static int nldev_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1329:12: warning: stack frame size (1040) exceeds limit (1024) in 'nldev_port_get_dumpit' [-Wframe-larger-than]
+ 1329 | static int nldev_port_get_dumpit(struct sk_buff *skb,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1994:12: warning: stack frame size (1040) exceeds limit (1024) in 'nldev_sys_get_doit' [-Wframe-larger-than]
+ 1994 | static int nldev_sys_get_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1906:12: warning: stack frame size (1104) exceeds limit (1024) in 'nldev_get_chardev' [-Wframe-larger-than]
+ 1906 | static int nldev_get_chardev(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:2207:12: warning: stack frame size (1056) exceeds limit (1024) in 'nldev_stat_set_doit' [-Wframe-larger-than]
+ 2207 | static int nldev_stat_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:2277:12: warning: stack frame size (1056) exceeds limit (1024) in 'nldev_stat_del_doit' [-Wframe-larger-than]
+ 2277 | static int nldev_stat_del_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:2577:12: warning: stack frame size (1072) exceeds limit (1024) in 'nldev_stat_get_counter_status_doit' [-Wframe-larger-than]
+ 2577 | static int nldev_stat_get_counter_status_doit(struct sk_buff *skb,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:2835:12: warning: stack frame size (1104) exceeds limit (1024) in 'nldev_frmr_pools_get_dumpit' [-Wframe-larger-than]
+ 2835 | static int nldev_frmr_pools_get_dumpit(struct sk_buff *skb,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:2938:12: warning: stack frame size (1072) exceeds limit (1024) in 'nldev_frmr_pools_set_doit' [-Wframe-larger-than]
+ 2938 | static int nldev_frmr_pools_set_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      |            ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1534:1: warning: stack frame size (1040) exceeds limit (1024) in 'res_get_common_doit' [-Wframe-larger-than]
+ 1534 | res_get_common_doit(struct sk_buff *skb, struct nlmsghdr *nlh,
+      | ^
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/infiniband/core/nldev.c:1615:12: warning: stack frame size (1136) exceeds limit (1024) in 'res_get_common_dumpit' [-Wframe-larger-than]
+ 1615 | static int res_get_common_dumpit(struct sk_buff *skb,
+      |            ^
+12 warnings generated.
+/tmp/psycachy-source-audit/cachyos-7.3.1-1/drivers/fpga/machxo2-spi.c:187:12: warning: stack frame size (1040) exceeds limit (1024) in 'machxo2_write_init' [-Wframe-larger-than]
+  187 | static int machxo2_write_init(struct fpga_manager *mgr,
+      |            ^
+1 warning generated.

@@ -1,0 +1,95 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+set -eu
+
+usage() {
+    printf '%s\n' 'Usage: sp12-save-recovery --root ROOT --payload-dir DIR'
+    printf '%s\n' 'Preserve a complete current SP12 payload set on ROOT before replacement.'
+}
+
+root=
+payload_dir=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --root) [ "$#" -ge 2 ] || { usage >&2; exit 2; }; root=$2; shift 2 ;;
+        --payload-dir) [ "$#" -ge 2 ] || { usage >&2; exit 2; }; payload_dir=$2; shift 2 ;;
+        -h|--help) usage; exit 0 ;;
+        *) printf 'Unknown argument: %s\n' "$1" >&2; usage >&2; exit 2 ;;
+    esac
+done
+[ -n "$root" ] && [ -n "$payload_dir" ] || { usage >&2; exit 2; }
+[ "$(id -u)" -eq 0 ] || { printf 'sp12-save-recovery: must run as root\n' >&2; exit 1; }
+[ -d "$root" ] && [ ! -L "$root" ] || { printf 'sp12-save-recovery: root is missing or symlinked\n' >&2; exit 1; }
+[ -d "$payload_dir" ] && [ ! -L "$payload_dir" ] || { printf 'sp12-save-recovery: payload directory is missing or symlinked\n' >&2; exit 1; }
+
+complete=1
+for name in vmlinuz initrd.img dtb; do
+    if [ ! -f "$payload_dir/$name" ] || [ -L "$payload_dir/$name" ]; then
+        complete=0
+    fi
+done
+if [ "$complete" -ne 1 ]; then
+    printf 'sp12-save-recovery: no complete previous payload set; nothing to preserve\n'
+    exit 0
+fi
+
+recovery_root=$root/var/lib/sp12-linux
+recovery=$recovery_root/recovery
+recovery_stage=$recovery_root/.recovery.new
+recovery_previous=$recovery_root/.recovery.previous
+[ ! -L "$root/var" ] && [ ! -L "$root/var/lib" ] && [ ! -L "$recovery_root" ] || {
+    printf 'sp12-save-recovery: refusing symlinked recovery path\n' >&2
+    exit 1
+}
+fstab=$root/etc/fstab
+if [ -f "$fstab" ]; then
+    for mount_path in /var /var/lib /var/lib/sp12-linux; do
+        if awk -v target="$mount_path" '$1 !~ /^#/ && $2 == target { found=1 } END { exit !found }' "$fstab"; then
+            mountpoint -q "$root$mount_path" || {
+                printf 'sp12-save-recovery: configured %s filesystem is not mounted under target root\n' "$mount_path" >&2
+                exit 1
+            }
+        fi
+    done
+fi
+mkdir -p -- "$recovery_root"
+[ ! -L "$recovery_root" ] || { printf 'sp12-save-recovery: refusing symlinked recovery root\n' >&2; exit 1; }
+for path in "$recovery" "$recovery_stage" "$recovery_previous"; do
+    if [ -e "$path" ] || [ -L "$path" ]; then
+        [ -d "$path" ] && [ ! -L "$path" ] || {
+            printf 'sp12-save-recovery: refusing unsafe recovery path: %s\n' "$path" >&2
+            exit 1
+        }
+    fi
+done
+
+# Resolve an interrupted rotation without discarding the only known-good copy.
+if [ -e "$recovery_previous" ]; then
+    if [ -e "$recovery" ]; then
+        rm -rf -- "$recovery_previous"
+    else
+        mv -- "$recovery_previous" "$recovery"
+    fi
+fi
+if [ -e "$recovery_stage" ]; then
+    rm -rf -- "$recovery_stage"
+fi
+mkdir -- "$recovery_stage"
+for name in vmlinuz initrd.img dtb; do
+    cp -- "$payload_dir/$name" "$recovery_stage/$name"
+    cmp -s "$payload_dir/$name" "$recovery_stage/$name"
+done
+(cd "$recovery_stage" && sha256sum vmlinuz initrd.img dtb > SHA256SUMS)
+sync
+if [ -e "$recovery" ]; then
+    rm -rf -- "$recovery_previous"
+    mv -- "$recovery" "$recovery_previous"
+    sync
+fi
+mv -- "$recovery_stage" "$recovery"
+sync
+if [ -e "$recovery_previous" ]; then
+    rm -rf -- "$recovery_previous"
+    sync
+fi
+printf 'sp12-save-recovery: preserved the previous complete SP12 payload set.\n'

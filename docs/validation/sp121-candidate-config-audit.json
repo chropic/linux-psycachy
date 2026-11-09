@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "enabled_seed_symbols": 12358,
+  "known_unreviewed_exceptions": [
+    {
+      "symbol": "CONFIG_CC_IS_GCC",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_AS_IS_GNU",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_LD_IS_BFD",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_NO_ARRAY_BOUNDS",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_NO_STRINGOP_OVERFLOW",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_GCC_SUPPORTS_DYNAMIC_FTRACE_WITH_ARGS",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_GPIO_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_POWER_RESET_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MACSMC_HWMON",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_MFD_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_REGULATOR_DA903X",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_DRM_AMD_DC_FP",
+      "before": "y",
+      "after": null,
+      "reason": "non-SP12 GPU option or sample; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_DRM_AMD_SECURE_DISPLAY",
+      "before": "y",
+      "after": null,
+      "reason": "non-SP12 GPU option or sample; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_RTC_DRV_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_UBSAN_BOUNDS_STRICT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_UBSAN_BOUNDS_STRICT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    }
+  ],
+  "unexpected_changes": [],
+  "newly_enabled_unreviewed": [
+    {
+      "symbol": "CONFIG_CC_IS_CLANG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_AS_IS_LLVM",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_LD_IS_LLD",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_RUSTC_CLANG_LLVM_COMPATIBLE",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_COUNTED_BY_PTR",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_ALLOC_TOKEN",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CACHY",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_SCHED_POC_SELECTOR",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CLANG_SUPPORTS_DYNAMIC_FTRACE_WITH_ARGS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_COMPAT_VDSO",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_THUMB2_COMPAT_VDSO",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAS_LTO_CLANG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAVE_CFI_ICALL_NORMALIZE_INTEGERS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAVE_CFI_ICALL_NORMALIZE_INTEGERS_RUSTC",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_MQ_IOSCHED_ADIOS",
+      "before": null,
+      "after": "m"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_SANCOV_STACK_DEPTH_CALLBACK",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_RANDSTRUCT",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_PAHOLE_HAS_BTF_TAG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_UBSAN_ARRAY_BOUNDS",
+      "before": null,
+      "after": "y"
+    }
+  ],
+  "limitations": [
+    "added or previously disabled symbols still require review",
+    "passing does not establish runtime or hardware support"
+  ],
+  "seed_sha256": "45e3ccb2dbfc4f9e34ab9089f3e1880651ee0b2effbf64efa8f8a250158df530",
+  "candidate_sha256": "e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c"
+}
