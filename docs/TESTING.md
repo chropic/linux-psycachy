@@ -225,3 +225,42 @@ image and the matching package-owned SP12 DTB, syncs that fallback payload,
 and updates `boot.conf` before package removal proceeds. See the disposable
 guest results in
 [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
+
+## Phase 2 read-only preflight collection
+
+`tools/phase2-collector.py` provides sanitized `inventory`, timed `sample`, and
+descriptive `compare` commands. These commands read telemetry and do not set
+CPU/GPU policy or launch workloads. Until Phase 1 gates and the workload plan
+are reviewed, use the collector only for inventory and harmless smoke checks.
+It writes new output paths and refuses to reuse a non-empty sample directory.
+
+```bash
+python3 tools/phase2-collector.py inventory --target b550i-amd64 \
+  --output output/phase2/b550i-inventory.json
+python3 tools/phase2-collector.py sample --target b550i-amd64 \
+  --scenario idle-pilot --run-label pilot --workload idle \
+  --workload-version operator-defined --duration 10 --interval 1 \
+  --output-dir output/phase2/b550i-idle-pilot
+python3 tools/phase2-collector.py compare \
+  output/phase2/baseline output/phase2/candidate \
+  --output output/phase2/comparison.md
+```
+
+Start any intended workload separately before sampling; the collector never
+starts or stops it. Comparison requires matching target, scenario, workload,
+workload version, brightness, radio mode, and ambient temperature metadata.
+The report contains sample means and p95 values only; it applies no acceptance
+threshold. Enter external wall-meter readings with `--meter-start-wh` and
+`--meter-end-wh` for whole-system energy comparisons. CPU powercap counters are
+reported separately and are not treated as wall energy. Treat generated
+inventory as machine-specific: it includes CPU and board model plus firmware
+version/date, while omitting hostname, serials, UUIDs, MACs, full kernel command
+line, process arguments, network inventory, and firmware/ESP contents. Review
+and sanitize files before publishing; `output/` is ignored by Git. Workload and
+scenario values must be short labels and must not contain private identifiers.
+Power-supply battery readings are labeled generically because Linux may expose
+peripheral batteries. Cumulative powercap/hwmon energy counters and battery
+state readings remain in the CSV but are excluded from comparison statistics;
+only operator-entered external wall-meter readings represent whole-system
+energy in the comparison report. The optional kernel release, config hash, and
+package hash fields attach reviewed candidate identity to each run.

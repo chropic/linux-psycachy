@@ -1,9 +1,10 @@
 # Phase 2 preliminary plan
 
-Recorded 2026-11-09. This is a planning and readiness checklist, not an
-implementation authorization or release decision. Phase 2 implementation must
-wait until the pending Phase 1 gates are closed and preserve the verified
-baseline and target separation.
+Recorded 2026-11-09. This is a planning and readiness checklist, not a release
+decision. Read-only Phase 2 preparation can proceed while Phase 1 gates remain
+open. Workload experiments, tuning, and candidate release remain gated on the
+Phase 1 checks and a preserved baseline; this preparation does not authorize
+system-policy changes.
 
 ## Proposed objective
 
@@ -12,11 +13,21 @@ and power behavior on each supported target. Keep AMD64 and ARM64 results,
 settings, manifests, and candidate packages separate. Change one variable at a
 time and retain a change only when repeatable measurements show a useful gain.
 
-The first implementation deliverable should be a read-only collector with
-`inventory`, timed `sample`, and `compare` commands. Store versioned JSON
-metadata, timestamped CSV samples, and a Markdown comparison report in a new
-experiment output directory. Record missing or unreadable interfaces as data;
-the collector should not change system policy or start experiments.
+The first implementation deliverable is a read-only collector with `inventory`,
+timed `sample`, and `compare` commands in [`../tools/phase2-collector.py`](../tools/phase2-collector.py).
+It stores versioned JSON metadata, timestamped CSV samples, and a Markdown
+comparison report in a new experiment output directory. Missing and unreadable
+interfaces are recorded as data. Sampling does not change system policy or
+start the workload, and comparison reports descriptive statistics without
+declaring a winner. Use the workflow only for harmless smoke checks until the
+Phase 1 gates and target workload plan are reviewed.
+
+Collector schema v1 has been smoke-captured in the current x86_64 task
+environment: inventory JSON and a two-second telemetry pilot completed with
+99 CSV rows across 10 metric names. This confirms command and file generation
+only; it is not a B550I workload baseline, energy measurement, or hardware
+validation result. The generated machine-specific files are ignored under
+`output/phase2-prep-smoke/` and are not committed.
 
 ## Readiness checks
 
@@ -104,7 +115,7 @@ the collector should not change system policy or start experiments.
   completion, and suspend as distinct workload outcomes; intrusive traces are
   separate runs.
 
-No Phase 2 performance or power tuning is started by this plan. Complete the
-outstanding Phase 1 checks and agree on the target workloads and acceptance
-thresholds first. These proposed thresholds and workloads need owner review
-before they become experiment gates.
+No Phase 2 performance or power tuning has started. Complete the outstanding
+Phase 1 checks and agree on the target workloads and acceptance thresholds
+before running comparative experiments. These proposed thresholds and
+workloads need owner review before they become experiment gates.
