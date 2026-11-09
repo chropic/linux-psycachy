@@ -72,6 +72,37 @@ The following tests install packages or load kernel modules. Run them only in
 a disposable Ubuntu 26.10 virtual machine (VM) or container that you can erase.
 Do not run them on a production system.
 
+### Install, boot, and remove the latest AMD64 candidate
+
+The 2026-11-09 AMD64 candidate has `znver3` CPU targeting. Use a disposable
+Ubuntu 26.10 VM with a compatible CPU model, root access, and a disposable
+system disk. Do not use the active B550I host. Before copying packages into the
+VM, verify both checksums against `docs/VALIDATION.md`. Install both packages,
+reboot into the candidate, then remove the pair and reboot into the VM's
+fallback kernel:
+
+```bash
+sha256sum -c SHA256SUMS
+sudo apt-get install ./linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
+  ./linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb
+sudo reboot
+```
+
+After the first reboot, record `uname -a`, `dpkg-query -W 'linux-image*psycachy*'`,
+`dpkg --audit`, and relevant kernel errors from `journalctl -b -k`. Then remove
+the candidate and reboot:
+
+```bash
+sudo apt-get remove linux-image-7.3.1-psycachy linux-headers-7.3.1-psycachy
+sudo dpkg --audit
+sudo reboot
+```
+
+Confirm the fallback kernel boots and the PsyCachy packages are removed. Record
+the VM CPU model, firmware mode, package checksums, command output, and any
+maintainer-script errors. This checks the current AMD64 package pair's install,
+boot, and removal path; it does not replace hardware validation.
+
 To test Secure Boot and module loading, use a VM with UEFI Secure Boot
 enabled. A container or WSL cannot test the firmware boot process. The VM's
 CPU must be compatible with the CPU used to build the packages. Copy this

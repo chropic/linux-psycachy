@@ -36,6 +36,8 @@ the collector should not change system policy or start experiments.
   [`validation/phase2-amd64-inventory-20261109.md`](validation/phase2-amd64-inventory-20261109.md).
   It does not include performance or energy measurements and is not a baseline
   result. The SP12 inventory still requires physical target access.
+- Thermal-zone visibility differed between inventory sessions; sensor
+  availability and starting temperatures remain unverified.
 - On SP12, inspect running and installed kernel identities, boot hooks, config,
   ESP payload, recovery media, firmware/Mesa versions, CPUFreq/CPUIdle, thermal
   and runtime-PM interfaces, battery telemetry, swap, MGLRU and sched_ext.

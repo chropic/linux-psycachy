@@ -12,15 +12,16 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 ## Current checkpoint
 
-- Commit `3aa85df` is pushed to the feature branch. It adds the missing `gpgv`
-  build prerequisite, fixes boot-hook activation ordering, and records the
-  owner’s VM-testing approval and patch-author attribution.
-- GitHub Actions run 11 (`42642272202`) is in progress. Static checks,
-  ShellCheck, and dependency installation passed; `Build and package` is
-  running. Check its result before changing CI again.
-- The disposable ARM64 guest has been powered off cleanly. Its persistent root
-  image is
-  `/home/charlie/.codex/visualizations/2026/11/09/01a1bdb7-6c8d-74e0-9e6f-c30d838101d1/phase1-package-tmp-20261109/arm64-package-vm-root-retry.qcow2`.
+- Latest pushed commit: `34eb65a`, which records ARM64 candidate direct-boot
+  evidence. Incremental documentation commits use `[skip ci]` as requested.
+- The latest ARM64 fallback-removal test is running in a disposable QEMU
+  `virt` guest on copy-on-write root and ESP disks. The base images remain
+  unchanged; do not treat the run as complete until package removal, audit,
+  payload, fallback, and shutdown checks are recorded.
+- The exact latest AMD64 image/headers packages remain uninstalled and
+  unbooted. Wait for an accessible disposable x86_64 VM with a CPU compatible
+  with the build's `znver3` target; do not install them on the active B550I
+  host.
 
 ## Implemented
 
@@ -199,9 +200,11 @@ preliminary planning. Push incremental changes to the feature branch; consider
 
 1. Repeat package removal in a disposable guest with an installed,
    package-managed fallback kernel; the previous guest's fallback files had no
-   dpkg owner, which caused `flash-kernel`'s status lookup to fail. Record
-   package ownership for the paths from `linux-version list --paths`, then
-   verify clean removal, fallback payload restoration, and boot. Exercise the
+   dpkg owner, which caused `flash-kernel`'s status lookup to fail. A fresh
+   copy-on-write guest is currently installing Ubuntu's packaged 7.3.0-9
+   fallback before retrying removal. Record ownership for paths from
+   `linux-version list --paths`, then verify clean removal, fallback payload
+   restoration, and boot. Exercise the
    installed package hooks across a normal reboot. The dependency-resolved
    install/configure, installer application, blank-ESP first-install hook, and
    FAT payload comparison passed, and the installed candidate kernel reached a

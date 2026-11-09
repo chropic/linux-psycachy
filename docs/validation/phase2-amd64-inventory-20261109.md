@@ -31,9 +31,8 @@ package installation was attempted on this host.
 - Current governor: `performance`
 - Energy performance preference: `performance`
 - CPU idle driver/governor: `acpi_idle` / `menu`
-- The earlier inventory exposed one thermal zone but retained no reading or
-  sensor identifier. A later task-environment check exposed no thermal zones;
-  host sensor availability is undetermined from this view.
+- Thermal-zone visibility differed between inventory sessions. Sensor
+  availability and starting temperatures remain unverified.
 - No system battery energy telemetry was exposed. A HID peripheral battery
   interface was present but is not suitable for system energy measurements.
 
