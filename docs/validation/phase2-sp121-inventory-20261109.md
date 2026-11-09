@@ -72,10 +72,11 @@ was captured at
 generic guest cannot validate Surface-specific firmware, device-tree, device,
 or recovery behavior.
 
-A final read-only inventory after the disposable guest was shut down records
-the running host kernel and available telemetry at
-`output/phase2/sp121-arm64-inventory-after-vm-20261109.json` (SHA-256
-`e244f8f3a331ccd94dd55c1500e35593844d24cf5a9c834a27b9d0580d9ff395`). It
+A final read-only inventory after the physical recovery apply records the
+running host kernel and available telemetry at
+`output/phase2/sp121-arm64-inventory-after-recovery-apply-20261109.json`
+(SHA-256
+`000597e195236cf0f84fd3d1b35068937daa7dc5faca63b5fdeb5df9544b811a`). It
 reports two CPU-frequency policies, 36 thermal zones, and no powercap energy
 counter. No workload sample was collected.
 
