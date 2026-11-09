@@ -7,12 +7,14 @@ import hashlib
 import json
 import os
 import pathlib
-import re
 import struct
 import subprocess
 import sys
 import tarfile
 import tempfile
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from deb_dependencies import dependency_names_for_arch
 
 
 FDT_MAGIC = 0xD00DFEED
@@ -111,17 +113,6 @@ def verify_arm64_elf(path: str, payload: bytes) -> None:
         raise ValueError(f"Headers package tool {path} is not AArch64 (ELF machine {machine})")
 
 
-def dependency_names(depends: str) -> set[str]:
-    """Return exact package names from Debian dependency alternatives."""
-    names = set()
-    for clause in depends.split(","):
-        for alternative in clause.split("|"):
-            match = re.match(r"\s*([a-z0-9][a-z0-9+.-]*)", alternative)
-            if match:
-                names.add(match.group(1))
-    return names
-
-
 def extract_file_from_deb(deb_path: pathlib.Path, target_relative_path: str, destination: pathlib.Path):
     """Extract a single file from a deb package using dpkg-deb and ar/tar."""
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -177,7 +168,7 @@ def verify_arm64_packages(
         )
 
     # 4. Dependency checks
-    img_depends = dependency_names(img_control.get("Depends", ""))
+    img_depends = dependency_names_for_arch(img_control.get("Depends", ""), "arm64")
     for req_dep in ("kmod", "linux-base"):
         if req_dep not in img_depends:
             raise ValueError(f"Image package missing required dependency: {req_dep}")

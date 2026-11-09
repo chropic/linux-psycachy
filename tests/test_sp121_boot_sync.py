@@ -195,6 +195,7 @@ if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
         self.assertEqual(b"new-vmlinuz", (self.dest / "vmlinuz").read_bytes())
         self.assertEqual(b"old-initrd.img", (self.dest / "initrd.img").read_bytes())
         self.assertEqual(b"old-dtb", (self.dest / "dtb").read_bytes())
+        self.assertFalse((self.dest / "SP12BOOT").exists())
         self.assertEqual(b"old-vmlinuz", (self.recovery_path / "vmlinuz").read_bytes())
 
         self.env.pop("SP12_TEST_KILL_ON_PROMOTE")
@@ -207,8 +208,32 @@ if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
         )
         self.assertEqual(restored.returncode, 0, restored.stderr)
         self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").exists())
         self.assertFalse(list(self.dest.glob("*.new")))
         self.assertTrue((self.recovery_path / "vmlinuz").is_file())
+        self.assertIn("remount,ro", self.log.read_text())
+
+    def test_failed_promotion_rolls_back_payloads_and_marker(self):
+        fail_destination = str(self.dest / "initrd.img")
+        self.command(
+            "mv",
+            """
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_FAIL_PROMOTE" ]; then
+    /bin/mv "$@"
+    exit 91
+fi
+exec /bin/mv "$@"
+""",
+        )
+        self.env["SP12_TEST_FAIL_PROMOTE"] = fail_destination
+
+        result = self.run_tool()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
         self.assertIn("remount,ro", self.log.read_text())
 
     def test_restore_refuses_corrupt_recovery_before_payload_writes(self):
@@ -297,6 +322,23 @@ if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("refusing symlinked boot marker", result.stderr)
         self.assertEqual(self.before, self.snapshot())
+
+    def test_boot_marker_is_invalidated_before_payload_promotion(self):
+        lines = (SYSTEM_DIR / "sp12-sync-boot").read_text().splitlines()
+        invalidate = next(i for i, line in enumerate(lines) if line.strip() == 'rm -f "$dest/SP12BOOT"')
+        first_promotion = next(
+            i for i, line in enumerate(lines)
+            if line.strip() == 'mv -f "$dest/$name.new" "$dest/$name"'
+        )
+        last_promotion = max(
+            i for i, line in enumerate(lines)
+            if line.strip() == 'mv -f "$dest/$name.new" "$dest/$name"'
+        )
+        marker = next(i for i, line in enumerate(lines) if line.strip() == 'touch "$dest/SP12BOOT"')
+        self.assertLess(invalidate, first_promotion)
+        self.assertEqual("sync", lines[invalidate + 1].strip())
+        self.assertTrue(any(last_promotion < i < marker and line.strip() == "sync"
+                            for i, line in enumerate(lines)))
 
     def test_refuses_when_stale_staging_file_present(self):
         (self.dest / "vmlinuz.new").write_bytes(b"stale")

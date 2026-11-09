@@ -178,4 +178,9 @@ to verify package architecture (`arm64`), version consistency, runtime dependenc
 
 Unit tests in `tests/test_arm64_package_verification.py` test this verification against valid and invalid mock deb packages, including rejection of host-architecture ELF tools at arbitrary paths within headers.
 
-Target boot synchronization tests in `tests/test_sp121_boot_sync.py` verify locked execution, insufficient-space refusal, staged per-file promotion, idempotency, stale-file handling, durable recovery checksums, and manual restore after injected interruption. The rescue procedure is documented in [`SP12-RECOVERY.md`](SP12-RECOVERY.md); FAT power-loss behavior remains unverified.
+`tests/test_deb_dependencies.py` validates exact Debian dependency package
+tokens, alternatives, architecture qualifiers, and architecture restriction
+lists used by both package validators. Foreign-architecture, inactive, and
+`:any` qualifiers do not satisfy native runtime dependencies.
+
+Target boot synchronization tests in `tests/test_sp121_boot_sync.py` verify locked execution, insufficient-space refusal, staged per-file promotion, idempotency, stale-file handling, durable recovery checksums, and manual restore after injected interruption. `SP12BOOT` is removed and synced before update promotion, restored after handled rollback, and recreated after manual recovery; the marker remains absent after an injected hard interruption. The fallback installer also invalidates the marker on repeat installs and rejects target `/boot` symlinks that escape the target root. The rescue procedure is documented in [`SP12-RECOVERY.md`](SP12-RECOVERY.md); FAT power-loss behavior remains unverified.

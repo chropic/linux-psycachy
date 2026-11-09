@@ -97,6 +97,13 @@ libelf and zlib development libraries for signing, DWARF and BTF tools. The
 package-only candidate passed structural `.deb` verification. A subsequent
 clean integrated ARM64 build also exited 0, produced the image and matching
 headers packages, and passed the package verifier and output checksums.
+The ARM64 builder also canonicalizes relative output paths before entering the
+temporary source directory, keeping delivered packages outside its cleanup
+tree. AMD64 package validation now parses exact dependency names and rejects
+architecture qualifiers that cannot satisfy the native amd64 package. The
+ARM64 verifier shares the same target-aware parser, accepting unqualified,
+`:native`, and `:arm64` dependencies while rejecting foreign architecture,
+`:any`, and inactive architecture-restricted clauses.
 
 Installer target inspection requires ARM64 dpkg metadata. The target-aware GRUB
 guard installer verifies the target package state, applies a local diversion
@@ -113,6 +120,10 @@ Automated coverage includes:
   - Rejection of missing runtime dependencies (`kmod`, `linux-base`).
   - Rejection of image/headers version mismatch.
   - Rejection of x86-64 ELF tools anywhere in the ARM64 headers package.
+- [`tests/test_deb_dependencies.py`](../tests/test_deb_dependencies.py):
+  - Exact package-name matching, Debian alternatives/version/architecture
+    syntax, and rejection of foreign-architecture or `:any` qualifiers for
+    native dependencies.
 - [`tests/test_sp121_boot_sync.py`](../tests/test_sp121_boot_sync.py):
   - Full ESP refusal before payload writes.
   - Successful sync promotes all files through staged per-file renames and creates `SP12BOOT`.
@@ -122,6 +133,9 @@ Automated coverage includes:
   - Verifies durable recovery checksums, recovery from an interrupted backup
     rotation, and manual restore after injected power loss during ESP promotion.
   - Rejects a corrupt recovery payload before restoring anything.
+  - Removes and syncs `SP12BOOT` before promotion, leaves it absent after an
+    injected hard interruption, and restores it after manual recovery or a
+    handled rollback.
 - [`tests/test_sp121_grub_guard_installer.py`](../tests/test_sp121_grub_guard_installer.py):
   - Dry-run leaves the target untouched.
   - Unexpected helper state is rejected.
@@ -132,12 +146,17 @@ Automated coverage includes:
   - Applies a fallback install to a disposable target and checks the recovery
     snapshot, restore command, and prior-loader backup are installed.
 - [`tests/test_sp121_boot_sync_installer.py`](../tests/test_sp121_boot_sync_installer.py):
-  - Confirms the target installer stages both recovery commands.
+  - Confirms the target installer stages both recovery commands, installs the
+    GRUB guard before setting its mode, and completes apply-mode installation.
+- [`tests/test_sp121_fallback_installer.py`](../tests/test_sp121_fallback_installer.py):
+  - Confirms a refusal after an ESP read-write remount returns it read-only,
+    `/boot` cannot resolve outside the target root, and cleanup does not
+    traverse a rejected symlink; signal traps exit through the same cleanup path.
 - [`tests/test_sp121_target_inspection.py`](../tests/test_sp121_target_inspection.py):
   - Rejects missing, non-ARM64, non-Ubuntu, and wrong-version targets.
 - [`tests/static-check.sh`](../tests/static-check.sh) passes in the current
   worktree with the target-inspection tests included; its root-only `mokutil`
-  check is skipped. The explicit static suite contains 77 checks; Python
+  check is skipped. The suite runs 94 test cases across 17 unittest groups; Python
   unittest discovery is not the test runner and discovers no tests.
   ShellCheck passed earlier on the Phase 1 shell entry points using the
   isolated local tool bundle.
@@ -194,8 +213,8 @@ structure only; installation and boot testing remain open.
 
 The candidate configuration remains unreviewed. The host fault-injection test
 does not reproduce FAT metadata failure or test the recovery command from a
-physical rescue boot; no power-loss safety guarantee is made. VM package
-installation and device behavior remain gates before deployment.
+physical rescue boot; no FAT atomicity or power-loss safety guarantee is made.
+VM package installation and device behavior remain gates before deployment.
 
 The legacy AMD64 dry-run and explicit `--target b550i-amd64` dry-run both
 passed and selected the same existing builder and output path. The AMD64

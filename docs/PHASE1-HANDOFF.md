@@ -24,7 +24,7 @@ remain experimental; this is not a release approval.
 
 ## Verification so far
 
-- `bash tests/static-check.sh`: passed 77 explicit checks in the current
+- `bash tests/static-check.sh`: passed 94 test cases across 17 unittest groups in the current
   worktree; root-only `mokutil` check skipped. Python unittest discovery is not
   used and finds no tests.
 - `bash tests/builder-negative.sh`: passed with an authenticated local source
@@ -33,7 +33,9 @@ remain experimental; this is not a release approval.
   `bash build.sh --target sp121-arm64 --dry-run`: passed after documentation
   updates. The dry run shows the correct cross compiler and target library
   prerequisites.
-- `git diff --check`: passed.
+- Source/documentation whitespace checks pass. Verbatim imported kernel patch
+  files and captured kernel logs contain upstream/context whitespace and are
+  excluded from that check.
 - ARM64 packages installed on the build host: AArch64 GCC, `libc6-dev-arm64-cross`,
   and ARM64 `libssl-dev`, `libdw-dev`, `libelf-dev`, `zlib1g-dev`. A read-only
   audit confirmed they match the builder checks and cross-build flags.
@@ -108,6 +110,20 @@ remain experimental; this is not a release approval.
   copying `.config` into the headers package and removing all build-only
   `fixdep` files under the packaged resolver tree. Both fixes now pass the
   final package verification and a fresh-source patch-application check.
+- A fresh code audit found and fixed additional correctness issues: the ARM64
+  builder now makes relative output paths absolute before changing directory;
+  AMD64 and ARM64 dependency checks parse exact package tokens and reject
+  incompatible architecture qualifiers and inactive architecture restrictions;
+  boot-sync installs the GRUB guard before changing its mode; fallback
+  installation validates target `/boot` containment, arms cleanup before any
+  ESP remount, and does not follow a rejected symlink during cleanup; both
+  update paths remove and sync `SP12BOOT` before payload promotion. Focused regression
+  tests passed, including apply-mode installer tests and interrupted update
+  recovery.
+- QEMU is not installed. A rootless package download failed because this
+  sandbox could not resolve `archive.ubuntu.com`; sudo requires a local terminal
+  password prompt. Run `sudo apt-get install -y qemu-system-arm` locally to
+  enable disposable ARM64 package-install and boot checks.
 - Preserve failed logs and retain previous package attempts separately from
   the `final-arm64-packages` directory.
 
@@ -115,23 +131,21 @@ remain experimental; this is not a release approval.
 
 1. Install the ARM64 packages in a disposable ARM64 VM and test package
    removal/rollback and the boot synchronization path. `qemu-system-aarch64`
-   is not installed on the host; installing QEMU needs local sudo because the
-   sandbox has no interactive sudo terminal. Generic `virt` testing does not
-   validate the Surface device tree or hardware. Neither ARM64 nor AMD64
+   is not installed on the host; QEMU installation needs local sudo. Generic
+   `virt` testing does not validate the Surface device tree or hardware. Neither ARM64 nor AMD64
    candidates have been installed or booted in this turn.
-3. Have a reviewer approve the candidate config and policies, especially
+2. Have a reviewer approve the candidate config and policies, especially
    module signature enforcement, lockdown and kexec settings.
-4. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
+3. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
    boot and recovery on physical Surface Pro 12 hardware before any deployment
    claim. Existing AMD64 physical installation evidence is still user-owned.
-5. Review platform-patch attribution and redistribution terms before treating
+4. Review platform-patch attribution and redistribution terms before treating
    the branch as a distributable release.
-6. Once implementation/build evidence and docs are complete, commit the branch
-   and push it to `chropic/linux-psycachy` on branch
-   `feature/linux-chropic-psycachy-b550i-sp121` (the configured local `origin`
-   is a filesystem mirror, not GitHub). The user requested shutdown after the
-   handoff and push; `sudo poweroff` may need to be run locally if the app
-   cannot provide an interactive sudo prompt.
+The implementation and handoff have been committed and pushed to
+`chropic/linux-psycachy`, branch
+`feature/linux-chropic-psycachy-b550i-sp121`. The configured local `origin` is
+a filesystem mirror, not GitHub. The user requested shutdown after the handoff
+and push; run `sudo poweroff` locally if the app cannot authenticate.
 
 ## Useful commands
 

@@ -32,6 +32,12 @@ esac
 
 target=$(readlink -f "$target")
 [ -d "$target" ] || { printf 'Target directory not found: %s\n' "$target" >&2; exit 1; }
+[ -d "$target/boot" ] || { printf 'Target /boot is missing or not a directory\n' >&2; exit 1; }
+real_target_boot=$(readlink -f "$target/boot")
+case "$real_target_boot" in
+    "$target"/*) ;;
+    *) printf 'Target /boot resolves outside the target root\n' >&2; exit 1 ;;
+esac
 
 [ -n "$dtb_source" ] || dtb_source=$target/boot/dtb-$kver
 [ -f "$dtb_source" ] || { printf 'DTB source not found: %s\n' "$dtb_source" >&2; exit 1; }
@@ -46,6 +52,11 @@ for helper in sp12-save-recovery sp12-restore-recovery; do
     }
 done
 esp=$target/boot/efi
+real_esp=$(readlink -f "$esp")
+case "$real_esp" in
+    "$target"/*) ;;
+    *) printf 'Target ESP resolves outside the target root\n' >&2; exit 1 ;;
+esac
 dest=$esp/sp12
 target_dtb=$target/boot/dtb-$kver
 kernel=$target/boot/vmlinuz-$kver
@@ -100,11 +111,47 @@ exec 9>"$lock_file"
 flock -n 9 || { printf 'Another boot operation is running\n' >&2; exit 1; }
 
 esp_was_ro=0
+config=
+loader_new=$esp/EFI/BOOT/BOOTAA64.NEW
+loader_started=0
+staging_started=0
+
+cleanup() {
+    result=$?
+    trap - EXIT HUP INT TERM
+    [ -z "$config" ] || rm -f "$config" || result=1
+    if [ "$loader_started" -eq 1 ]; then
+        rm -f "$loader_new" || result=1
+    fi
+    if [ "$staging_started" -eq 1 ]; then
+        if [ ! -L "$dest" ]; then
+            rm -f "$dest/vmlinuz.new" "$dest/initrd.img.new" "$dest/dtb.new" || result=1
+        fi
+        if [ ! -L "$target/boot" ]; then
+            rm -f "$target_dtb.new" || result=1
+        fi
+    fi
+    sync || result=1
+    if [ "$esp_was_ro" -eq 1 ]; then
+        mount -o remount,ro "$esp" || {
+            printf 'Unable to remount ESP read-only: %s\n' "$esp" >&2
+            result=1
+        }
+    fi
+    exit "$result"
+}
+trap cleanup EXIT
+trap 'exit 1' HUP INT TERM
+
 if [ "${SP12_TEST_MOCK_MOUNTS:-0}" -ne 1 ]; then
     if findmnt -n -o OPTIONS --mountpoint "$esp" | tr ',' '\n' | grep -qx ro; then
         esp_was_ro=1
         mount -o remount,rw "$esp"
     fi
+elif [ "${SP12_TEST_ESP_WAS_RO:-0}" -eq 1 ]; then
+    # Test-only mount-state simulation exercises cleanup without a real mount.
+    esp_was_ro=1
+    mount -o remount,rw "$esp"
 fi
 
 [ ! -L "$dest" ] || { printf 'Refusing symlinked SP12 payload directory: %s\n' "$dest" >&2; exit 1; }
@@ -142,16 +189,6 @@ if [ -e "$target_dtb.new" ]; then
 fi
 config=$(mktemp "$target/tmp/sp12-fat.cfg.XXXXXX")
 config_inside=${config#"$target"}
-loader_new=$esp/EFI/BOOT/BOOTAA64.NEW
-
-cleanup() {
-    rm -f "$config" "$loader_new" "$dest/vmlinuz.new" "$dest/initrd.img.new" "$dest/dtb.new" "$target_dtb.new"
-    sync
-    if [ "$esp_was_ro" -eq 1 ] && [ "${SP12_TEST_MOCK_MOUNTS:-0}" -ne 1 ]; then
-        mount -o remount,ro "$esp" || true
-    fi
-}
-trap cleanup EXIT HUP INT TERM
 
 # Protect the newly staged removable loader from later GRUB package hooks.
 "$installer_dir/install-grub-fallback-guard.sh" --target "$target" --apply
@@ -174,6 +211,7 @@ chmod 0755 "$target/usr/local/sbin/sp12-restore-recovery"
     printf '%s\n' 'boot'
 } > "$config"
 
+staging_started=1
 cp -f "$dtb_source" "$target_dtb.new"
 cmp -s "$dtb_source" "$target_dtb.new"
 
@@ -185,12 +223,14 @@ cmp -s "$initrd" "$dest/initrd.img.new"
 cmp -s "$target_dtb.new" "$dest/dtb.new"
 
 if [ "${SP12_TEST_MOCK_MOUNTS:-0}" -ne 1 ]; then
+    loader_started=1
     chroot "$target" grub-mkstandalone --format=arm64-efi \
         --modules='part_gpt fat search search_fs_file linux' \
         --output=/boot/efi/EFI/BOOT/BOOTAA64.NEW \
         "boot/grub/grub.cfg=$config_inside"
     chroot "$target" grub-file --is-arm64-efi /boot/efi/EFI/BOOT/BOOTAA64.NEW
 else
+    loader_started=1
     printf 'mock-arm64-loader' > "$loader_new"
 fi
 
@@ -200,10 +240,18 @@ if [ -f "$loader" ] && [ ! -e "$loader_backup" ]; then
     cp -a "$loader" "$loader_backup"
 fi
 
+# Invalidate an existing fallback entry before replacing its payload set. A
+# power loss during a repeat install then falls back instead of selecting mixed
+# kernel, initramfs, and DTB files.
+if [ -f "$dest/SP12BOOT" ]; then
+    rm -f "$dest/SP12BOOT"
+    sync
+fi
 mv -f "$target_dtb.new" "$target_dtb"
 mv -f "$dest/vmlinuz.new" "$dest/vmlinuz"
 mv -f "$dest/initrd.img.new" "$dest/initrd.img"
 mv -f "$dest/dtb.new" "$dest/dtb"
+sync
 touch "$dest/SP12BOOT"
 sync
 # The new loader searches for this marker. Make the complete staged payload

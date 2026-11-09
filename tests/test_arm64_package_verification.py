@@ -7,6 +7,7 @@ import struct
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("verify_arm64_packages", ROOT / "tools/verify-arm64-packages.py")
@@ -249,6 +250,48 @@ class Arm64PackageVerificationTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "missing required dependency: kmod"):
             verify_arm64_packages(self.packages_dir, expected_release=self.release)
+
+    def test_rejects_dependency_with_wrong_architecture_qualifier(self):
+        self.create_valid_packages()
+        image = next(self.packages_dir.glob("linux-image-*_*.deb"))
+        self.repack(
+            image,
+            "repack-wrong-dependency-architecture",
+            lambda stage: (stage / "DEBIAN/control").write_text(
+                (stage / "DEBIAN/control").read_text().replace(
+                    "Depends: kmod, linux-base", "Depends: kmod:amd64, linux-base"
+                )
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "missing required dependency: kmod"):
+            verify_arm64_packages(self.packages_dir, expected_release=self.release)
+
+    def test_rejects_dependency_with_inactive_architecture_restriction(self):
+        self.create_valid_packages()
+        read_control = VERIFY.read_deb_control
+
+        def inactive_kmod(deb):
+            control = read_control(deb)
+            if deb.name.startswith("linux-image-"):
+                control["Depends"] = "kmod [amd64], linux-base"
+            return control
+
+        with mock.patch.object(VERIFY, "read_deb_control", side_effect=inactive_kmod):
+            with self.assertRaisesRegex(ValueError, "missing required dependency: kmod"):
+                verify_arm64_packages(self.packages_dir, expected_release=self.release)
+
+    def test_accepts_native_or_matching_architecture_dependency_qualifiers(self):
+        self.create_valid_packages()
+        read_control = VERIFY.read_deb_control
+
+        def matching_kmod(deb):
+            control = read_control(deb)
+            if deb.name.startswith("linux-image-"):
+                control["Depends"] = "kmod:arm64 [arm64], linux-base:native [linux-any]"
+            return control
+
+        with mock.patch.object(VERIFY, "read_deb_control", side_effect=matching_kmod):
+            self.assertTrue(verify_arm64_packages(self.packages_dir, expected_release=self.release))
 
     def test_rejects_wrong_headers_build_symlink_target(self):
         self.create_valid_packages()

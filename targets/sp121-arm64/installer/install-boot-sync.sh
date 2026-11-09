@@ -104,11 +104,11 @@ chmod 0755 "$target/usr/local/sbin/sp12-sync-boot" \
            "$target/usr/local/sbin/sp12-esp-space" \
            "$target/usr/local/sbin/sp12-save-recovery" \
            "$target/usr/local/sbin/sp12-restore-recovery" \
-           "$target/usr/local/sbin/sp12-grub-multi-install-guard" \
            "$target/etc/kernel/postinst.d/zzzz-sp12-sync" \
            "$target/etc/initramfs/post-update.d/zzzz-sp12-sync"
 
 "$installer_dir/install-grub-fallback-guard.sh" --target "$target" --apply
+chmod 0755 "$target/usr/local/sbin/sp12-grub-multi-install-guard"
 
 config_tmp=$(mktemp "$target/etc/sp12-linux/boot.conf.XXXXXX")
 {

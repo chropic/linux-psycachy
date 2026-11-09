@@ -181,11 +181,12 @@ headers=("$work"/linux-headers-*psycachy_*.deb)
 [[ $(dpkg-deb -f "${images[0]}" Version) == "$pkg_version" && $(dpkg-deb -f "${headers[0]}" Version) == "$pkg_version" ]] || die 'image and header versions do not match'
 image_depends=$(dpkg-deb -f "${images[0]}" Depends)
 headers_depends=$(dpkg-deb -f "${headers[0]}" Depends)
-for dep in kmod linux-base; do [[ ,$image_depends, == *"$dep"* ]] || die "image dependency missing: $dep"; done
+python3 "$root/tools/deb_dependencies.py" amd64 "$image_depends" kmod linux-base || die 'image package is missing required dependencies'
+python3 "$root/tools/deb_dependencies.py" amd64 "$image_depends" \
+  "linux-headers-$kernel_release" || die 'image dependency on headers has an unexpected package name'
 [[ $image_depends == *"linux-headers-$kernel_release (= $pkg_version)"* ]] || die 'image does not require matching headers before configuration'
-for dep in build-essential clang-22 llvm-22 lld-22 pahole libelf1t64 libssl4; do
-  [[ ,$headers_depends, == *"$dep"* ]] || die "headers dependency missing: $dep"
-done
+python3 "$root/tools/deb_dependencies.py" amd64 "$headers_depends" \
+  build-essential clang-22 llvm-22 lld-22 pahole libelf1t64 libssl4 || die 'headers package is missing required dependencies'
 stage="$work/header-check"
 mkdir -p "$stage"
 dpkg-deb --extract "${headers[0]}" "$stage"

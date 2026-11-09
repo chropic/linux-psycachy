@@ -13,6 +13,9 @@ jobs=${2:?job count is required}
 die() { echo "error: $*" >&2; exit 1; }
 
 [[ $jobs =~ ^[1-9][0-9]*$ ]] || die 'job count must be positive'
+# The working directory changes into the extracted source tree below. Resolve
+# caller-relative outputs first so EXIT cleanup cannot remove the deliverables.
+[[ $output = /* ]] || output="$PWD/$output"
 [[ ! -e $output && ! -L $output ]] || die 'SP12 build output must not already exist'
 [[ ${TMPDIR:-/tmp} != *[[:space:]]* ]] || die 'TMPDIR must not contain whitespace for the kernel build system'
 

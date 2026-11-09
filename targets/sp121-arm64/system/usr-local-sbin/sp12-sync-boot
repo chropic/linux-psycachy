@@ -112,8 +112,12 @@ cleanup() {
                 rm -f "$dest/$name" || restore_failed=1
             fi
         done
-        if [ "$writable" -eq 1 ] && [ "$had_marker" -eq 0 ]; then
-            rm -f "$dest/SP12BOOT" || restore_failed=1
+        if [ "$writable" -eq 1 ] && [ "$restore_failed" -eq 0 ]; then
+            if [ "$had_marker" -eq 1 ]; then
+                touch "$dest/SP12BOOT" || restore_failed=1
+            else
+                rm -f "$dest/SP12BOOT" || restore_failed=1
+            fi
         fi
     fi
     if [ "$restore_failed" -eq 0 ]; then
@@ -163,10 +167,18 @@ for name in $changes; do
     cp -f "$source" "$dest/$name.new"
     cmp -s "$source" "$dest/$name.new"
 done
+# Keep the fallback loader from booting a mixed kernel/initramfs/DTB set after
+# a hard power loss during promotion. Restore the marker only after rollback or
+# a complete successful update.
+if [ "$had_marker" -eq 1 ]; then
+    rm -f "$dest/SP12BOOT"
+    sync
+fi
 for name in $changes; do
     promoted="$promoted $name"
     mv -f "$dest/$name.new" "$dest/$name"
 done
+sync
 touch "$dest/SP12BOOT"
 sync
 committed=1

@@ -20,6 +20,12 @@ class TargetSelectionTests(unittest.TestCase):
         self.assertIn('"$root/config/patches/ubuntu-package-dependencies.patch"', builder)
         self.assertIn('cd "$source_dir"', builder)
 
+    def test_sp12_builder_resolves_relative_output_before_changing_directory(self):
+        builder = (ROOT / "targets/sp121-arm64/build.sh").read_text()
+        resolve = builder.index('[[ $output = /* ]] || output="$PWD/$output"')
+        change_directory = builder.index('cd "$source_dir"')
+        self.assertLess(resolve, change_directory)
+
     def test_sp12_headers_patch_includes_the_kernel_config(self):
         patch = (ROOT / "targets/sp121-arm64/patches/08-cross-build-header-tools.patch").read_text()
         self.assertIn('cp .config "${pdir}/usr/src/linux-headers-${version}/.config"', patch)
@@ -32,6 +38,11 @@ class TargetSelectionTests(unittest.TestCase):
         self.assertIn('cd "$source_dir"\ncp "$root/config/cachyos-7.3.config"', builder)
         self.assertIn('cp "$root/config/psycachy.fragment" "$work/psycachy.fragment"', builder)
         self.assertIn('merge_config.sh -m .config "$work/psycachy.fragment"', builder)
+
+    def test_amd64_builder_uses_exact_package_dependency_parser(self):
+        builder = (ROOT / "build.sh").read_text()
+        self.assertIn('python3 "$root/tools/deb_dependencies.py" amd64 "$image_depends" kmod linux-base', builder)
+        self.assertIn('python3 "$root/tools/deb_dependencies.py" amd64 "$headers_depends"', builder)
 
     def run_builder(self, *args):
         return subprocess.run(
@@ -71,6 +82,14 @@ class TargetSelectionTests(unittest.TestCase):
             result = self.run_builder("--target", "sp121-arm64", "--dry-run", *args)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn(f"Output directory: {ROOT / expected}", result.stdout)
+
+    def test_dry_run_reports_relative_output_without_writing(self):
+        result = self.run_builder(
+            "--target", "sp121-arm64", "--dry-run", "--output-dir", "relative-output/check"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Output directory: relative-output/check", result.stdout)
+        self.assertFalse((ROOT / "relative-output").exists())
 
     def test_sp12_debian_profiles_match_the_package_source_name(self):
         builder = (ROOT / "targets/sp121-arm64/build.sh").read_text()
