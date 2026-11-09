@@ -211,7 +211,8 @@ contains the matching `.config`, a `lib/modules/7.3.1-psycachy/build` symlink,
 and 11 executable ELF files, all x86-64. This verifies build and package
 structure only; installation and boot testing remain open.
 
-The candidate configuration remains unreviewed. The host fault-injection test
+The owner approved the exact candidate config for disposable VM testing only;
+independent policy and runtime review remain open. The host fault-injection test
 does not reproduce FAT metadata failure or test the recovery command from a
 physical rescue boot; no FAT atomicity or power-loss safety guarantee is made.
 VM package installation and device behavior remain gates before deployment.
