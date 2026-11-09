@@ -48,9 +48,8 @@ candidate image `rc`, candidate headers `un`, and flash-kernel half-configured;
 
 The ESP remained read-only and retained the same kernel/initrd/DTB bytes after
 removal, while the candidate root initrd was absent. Therefore the retained ESP
-payload was not evidence of a working fallback. No normal reboot or candidate
-boot was attempted. The flash-kernel removal-trigger failure and fallback
-behavior need another disposable guest run.
+payload was not evidence of a working fallback. The flash-kernel removal-trigger
+failure and fallback behavior need another disposable guest run.
 
 ## Removal-trigger diagnosis
 
@@ -82,10 +81,41 @@ returned by `linux-version list --paths` before removing the candidate. Then
 require clean removal, an empty `dpkg --audit`, restored fallback payloads, and
 a fallback boot.
 
+## Candidate boot checks
+
+In a fresh nested COW root based on the retained post-removal image, the
+candidate image and headers packages were unpacked and configured again.
+`dpkg --configure -a` returned 0, all four relevant packages reported `ii`,
+`dpkg --audit` was empty, and the ESP was read-only after the hooks ran. The
+kernel and generated initrd matched their copies exported from the guest:
+
+| Payload | Size (bytes) | SHA-256 |
+| --- | ---: | --- |
+| Package kernel | 17,170,944 | `91b0e460d80ce5d2929eb078ca3d2c6abf9578cf55064fee4b965dc403158947` |
+| Generated initrd | 166,614,961 | `e6e2a662dc2716c03a53ed8aae295072c28c198c861c85a50baaaa60db199c94` |
+
+The ESP kernel and initrd hashes matched these source files. A direct QEMU
+`virt` boot using the package kernel and the installed guest root reached
+`/bin/bash`; `uname -r` reported `7.3.1-psycachy-sp121`, both candidate packages
+reported `ii`, and `dpkg --audit` was empty. This checks the installed kernel
+against a generic virtual machine; it is not an SP12 hardware or firmware boot.
+
+A second QEMU attempt used the package-generated initrd and requested the
+multi-user target. It reached the initramfs and completed
+`/scripts/casper-premount`, but no systemd target or login was recorded. This
+root image is derived from live media and includes casper initramfs hooks, so
+the attempt does not establish a normal installed-system reboot. A boot through
+the ESP/GRUB path and a normal reboot remain open.
+
+The direct-boot transcript is retained locally at
+`output/phase1-lifecycle-vm/candidate-direct-boot.log` (SHA-256
+`de11d1fa658efb326e780a640c90fbf88c8f257d27291f12fa9c172ea97ad15d`). The
+initrd-boot serial log is at `output/phase1-lifecycle-vm/normal-boot-serial.log`
+(SHA-256 `0b6501330bcd6e70553b404b06dcff9bf94a3935fd813ecefaa93346a6e44d5f`).
+
 ## Evidence retained locally
 
 The serial transcript is retained in the ignored output directory at
 `output/phase1-lifecycle-vm/serial-transcript.log` (SHA-256
 `7f7dd182b65110ba2204082179c18aca1b83af7cb685ea38e09bb1139f70a17e`). The
 `root4.qcow2` and `esp4.qcow2` overlays are also retained there. QEMU powered
-off cleanly; the immutable backing images were not modified.

@@ -204,8 +204,9 @@ preliminary planning. Push incremental changes to the feature branch; consider
    verify clean removal, fallback payload restoration, and boot. Exercise the
    installed package hooks across a normal reboot. The dependency-resolved
    install/configure, installer application, blank-ESP first-install hook, and
-   FAT payload comparison passed; fallback removal/reboot behavior remains
-   open. See
+   FAT payload comparison passed, and the installed candidate kernel reached a
+   shell in generic QEMU. The initrd-based multi-user boot did not reach
+   systemd; fallback removal/reboot behavior remains open. See
    [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
