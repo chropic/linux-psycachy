@@ -22,9 +22,10 @@ preliminary planning. Push incremental changes to the feature branch; consider
   0, `dpkg --audit` was empty, and the ESP payload hashes matched the installed
   Ubuntu fallback kernel, initrd, and SP12 DTB. That removal guest did not
   reboot the fallback through UEFI/GRUB. A later generic UEFI smoke check
-  loaded the verified fallback kernel/initrd bytes, mounted root, then stopped
-  in the live-media Casper path; the ESP-resident loader, normal reboot, and
-  physical SP12 validation remain open.
+  booted a copy of the fallback ESP after adding a temporary GRUB EFI loader;
+  it loaded the verified fallback kernel/initrd and mounted root, then stopped
+  in the live-media Casper path. The package-produced ESP lacked an EFI loader,
+  and a normal reboot and physical SP12 validation remain open.
 - The exact latest AMD64 image/headers packages now pass dependency-resolved
   installation, UEFI/GRUB boot with Secure Boot disabled, removal, and Ubuntu
   generic fallback boot in a disposable TCG VM on the B550I host. Its emulated
@@ -213,13 +214,14 @@ preliminary planning. Push incremental changes to the feature branch; consider
    fallback removal/payload update have passed in disposable QEMU. The
    pre-remove hook now validates fallback package ownership and matching SP12
    DTB before changing boot configuration. A generic ARM64 UEFI/GRUB fallback
-   smoke check loaded the verified kernel/initrd bytes copied from the ESP,
+   smoke check loaded the verified kernel/initrd bytes from a copy of the ESP,
    mounted the guest root, and then stalled in the copied live-media Casper
-   initramfs before systemd/login. The temporary GRUB loader was not stored on
-   the ESP, and QEMU's generated device tree was used in place of the SP12 DTB.
-   The ESP-resident loader path, a normal installed-system reboot, and SP12
-   hardware validation remain open. Earlier candidate initrd boot reached
-   the same live-media hook; the direct candidate kernel reached a shell. See
+   initramfs before systemd/login. The GRUB loader was added only to an isolated
+   ESP copy; it was absent from the package-produced ESP. QEMU's generated
+   device tree was used in place of the SP12 DTB. A normal installed-system
+   reboot and SP12 hardware validation remain open. Earlier candidate initrd
+   boot reached the same live-media hook; the direct candidate kernel reached
+   a shell. See
    [`validation/sp121-arm64-package-lifecycle-20261109.txt`](validation/sp121-arm64-package-lifecycle-20261109.txt).
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate

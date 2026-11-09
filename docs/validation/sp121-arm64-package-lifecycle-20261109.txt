@@ -165,12 +165,11 @@ transcript is retained locally at
 ## ARM64 UEFI fallback payload smoke check — 2026-11-09
 
 A further disposable QEMU `virt` check used AAVMF 2026.05 with software
-emulation. GRUB could not see the ESP's secondary virtio block device, so the
-exact fallback kernel and initrd files were copied from a read-only raw
-conversion of the ESP into a temporary FAT boot disk. Their hashes matched the
-ESP payloads above. A standalone ARM64 GRUB EFI loader on that disk selected
-the copied payload using a temporary zero-byte `SP12BOOT` marker, loaded
-`7.3.0-9-generic`, and started its initrd under UEFI. The QEMU-generated
+emulation. The package-produced ESP did not contain an EFI loader, so a
+read-only raw copy of that ESP was made and a temporary standalone ARM64 GRUB
+EFI loader was added at `EFI/BOOT/BOOTAA64.EFI`. AAVMF booted this ESP copy as
+its UEFI device. GRUB loaded the existing fallback kernel and initrd from
+`/sp12`; their hashes matched the ESP payloads above. The QEMU-generated
 `virt` device tree was used; the SP12 DTB was not passed to the generic QEMU
 machine.
 
@@ -179,14 +178,17 @@ mounted root UUID `048bbb9c-e82e-42ad-bf34-e5d675e981bb` read-only. The
 initramfs then unmounted it and stopped progressing through the copied live
 media's Casper path; no systemd target or login was recorded. This is UEFI,
 GRUB, kernel, initrd, and root-mount smoke evidence. It is not a normal
-installed-system reboot, a boot from the ESP-resident loader, or validation of
-the SP12 DTB or Surface hardware.
+installed-system reboot, a boot using a package/installer-provided ESP loader,
+or validation of the SP12 DTB or Surface hardware.
 
-The serial transcript is retained locally at
-`output/phase1-lifecycle-vm/uefi-fallback-tcg/serial.log` (SHA-256
-`3edbe369444c2fbac50ed4625b36769668cb784446c3e748c38ebb3ebdd9861a`). The
-temporary EFI loader, raw ESP inspection image, extracted payload copies, and
-new qcow2 overlays are under the same ignored output directory.
+This confirms firmware-to-GRUB-to-kernel/initrd loading from an ESP copy. It
+does not verify the package or installer supplied an EFI loader, and it does
+not complete a normal installed-system reboot. The serial transcript is
+retained locally at
+`output/phase1-lifecycle-vm/uefi-fallback-tcg/serial-esp-loader.log` (SHA-256
+`9b637aec2fedd2e646d47f4633204231a4ed168cc284cc244d4fcf76d1059fc4`). The
+temporary EFI loader, raw ESP copies, extracted payload copies, and new qcow2
+overlays are under the same ignored output directory.
 
 ## Evidence retained locally
 
