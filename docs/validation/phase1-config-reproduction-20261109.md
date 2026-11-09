@@ -12,6 +12,9 @@ The resulting kernel release is `7.3.1-psycachy-sp121`. The config audit
 reports 12,358 enabled seed symbols, 17 declared exceptions, zero unexpected
 changes, and 20 newly enabled symbols. Its SHA-256 is
 `04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659`.
+After removing the seed and candidate digests, the audit JSON is identical to
+the recorded audit for the previously approved config. This establishes the
+same audit summary, not byte-for-byte config equality.
 
 This does not match the config specifically approved for disposable VM tests,
 `e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`. No

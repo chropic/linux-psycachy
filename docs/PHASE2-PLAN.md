@@ -36,15 +36,22 @@ This is a device inventory only: no timed sample, workload, energy measurement,
 or policy change occurred. In the current shell, `/` is mounted read-write but
 the process is unprivileged and sudo requires interactive authentication; the
 ESP remains read-only. The current ESP payload and EFI loader are now copied
-to the root filesystem and checksum-compared, but restore and fallback boot
-have not been tested.
+to the root filesystem and checksum-compared; the recovery manifest and saved
+EFI/BOOT tree were then reverified. Restore-apply and physical fallback boot
+remain untested. A generic Ubuntu fallback reboot now passes in the disposable
+ARM64 TCG guest; this is not evidence for the physical SP12 fallback path. A
+post-VM inventory is retained at
+`output/phase2/sp121-arm64-inventory-after-vm-20261109.json` (SHA-256
+`e244f8f3a331ccd94dd55c1500e35593844d24cf5a9c834a27b9d0580d9ff395`) with a
+sanitized record in the validation report.
 
 ## Readiness checks
 
 - The AMD64 candidate's dependency-resolved install, candidate boot, package
   removal, and generic fallback reboot have passed in a disposable TCG VM. For
-  ARM64, close the remaining generic UEFI/GRUB fallback reboot and normal
-  installed-system checks documented in [the handoff](PHASE1-HANDOFF.md).
+  ARM64, the generic UEFI/GRUB stock-fallback reboot now passes in a disposable
+  Ubuntu guest. Candidate-package install, boot, removal, and normal
+  installed-system checks remain open as documented in [the handoff](PHASE1-HANDOFF.md).
   The blank-ESP first-install hook and FAT payload comparison have passed.
 - Keep physical SP12 installation, suspend/resume, display, storage, Wi-Fi,
   fallback boot, and recovery as separate hardware validation gates. Generic
