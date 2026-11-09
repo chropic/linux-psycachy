@@ -8,7 +8,8 @@ hash comparison are retained locally under ignored `output/`.
 ## Read-only inventory
 
 - Target: SP12 ARM64, running Ubuntu 26.10. The running kernel is an earlier
-  candidate than the branch's 7.3.1 package pair.
+  platform build (`7.3.0-sp12-v7.3-platform`), before the branch's 7.3.1
+  candidate.
 - CPU frequency interfaces were available through `scmi` with `schedutil`;
   CPUIdle reported `psci_idle` with the `menu` governor.
 - Thermal sensors returned readings during collection, but temperature and
@@ -70,6 +71,13 @@ was captured at
 [VM testbed staging report](phase1-arm64-vm-testbed-staging-20261109.md). A
 generic guest cannot validate Surface-specific firmware, device-tree, device,
 or recovery behavior.
+
+A final read-only inventory after the disposable guest was shut down records
+the running host kernel and available telemetry at
+`output/phase2/sp121-arm64-inventory-after-vm-20261109.json` (SHA-256
+`e244f8f3a331ccd94dd55c1500e35593844d24cf5a9c834a27b9d0580d9ff395`). It
+reports two CPU-frequency policies, 36 thermal zones, and no powercap energy
+counter. No workload sample was collected.
 
 The repository already records disposable ARM64 guest package installation,
 configuration, package-managed fallback removal, and payload verification. Its
