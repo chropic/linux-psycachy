@@ -1,5 +1,27 @@
 # Test results
 
+## AMD64 dual-target candidate packages — 2026-11-09
+
+The integrated native `b550i-amd64` Phase 1 builder exited successfully and
+produced image and headers packages at version `7.3.1-1psycachy1` for
+`amd64`. The recorded image checksum is
+`c1e3403460d136d1b0aca498f5de51a23eabc0a3b074a028971ccf265782c7c1`; the
+headers checksum is
+`85ab822c398f8899e28d369f6bf42930e0b984111688eda28f1578e8796027f8`. The
+package structure receipt is
+`7388473c8502ec521d5bd57c8e7a329b41bfe38dce216f090319cf4db37ed53d`.
+The image depends on the matching headers version. The image contains the
+kernel image, config, `System.map`, and 6,549 compressed modules. The headers
+include the matching config, build symlink, and 11 executable tools identified
+as x86-64 ELF. Checksums and structural package verification passed.
+
+These packages were built on a Ryzen 7 5800X3D host with native `znver3`
+optimization. They are CPU-specific. This latest package pair has not been
+installed or booted; prior AMD64 Secure Boot and NVIDIA VM results below refer
+to earlier package checksums and do not close this candidate's install/boot
+gate. Build logs, package files, and the receipt are retained outside Git in
+the task's package-artifact directory.
+
 The kernel was built in Ubuntu 26.10 using native CPU optimization.
 Use these CPU-specific packages only on compatible CPUs. The package tests
 below ran on November 5, 2026; installer tests ran on November 7.

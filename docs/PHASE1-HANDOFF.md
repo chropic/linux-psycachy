@@ -4,6 +4,23 @@ Recorded 2026-11-09. This handoff tracks Phase 1 implementation in branch
 `feature/linux-chropic-psycachy-b550i-sp121`. Candidate kernels and packages
 remain experimental; this is not a release approval.
 
+## Revised objective
+
+Finish and verify Phase 1 for AMD64 and SP12 ARM64, then start Phase 2
+preliminary planning. Push the completed work to `main` when it is ready.
+
+## Current checkpoint
+
+- Commit `3aa85df` is pushed to the feature branch. It adds the missing `gpgv`
+  build prerequisite, fixes boot-hook activation ordering, and records the
+  owner’s VM-testing approval and patch-author attribution.
+- GitHub Actions run 11 (`42642272202`) is in progress. Static checks,
+  ShellCheck, and dependency installation passed; `Build and package` is
+  running. Check its result before changing CI again.
+- The disposable ARM64 guest has been powered off cleanly. Its persistent root
+  image is
+  `/home/charlie/.codex/visualizations/2026/11/09/01a1bdb7-6c8d-74e0-9e6f-c30d838101d1/phase1-package-tmp-20261109/arm64-package-vm-root-retry.qcow2`.
+
 ## Implemented
 
 - Added target selection in `build.sh`, retaining the legacy AMD64 default and
@@ -137,30 +154,42 @@ remain experimental; this is not a release approval.
   `bc9eb917fb161f9d6ad4e448f6a40931205fe255b3b9dac01f7c3ce994e77a23`).
   These generic boots do not install the `.deb` packages or exercise the SP12
   device tree and hardware.
-- A separate persistent ext4 Ubuntu 26.10 ARM64 `virt` guest booted the final
-  candidate kernel directly and mounted its root disk. The image and headers
-  packages were installed with `dpkg --force-depends`; both reached `ii` and
-  `dpkg --audit` was empty. Missing dependencies were the offline header-build
+- A persistent ext4 Ubuntu 26.10 ARM64 `virt` guest booted the final candidate
+  kernel directly and mounted its root disk. The image and headers packages
+  were installed with `dpkg --force-depends`; both reached `ii` and
+  `dpkg --audit` was empty. Missing dependencies were offline header-build
   tools (`build-essential`, `clang-22`, `llvm-22`, `lld-22`, and `pahole`). The
   image's `kdump-tools` hook completed and generated its kdump initrd, with
-  warnings caused by the live-root `overlay` configuration. The copied live
-  system replaces `update-initramfs` with a stub that reports updates disabled
-  on read-only media, so no normal `/boot/initrd.img-$kver` was generated.
-  Applying the old boot-sync installer then failed because the live guest lacks
-  `grub2-common`; this exposed that it left active hooks before the guard check.
-  The installer now writes `boot.conf` and installs the GRUB guard before
-  activating staged hooks, with a regression test for guard failure. Package
-  removal, dependency-resolved installation, normal initramfs update hooks, and
-  a full boot-sync apply in the guest remain unverified.
+  warnings caused by the copied live root's `overlay` configuration. The live
+  system replaces `update-initramfs` with a stub that disables updates, so I
+  invoked its packaged `update-initramfs.distrib` directly. It generated
+  `/boot/initrd.img-7.3.1-psycachy-sp121` and ran the installed post-update
+  hook. That hook failed with
+  `sp12-save-recovery: payload directory is missing or symlinked` because the
+  blank test ESP had no `/boot/efi/sp12` directory. The helper now treats a
+  missing payload directory as an empty first-install state and the host
+  regression test verifies that sync creates the kernel, initramfs, DTB and
+  `SP12BOOT` marker. The post-update hook still needs to be rerun in the
+  persistent FAT-backed guest and its files checked on the FAT image.
+- The guest's first boot-sync installer attempt used the pre-fix script and
+  failed at the GRUB guard because the live guest lacks `grub2-common`; it left
+  hooks active before a config existed. Commit `3aa85df` reorders setup to
+  write `boot.conf`, install the guard, then stage/activate hooks, with a test
+  for guard failure. Rerun the updated installer on a guest with `grub2-common`
+  before claiming an end-to-end installer pass.
+- Dependency resolution was forced, and package removal has not yet been
+  tested in this persistent guest.
 - Preserve failed logs and retain previous package attempts separately from
   the `final-arm64-packages` directory.
 
 ## Remaining gates
 
-1. Run a dependency-resolved package install/removal in the persistent ARM64
-   Ubuntu guest, then install boot-sync on a guest with `grub2-common` and a
-   normal initramfs-tools setup and exercise package hooks across reboot. The
-   forced-dependency package install above does not provide those guarantees.
+1. Rerun the post-update hook on the persistent FAT-backed guest and verify
+   kernel, initramfs, DTB and marker contents on the FAT image. Then run a
+   dependency-resolved package
+   install/removal in a guest with `grub2-common` and normal initramfs-tools,
+   exercise package hooks across reboot, and rerun the updated installer.
+   Forced-dependency install evidence above does not provide those guarantees.
    The final packaged image has passed
    generic direct and UEFI/GRUB boots on QEMU `virt`, which does not validate
    the Surface device tree or hardware. The owner approved the config for VM
@@ -169,6 +198,11 @@ remain experimental; this is not a release approval.
    [`PHASE1-CONFIG-REVIEW.md`](PHASE1-CONFIG-REVIEW.md) and the audit report at
    `docs/validation/sp121-candidate-config-audit.json` (17 declared removals,
    20 newly enabled symbols, zero unexpected changes).
+2. Install and boot the latest AMD64 image/headers pair in a compatible
+   disposable VM and verify package removal/fallback. The 2026-11-09 native
+   build and structural receipt are recorded in [`VALIDATION.md`](VALIDATION.md),
+   but that exact package pair has not been installed or booted. Earlier VM
+   evidence covers different package hashes.
 3. Exercise installation, suspend/resume, display, storage, Wi-Fi, fallback
    boot and recovery on physical Surface Pro 12 hardware before any deployment
    claim. Existing AMD64 physical installation evidence is still user-owned.
@@ -183,17 +217,18 @@ GitHub Actions runs 7–10 on this branch all passed static checks and
 ShellCheck, then failed at `Build and package` during prerequisite checking
 with `error: missing required command: gpgv`. The bootstrap installs `gnupg`
 with `--no-install-recommends`, so it did not install `gpgv`; the package is
-now listed explicitly in `tools/ubuntu-26.10-packages.txt`. A new run is
-needed to confirm the fix and reveal any later build-stage failures.
+now listed explicitly in `tools/ubuntu-26.10-packages.txt`. Run 11 has passed
+the prerequisite, static, and lint stages and was still building when this
+handoff was written; verify its final result.
 
 The owner reports Harrison Van der Byl (GitHub) as author/source of the SP12
 patch series. The patch-to-author association and redistribution terms remain
 under review; see [`PATCH-PROVENANCE.md`](../targets/sp121-arm64/PATCH-PROVENANCE.md).
-The implementation and handoff have been committed and pushed to
-`chropic/linux-psycachy`, branch
-`feature/linux-chropic-psycachy-b550i-sp121`. The configured local `origin` is
-a filesystem mirror, not GitHub. The user requested shutdown after the handoff
-and push; run `sudo poweroff` locally if the app cannot authenticate.
+Commits through `3aa85df` are pushed to `chropic/linux-psycachy`, branch
+`feature/linux-chropic-psycachy-b550i-sp121`. This handoff update is local and
+uncommitted. The configured local `origin` is a filesystem mirror, not GitHub.
+Do not push to `main` until Phase 1 is complete and the Phase 2 preliminary
+work is ready.
 
 ## Useful commands
 

@@ -158,12 +158,22 @@ printf '%s\\n' "$*" >> "$SP12_TEST_MOUNT_LOG"
         self.assertFalse(self.log.exists())
         self.assertFalse(list(self.dest.glob("*.new")))
 
+    def test_sync_populates_initially_blank_esp(self):
+        subprocess.run(["rm", "-rf", str(self.dest)], check=True)
+        result = self.run_tool()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        for name, source in self.sources.items():
+            self.assertEqual((self.dest / name).read_bytes(), source.read_bytes())
+        self.assertIn("no previous payload directory", result.stdout)
+
     def test_successful_sync_promotes_all_files(self):
         result = self.run_tool()
         self.assertEqual(result.returncode, 0, result.stderr)
         expected = {name: f"new-{name}".encode() for name in self.sources}
         self.assertEqual(expected, self.snapshot())
         self.assertTrue((self.dest / "SP12BOOT").exists())
+        self.assertTrue(self.log.exists())
         self.assertFalse(list(self.dest.glob("*.new")))
         self.assertEqual(
             {name: f"old-{name}".encode() for name in self.sources},

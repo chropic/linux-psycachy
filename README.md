@@ -18,6 +18,7 @@ keep a working recovery option before testing.
 - [Manual package installation and recovery](docs/INSTALL-HARDWARE.md)
 - [SP12 boot payload recovery](docs/SP12-RECOVERY.md)
 - [Phase 1 implementation handoff](docs/PHASE1-HANDOFF.md)
+- [Phase 2 preliminary plan](docs/PHASE2-PLAN.md)
 - [Kernel configuration](docs/CONFIGURATION.md) and [patch audit](docs/PATCH-AUDIT.md)
 - [Source provenance](config/cachyos-7.3-provenance.txt)
 

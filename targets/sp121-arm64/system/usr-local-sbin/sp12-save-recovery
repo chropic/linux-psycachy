@@ -20,7 +20,12 @@ done
 [ -n "$root" ] && [ -n "$payload_dir" ] || { usage >&2; exit 2; }
 [ "$(id -u)" -eq 0 ] || { printf 'sp12-save-recovery: must run as root\n' >&2; exit 1; }
 [ -d "$root" ] && [ ! -L "$root" ] || { printf 'sp12-save-recovery: root is missing or symlinked\n' >&2; exit 1; }
-[ -d "$payload_dir" ] && [ ! -L "$payload_dir" ] || { printf 'sp12-save-recovery: payload directory is missing or symlinked\n' >&2; exit 1; }
+[ ! -L "$payload_dir" ] || { printf 'sp12-save-recovery: payload directory is symlinked\n' >&2; exit 1; }
+if [ ! -e "$payload_dir" ]; then
+    printf 'sp12-save-recovery: no previous payload directory; nothing to preserve\n'
+    exit 0
+fi
+[ -d "$payload_dir" ] || { printf 'sp12-save-recovery: payload path is not a directory\n' >&2; exit 1; }
 
 complete=1
 for name in vmlinuz initrd.img dtb; do
