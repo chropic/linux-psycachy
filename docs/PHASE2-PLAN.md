@@ -37,8 +37,10 @@ or policy change occurred. In the current shell, `/` is mounted read-write but
 the process is unprivileged and sudo requires interactive authentication; the
 ESP remains read-only. The current ESP payload and EFI loader are now copied
 to the root filesystem and checksum-compared; the recovery manifest and saved
-EFI/BOOT tree were then reverified. Restore-apply and physical fallback boot
-remain untested. A generic Ubuntu fallback reboot now passes in the disposable
+EFI/BOOT tree were then reverified. The operator applied the saved payload set;
+post-apply checks confirmed it matches the ESP, the recovery copy remains, and
+the ESP returned to read-only. Physical reboot and fallback boot remain
+untested. A generic Ubuntu fallback reboot now passes in the disposable
 ARM64 TCG guest; this is not evidence for the physical SP12 fallback path. A
 post-VM inventory is retained at
 `output/phase2/sp121-arm64-inventory-after-vm-20261109.json` (SHA-256

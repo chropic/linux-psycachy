@@ -1,4 +1,4 @@
-# SP12 recovery snapshot — 2026-11-09
+# SP12 recovery snapshot and apply — 2026-11-09
 
 The operator ran the repository's `sp12-save-recovery` helper against the
 active `/boot/efi/sp12` payload, then ran the helper's default read-only
@@ -21,8 +21,20 @@ verification are retained under ignored `output/phase1/` in
 `phase1-recovery-snapshot-20261109.log` (SHA-256
 `2c7543076778f329dfc96a81d6d5ef2137fba10d4e51b948e762b6554b774654`).
 
-This preserves the current boot payload and loader files before candidate
-package changes. No ESP write occurred during snapshot creation. The restore
-helper was run in report-only mode: no restore was applied, and neither the
-recovery payload nor fallback entry has been boot-tested. Physical install,
-removal, fallback boot, and recovery-apply gates remain open.
+## Recovery apply
+
+The operator then ran the repository's `sp12-restore-recovery --apply`
+helper. It reported restoring the verified previous SP12 boot set and
+retaining the recovery copy. A fresh read-only check confirmed the ESP is
+`/dev/sda1`, `vfat`, and mounted read-only again. The active ESP kernel,
+initramfs, and DTB each byte-match the saved recovery payload and pass the
+saved checksum manifest. The EFI/BOOT directory still compares identical to
+its saved copy, the `SP12BOOT` marker is present, and no `.new` or
+`.restore.new` payloads remain. The raw apply output and post-action checks are
+retained under ignored `output/phase1/phase1-recovery-apply-20261109.log`
+(SHA-256 `5ae247237d23f1f5c12ef911d0ffef8e96ac8d25e870cee2b2103aa0564b644c`).
+
+This verifies the physical restore operation and retained payload integrity.
+The device has not rebooted since apply, so booting the restored set and the
+recovery-panel entry remain unverified. Candidate package install, removal,
+candidate boot, and physical fallback boot are also still open.

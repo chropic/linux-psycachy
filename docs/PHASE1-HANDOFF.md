@@ -22,10 +22,12 @@ older kernel. The system-side initrds are not readable by the unprivileged
 shell, so the initial inventory could not compare complete payload sets. The
 operator has since preserved the active kernel, initramfs, and DTB under the
 root filesystem and verified their checksums. The existing EFI boot directory
-was copied and compared with the ESP. This preserves current boot files, but
-the restore path and recovery-panel entry have not been boot-tested. No
-candidate package installation/removal, recovery apply, or reboot has been
-attempted. See the [recovery snapshot report](validation/phase1-sp12-recovery-snapshot-20261109.md)
+was copied and compared with the ESP. The operator then applied the saved set
+to the ESP; a follow-up check confirmed byte-for-byte payload matches, a
+retained recovery copy, and the ESP remounted read-only. The device has not
+rebooted since apply, so the restored boot path and recovery-panel entry remain
+untested. Candidate package installation/removal and physical fallback boot
+also remain open. See the [recovery snapshot and apply report](validation/phase1-sp12-recovery-snapshot-20261109.md)
 and [SP12 inventory report](validation/phase2-sp121-inventory-20261109.md);
 raw machine-specific files remain under ignored `output/`.
 
