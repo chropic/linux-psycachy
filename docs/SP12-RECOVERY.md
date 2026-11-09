@@ -20,6 +20,10 @@ findmnt --mountpoint /boot/efi -o TARGET,SOURCE,FSTYPE,OPTIONS
 test -f /boot/efi/sp12/vmlinuz
 test -f /boot/efi/sp12/initrd.img
 test -f /boot/efi/sp12/dtb
+kver=$(uname -r)
+sudo cmp "/boot/vmlinuz-$kver" /boot/efi/sp12/vmlinuz
+sudo cmp "/boot/initrd.img-$kver" /boot/efi/sp12/initrd.img
+sudo cmp "/boot/dtb-$kver" /boot/efi/sp12/dtb
 sudo test ! -e /var/lib/sp12-linux
 sudo ./targets/sp121-arm64/system/usr-local-sbin/sp12-save-recovery \
   --root / --payload-dir /boot/efi/sp12
