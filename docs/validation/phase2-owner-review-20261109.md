@@ -104,9 +104,11 @@ storage errors, scheduler watchdog events, failed resume, or functional
 regression, regardless of energy results.
 
 The six selected scenarios are screen-on idle, interactive use, video,
-interactive compilation, batch completion, and suspend. Exact workload inputs,
-versions, task completion metrics, and energy-meter setup still need to be
-pinned in the run manifest before starting trials. The existing collector
+interactive compilation, batch completion, and suspend. Their fixed task
+definitions and metrics are recorded in the
+[Phase 2 run protocol](phase2-run-protocol-20261110.md). The fixed input files
+still need to be generated, hashed, and copied to both targets, and the UI
+driver needs validation on both desktops before trials. The existing collector
 pilot and inventories remain readiness checks, not baselines.
 
 ## Readiness refresh — 2026-11-10
@@ -133,3 +135,9 @@ not treat a battery or CPU counter as a substitute for the approved energy
 gate. The owner should provide or identify suitable meter hardware and
 physically verify the actual source/charge range and display conditions before
 controlled trials. No tuning or system-policy change has been authorized.
+
+The remaining trial prerequisites are meter access, physical confirmation of
+SP12 source/charge/display/radio state, a B550I test window, the exact latest
+AMD64 candidate package, and validated fixed inputs/UI driver. The run protocol
+also requires interleaved pairs and matched conditions; no workload trial has
+started.

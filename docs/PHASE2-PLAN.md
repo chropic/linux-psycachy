@@ -163,8 +163,11 @@ comparison and rejection thresholds. Run the B550I AMD64 target first, then
 the SP12 ARM64 target after its physical readiness checks. Exact workload
 inputs, versions, task metrics, and a suitable whole-system energy meter still
 need to be pinned before trials.
-The outstanding target, workload, threshold, and measurement prerequisites are
-collected in the [Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md).
+The owner selections and approved gates are recorded in the
+[Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md). The
+[run protocol](validation/phase2-run-protocol-20261110.md) defines the six
+workloads and their metrics. Trials remain gated on fixed artifact hashes, UI
+driver validation, meter access, target readiness, and the exact AMD64 candidate.
 
 ## Continuation update — 2026-11-10
 
