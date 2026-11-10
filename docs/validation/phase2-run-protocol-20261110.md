@@ -21,7 +21,7 @@ watchdog events, failed resume, or functional regression regardless of energy.
 | --- | --- | --- | --- |
 | Screen-on idle | Stable desktop for 30 minutes; fixed display brightness, radios, and peripherals | Whole-system Wh per 30 minutes | CPU activity and thermal trend; no invalid sensor as temperature input |
 | Interactive use | GNOME Text Editor 50.1; restore the same generated 64 KiB UTF-8 fixture, then perform the same 20 find/replace-and-save operations in order | Median task completion time | P95 per-operation response time; use the same UI driver and record its version on each target |
-| Video | Same locally stored 30-second 1080p30 H.264 clip looped for 20 minutes; VLC 3.0.24 on B550I and Firefox on SP12 | Whole-system Wh per playback minute | Dropped frames and playback completion; record exact Firefox version and clip SHA-256 |
+| Video | Same locally stored 30-second 1080p30 H.264 clip looped for 20 minutes; VLC 3.0.24 on B550I and Firefox 158.0-2 on SP12 | Whole-system Wh per playback minute | Dropped frames and playback completion; record Firefox snap revision 9056 and clip SHA-256 |
 | Interactive compilation | Pinned `cachyos-7.3.1-1` source and target config, fresh output tree, `make -j4`; repeat the editor task during the build | Build progress/completion time over the fixed run | P95 editor-operation response time; preserve thermal protections |
 | Batch completion | Same pinned source and target config, fresh output tree, `make -j$(nproc)` to completion | Wall-clock completion time and whole-system Wh | Build result and storage/kernel error checks |
 | Suspend | 15-minute suspend with the same wake source per target | Whole-system Wh per suspend interval | Resume time; display, network, input, storage, and error checks |

@@ -31,9 +31,14 @@ latest candidate image; the earlier
 The latest image package SHA-256 is
 `b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127` in
 [`VALIDATION.md`](../VALIDATION.md). No matching `.deb` is present in the
-workspace's `output/` or `/tmp`. Do not treat measurements on the currently
-running image as the final candidate comparison. A matching package and
-controlled kernel-selection window are required before such a comparison.
+workspace's `output/` or `/tmp`. The retained
+[GitHub Actions run 11 artifact](https://github.com/chropic/linux-psycachy/actions/runs/42642272202)
+was checked, but its image package hash is
+`c8539063623430770ec1567adb67e66738da9eb73fe0587836168d52f538efdb`, which
+does not match the approved package hash, so it was discarded and will not be
+used. Do not treat measurements on the currently running image as the final
+candidate comparison. A matching package and controlled kernel-selection
+window are required before such a comparison.
 
 ## Measurement readiness
 
