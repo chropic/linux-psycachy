@@ -9,6 +9,7 @@ recovery payload, update sanitized documentation, and push the feature branch.
 - Repository: `github.com/chropic/linux-psycachy`
 - Branch: `feature/linux-chropic-psycachy-b550i-sp121`
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
+- Completed continuation commit: `5043a51` (pushed with `[skip ci]`)
 - Build host: `CS-B550i` (x86_64 Ryzen 7 5800X3D)
 - SP12 access: root Tailscale SSH to `cs-sp12` was authorized by the user and
   verified from the host context.
@@ -76,9 +77,9 @@ thresholds. The owner review brief must be resolved before controlled trials.
 Do not change kernel config, patches, scheduler policy, power profile, or other
 system policy while waiting.
 
-## Relevant working-tree edits and tests
+## Committed changes and tests
 
-Expected source edits in this continuation:
+The pushed commit includes these source changes:
 
 - `targets/sp121-arm64/installer/install-boot-sync.sh`: allow safe direct
   `--target /` root installation while preserving target-root confinement for
@@ -101,20 +102,19 @@ inventory are under ignored `output/`; do not add them to Git.
 
 ## Next agent actions
 
-1. Inspect the branch diff and stage only the three intended source/test files
-   and sanitized documentation. Do not stage inherited `.agents/`, `.codex/`,
-   `AGENTS.md`, `RTK.md`, `phase0-work/`, or `sp121-reference/` files.
-2. Re-run the test commands above after any edits.
-3. Commit with a `[skip ci]` subject and push
-   `feature/linux-chropic-psycachy-b550i-sp121` to origin. If the push fails,
-   retain the commit and document the exact authentication/network error.
-4. Do not re-install the candidate on the physical SP12. Its current state is
+1. Start from pushed commit `5043a51` on the feature branch; the documentation
+   and test updates are already pushed. Do not stage inherited `.agents/`,
+   `.codex/`, `AGENTS.md`, `RTK.md`, `phase0-work/`, or `sp121-reference/`
+   files.
+2. Do not re-install the candidate on the physical SP12. Its current state is
    restored fallback. Do not test or repair the recovery-panel entry until its
    installed/ESP initrd mismatch is reviewed and separately approved.
-5. Stop Phase 2 at read-only preparation. Ask the owner to resolve the target
+3. Stop Phase 2 at read-only preparation. Ask the owner to resolve the target
    order, workloads/equivalence metrics, and acceptance/rejection thresholds
    in `validation/phase2-owner-review-20261109.md`. Continue only after those
    decisions; do not treat proposed percentages as approved gates.
+4. Review the missing `qcom/gen71500_sqe.fw` DPU firmware report and other
+   candidate boot warnings before considering further physical candidate work.
 
 No user-run sudo command is needed at this handoff point. Any later physical
 work should be proposed only after the outstanding firmware and recovery-panel
