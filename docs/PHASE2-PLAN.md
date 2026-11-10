@@ -32,12 +32,13 @@ validation result. The generated machine-specific files are ignored under
 A read-only schema-v1 inventory has now been captured on the physical SP12.
 The sanitized summary and Phase 1 access limitations are recorded in
 [`validation/phase2-sp121-inventory-20261109.md`](validation/phase2-sp121-inventory-20261109.md).
-This is a device inventory only: no timed sample, workload, energy measurement,
-or policy change occurred. In the current shell, `/` is mounted read-write but
-the process is unprivileged and sudo requires interactive authentication; the
-ESP remains read-only. The current ESP payload and EFI loader are now copied
-to the root filesystem and checksum-compared; the recovery manifest and saved
-EFI/BOOT tree were then reverified. The operator applied the saved payload set;
+The initial capture was a device inventory only; no workload, energy
+measurement, or policy change occurred. In the current shell, `/` is mounted
+read-write but the process is unprivileged and sudo requires interactive
+authentication; the ESP remains read-only. The current ESP payload and EFI
+loader are now copied to the root filesystem and checksum-compared; the
+recovery manifest and saved EFI/BOOT tree were then reverified. The operator
+applied the saved payload set;
 post-apply checks confirmed it matches the ESP, the recovery copy remains, and
 the ESP returned to read-only. Physical reboot and fallback boot remain
 untested. A generic Ubuntu fallback reboot now passes in the disposable
@@ -47,6 +48,13 @@ post-recovery-apply inventory is retained at
 (SHA-256
 `000597e195236cf0f84fd3d1b35068937daa7dc5faca63b5fdeb5df9544b811a`) with a
 sanitized record in the validation report.
+
+A ten-second read-only idle telemetry pilot has since been captured on SP12 as
+a collector smoke check. It did not start a workload, change policy, or qualify
+as a baseline; unknown radios, omitted brightness/ambient metadata, background
+CPU activity, missing GPU/powercap channels, and one invalid temperature
+channel limit its use. Raw files and details are recorded in
+[`validation/phase2-sp121-inventory-20261109.md`](validation/phase2-sp121-inventory-20261109.md).
 
 ## Readiness checks
 

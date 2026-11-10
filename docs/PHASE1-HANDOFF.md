@@ -111,5 +111,6 @@ all Phase 1 gates pass.
 
 The read-only SP12 inventory is complete, but it is not a workload or energy
 baseline. The workload plan and acceptance thresholds remain open for review.
-No timed workload sample or tuning was performed. See the
+One 10-second read-only telemetry pilot was run as a collector smoke check; it
+is not a workload baseline. No tuning was performed. See the
 [Phase 2 plan](PHASE2-PLAN.md).

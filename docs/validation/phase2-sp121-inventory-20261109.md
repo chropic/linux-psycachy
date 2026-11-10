@@ -89,8 +89,25 @@ physical SP12 checks. See the
 
 ## Baseline preparation status
 
-Inventory is complete. No timed sample or workload baseline was started because
-Phase 1 hardware gates remain open and workload/acceptance criteria need review.
+Inventory is complete. A ten-second read-only telemetry pilot was captured
+while Phase 1 gates remain open. It sampled 1,133 rows across 15 metric names
+and completed in 10.08 seconds. The collector did not start a workload or
+change policy. This was a smoke check, not a workload baseline, energy result,
+or comparison run: brightness and ambient temperature were not recorded, radio
+state was marked unknown, no external meter was used, and aggregate CPU busy
+readings ranged from 8.1% to 12.2%, indicating background activity during the
+pilot. GPU busy telemetry was unsupported, GPU identity was partial, battery
+charge in Ah was unreadable, and powercap telemetry was absent.
+
+One hwmon temperature channel returned `-273.1 C` throughout the pilot. Treat
+that channel as invalid until its sensor mapping is reviewed; do not use it as
+an ambient or surface temperature. The other readings remain uncontrolled
+observations from the same short pilot. Raw files are retained under ignored
+`output/phase2/sp121-arm64-idle-pilot-20261109/`: `manifest.json` (SHA-256
+`a9988f0e333e1c6865df8af86ae480d4d3626656f164d88998b7bfb38d810fea`) and
+`samples.csv` (SHA-256
+`cc6bc9a6d5877ecc07789ec27a3ed26f5eb3393991e8d211a94acaa337ae20e2`).
+
 Before baseline trials, record power source and charge range, brightness, radio
 state, peripherals, ambient and starting temperature, active power policy,
 workload version, and background activity. Use separate repeated trials for
