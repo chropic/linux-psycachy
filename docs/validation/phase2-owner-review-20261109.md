@@ -107,9 +107,10 @@ The six selected scenarios are screen-on idle, interactive use, video,
 interactive compilation, batch completion, and suspend. Their fixed task
 definitions and metrics are recorded in the
 [Phase 2 run protocol](phase2-run-protocol-20261110.md). The fixed input files
-still need to be generated, hashed, and copied to both targets, and the UI
-driver needs validation on both desktops before trials. The existing collector
-pilot and inventories remain readiness checks, not baselines.
+have been generated on B550I, hashed, and staged under `/tmp/phase2-inputs/`
+on SP12 with matching hashes. The UI driver still needs validation on both
+desktops before trials. The existing collector pilot and inventories remain
+readiness checks, not baselines.
 
 ## Readiness refresh — 2026-11-10
 
@@ -138,6 +139,6 @@ controlled trials. No tuning or system-policy change has been authorized.
 
 The remaining trial prerequisites are meter access, physical confirmation of
 SP12 source/charge/display/radio state, a B550I test window, the exact latest
-AMD64 candidate package, and validated fixed inputs/UI driver. The run protocol
-also requires interleaved pairs and matched conditions; no workload trial has
+AMD64 candidate package, and UI-driver validation. The run protocol also
+requires interleaved pairs and matched conditions; no workload trial has
 started.

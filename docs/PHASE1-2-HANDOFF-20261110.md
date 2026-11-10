@@ -88,11 +88,11 @@ prepare trials.
 The owner choices and approved thresholds are recorded in the
 [owner review](validation/phase2-owner-review-20261109.md); the six workload
 definitions, collection controls, and readiness gates are in the
-[Phase 2 run protocol](validation/phase2-run-protocol-20261110.md). The protocol
-is not trial-ready until the fixed input artifacts are staged and hashed, the
-UI driver is validated on both desktops, and the meter and target prerequisites
-are met. The exact latest AMD64 candidate package is also required before its
-comparison.
+[Phase 2 run protocol](validation/phase2-run-protocol-20261110.md). The fixed
+input artifacts are staged on both targets and their hashes match. The protocol
+is not trial-ready until the UI driver is validated on both desktops and the
+meter and target prerequisites are met. The exact latest AMD64 candidate
+package is also required before its comparison.
 
 ## Committed changes and tests
 

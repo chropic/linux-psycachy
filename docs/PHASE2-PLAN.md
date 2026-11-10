@@ -160,14 +160,15 @@ completed on the physical SP12; the candidate firmware-load behavior and
 recovery-panel route remain open technical qualification items. On 2026-11-10
 the owner approved both targets, all six proposed scenarios, and the proposed
 comparison and rejection thresholds. Run the B550I AMD64 target first, then
-the SP12 ARM64 target after its physical readiness checks. Exact workload
-inputs, versions, task metrics, and a suitable whole-system energy meter still
-need to be pinned before trials.
+the SP12 ARM64 target after its physical readiness checks. The workload
+definitions and fixture hashes are now recorded in the run protocol; the UI
+driver and exact app/build versions still need validation before trials.
 The owner selections and approved gates are recorded in the
 [Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md). The
 [run protocol](validation/phase2-run-protocol-20261110.md) defines the six
-workloads and their metrics. Trials remain gated on fixed artifact hashes, UI
-driver validation, meter access, target readiness, and the exact AMD64 candidate.
+workloads and their metrics. Fixed artifacts are staged and hash-matched on
+both targets. Trials remain gated on UI-driver validation, meter access,
+physical target readiness, and the exact AMD64 candidate.
 
 ## Continuation update — 2026-11-10
 

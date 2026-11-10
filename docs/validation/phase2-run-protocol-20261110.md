@@ -36,16 +36,17 @@ B550I by `tools/prepare-phase2-inputs.py`; the ignored manifest is
 | `editor-operations.json` | `0f7bd06879147c819f10c6a06aaf28f884e19df4503cfd821a9926b89211d6aa` |
 | `playback-1080p30-30s.mp4` | `869a3038582e0578652accc7c3faa0a2a96689f63193be0179014af0bcfd05d1` |
 
-Copy both inputs unchanged to SP12 and verify the hashes on both devices before
-trials. Pin the build source commit and per-target config; each run starts with
-an empty output directory. The UI driver must timestamp
+All three files were copied over the approved Tailscale connection to
+`/tmp/phase2-inputs/` on SP12 and their hashes matched on 2026-11-10. Pin the
+build source commit and per-target config; each run starts with an empty output
+directory. The UI driver must timestamp
 each operation with a monotonic clock and verify its resulting document state;
 validate the driver against both desktop sessions before collecting results.
 Measure p95 over the same 20 operations in interactive-use and
 interactive-compilation runs. Record fixture/clip hashes, app and driver
 versions, compiler version, build config hash, source hash, candidate package
 hash, and driver version in each run manifest. These artifacts and the UI driver
-are not yet staged on SP12 and the UI driver is not yet validated, so the run
+are staged on both targets, but the UI driver is not yet validated, so the run
 protocol is specified but not yet trial-ready.
 
 ## Collection and controls
@@ -61,8 +62,7 @@ system policy between runs.
 ## Readiness gates before the first trial
 
 - Provide an external whole-system energy meter for the target under test.
-- Copy the fixed fixture/video artifacts to SP12 and verify all hashes there;
-  validate the same UI driver on both desktops before interactive scenarios.
+- Validate the same UI driver on both desktops before interactive scenarios.
 - Physically verify SP12 power source, main-battery charge range, brightness,
   radio/peripheral state, and an acceptable ambient/start temperature. Its
   software power-source interfaces conflict; `surface_thermal` `temp12` is
