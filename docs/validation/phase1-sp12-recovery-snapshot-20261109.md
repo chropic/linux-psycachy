@@ -43,3 +43,11 @@ entry remains untested. Candidate package install, removal, candidate boot,
 and physical fallback boot are also still open. The operator's raw post-reboot
 report is retained in ignored
 `output/phase1/phase1-restored-default-boot-20261109.log`.
+
+After that reboot, the operator compared the active ESP payload hashes with
+the retained recovery copies. Kernel, initramfs, and DTB hashes match pairwise
+and equal the saved recovery manifest. This confirms the restored payloads
+remain intact after boot. The package audit output was not included in that
+message, so package database cleanliness remains unconfirmed. Raw hashes are
+retained in ignored
+`output/phase1/phase1-restored-recovery-hash-check-20261109.log`.
