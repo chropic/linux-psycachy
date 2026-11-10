@@ -24,6 +24,10 @@
   carries the pin-manifest hash.
 - Full local unit suite: 108 passed. `bash tests/static-check.sh` passed; its
   root-only `mokutil` test was skipped by the existing test policy.
+- The top-level kernel builder now implements `--target all`, building AMD64
+  and ARM64 package sets sequentially into separate subdirectories. Its
+  dry-run and target-selection tests pass; this change did not build new
+  kernel packages.
 
 ## ISO work still required
 
@@ -33,11 +37,16 @@
   with the exact pinned packages. The current session cannot attach loop
   devices, so it cannot produce this ISO here.
 - ARM64: the main repository still has no ARM64 live-media or installer ISO
-  builder. Implement a live layer using the pinned kernel and DTB plus the
-  validated device-support inputs, integrate the guarded target install and
-  fallback scripts, then test media identity, live boot, target installation,
-  fallback, and recovery in disposable environments. A native ARM64 build
-  runner is required for the live-image stage.
+  builder. The pinned base is Ubuntu Desktop ARM64. The
+  [livefs-editor documentation](https://github.com/ubuntu/livefs-editor)
+  describes live-server ISO support and says its desktop ISO behavior has not
+  been evaluated; the [Ubuntu image cookbook](https://ubuntu.com/hardware/docs/image-cookbook/howto/images/customize_installer_image/)
+  recommends the editor for installer customization and requires it to run as
+  root. This is not yet a validated ARM Desktop build path. Implement and
+  validate the live layer with the pinned kernel, generated initramfs, DTB and
+  device-support inputs; integrate the guarded target install and fallback
+  scripts; then test media identity, live boot, target installation, fallback,
+  and recovery in disposable environments.
 - Both targets: physical USB boot/install validation is separate from VM
   evidence. Preserve the generic AMD64 fallback and the verified SP12 fallback;
   the unresolved SP12 recovery-panel route remains untouched.
