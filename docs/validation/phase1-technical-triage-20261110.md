@@ -41,6 +41,24 @@ initramfs included the blob. Do not reinstall the candidate to investigate.
 Sources: [Ubuntu Resolute Qualcomm firmware package file list](https://packages.ubuntu.com/resolute/all/linux-firmware-qualcomm-graphics/filelist),
 [Linux kernel firmware lookup documentation](https://docs.kernel.org/driver-api/firmware/direct-fs-lookup.html).
 
+## Other candidate boot warnings
+
+The earlier `7.3.0-sp12-v7.3-platform` hardware smoke record already reports
+UFS RPMB registration against an unregistered `ufs_rpmb` bus and a Qualcomm
+APM command timeout; it says root storage worked and RPMB functionality and
+audio playback were not tested. This makes those messages pre-existing in the
+platform-kernel record, rather than evidence of a new candidate regression.
+The candidate capture also shows root storage working, but it does not qualify
+RPMB operations, audio, or all storage behavior. The prior record is
+[`boot-smoke.json`](../../sp121-reference/kernel/ports/v7.3/validation/boot-smoke.json).
+
+The two candidate `surface_serial_hub` unexpected-message notices have no
+matching comparison in the saved platform-kernel boot record. Their functional
+effect is therefore undetermined. The captured `fwupd-refresh.service` failure
+was not attributed to the candidate in the lifecycle report. These points
+remain qualification observations; no policy or hardware change follows from
+them.
+
 ## Recovery-panel initrd mismatch
 
 The operator-assisted read-only comparison found the installed
