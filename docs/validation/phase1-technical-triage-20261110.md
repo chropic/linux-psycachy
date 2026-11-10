@@ -100,20 +100,21 @@ The watchdog messages also match across both boots: the platform reports NMI
 watchdog unsupported and hard watchdog disabled, while the SBSA generic
 watchdog initializes. No scheduler watchdog event was found in either boot.
 
-The two candidate `surface_serial_hub` unexpected-message notices have no
-matching comparison in the saved platform-kernel boot record. Their functional
-effect is therefore undetermined. After the later candidate reboot, the owner
+The two `surface_serial_hub` unexpected-message notices appeared in an older
+candidate boot, but not in the compared fallback boots or the latest candidate
+boot. Their functional effect is undetermined. After reboot, the owner
 confirmed that speakers work. The X1P42100 audio card enumerates in read-only
 inspection; no tone was played and no mixer control was changed. Wi-Fi is
 unblocked; Bluetooth is soft-blocked in software despite the owner's report
 that radios work. The radio state was not changed. The `fwupd-refresh.service`
 failure appears in both fallback and candidate journals after attempting to
-refresh LVFS metadata; it is not candidate-specific. `geoclue.service` differs:
-it starts and exits normally after 60 idle seconds on fallback, but times out
-after its 90-second start limit on the candidate. This is a candidate-associated
-service regression with no established mechanism; it remains open against the
-functional-regression acceptance gate. Neither service was restarted or
-reconfigured. These checks made no system-policy or hardware change. Earlier
+refresh LVFS metadata; it is not candidate-specific. `geoclue.service` started
+and exited normally after 60 idle seconds on fallback, timed out after its
+90-second start limit on one candidate boot, then started successfully on the
+next candidate boot. The timeout did not reproduce; treat it as an
+intermittent observation to monitor rather than an established candidate
+regression. Neither service was restarted or reconfigured. These checks made
+no system-policy or hardware change. Earlier
 sanitized audio-path
 evidence is in ignored
 `output/phase1/sp12-audio-readonly-20261110.txt` (SHA-256

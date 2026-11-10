@@ -72,9 +72,9 @@ grep -Fq "'$GENERIC_SUBMENU_ID'" "$grub_cfg" && grep -Fq "'$CANDIDATE_KERNEL_ID'
   exit 1
 }
 
-available_mib="$(df -Pm /boot | awk 'NR == 2 {print $4}')"
-if [[ ! "$available_mib" =~ ^[0-9]+$ ]] || (( available_mib < 1024 )); then
-  echo "Less than 1 GiB is available on /boot; refusing." >&2
+available_kib="$(command df -Pk /boot | awk 'NR == 2 {print $4}')"
+if [[ ! "$available_kib" =~ ^[0-9]+$ ]] || (( available_kib < 1048576 )); then
+  echo "Less than 1 GiB is available on /boot, or free space could not be checked; refusing." >&2
   exit 1
 fi
 

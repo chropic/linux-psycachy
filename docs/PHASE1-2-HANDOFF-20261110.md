@@ -9,8 +9,8 @@ recovery payload, update sanitized documentation, and push the feature branch.
 - Repository: `github.com/chropic/linux-psycachy`
 - Branch: `feature/linux-chropic-psycachy-b550i-sp121`
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
-- Prior pushed documentation tip: `f667a48`; this update records the later
-  owner-authorized SP12 reinstall and successful candidate boot.
+- Prior pushed documentation tip: `e03e766`; subsequent updates record the
+  latest SP12 retry and Phase 2 installer preflight.
 - Build host: `CS-B550i` (x86_64 Ryzen 7 5800X3D)
 - SP12 access: root Tailscale SSH to `cs-sp12` was authorized by the user and
   verified from the host context.
@@ -60,7 +60,7 @@ observations are recorded in
 
 6. The candidate image and headers were reinstalled from exact SHA-verified
    ARM64 packages. Candidate kernel, initrd, and DTB matched across `/boot` and
-   the read-only ESP before reboot. Boot ID
+   the read-only ESP before reboot. Install boot ID
    `6bf2c7ea-122a-4bb4-9436-2ae07d28773b` confirms release
    `7.3.1-psycachy-sp121`; `dpkg --audit` is clean and the fallback recovery
    manifest verifies. Tailscale returned after about a minute without
@@ -103,8 +103,8 @@ The owner choices and approved thresholds are recorded in the
 definitions, collection controls, and readiness gates are in the
 [Phase 2 run protocol](validation/phase2-run-protocol-20261110.md). The fixed
 input artifacts are staged on both targets and their hashes match. The protocol
-is not trial-ready until a UI driver is implemented and validated on both
-desktops and target prerequisites are met. UPS readings were cross-checked at
+is not trial-ready until the interactive UI driver is implemented and validated
+on both desktops and target prerequisites are met. UPS readings were cross-checked at
 idle and build load; retain NUT samples and report integrated results as
 estimated Wh. The exact latest AMD64 package remains unavailable.
 
@@ -166,12 +166,13 @@ inventory are under ignored `output/`; do not add them to Git.
    absent from the repository; no workload trial has started.
 4. The full candidate-boot journal resolves the early DPU warning; the
    candidate loads SQE and GMU firmware after the initial lookup failures.
-   Preserve the boot log reference in
-   `validation/phase1-technical-triage-20261110.md`. No firmware change or
-   candidate reinstall is needed to resolve that concern. The latest fallback
-   comparison confirms UFS RPMB and watchdog messages predate the candidate,
-   but `geoclue.service` starts normally on fallback and times out on the
-   candidate; this remains an open functional-regression gate.
+   UFS RPMB and watchdog messages also occur on fallback. GeoClue timed out on
+   one candidate boot, then started successfully on the next candidate retry;
+   treat it as an intermittent observation to monitor, not an established
+   regression. Surface serial-hub notices from an older candidate boot did not
+   recur on fallback or the latest candidate boot. See
+   `validation/phase1-technical-triage-20261110.md` and
+   `validation/phase2-sp121-readiness-20261110.md`.
 
 The reviewed package identity and completed install/boot verification are in
 `validation/phase1-candidate-install-review-20261110.md`. The owner physically
@@ -188,3 +189,31 @@ in this execution context is read-only and sudo is blocked by
 the owner's sudo-capable host context after its distinct-candidate review. The
 next required operator action is `sudo bash tools/install-phase2-amd64-rebuild.sh`
 from the repository root; it will not reboot. No workload trial has occurred.
+
+
+## Continuation update — 2026-11-10
+
+After the owner reconnected the SP12, a diagnostic reboot again reached
+`7.3.1-psycachy-sp121` (boot ID
+`39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`). The fallback recovery manifest still
+verifies. GeoClue started on this retry after one prior candidate startup
+timeout; the timeout is intermittent, not a reproduced regression. The owner
+confirms the SP12 is plugged in at 77%, brightness is controllable, radios and
+speakers work, and the device is not hot to the touch. SP12 cannot connect to
+the APC, so no SP12 whole-system energy gate is available. Continue its time,
+latency, and functional checks only unless another whole-system meter is
+provided.
+
+The owner-authorized B550I guarded installer was run from the host but stopped
+at the disk-space preflight because the host's `df` command rejected `-m`.
+That check occurs before backups or mutations, so no GRUB/package changes were
+made. `tools/install-phase2-amd64-rebuild.sh` now uses POSIX `df -Pk` and
+checks available KiB. The next operator action is to pull the latest branch
+changes on B550I and rerun `sudo bash tools/install-phase2-amd64-rebuild.sh`;
+the installer still performs no reboot. If it passes, inspect its full output
+before one-time candidate boot selection.
+
+The interactive UI driver remains absent and no workload trial has started.
+The APC sampler and fixed inputs are ready; the fixed non-target UPS loads
+(Mac mini, two monitors, DAC, MIDI keyboard, printer) must remain in the same
+state for every B550I pair.

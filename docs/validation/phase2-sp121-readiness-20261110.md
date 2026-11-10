@@ -12,8 +12,9 @@ change was made.
 
 - Target: Microsoft Surface Pro 12in 1st Edition, AArch64, 8 logical CPUs
 - OS: Ubuntu 26.10
-- Running kernel: `7.3.1-psycachy-sp121` (boot ID
-  `6bf2c7ea-122a-4bb4-9436-2ae07d28773b`)
+- Running kernel: `7.3.1-psycachy-sp121` (latest checked boot ID
+  `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; the earlier install boot is
+  recorded below)
 - CPUFreq: 2 policies; CPUIdle `psci_idle` / `menu`
 - Thermal zones: 36
 - ESP: `/dev/sda1`, mounted read-only
@@ -65,6 +66,12 @@ numeric ambient/start temperature and fixed display brightness still need to
 be set for repeatable trials. Continue to exclude the invalid
 `surface_thermal` `temp12` reading.
 
+The owner later confirmed the SP12 is plugged in at 77%, brightness is
+controllable, radios and speakers work, and the device is not hot to the
+touch. The report gives no numeric ambient temperature. Whole-system energy
+remains unavailable for SP12: it cannot be connected to the calibrated APC,
+and the device has no internal energy counter.
+
 ## Artifact
 
 Raw sanitized inventory: ignored
@@ -76,12 +83,12 @@ Captured at `2026-11-10T15:33:43.782Z` with collector version `0.1.0`.
 
 The owner restored the SP12's Tailscale connectivity after a transient
 offline state. Read-only root SSH confirmed release
-`7.3.1-psycachy-sp121`, unchanged boot ID
+`7.3.1-psycachy-sp121`, boot ID
 `6bf2c7ea-122a-4bb4-9436-2ae07d28773b`, clean `dpkg --audit`, and ESP mounted
 read-only. The on-device fallback recovery set passed `sha256sum -c` for
 `vmlinuz`, `initrd.img`, and `dtb`. Backlight remains 1256/4095. The current
-failed units are `fwupd-refresh.service` and `geoclue.service`; no causal link
-to the kernel is established and neither was changed.
+failed units were `fwupd-refresh.service` and `geoclue.service`; subsequent
+boot comparison is below. Neither service was changed.
 
 A fresh schema-v1 inventory was captured at
 `2026-11-10T19:37:21.861Z` with 102 telemetry rows and 36 thermal zones. Its
@@ -94,3 +101,22 @@ Read-only application checks confirm GNOME Text Editor 50.1 and Firefox
 158.0-2 at snap revision 9056, matching the planned SP12 workloads. `xdotool`
 is not installed, and the Codex session exposes no desktop app for UI-driver
 validation. No UI interaction was performed.
+
+
+## Candidate retry after service anomaly — 2026-11-10
+
+A subsequent diagnostic reboot again reached candidate release
+`7.3.1-psycachy-sp121`, boot ID
+`39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`. The fallback recovery checksums
+remained valid. `geoclue.service` started successfully on this candidate boot
+after one earlier candidate boot had timed out at its 90-second start limit;
+the timeout did not reproduce on this retry, so it is an intermittent
+observation rather than an established candidate regression. The service was
+not restarted or reconfigured. `fwupd-refresh.service` continues to fail
+following LVFS refresh attempts on both candidate and fallback boots.
+
+The serial-hub unexpected-message notices were present in an older candidate
+boot journal, absent from the compared fallback boots, and absent from this
+latest candidate boot. Speakers remain owner-confirmed working. These
+intermittent boot-log observations have no known functional effect. No
+workload or performance trial has started.

@@ -125,15 +125,17 @@ system policy between runs.
   candidate successfully; the checksum-verified platform fallback is saved in
   the on-device recovery directory. The current sysfs brightness is
   1256/4095 (30.7%); choose and hold a fixed value for comparisons.
-- A current candidate boot timed out starting `geoclue.service` after 90
-  seconds; the retained fallback boot started the service and it exited
-  normally after 60 idle seconds. Treat this candidate-associated functional
-  regression as an open rejection gate until its cause and reproducibility
-  are resolved. The service was not restarted or reconfigured.
+- `geoclue.service` timed out after 90 seconds on one candidate boot, but
+  started successfully on the next candidate boot; the retained fallback
+  boot also started it and it exited normally after 60 idle seconds. The
+  timeout did not reproduce. Record it as an intermittent observation to
+  monitor, not an established regression. The service was not restarted or
+  reconfigured.
 
 No workload trial has started. SP12 was reconnected by the owner and now
-answers Tailscale SSH. Current boot ID is unchanged, `dpkg --audit` is clean,
-the ESP remains read-only, and the fallback recovery checksums verify. Current
+answers Tailscale SSH. After a diagnostic reboot it remains on candidate boot
+ID `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; `dpkg --audit` is clean, the ESP
+remains read-only, and the fallback recovery checksums verify. Current
 inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and
 [SP12 readiness record](phase2-sp121-readiness-20261110.md).

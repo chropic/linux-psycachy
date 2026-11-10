@@ -215,9 +215,13 @@ fallback checksums. A fresh schema-v1 inventory was captured at
 `d41ec99949243f4dbdb32286355a4b34456d3e56ccbd040b198108351d64ec90`; it
 records 102 telemetry rows and 36 thermal zones. `fwupd-refresh.service`
 fails after attempting an LVFS refresh on both candidate and fallback boots.
-`geoclue.service` started and stopped normally on fallback, but timed out after
-90 seconds during candidate startup; this candidate-associated functional
-regression remains open. No service was restarted or reconfigured. The B550I filesystem in this
+`geoclue.service` started and stopped normally on fallback, timed out after
+90 seconds on one candidate boot, then started successfully on the next
+candidate boot. The timeout did not reproduce and is recorded as an
+intermittent observation to monitor, not an established regression. No service
+was restarted or reconfigured. A later diagnostic reboot reached candidate
+boot ID `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; the checksum-verified fallback
+remained intact. The B550I filesystem in this
 Codex execution context is mounted read-only and sudo is blocked by
 `no_new_privileges`, so a package install or kernel selection requires the
 owner's sudo-capable host context. The owner provided the GRUB entry IDs and
