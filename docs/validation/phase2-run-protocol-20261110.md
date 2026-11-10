@@ -42,9 +42,10 @@ All three files were copied over the approved Tailscale connection to
 build source commit and per-target config; each run starts with an empty output
 directory. `tools/phase2-editor-driver.py` implements this workflow over
 GNOME AT-SPI, using a monotonic clock and verifying document contents after
-each replacement. Its syntax and command-line interface are checked, but the
-accessibility tree and 20-operation workflow still require validation on both
-desktop sessions. The driver launches Text Editor with `GTK_A11Y=atspi`
+each replacement. Its syntax and command-line interface are checked. The
+B550I probe now exposes the exact fixture; the find/replace controls and
+20-operation workflow still need validation on both desktop sessions. The
+driver launches Text Editor with `GTK_A11Y=atspi`
 scoped to that process and `--standalone` to force an isolated editor
 instance; this requests GTK's AT-SPI backend without changing session-wide
 settings. Then run
@@ -57,23 +58,23 @@ that exact fixture. Probe output redacts document text; inspect the exposed
 find, replace, Replace All, and document controls.
 Measure p95 over the same 20 operations in interactive-use and
 interactive-compilation runs. Record fixture/clip hashes, app and driver
-versions, compiler version, build config hash, source hash, candidate package
-hash, and driver version in each run manifest. The fixed inputs are staged on
-both targets. The interactive scenarios remain unready until the driver is
-validated on both desktops; workload trials also require the current
-candidate boot health review and controlled conditions.
+versions, kernel config and payload hashes, the kernel package hash when
+available, and the pinned build source hash for build scenarios in each run
+manifest. The fixed inputs are staged on both targets. The interactive
+scenarios remain unready until the full driver workflow is validated on both
+desktops; workload trials also require the current candidate boot health
+review and controlled conditions.
 
 Read-only version checks confirm Text Editor 50.1 on both targets, VLC 3.0.24
 and FFmpeg 8.1.2 on B550I, and Firefox 158.0-2 snap revision 9056 on SP12.
 The first B550I probe encountered an existing editor process with no AT-SPI
 socket. Later diagnostics confirmed the AT-SPI bus and registry are running,
 and GNOME's `toolkit-accessibility` preference was false; the owner enabled
-it. The probe dump showed the editor as `gnome-text-editor`, but the driver
-filter missed hyphens. The tree exposed the text widget, but PyGObject method
-resolution also selected a deprecated Accessible `get_text` helper instead
-of the Text interface method. Both issues are fixed; failed probes emit
-redacted app/tree metadata. Rerun before judging the accessibility interface.
-No UI workflow was exercised.
+it. The probe exposed the exact fixture in the standalone editor after two
+driver fixes: hyphen-tolerant app-name matching and explicit AT-SPI Text
+interface dispatch. A stale Bitwarden process still emits a missing-socket
+warning, but Text Editor is exposed. The find/replace controls and complete
+workflow have not yet been exercised.
 
 ## Collection and controls
 

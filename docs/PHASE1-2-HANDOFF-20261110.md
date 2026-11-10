@@ -243,14 +243,13 @@ cleared; using the persistent repository fixture still did not expose the
 document over AT-SPI. The driver now launches a standalone editor with
 `GTK_A11Y=atspi` scoped to that process, requires the exact document in the
 accessibility tree, and redacts document text in probe output. Per-user
-diagnostics show the bus and registry running. The GNOME
-`toolkit-accessibility` preference was false, and enabling it did not fix
-document discovery. Its desktop dump showed the editor's hyphenated name,
-which the original filter missed. The filter now normalizes punctuation, and
-the tree showed its text widget. PyGObject had also resolved a deprecated
-Accessible `get_text` helper rather than the Text interface; the driver now
-calls the explicit interface method. Rerun before concluding the editor is
-inaccessible.
+diagnostics showed the bus and registry running. The GNOME
+`toolkit-accessibility` preference was false and is now enabled. The updated
+probe exposes the exact 64 KiB fixture in Text Editor; the app-name filter and
+PyGObject Text-interface dispatch both needed fixes. A stale Bitwarden process
+still emits a missing-socket warning, but the editor itself is accessible.
+The find/replace controls and complete 20-operation workflow remain to be
+validated.
 Interactive workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.

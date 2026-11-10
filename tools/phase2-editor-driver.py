@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 _ATSPI_API: Any = None
 
 
@@ -438,8 +438,9 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         "scenario": args.scenario,
         "kernel_release": args.kernel_release,
         "kernel_config_sha256": args.kernel_config_sha256,
-        "candidate_package_sha256": args.package_sha256,
-        "source_sha256": args.source_sha256,
+        "kernel_package_sha256": args.package_sha256,
+        "kernel_payload_sha256": args.kernel_payload_sha256,
+        "build_source_sha256": args.source_sha256,
         "app": "GNOME Text Editor",
         "app_version": app_version,
         "fixture_sha256": sha256(fixture),
@@ -472,8 +473,9 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("--scenario", choices=("interactive-use", "interactive-compilation"), required=True)
     run_parser.add_argument("--kernel-release", required=True)
     run_parser.add_argument("--kernel-config-sha256", required=True)
-    run_parser.add_argument("--package-sha256", required=True)
-    run_parser.add_argument("--source-sha256", required=True)
+    run_parser.add_argument("--package-sha256")
+    run_parser.add_argument("--kernel-payload-sha256", required=True)
+    run_parser.add_argument("--source-sha256")
     run_parser.add_argument("--app-version", required=True)
     run_parser.add_argument("--editor", default="gnome-text-editor")
     run_parser.add_argument("--startup-timeout-s", type=float, default=30.0)

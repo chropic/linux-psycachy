@@ -105,21 +105,17 @@ again included TDX unsupported and a Logitech HID++ protocol ping mismatch,
 also observed on candidate. `geoclue.service` timed out after 90 seconds on
 both the candidate and generic boots. This reproduces a GeoClue startup issue
 on both B550I kernel choices rather than a candidate-only failure. The initial
-AT-SPI probe encountered an already-open Text Editor process with no
-session accessibility-bus socket. A later probe used the persistent fixture
-from `output/phase2-inputs/` but still could not expose it over AT-SPI. The
-owner's read-only diagnostics confirm that the accessibility bus and registry
-are running. GNOME's `toolkit-accessibility` preference was `false`; the owner
-enabled it, but the probe still failed to locate the fixture. Its desktop dump
-showed the standalone app as `gnome-text-editor` (PID 12312), while the driver
-filter only recognized spaces or dots, so it missed the hyphenated app name.
-The filter now normalizes punctuation. The tree exposed the text widget, but
-PyGObject method resolution also selected the deprecated Accessible
-`get_text` helper instead of the Text interface method; the driver now calls
-the `Atspi.Text` method explicitly. Failed probes print app/tree metadata,
-accessible text lengths, and fixture-hash matches without exposing document
-contents. Rerun validation before treating this as an application
-accessibility failure. No editor workload has run.
+The first AT-SPI probe encountered an existing Text Editor process with no
+session accessibility-bus socket. Read-only diagnostics confirmed that the
+AT-SPI bus and registry are running; GNOME's `toolkit-accessibility`
+preference was `false`, and the owner enabled it. The subsequent probe
+successfully exposed the exact 64 KiB fixture in Text Editor 50.1. It required
+two driver fixes: normalize punctuation in the app name and call the AT-SPI
+Text interface explicitly to avoid PyGObject selecting the deprecated
+Accessible `get_text` helper. The probe redacts document contents. An unrelated
+stale Bitwarden process still emits a missing-socket warning. Find/replace
+controls and the full 20-operation workload remain to be validated; no editor
+workload has run.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
