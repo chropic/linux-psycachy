@@ -3,9 +3,11 @@
 ## Decision
 
 The owner authorized a reviewed candidate install after physical readiness
-checks. This review covers package identity, hook behavior, and recovery
-effects. It is not a go-ahead to install yet: the physical checks have not
-been returned. The recovery-panel route is outside this review.
+checks. The owner returned those checks, the target state and package hashes
+were re-verified, and the candidate was installed, selected, and booted
+successfully. This record covers package identity, hook behavior, recovery
+effects, and the observed result; it is not release approval. The
+recovery-panel route is outside this review.
 
 ## Candidate identity
 
@@ -57,30 +59,51 @@ is separately retained under
 were checked. Keep both copies intact through candidate installation and
 rollback.
 
-## Conditions before installation
+## Pre-install gates applied
 
-1. Owner confirms physical power source, main-battery charge, temperature,
-   and that the device is stable on the fallback kernel. Confirm speakers
-   after restart for baseline functionality.
-2. Reconnect to SP12 and re-read the running kernel, package state, boot config,
-   ESP mount state, and hashes of active ESP plus both recovery copies. Stop if
-   they differ from the reviewed state and re-review the new state.
-3. Transfer only these exact candidate packages to temporary storage, verify
-   both hashes on-device, and confirm sufficient root and ESP space.
-4. Install packages while boot config still selects the fallback. Verify
-   package status, generated candidate initrd and DTB, clean `dpkg --audit`,
-   and that the active ESP still contains the fallback set.
-5. Before switching selection, verify the helper and boot config on-device,
-   confirm the refreshed recovery snapshot now matches the saved current
-   fallback copy, then select/sync the candidate and verify all three active
-   ESP hashes against `/boot` before reboot.
-6. Reboot only with a verified remote or physical recovery path available.
-   After boot, verify kernel, display, storage, radios/network access, audio,
-   and package state. Keep the fallback boot config and both off-host payload
-   copies available for rollback.
+The following gates were completed in order before candidate selection:
 
-No package has been staged or installed during this review. No boot config,
-ESP payload, or recovery snapshot has been changed. The exact target-side
-commands should be generated from fresh read-only state after the owner
-returns the readiness checks; this record intentionally does not prescribe a
-blind command sequence.
+1. The owner confirmed physical power, 77% battery, no unusual heat,
+   controllable brightness, working radios, and working speakers.
+2. Root Tailscale SSH re-read the running kernel, package state, boot config,
+   ESP mount state, and active/recovery payload hashes; they matched the
+   reviewed state.
+3. The exact candidate packages were transferred to `/tmp`, both hashes were
+   verified on-device, and root/ESP space was confirmed sufficient.
+4. Packages were installed while boot config still selected the fallback.
+   Package status, generated candidate initrd and DTB, clean `dpkg --audit`,
+   and unchanged fallback ESP files were verified.
+5. The on-device recovery snapshot was confirmed to match the saved current
+   fallback after sync. The candidate was selected and synced; all three active
+   ESP hashes matched `/boot` before reboot.
+6. SP12 rebooted and successfully returned over Tailscale. Kernel, display,
+   root storage, network, owner-confirmed audio, and package state were
+   checked. The fallback config backup and both off-host payload copies remain
+   available for rollback.
+
+## Completed install and boot verification
+
+The owner returned the physical readiness checks: plugged in, 77% battery,
+not hot to the touch, brightness controllable, radios working, and speakers
+working. Fresh read-only checks confirmed fallback selection, clean dpkg
+state, read-only ESP, sufficient disk space, and the two preserved payload
+sets. The exact package hashes above were verified on the B550I and on SP12
+`/tmp` before installation.
+
+Both packages were installed as root while `boot.conf` still selected the
+fallback. The generated candidate initrd and DTB were verified, `dpkg --audit`
+was clean, and the fallback ESP payload remained unchanged. Before switching,
+the fallback boot configuration was saved at
+`/var/lib/sp12-linux/boot.conf.pre-candidate-20261110`. Candidate selection
+and `sp12-sync-boot` saved the current fallback set into the on-device recovery
+directory before promoting the candidate. All active ESP candidate hashes
+matched `/boot`, the fallback recovery manifest verified, and the ESP was
+read-only before reboot.
+
+The reboot reached release `7.3.1-psycachy-sp121` (boot ID
+`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`). Tailscale returned after about a
+minute without physical intervention. `dpkg --audit` remained clean, the
+fallback package remains installed, and the checksum-verified fallback is
+available in `/var/lib/sp12-linux/recovery`. The older original recovery
+payload remains preserved in the ignored off-host copy. No policy or firmware
+change was made, and no workload trial was run.

@@ -3,22 +3,25 @@
 ## Scope
 
 A fresh schema-v1 inventory was streamed through the existing read-only
-collector over the approved Tailscale SSH session. The script ran from stdin;
-the only output file was written locally under ignored `output/`. No workload,
-package, policy, boot-file, or device change was made.
+collector before the candidate reinstall. The script ran from stdin; its only
+inventory output was written locally under ignored `output/`. The reviewed
+candidate was subsequently installed and booted; no workload or system-policy
+change was made.
 
-## Current fallback state
+## Current candidate state
 
 - Target: Microsoft Surface Pro 12in 1st Edition, AArch64, 8 logical CPUs
 - OS: Ubuntu 26.10
-- Running kernel: `7.3.0-sp12-v7.3-platform`
+- Running kernel: `7.3.1-psycachy-sp121` (boot ID
+  `6bf2c7ea-122a-4bb4-9436-2ae07d28773b`)
 - CPUFreq: 2 policies; CPUIdle `psci_idle` / `menu`
 - Thermal zones: 36
 - ESP: `/dev/sda1`, mounted read-only
-- Candidate image package: residual-config state `rc`; headers package: absent
+- Candidate image and headers packages: installed (`ii`); fallback image also
+  remains installed
 - `dpkg --audit`: clean
-- Active kernel and DTB match the original recovery set; the active initrd has
-  since been regenerated and no longer matches the original recovery initrd
+- Candidate ESP kernel, initrd, and DTB match their `/boot` files; ESP is
+  mounted read-only
 
 The collector recorded 102 telemetry rows, but they are point-in-time inventory
 data, not workload measurements. Its `load1` was 1.04 during capture. The
@@ -26,32 +29,39 @@ data, not workload measurements. Its `load1` was 1.04 during capture. The
 temperature control. The collector found no powercap energy counter.
 
 Power telemetry remains unsuitable for an approved energy comparison. The
+owner physically confirms the device is plugged in and at 77% battery. The
 system reports a main-battery energy value of 28.552 Wh and `Not charging`,
 while a separate HID battery reports 0% with unknown status. Earlier direct
-read-only sysfs checks showed USB power online at one interface and conflicting
-AC/USB source states at others. The external whole-system energy meter is not
-provided through the inventory. The owner reports a UPS is available but its
-accuracy and metering capability are unknown; it has not been qualified to
-measure whole-system Wh. Verify the physical power source and main-battery
-charge range, and qualify a suitable meter before trials.
+read-only sysfs checks show USB power online at one interface and conflicting
+AC/USB source states at others. The owner confirms the whole setup is
+connected to an APC Back-UPS XS 1500G and says its battery warning is a false
+alarm. The owner clarified that normal idle is 140–160 W; the UPS reads about
+250 W while a kernel build is running. Its NUT USB feed polls every two
+seconds and exposes only 19% load and nominal 865 W (about 164 W), not measured
+watts or Wh. This matches the normal-idle range. Validate that estimate
+against the display at idle and under load, then integrate sampled watts and
+quantify error before Phase 2 trials. Keep the owner's physical 77% battery
+reading rather than substituting the inconsistent sensor reports.
 
-After the owner restarted SP12, the active kernel remained the fallback. The
-active ESP initrd matches its `/boot` source at SHA-256
+Before candidate selection, the active fallback initrd matched its `/boot`
+source at SHA-256
 `0b37595fbe6d03647ce48df946c0e84bbc54f372d2f37052825e86a562481b58`, while
-the separately preserved original recovery initrd remains at
-`f396c44daf6e9326b7d113d1330af5dca39fc3eb11467e3419526e0d25e4a4fa`.
-Both complete payload sets have ignored off-host copies. Re-read all three
-payload hashes and the recovery manifest before any candidate selection; the
-SP12 sync helper rotates the on-device recovery snapshot to the active ESP
-payload before writing a replacement.
+the original recovery initrd was
+`f396c44daf6e9326b7d113d1330af5dca39fc3eb11467e3419526e0d25e4a4fa`. The
+candidate sync helper saved the current fallback set to the on-device
+recovery directory before promoting the candidate. The recovery manifest
+still verifies and now represents that current fallback; the older original
+recovery set remains in the ignored off-host copy.
 
-The owner reports that hardware otherwise works except for the speakers and
-restarted the device to see whether that resolves it. Read-only follow-up
-confirmed the post-restart kernel is still the fallback. ALSA and PipeWire
-expose an unmuted speaker path at 72% PipeWire volume; ALSA speaker/PA levels
-are 17%. The kernel still logs a Qualcomm APM timeout and codec-cache/binding
-warnings. Audible output remains unverified; no audio playback or mixer change
-was made. The owner should confirm whether the speakers work now.
+The owner confirms speakers work after restart. Read-only candidate checks
+show eDP connected and the X1P42100 audio card enumerated. The owner reports
+radios working; current software shows Wi-Fi unblocked and Bluetooth
+soft-blocked, which was left unchanged. Brightness is controllable; sysfs is
+1256/4095 (30.7%). The owner reports the device is not hot to the touch;
+internal thermal zones were 29.9–34.5°C and are not ambient measurements. A
+numeric ambient/start temperature and fixed display brightness still need to
+be set for repeatable trials. Continue to exclude the invalid
+`surface_thermal` `temp12` reading.
 
 ## Artifact
 

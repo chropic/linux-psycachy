@@ -31,7 +31,9 @@ latest candidate image; the earlier
 The latest image package SHA-256 is
 `b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127` in
 [`VALIDATION.md`](../VALIDATION.md). No matching `.deb` is present in the
-workspace's `output/` or `/tmp`. The retained
+workspace's `output/` or `/tmp`. After the owner suggested a B550I Codex docs
+folder, a broader local search covered `/home/charlie` and `/tmp` and hashed
+all retained `.deb` files; no file matched the expected digest. The retained
 [GitHub Actions run 11 artifact](https://github.com/chropic/linux-psycachy/actions/runs/42642272202)
 was checked, but its image package hash is
 `c8539063623430770ec1567adb67e66738da9eb73fe0587836168d52f538efdb`, which
@@ -50,11 +52,39 @@ component temperatures, not ambient temperature. Exact starting temperature,
 display brightness, radio/peripheral state, and background activity remain to
 be recorded for each trial.
 
-An external meter and verified, repeatable power source are required to assess
-the approved 10% energy gate. Do not substitute CPU counters or a peripheral
-battery reading. Keep the current candidate and generic comparison kernel
-separate, and do not change the existing `performance` policy to prepare a
-trial.
+The owner confirms the entire setup is connected to an APC Back-UPS XS 1500G
+and says the battery warning is a false alarm. On connected host `op7060`, NUT
+polls the USB UPS every two seconds and exposes `ups.load` percent and nominal
+865 W, not measured watts or Wh. At idle, five samples were 20% (173 W
+estimated) while the owner observed 169–183 W, mostly around 175 W. During a
+kernel build, NUT reported 28% (242 W) while the owner observed about 250 W.
+The observed difference is at most about 6% across the stated front-display
+readings. Use this as a calibrated estimate for relative comparisons, preserve
+raw samples, and integrate with the actual elapsed intervals; do not describe
+it as measured Wh. The owner opened the B550I trial window for now.
+
+The exact latest AMD64 `.deb` is unavailable. An isolated rebuild completed
+from the pinned, signature-verified source archive
+(`3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f`). Its
+final config hash exactly matches the running B550I config
+(`3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae`), but
+the local image package hash (`7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92`),
+headers package hash (`1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e`),
+and kernel payload differ from the expected package and installed image. No
+package has been installed. Keep this build classified as a local rebuild;
+review boot selection and rollback before considering it as a distinct
+candidate. See the [local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
+
+The B550I root filesystem was read-only in this execution context; the current
+user has no sudo capability here. The UI driver is absent from the repository
+and staged artifacts, so interactive scenarios are not ready. Do not change
+the existing `performance` policy to prepare trials.
+
+`tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
+trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
+returned four valid 20% samples across 6.00 seconds, no skipped intervals, and
+`complete=true`. This validates NUT access and the integration path, not a
+workload baseline.
 
 ## Artifact
 

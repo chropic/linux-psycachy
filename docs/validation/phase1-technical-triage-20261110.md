@@ -2,11 +2,11 @@
 
 ## Scope and current safety boundary
 
-This review uses the saved Phase 1 reports and candidate boot logs plus a fresh
-read-only inspection after the owner's restart. The owner authorized a
-reviewed candidate reinstall after physical readiness checks. That condition
-has not yet been met; no install or boot-file change was made during this
-review. The recovery-panel boot remains outside scope.
+This review uses the saved Phase 1 reports, a fresh pre-install inspection,
+and the latest candidate boot journal. After the owner supplied the physical
+readiness report, the reviewed candidate reinstall and reboot were completed
+under the prior authorization. The candidate is now running and its fallback
+recovery payload verifies. The recovery-panel boot remains outside scope.
 
 ## DPU firmware observation
 
@@ -27,7 +27,7 @@ kernel documentation notes that built-in drivers may request firmware before
 the real root filesystem is available and recommends putting required
 firmware in the boot initramfs in that situation.
 
-### Read-only SP12 follow-up
+### Pre-install read-only SP12 follow-up
 
 Root SSH inspection after the owner's restart confirmed the active kernel is
 `7.3.0-sp12-v7.3-platform`, the candidate image package is `rc`, candidate
@@ -66,6 +66,21 @@ lines is in ignored
 `output/phase1/sp12-candidate-dpu-journal-20261110.txt` (SHA-256
 `e4ce4a1d1254e5e02e5ff48e57c804c9d32d49b1bb1aa7354a1f0af5327b5e98`).
 
+### Latest candidate boot — 2026-11-10
+
+After the reviewed reinstall, the SP12 booted release
+`7.3.1-psycachy-sp121` with boot ID
+`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`. Its newly generated initrd is
+`55c4796998b575d491ceaebc830934e5addbcbf49af46bb4a4d4a5e5f8fd05db`; this
+is distinct from the earlier retained candidate initrd hash
+`f803e1bca0354084fa39558efe28d60e3396de2cdaf72bda181d245e9b599281`.
+The boot journal again shows early SQE lookup failures, followed around seven
+seconds later by successful SQE and GMU loads and GMU firmware v4.6.4. The eDP
+display connected, the root filesystem mounted, and Tailscale returned after
+about a minute without physical intervention. This confirms the same firmware
+fallback path on the newly generated initrd; it does not demonstrate sustained
+GPU rendering.
+
 Sources: [Ubuntu Resolute Qualcomm firmware package file list](https://packages.ubuntu.com/resolute/all/linux-firmware-qualcomm-graphics/filelist),
 [Linux kernel firmware lookup documentation](https://docs.kernel.org/driver-api/firmware/direct-fs-lookup.html).
 
@@ -82,19 +97,16 @@ RPMB operations, audio, or all storage behavior. The prior record is
 
 The two candidate `surface_serial_hub` unexpected-message notices have no
 matching comparison in the saved platform-kernel boot record. Their functional
-effect is therefore undetermined. The owner reports that speakers were not
-working and restarted the SP12 to check them; the post-restart speaker result
-has not yet been confirmed audibly. Read-only inspection after the restart
-confirmed the device booted the `7.3.0-sp12-v7.3-platform` fallback. ALSA
-exposes the X1P42100 card; PipeWire has a default built-in speaker sink at
-72% volume and no active stream. ALSA's speaker and left/right PA controls are
-at 17%, with speaker DAC/PA/PBR on and WSA digital mutes off. The boot still
-logs a Qualcomm APM command timeout, WSA/RX codec-cache warnings, and an ASoC
-widget-binding deferral, while the card and speaker sink enumerate. This does
-not prove audible output; no test tone or mixer change was made. The captured
-`fwupd-refresh.service` failure was not attributed to the candidate in the
-lifecycle report. These points remain qualification observations; no policy
-or hardware change follows from them. Sanitized evidence is in ignored
+effect is therefore undetermined. After the later candidate reboot, the owner
+confirmed that speakers work. The X1P42100 audio card enumerates in read-only
+inspection; no tone was played and no mixer control was changed. Wi-Fi is
+unblocked; Bluetooth is soft-blocked in software despite the owner's report
+that radios work. The radio state was not changed. The earlier
+`fwupd-refresh.service` failure was not attributed to the candidate. The
+current candidate boot lists `geoclue.service` as failed, but no causal link
+to the kernel is established. These remain qualification observations; no
+system policy or hardware change was made. Earlier sanitized audio-path
+evidence is in ignored
 `output/phase1/sp12-audio-readonly-20261110.txt` (SHA-256
 `5d83f105ccca43efa25490c9210a11a4409254ad0b0feb5ffa0800d273c03af9`).
 
@@ -135,12 +147,10 @@ attempts a different boot path and is outside this authorization.
 
 ## Phase 1 and Phase 2 status
 
-The documented Phase 1 fallback and recovery lifecycle completed for the
-tested default boot path. The later read-only check found a regenerated active
-fallback initrd and a still-verified older recovery initrd; keep these states
-distinct during candidate install review. The candidate's late SQE and GMU
-loads are confirmed by retained journal history; its early lookup warnings
-recovered. The panel route remains unvalidated. Phase 2 choices were received;
-trials still require a qualified whole-system Wh meter and verified physical
-conditions. The candidate reinstall remains conditional on those checks and a
-reviewed target procedure.
+The Phase 1 fallback and recovery lifecycle completed, and the reviewed
+candidate has now been reinstalled and booted successfully. The active ESP
+matches candidate `/boot` payloads; the on-device recovery manifest verifies
+the current fallback. The original older recovery copy remains off-host. Early
+SQE/GMU lookup warnings recovered on both candidate boots. The panel route
+remains unvalidated. Phase 2 choices were received; trials still require a
+qualified whole-system Wh meter and matched physical conditions.

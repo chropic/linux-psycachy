@@ -2,18 +2,20 @@
 
 ## Result and scope
 
-The SP12 is restored to its original package-managed platform kernel,
-`7.3.0-sp12-v7.3-platform`. Candidate boot, package removal, physical fallback
-boot, recovery verification/apply, and a second fallback reboot all completed.
-The candidate packages are removed (`linux-image` residual config state `rc`,
-headers `un`); `dpkg --audit` is clean. The ESP is read-only and contains the
-original known-good platform payload. No tuning or workload trial was run.
+The earlier candidate-removal and fallback-recovery lifecycle completed. After
+the owner's physical readiness report and explicit conditional authorization,
+the reviewed candidate was reinstalled and rebooted successfully. The current
+kernel is `7.3.1-psycachy-sp121`; candidate image and headers are installed,
+`dpkg --audit` is clean, and the ESP is read-only. The fallback remains
+installed and checksum-verified as the on-device recovery payload. No tuning,
+workload trial, or system-policy change was made.
 
 The device already had the candidate installed and was running it when this
 continuation resumed. The config hash approval in the earlier records was
 explicitly for disposable QEMU only; it did not by itself authorize a physical
-install. This record documents the observed state and cleanup, and is not a
-physical-install or release approval.
+install. A separate owner authorization for the reviewed reinstall was
+received after the physical readiness report, as described below; neither
+authorization constitutes release approval.
 
 ## Candidate boot
 
@@ -67,7 +69,7 @@ Platform source and active ESP hashes matched:
 | Initrd | `f396c44daf6e9326b7d113d1330af5dca39fc3eb11467e3419526e0d25e4a4fa` |
 | DTB | `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc` |
 
-## Recovery preservation and final state
+## Recovery preservation during the fallback lifecycle
 
 The fallback selector rotates the recovery set to the pre-removal active ESP
 payload before synchronizing the fallback. That lifecycle behavior captured
@@ -82,7 +84,60 @@ original payload to the active ESP and remounted it read-only. A second reboot
 again reached `7.3.0-sp12-v7.3-platform`; `dpkg --audit` remained clean, the
 recovery manifest verified, and the active ESP hashes still matched the
 original payload. The EFI/BOOT tree compared equal to its saved copy. Firmware
-boot variables were not changed.
+boot variables were not changed during that lifecycle.
+
+## Reviewed candidate reinstall and current boot
+
+After the owner reported SP12 plugged in, at 77% battery, not hot to the
+touch, with controllable brightness, working radios, and working speakers,
+the exact ARM64 image and headers package hashes were verified locally and on
+SP12 before installation. The packages were installed while `boot.conf` still
+selected the platform fallback. The image package generated the physical
+initrd; `dpkg --audit` was clean and the fallback remained active after
+configuration. Before selection, the target's active fallback files matched
+the reviewed off-host fallback copy. The sync helper then saved that current
+fallback set into `/var/lib/sp12-linux/recovery`, selected the candidate, and
+promoted the matching candidate kernel/initrd/DTB to the ESP. The saved
+fallback recovery manifest verifies. The original older recovery initrd
+remains in the off-host recovery copy.
+
+The candidate booted successfully with boot ID
+`6bf2c7ea-122a-4bb4-9436-2ae07d28773b` and release
+`7.3.1-psycachy-sp121`. Installed package status is `ii` for image and
+headers; the platform fallback image remains installed and `dpkg --audit` is
+clean. The active ESP is read-only. Its candidate hashes match `/boot`:
+
+| Payload | SHA-256 |
+| --- | --- |
+| Kernel | `ec4d4435f103038d5f3ed8f14be4afc0d33e13905a3060ce7ee57e383351598e` |
+| Initrd | `55c4796998b575d491ceaebc830934e5addbcbf49af46bb4a4d4a5e5f8fd05db` |
+| DTB | `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc` |
+
+The on-device recovery payload is the current fallback set: kernel
+`3492d2fda4f53179a54e9e1f1b43e5e5a541054355919a287d56c926cf002716`, initrd
+`0b37595fbe6d03647ce48df946c0e84bbc54f372d2f37052825e86a562481b58`, and DTB
+`5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`. Its
+manifest verifies. The older original recovery initrd
+`f396c44daf6e9326b7d113d1330af5dca39fc3eb11467e3419526e0d25e4a4fa` remains
+available in the ignored off-host copy.
+
+The reboot caused about a minute of Tailscale unavailability; it rejoined
+without physical intervention. Read-only checks show the root filesystem
+mounted, eDP connected, Wi-Fi unblocked, and the built-in audio card
+enumerated. The owner confirms speakers work. Bluetooth is soft-blocked in
+software despite the owner's report that radios work; it was not changed. The
+owner reports controllable brightness; sysfs reads 1256/4095 (30.7%). The
+owner did not report a numeric ambient temperature; the 36 internal thermal
+zones were 29.9–38.9°C during inspection and are not ambient readings. The
+`surface_thermal` `temp12_input` channel still returned -273.1°C. Software
+power-source values remain conflicting despite the physical report that it is
+plugged in and charging.
+
+The current kernel log again records early SQE lookup errors followed about
+seven seconds later by successful SQE and GMU firmware loads and GMU v4.6.4.
+UFS RPMB registration fails while root storage remains available. The only
+service listed by `systemctl --failed` after this boot is
+`geoclue.service`; its relation to this candidate is not established.
 
 The recovery-panel payload hashes remain unchanged: kernel
 `31f62bebc7dc0483b157021dcd4b295c256a48f9555b64dcf98cd1ac205460c2`, initrd
@@ -102,6 +157,8 @@ Machine-specific transcripts and inventory JSON are under ignored `output/`:
 - `output/phase1/sp12-fallback-post-recovery-boot-20261110.log`
 - `output/phase2/sp121-arm64-inventory-after-phase1-20261110.json` (SHA-256
   `f01e62172582ffa5edbcee3fb13eee3f322468c044b081145130d83e332bb199`)
+- `output/phase1/sp12-candidate-reinstall-boot-20261110.txt` (SHA-256
+  `939acec660fc3705685fc97aff11f661f43b092ca8cf860785ed68316f252ade`)
 
 The fresh Phase 2 inventory reports AArch64, the restored platform kernel,
 two CPU-frequency policies, 36 thermal zones, and 102 telemetry metrics. It is

@@ -40,46 +40,79 @@ B550I by `tools/prepare-phase2-inputs.py`; the ignored manifest is
 All three files were copied over the approved Tailscale connection to
 `/tmp/phase2-inputs/` on SP12 and their hashes matched on 2026-11-10. Pin the
 build source commit and per-target config; each run starts with an empty output
-directory. The UI driver must timestamp
-each operation with a monotonic clock and verify its resulting document state;
-validate the driver against both desktop sessions before collecting results.
+directory. A UI driver is not present in the repository or staged artifacts.
+Before interactive scenarios, implement and validate a driver on each desktop
+that timestamps operations with a monotonic clock and verifies resulting
+document state.
 Measure p95 over the same 20 operations in interactive-use and
 interactive-compilation runs. Record fixture/clip hashes, app and driver
 versions, compiler version, build config hash, source hash, candidate package
-hash, and driver version in each run manifest. These artifacts and the UI driver
-are staged on both targets, but the UI driver is not yet validated, so the run
-protocol is specified but not yet trial-ready.
+hash, and driver version in each run manifest. The fixed inputs are staged on
+both targets; the missing UI driver and unqualified candidate comparison make
+the protocol not yet trial-ready.
 
 ## Collection and controls
 
-Use the existing `phase2-collector.py sample` command for telemetry. Enter
-external meter start/end Wh in run metadata; battery and CPU counters are not
-whole-system energy. Keep power source and charge range, brightness, radios,
-peripherals, ambient and starting temperature, active power policy, workload
-version, and background activity matched within each baseline/candidate pair.
+Use the existing `phase2-collector.py sample` command for target telemetry.
+For whole-system power, stage `tools/phase2-ups-meter.py` on the NUT host and
+run:
+
+```sh
+python3 phase2-ups-meter.py sample --ups apcups@localhost --duration-s 1800 \
+  --output <run-id>-ups.json
+```
+
+It samples `ups.load` every two seconds and
+converts percent to estimated watts as `load_pct * 865 / 100`. It integrates
+adjacent pairs by trapezoid rule over monotonic elapsed seconds and divides by
+3600 for estimated Wh. Preserve raw load samples, timestamps, the 865 W
+nominal rating, and converted values; label results estimated Wh, not measured
+UPS energy. Inspect the summary's `complete` flag and don't use incomplete
+captures for the threshold. Battery and CPU counters are not whole-system
+energy. Keep power source and charge range, brightness, radios, peripherals,
+ambient and starting temperature, active power policy, workload version, and
+background activity matched within each baseline/candidate pair.
 Do not change kernel configuration, scheduler policy, power profile, or other
 system policy between runs.
 
 ## Readiness gates before the first trial
 
-- Qualify a meter that reports or can integrate whole-system Wh. The owner has
-  a UPS, but its model, measurement method, and accuracy are unknown; do not
-  treat it as a meter until those details are verified.
+- Meter cross-check passed provisionally for relative energy comparisons.
+  The owner confirms the entire setup is on an APC Back-UPS XS 1500G and says
+  the battery warning is a false alarm. NUT on `op7060` exposes 2-second
+  `ups.load` samples and nominal 865 W, but no measured W/Wh. At idle, five
+  samples were 20% (173 W estimated) while the owner observed 169–183 W,
+  mostly around 175 W. During a kernel build, NUT reported 28% (242 W) while
+  the owner observed about 250 W. These cross-checks differ by at most about
+  6% across the stated display readings, below the approved 10% energy gate.
+  Treat this as a calibrated estimate, not a precision watt-hour meter; retain
+  raw samples and integrate trapezoidally at the actual sample intervals.
+  The new sampler completed a six-second smoke capture from op7060 with four
+  valid 20% samples, 6.00 seconds integrated, no skipped intervals, and a
+  complete result. This checked NUT access and integration only; it was not a
+  workload or energy baseline.
 - Validate the same UI driver on both desktops before interactive scenarios.
-- Physically verify SP12 power source, main-battery charge range, brightness,
-  radio/peripheral state, and an acceptable ambient/start temperature. Its
-  software power-source interfaces conflict; `surface_thermal` `temp12` is
-  invalid.
-- Schedule a B550I test window; its desktop session is live and its root
-  filesystem was read-only during the readiness inventory.
-- For the AMD64 candidate comparison, obtain the exact latest candidate
-  package. The running `7.3.1-psycachy` image predates that package despite
-  sharing the release label; the `.deb` is absent from the workspace.
-- The post-restart SP12 state has been re-confirmed as the fallback. The owner
-  restarted it after reporting a speaker issue; audible output still needs the
-  owner's confirmation. A candidate install is authorized only after the
-  physical checks and review above.
+- The owner confirms SP12 is plugged in, at 77% battery, not hot to the touch,
+  with controllable brightness, working radios, and working speakers. For
+  each trial, record the physical power source and ambient/start temperature,
+  set a fixed brightness, and verify the intended radio/peripheral state.
+  Software power-source interfaces conflict and `surface_thermal` `temp12` is
+  invalid. Bluetooth is soft-blocked in current software.
+- The owner opened the B550I test window for now; its desktop session is live
+  and its root filesystem was read-only during the readiness inventory.
+- For the AMD64 candidate comparison, the exact latest package remains
+  unavailable. A local rebuild from pinned, signature-verified source has
+  matching final config but different image/header package and kernel payload
+  hashes. It is not the exact approved artifact and has not been installed.
+  Review identity and boot/recovery conditions in the
+  [local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
+- The reviewed SP12 candidate install is complete and the device booted the
+  candidate successfully; the checksum-verified platform fallback is saved in
+  the on-device recovery directory. The current sysfs brightness is
+  1256/4095 (30.7%); choose and hold a fixed value for comparisons.
 
-No workload trial has started. Current inventories are documented in the
+No workload trial has started. SP12 is currently offline over Tailscale and
+must be reachable again before its trial; the user may need to check its
+network/device state physically. Current inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and
 [SP12 readiness record](phase2-sp121-readiness-20261110.md).

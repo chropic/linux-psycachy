@@ -145,13 +145,63 @@ started.
 
 ## Owner follow-up — 2026-11-10
 
-The owner reports a UPS is available but does not know its accuracy; no make,
-model, energy-reading capability, or B550I trial window has been provided, so
-it is not yet qualified as the whole-system Wh meter. The owner explicitly
-authorized a reviewed SP12 candidate install after physical readiness checks.
-This is conditional approval: do not install until the current fallback state,
-power/charge/display/radio/temperature conditions, package hashes, and the
-install/rollback procedure have been reviewed. The owner also reported that
-speakers were not working and restarted the SP12; the current software audio
-path enumerates, but audible output after reboot still needs the owner's
-confirmation.
+The owner reported that a UPS was available but its accuracy was unknown; at
+that time its model and metering capability had not been provided. The owner
+explicitly authorized a reviewed SP12 candidate install after physical
+readiness checks. The owner later confirmed SP12 was plugged in, at 77% battery,
+not hot to the touch, with controllable brightness, working radios, and
+working speakers. The reviewed candidate install and reboot completed; see the
+[physical lifecycle report](phase1-physical-lifecycle-20261110.md).
+
+The owner identified the UPS as an APC Back-UPS XS 1500; subsequent USB
+inspection identifies it as model 1500G. The B550I trial window and package
+location were unknown at the time of this update. A local search under the
+B550I home, Codex, project, and temporary folders found no `.deb` matching
+expected SHA-256
+`b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127`.
+
+The owner later opened the B550I test window for now, confirmed the whole setup
+is connected to the UPS, reported about 40 W at idle, and said the battery
+warning is a false alarm. See the meter follow-up below for the outstanding
+telemetry discrepancy and current qualification status.
+
+## Meter topology follow-up — 2026-11-10
+
+Read-only inspection of the owner's `op7060` host identifies the connected
+UPS as APC Back-UPS XS 1500G over USB. NUT `usbhid-ups` polls every two
+seconds. It exposes `ups.load` percent and nominal 865 W, but no measured
+watts or Wh value. The owner confirms the whole setup is connected and says
+the battery warning is a false alarm. NUT showed 20% load (173 W estimated)
+in five idle samples while the owner observed 169–183 W, mostly about 175 W.
+During a kernel build, NUT showed 28% (242 W estimated) while the owner
+observed about 250 W. The readings differ by at most about 6% across the
+reported display range. This qualifies the feed provisionally for relative
+energy comparisons against the approved 10% threshold. Treat the result as
+estimated Wh, retain raw samples, and integrate trapezoidally over monotonic
+sample intervals. It is not a calibrated or direct Wh reading. No UPS
+configuration or battery test was performed. The repository now includes
+`tools/phase2-ups-meter.py`; a six-second smoke capture on `op7060` returned
+four valid 20% samples and a complete 6.00-second integration with no skipped
+intervals. This was a sampler smoke check, not a Phase 2 result.
+
+## AMD64 rebuild review — 2026-11-10
+
+No local `.deb` matched the expected AMD64 image hash. The owner has no known
+alternate package location. An isolated rebuild completed from a pinned,
+signature-verified source archive. The final config hash matches the currently
+running B550I config exactly, but the rebuilt image and headers package hashes
+and embedded kernel payload do not match the expected package and installed
+image. The local rebuild is not represented as the exact approved artifact;
+it remains uninstalled pending boot-selection and rollback review. Build
+hashes and structural checks are in ignored
+`output/phase2-amd64-candidate-rebuild-20261110/completion-note.txt`.
+
+## Current access and readiness — 2026-11-10
+
+The Phase 2 UI driver is absent from the repository and staged files. No
+workload trial has started. The SP12 was online after the reviewed install,
+but is currently not answering Tailscale SSH; its last Tailscale status was
+inactive. The B550I filesystem in this Codex execution context is mounted
+read-only and sudo is blocked by `no_new_privileges`, so a package install or
+kernel selection requires the owner's sudo-capable host context. The recovery
+payload remains preserved; do not change the recovery-panel entry.
