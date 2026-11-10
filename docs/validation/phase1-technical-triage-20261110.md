@@ -81,9 +81,18 @@ The operator-assisted read-only comparison found the installed
 ESP copy hash
 `b2e5bfcc05e7f070581a197d3a6d7a3a8a34833bb825d0979d54d444bc8b10e4`.
 `cmp` returned 1. The panel kernel and DTB matched their recorded installed
-counterparts. No evidence currently establishes which initrd is intended or
-when they diverged. The ESP payload has not been altered and the panel entry
-has not been booted.
+counterparts.
+
+Root SSH read-only inspection found the ESP initrd is 103,732,141 bytes and
+dated 2026-08-13 12:46 MDT; the installed `/boot` initrd is 104,239,354 bytes
+and dated 2026-08-16 12:05 MDT. The installed initrd's listing has
+`scmi-cpufreq.ko`, `scmi_perf_domain.ko`, Btrfs utilities, and SP12 power-rule
+configuration that are absent from the ESP copy. The ESP copy alone contains
+an old Linux 7.0.0-29 blacklist file. The panel image package
+`7.2.0~rc7-2` is installed. These facts establish that the ESP has an older,
+different initrd listing; package and initramfs logs do not establish why it
+was refreshed or which payload was intended for the recovery entry. The ESP
+payload has not been altered and the panel entry has not been booted.
 
 If panel recovery is still required, review the package ownership, initrd
 timestamps and generation records, and the exact GRUB entry before proposing
