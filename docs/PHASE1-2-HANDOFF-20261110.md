@@ -80,7 +80,8 @@ ARM64 after physical readiness checks. Remaining readiness limits include
 inconsistent SP12 AC/USB/battery source reports, an invalid
 `surface_thermal` `hwmon4/temp12_input` channel, and no verified external
 whole-system energy meter. See the [owner review](validation/phase2-owner-review-20261109.md)
-and [AMD64 readiness record](validation/phase2-amd64-readiness-20261110.md).
+and the [AMD64](validation/phase2-amd64-readiness-20261110.md) and
+[SP12](validation/phase2-sp121-readiness-20261110.md) readiness records.
 Do not change kernel config, patches, scheduler policy, or power profile to
 prepare trials.
 

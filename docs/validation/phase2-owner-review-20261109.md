@@ -126,6 +126,8 @@ matching artifact, a controlled kernel-selection window, and meter setup.
 The SP12 root SSH snapshot confirms the original fallback kernel, clean dpkg
 audit, read-only ESP, and recovery payload hashes. Power-source interfaces
 still disagree, and the `surface_thermal` `hwmon4` channel remains invalid.
+The fresh collector result is summarized in
+[`phase2-sp121-readiness-20261110.md`](phase2-sp121-readiness-20261110.md).
 Neither target currently has a verified whole-system energy-meter feed. Do
 not treat a battery or CPU counter as a substitute for the approved energy
 gate. The owner should provide or identify suitable meter hardware and

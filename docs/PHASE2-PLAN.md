@@ -182,6 +182,8 @@ Owner selections are recorded in
 [`validation/phase2-owner-review-20261109.md`](validation/phase2-owner-review-20261109.md).
 The current AMD64 inventory and readiness limits are in
 [`validation/phase2-amd64-readiness-20261110.md`](validation/phase2-amd64-readiness-20261110.md).
+The current SP12 inventory and power-source limits are in
+[`validation/phase2-sp121-readiness-20261110.md`](validation/phase2-sp121-readiness-20261110.md).
 The candidate DPU firmware observation now has a read-only current-state
 comparison in
 [`validation/phase1-technical-triage-20261110.md`](validation/phase1-technical-triage-20261110.md);
