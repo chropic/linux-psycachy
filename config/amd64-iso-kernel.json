@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "kernel_release": "7.3.1-psycachy",
+  "debian_version": "7.3.1-1psycachy1",
+  "architecture": "amd64",
+  "cpu_target": "znver3",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "resolved_config_sha256": "3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae",
+  "packages": [
+    {
+      "name": "linux-headers-7.3.1-psycachy",
+      "filename": "linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb",
+      "sha256": "1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e"
+    },
+    {
+      "name": "linux-image-7.3.1-psycachy",
+      "filename": "linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb",
+      "sha256": "7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92"
+    }
+  ]
+}

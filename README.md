@@ -1,8 +1,9 @@
 # PsyCachy
 
 PsyCachy builds an Ubuntu 26.10 desktop installer and custom x86-64 kernel
-from CachyOS 7.3.1-1. The installer is **experimental**: candidate v13 passed
-offline and Secure Boot VM tests, but has not been tested on the target PC.
+from CachyOS 7.3.1-1. The AMD64 installer is **experimental**: candidate v13
+passed offline and Secure Boot VM tests. The newer pinned AMD64 package pair
+has physical boot evidence but its ISO install path is not yet validated.
 Kernel packages use the build computer's CPU settings and require a compatible
 CPU. A user reports successful regular use on a physical system; individual
 hardware and recovery checks remain unverified. Review the installer guide and
@@ -38,10 +39,10 @@ builder; the legacy invocation without `--target` still selects it. Use
 `bash build.sh --target b550i-amd64 --dry-run` to review its plan without
 writing output. Dry runs also describe the experimental `sp121-arm64` package
 path and the unimplemented `all` target. SP12 supports authenticated
-source/configuration preparation and a candidate ARM64 kernel package build,
-but no ISO build. Kernel and module compilation completed; `.deb` generation
-has produced candidate ARM64 image and headers packages, and the package
-structure verifier passes. A full native AMD64 build also exits successfully
+source/configuration preparation, a pinned ARM64 kernel candidate, and a
+verified target payload bundle, but no ARM64 ISO build yet. Kernel and module
+compilation completed; `.deb` generation has produced candidate ARM64 image and
+headers packages, and the package structure verifier passes. A full native AMD64 build also exits successfully
 and produces image and headers packages whose package structure and checksums
 were verified. Both target candidates remain experimental until configuration,
 package-install, recovery, and target-hardware gates are reviewed.

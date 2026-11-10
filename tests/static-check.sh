@@ -25,9 +25,12 @@ for script in build.sh config/source-pin.sh targets/sp121-arm64/prepare.sh targe
   tests/iso-signing-failure.sh tests/iso-update-fallback.sh tests/iso-offline-policy.sh; do
   bash -n "$script"
 done
-python3 -m py_compile tools/config_diff.py tools/deb_dependencies.py iso/select-disk.py tests/iso-no-io-uring.py tests/arm64-kernel-smoke.py tools/verify-arm64-packages.py
+python3 -m py_compile tools/config_diff.py tools/deb_dependencies.py iso/select-disk.py iso/kernel_package_pin.py iso/verify-kernel-packages.py iso/verify-archive-packages.py tests/test_kernel_package_pin.py tests/test_arm64_iso_pin.py tests/iso-no-io-uring.py tests/arm64-kernel-smoke.py tools/verify-arm64-packages.py
 python3 tests/test_config_diff.py
 python3 tests/test_deb_dependencies.py
+python3 tests/test_archive_packages.py
+python3 tests/test_kernel_package_pin.py
+python3 tests/test_arm64_iso_pin.py
 python3 tests/test_target_selection.py
 python3 tools/verify-sp121-inputs.py
 python3 tests/test_sp121_inputs.py

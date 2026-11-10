@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "release": "26.10",
+  "architecture": "arm64",
+  "filename": "ubuntu-26.10-desktop-arm64.iso",
+  "sha256": "9242a38c47eb53a5beb153c249d4843e4366f8955e9b972663e4ab7989311e9f"
+}

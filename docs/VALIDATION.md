@@ -28,6 +28,46 @@ znver3-equivalent CPU compatibility or physical B550I operation. Build logs,
 package files, and the receipt are retained outside Git in the task's
 package-artifact directory.
 
+## Current AMD64 ISO kernel candidate — 2026-11-10
+
+The historical ISO package pair was unavailable locally. A separate rebuild
+from the pinned, signature-verified source produced a candidate pair with the
+same resolved configuration as the installed kernel. The exact pair is pinned
+in [`config/amd64-iso-kernel.json`](../config/amd64-iso-kernel.json): headers
+SHA-256
+`1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e` and image
+SHA-256
+`7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92`. Package
+structure and metadata passed verification. The candidate booted on the
+physical AMD64 target with Secure Boot and NVIDIA checks reported passing; the
+generic kernel remains the saved fallback. A later read-only review found no
+block I/O or recognized watchdog failure signatures in the checked logs.
+
+This pin is a build candidate, not ISO validation or release approval. The
+candidate has not passed the new ISO's disposable-VM install, second-disk
+preservation, and boot-without-media checks. Those checks also require the
+official signed Ubuntu base ISO and QEMU/OVMF. The AMD64 configuration targets
+`znver3`, so its packages require a compatible processor. See the
+[local rebuild review](validation/phase2-amd64-local-rebuild-review-20261110.md).
+
+The official Ubuntu 26.10 AMD64v3 base image and Canonical-signed checksum
+list were downloaded and verified. The offline Ubuntu package closure was
+resolved and hash-checked. ISO assembly reached its editor stage, then stopped
+because this execution environment cannot attach loop devices; the constrained
+user namespace does not have host loop-device permission. No ISO was produced.
+
+## SP12 ARM64 ISO inputs — 2026-11-10
+
+The current ARM64 kernel package pair and official Ubuntu 26.10 ARM64 base ISO
+are pinned in [`config/arm64-iso-kernel.json`](../config/arm64-iso-kernel.json)
+and [`config/arm64-iso-base.json`](../config/arm64-iso-base.json). Package
+structure, AArch64 headers tools, DTB identity, physical candidate boot, and
+fallback recovery lifecycle have evidence elsewhere in this validation set.
+The target payload bundler now enforces the exact package hashes. No ARM64 live
+or installer ISO builder exists in this repository yet; live-media assembly,
+guarded install integration, disposable ARM64 ISO lifecycle tests, and physical
+USB validation remain open.
+
 The kernel was built in Ubuntu 26.10 using native CPU optimization.
 Use these CPU-specific packages only on compatible CPUs. The package tests
 below ran on November 5, 2026; installer tests ran on November 7.

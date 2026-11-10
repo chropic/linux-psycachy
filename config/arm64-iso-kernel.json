@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "kernel_release": "7.3.1-psycachy-sp121",
+  "debian_version": "7.3.1-1psycachy1",
+  "architecture": "arm64",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "config_seed_sha256": "04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659",
+  "resolved_config_sha256": "e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c",
+  "dtb_path": "qcom/x1p42100-microsoft-sp12in.dtb",
+  "dtb_sha256": "5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc",
+  "packages": [
+    {
+      "name": "linux-headers-7.3.1-psycachy-sp121",
+      "filename": "linux-headers-7.3.1-psycachy-sp121_7.3.1-1psycachy1_arm64.deb",
+      "sha256": "908ec65e415247af5c80361f243ebcd8b866c79186daa489a02471f13a0afad7"
+    },
+    {
+      "name": "linux-image-7.3.1-psycachy-sp121",
+      "filename": "linux-image-7.3.1-psycachy-sp121_7.3.1-1psycachy1_arm64.deb",
+      "sha256": "8382f741b7472f24fb6ef6b505cb67a2b5f882cf15fa0984af32cdc23b30f3d5"
+    }
+  ]
+}

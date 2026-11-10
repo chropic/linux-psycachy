@@ -66,6 +66,11 @@ update-fallback, and unsigned-module tests are destructive to the disposable
 guest and must never run on an existing system. See their script comments for
 preconditions. The real hardware test is separate from this VM workflow.
 
+The helper accepts `PSYCACHY_QEMU_IMG`, `PSYCACHY_QEMU_IO`,
+`PSYCACHY_QEMU_SYSTEM`, and `PSYCACHY_OVMF_DIR` for an isolated local tool
+directory. These override executable and firmware paths only; VM disks remain
+new disposable files under the specified VM directory.
+
 ## Test in a disposable Ubuntu 26.10 VM
 
 The following tests install packages or load kernel modules. Run them only in

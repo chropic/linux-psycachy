@@ -3,6 +3,7 @@
 import hashlib
 import pathlib
 import sys
+from kernel_package_pin import expected_records
 
 if len(sys.argv) != 3:
     raise SystemExit("Usage: verify-archive-packages.py LOCAL_PACKAGES APT_LISTS_DIRECTORY")
@@ -28,12 +29,7 @@ def identity(record, digest):
     return tuple(record.get(key, "") for key in ("Package", "Version", "Architecture")) + (digest,)
 
 
-custom = {
-    ("linux-headers-7.3.1-psycachy", "7.3.1-1psycachy1", "amd64",
-     "79bd9418e8c2aa8eaa74f4e0d92b678f13fd32f7a628a2c85494b5b073127b11"),
-    ("linux-image-7.3.1-psycachy", "7.3.1-1psycachy1", "amd64",
-     "b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127"),
-}
+custom = expected_records()
 local_index = pathlib.Path(sys.argv[1])
 local_records = list(records(local_index))
 local_sha256 = {identity(record, record.get("SHA256", "")) for record in local_records}

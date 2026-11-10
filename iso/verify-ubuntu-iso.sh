@@ -7,11 +7,23 @@ if (( $# != 3 )); then
   exit 2
 fi
 
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+mapfile -t base_identity < <(python3 - "$root/config/amd64-iso-base.json" <<'PY'
+import json, sys
+manifest = json.load(open(sys.argv[1], encoding="utf-8"))
+if manifest.get("schema_version") != 1 or manifest.get("architecture") != "amd64":
+    raise SystemExit("Unsupported AMD64 base ISO manifest")
+print(manifest["filename"])
+print(manifest["sha256"])
+PY
+)
+(( ${#base_identity[@]} == 2 )) || { echo 'Invalid AMD64 base ISO manifest' >&2; exit 1; }
+name=${base_identity[0]}
+expected_hash=${base_identity[1]}
 iso=$1
 sums=$2
 signature=$3
 keyring=/usr/share/keyrings/ubuntu-cdimage-keyring.gpg
-name=ubuntu-26.10-desktop-amd64.iso
 
 [[ ${iso##*/} == "$name" && -f $iso ]] || {
   echo "Expected a regular file named $name" >&2; exit 1;
@@ -26,8 +38,9 @@ mapfile -t hashes < <(awk -v name="$name" '
   { file=$2; sub(/^\*/, "", file); if (file == name) print $1 }
 ' "$sums")
 (( ${#hashes[@]} == 1 )) && [[ ${hashes[0]} =~ ^[[:xdigit:]]{64}$ ]] || {
-  echo 'Expected exactly one valid checksum for the Desktop ISO' >&2; exit 1;
+  echo 'Expected exactly one valid checksum for the pinned Desktop ISO' >&2; exit 1;
 }
+[[ ${hashes[0],,} == "$expected_hash" ]] || { echo 'Signed ISO hash differs from the pinned base ISO' >&2; exit 1; }
 actual=$(sha256sum -- "$iso")
 [[ ${actual%% *} == "${hashes[0],,}" ]] || {
   echo 'Ubuntu ISO checksum mismatch' >&2; exit 1;

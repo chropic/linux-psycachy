@@ -24,6 +24,31 @@ def sha256_file(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_iso_kernel_pin(packages_dir: pathlib.Path, pin_path: pathlib.Path | None = None) -> dict:
+    if pin_path is None:
+        pin_path = ROOT / "config/arm64-iso-kernel.json"
+    pin = json.loads(pathlib.Path(pin_path).read_text(encoding="utf-8"))
+    if pin.get("schema_version") != 1 or pin.get("architecture") != "arm64":
+        raise ValueError("Unsupported ARM64 ISO kernel pin")
+    packages = pin.get("packages", [])
+    expected = {entry["filename"]: entry["sha256"] for entry in packages}
+    expected_names = {
+        f"linux-image-{pin['kernel_release']}", f"linux-headers-{pin['kernel_release']}"
+    }
+    if len(expected) != 2 or {entry["name"] for entry in packages} != expected_names:
+        raise ValueError("ARM64 ISO pin must identify one matching image and headers pair")
+    actual = {path.name for path in pathlib.Path(packages_dir).glob("*.deb")}
+    if actual != set(expected):
+        raise ValueError("ARM64 ISO package directory does not exactly match the pinned pair")
+    for filename, digest in expected.items():
+        if sha256_file(pathlib.Path(packages_dir) / filename) != digest:
+            raise ValueError(f"ARM64 ISO package hash differs from pin: {filename}")
+    dtb_hash = pin.get("dtb_sha256", "")
+    if len(dtb_hash) != 64 or any(char not in "0123456789abcdef" for char in dtb_hash):
+        raise ValueError("ARM64 ISO pin has an invalid DTB checksum")
+    return pin
+
+
 def bundle_target(
     packages_dir: pathlib.Path,
     bundle_output: pathlib.Path,
@@ -32,6 +57,10 @@ def bundle_target(
 ) -> dict:
     if bundle_output.exists():
         raise FileExistsError(f"Bundle output directory already exists: {bundle_output}")
+
+    pin = verify_iso_kernel_pin(packages_dir)
+    if pin["kernel_release"] != kernel_release or pin["dtb_path"] != dtb_path:
+        raise ValueError("Requested ARM64 ISO bundle differs from its pinned kernel or DTB")
 
     # Run verification against packages directory
     verification_report = verify_arm64_packages(
@@ -68,6 +97,7 @@ def bundle_target(
         "kernel_release": kernel_release,
         "package_version": verification_report["package_version"],
         "architecture": "arm64",
+        "kernel_pin_sha256": sha256_file(ROOT / "config/arm64-iso-kernel.json"),
         "dtb_path": dtb_path,
         "dtb_sha256": verification_report["dtb"]["sha256"],
         "files": {

@@ -8,20 +8,25 @@ fi
 action=$1
 dir=$2
 iso=$(realpath -- "$3")
+qemu_img=${PSYCACHY_QEMU_IMG:-qemu-img}
+qemu_io=${PSYCACHY_QEMU_IO:-qemu-io}
+qemu_system=${PSYCACHY_QEMU_SYSTEM:-qemu-system-x86_64}
+ovmf_dir=${PSYCACHY_OVMF_DIR:-/usr/share/OVMF}
 [[ -f $iso ]] || { echo 'Installer ISO is missing.' >&2; exit 1; }
 case $action in
   init|init-insecure)
     [[ ! -e $dir && ! -L $dir ]] || { echo 'VM directory already exists.' >&2; exit 1; }
-    command -v qemu-img >/dev/null
-    vars=/usr/share/OVMF/OVMF_VARS_4M.ms.fd
-    if [[ $action == init-insecure ]]; then vars=/usr/share/OVMF/OVMF_VARS_4M.fd; fi
+    command -v "$qemu_img" >/dev/null
+    command -v "$qemu_io" >/dev/null
+    vars=$ovmf_dir/OVMF_VARS_4M.ms.fd
+    if [[ $action == init-insecure ]]; then vars=$ovmf_dir/OVMF_VARS_4M.fd; fi
     [[ -r $vars ]] || { echo 'OVMF variables are missing.' >&2; exit 1; }
     umask 077
     mkdir -p -- "$dir"
-    qemu-img create -f qcow2 "$dir/linux.qcow2" 64G
+    "$qemu_img" create -f qcow2 "$dir/linux.qcow2" 64G
     # Both disks must be large enough to appear as installation targets.
-    qemu-img create -f qcow2 "$dir/other.qcow2" 64G
-    qemu-io -f qcow2 -c 'write -P 0x5a 0 1M' "$dir/other.qcow2"
+    "$qemu_img" create -f qcow2 "$dir/other.qcow2" 64G
+    "$qemu_io" -f qcow2 -c 'write -P 0x5a 0 1M' "$dir/other.qcow2"
     (cd "$dir" && sha256sum other.qcow2 > other.sha256)
     cp -- "$vars" "$dir/vars.fd"
     printf '%s\n' "$action" > "$dir/firmware-mode"
@@ -37,8 +42,8 @@ case $action in
       [[ -f $dir/$file ]] || { echo "Missing $dir/$file" >&2; exit 1; }
     done
     case $(cat "$dir/firmware-mode") in
-      init) firmware=/usr/share/OVMF/OVMF_CODE_4M.ms.fd ;;
-      init-insecure) firmware=/usr/share/OVMF/OVMF_CODE_4M.fd ;;
+      init) firmware=$ovmf_dir/OVMF_CODE_4M.ms.fd ;;
+      init-insecure) firmware=$ovmf_dir/OVMF_CODE_4M.fd ;;
       *) echo 'Invalid VM firmware mode.' >&2; exit 1 ;;
     esac
     accel=${PSYCACHY_VM_ACCEL:-kvm}
@@ -60,8 +65,8 @@ case $action in
       *) echo 'Use none, user, or restricted for networking.' >&2; exit 1;;
     esac
     case $io_uring in
-      on) launcher=(qemu-system-x86_64) ;;
-      off) launcher=(python3 "$(dirname -- "${BASH_SOURCE[0]}")/iso-no-io-uring.py" qemu-system-x86_64) ;;
+      on) launcher=("$qemu_system") ;;
+      off) launcher=(python3 "$(dirname -- "${BASH_SOURCE[0]}")/iso-no-io-uring.py" "$qemu_system") ;;
       *) echo 'Use on or off for io_uring.' >&2; exit 1;;
     esac
     [[ -r $firmware ]] || { echo 'OVMF is required.' >&2; exit 1; }

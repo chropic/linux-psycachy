@@ -12,7 +12,7 @@ fi
 # shellcheck source=/dev/null
 . /etc/os-release
 [[ ${ID:-} == ubuntu && ${VERSION_ID:-} == 26.10 && $(dpkg --print-architecture) == amd64 ]] || die 'Ubuntu 26.10 amd64 is required'
-for cmd in git python3 xorriso mksquashfs unsquashfs gpgv sha256sum mount umount mountpoint findmnt dpkg-scanpackages diff cmp; do
+for cmd in git python3 xorriso mksquashfs unsquashfs gpgv sha256sum mount umount mountpoint findmnt losetup truncate dpkg-scanpackages diff cmp; do
   command -v "$cmd" >/dev/null || die "missing $cmd"
 done
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
@@ -32,6 +32,7 @@ bash "$root/iso/verify-kernel-packages.sh" "$kernels"
 work=$(mktemp -d /var/tmp/psycachy-iso.XXXXXXXX)
 cleanup() {
   mountpoint -q "$work/mount-check" && umount "$work/mount-check" || true
+  if [[ -n ${loop_probe:-} ]]; then losetup --detach "$loop_probe" || true; fi
   if findmnt -rn -o TARGET | awk -v base="$work/" 'index($0,base)==1 {found=1} END {exit !found}'; then
     echo "Mounts remain under $work; leaving it in place for manual cleanup." >&2
   else
@@ -43,6 +44,10 @@ mkdir "$work/mount-check"
 mount -t tmpfs -o size=1m tmpfs "$work/mount-check" || die 'mount support is required'
 umount "$work/mount-check"
 exec > >(tee "$output/build.log") 2>&1
+truncate -s 1M "$work/loop-probe.img"
+loop_probe=$(losetup --find --show "$work/loop-probe.img") || die 'working loop-device access is required to edit the live ISO'
+losetup --detach "$loop_probe" || die 'unable to release the loop-device preflight'
+loop_probe=
 
 if (( $# == 4 )); then
   repo=$(realpath -- "$4")
@@ -61,6 +66,8 @@ git -C "$work/livefs-editor" fetch -q --depth 1 https://github.com/mwhudson/live
 git -C "$work/livefs-editor" checkout -q --detach FETCH_HEAD
 [[ $(git -C "$work/livefs-editor" rev-parse HEAD) == "$editor_revision" ]] || die 'unexpected livefs-editor revision'
 python3 -m venv --system-site-packages "$work/venv"
+"$work/venv/bin/pip" install --disable-pip-version-check --require-hashes \
+  --requirement "$root/iso/build-requirements.txt"
 "$work/venv/bin/pip" install --no-build-isolation "$work/livefs-editor"
 
 mkdir -p "$work/payload/helpers" "$work/payload/repo"
@@ -94,7 +101,10 @@ grep -Eq 'El Torito boot img :[[:space:]]+[0-9]+[[:space:]]+UEFI[[:space:]]+y' "
 {
   printf 'Ubuntu ISO: %s\n' "${source_iso##*/}"
   sha256sum "$source_iso" "$kernels"/*.deb
+  sha256sum "$root/config/amd64-iso-base.json"
+  sha256sum "$root/config/amd64-iso-kernel.json"
   printf 'livefs-editor revision: %s\n' "$editor_revision"
+  "$work/venv/bin/pip" show setuptools livefs-edit | awk '/^(Name|Version):/ {print "Python build " $0}'
   printf 'PsyCachy source revision: %s\n' "$(git -C "$root" rev-parse HEAD)"
   git -C "$root" status --short
   for input in "$root"/iso/*; do
