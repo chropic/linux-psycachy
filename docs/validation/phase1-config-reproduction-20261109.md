@@ -33,7 +33,8 @@ The public repository's releases endpoint returned no releases. Five workflow
 runs were listed for the feature branch; the only non-expired artifact was
 named `psycachy-ubuntu2610-ci-native`, and the other four runs had no artifacts.
 The workflow calls the native `build.sh` path; the artifact was not downloaded
-or inspected. No GitHub artifact containing the exact approved ARM64 config was
-found. The raw metadata inventory is under ignored
+or inspected. The repository has only the feature branch and `master`; neither
+branch tracks a generated ARM64 candidate config. No GitHub artifact containing
+the exact approved ARM64 config was found. The raw metadata inventory is under ignored
 `output/phase1/github-config-artifact-inventory-20261110.json` (SHA-256
-`a8856ffefaf7c6ca968edaa48103678e5e8e860bec27b32a97dbd2f654b4d2fa`).
+`2ccebec062bb5a7d6d39ba30a2023d1603d3e813eb385963f7111910fa42f092`).
