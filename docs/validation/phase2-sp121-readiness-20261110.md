@@ -28,20 +28,22 @@ data, not workload measurements. Its `load1` was 1.04 during capture. The
 `surface_thermal` `temp12` channel again returned `-273.1 C`; exclude it from
 temperature control. The collector found no powercap energy counter.
 
-Power telemetry remains unsuitable for an approved energy comparison. The
-owner physically confirms the device is plugged in and at 77% battery. The
+The device has no usable internal whole-system energy counter. The owner
+physically confirms it is plugged in and at 77% battery. The
 system reports a main-battery energy value of 28.552 Wh and `Not charging`,
 while a separate HID battery reports 0% with unknown status. Earlier direct
 read-only sysfs checks show USB power online at one interface and conflicting
 AC/USB source states at others. The owner confirms the whole setup is
 connected to an APC Back-UPS XS 1500G and says its battery warning is a false
-alarm. The owner clarified that normal idle is 140–160 W; the UPS reads about
-250 W while a kernel build is running. Its NUT USB feed polls every two
-seconds and exposes only 19% load and nominal 865 W (about 164 W), not measured
-watts or Wh. This matches the normal-idle range. Validate that estimate
-against the display at idle and under load, then integrate sampled watts and
-quantify error before Phase 2 trials. Keep the owner's physical 77% battery
-reading rather than substituting the inconsistent sensor reports.
+alarm. The owner clarified that normal idle is 140–160 W; the front display
+showed 169–183 W, mostly around 175 W. During a kernel build it showed about
+250 W. NUT polls every two seconds and exposes load percent plus nominal
+865 W, not measured watts or Wh. Five idle samples at 20% estimate 173 W; a
+build sample at 28% estimates 242 W. The owner display cross-check differs by
+at most about 6%, so the feed is provisionally qualified for relative energy
+comparisons. Use the UPS sampler and label integrated values estimated Wh.
+Keep the owner's physical 77% battery reading rather than substituting the
+inconsistent sensor reports.
 
 Before candidate selection, the active fallback initrd matched its `/boot`
 source at SHA-256
@@ -69,3 +71,21 @@ Raw sanitized inventory: ignored
 `output/phase2/sp121-readiness-inventory-20261110.json`; SHA-256
 `aa7b1d5ca547941f39c67bda8ae06a0a7cc1e6fabd5ef59e494d1908946c12a8`.
 Captured at `2026-11-10T15:33:43.782Z` with collector version `0.1.0`.
+
+## Reconnect verification — 2026-11-10
+
+The owner restored the SP12's Tailscale connectivity after a transient
+offline state. Read-only root SSH confirmed release
+`7.3.1-psycachy-sp121`, unchanged boot ID
+`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`, clean `dpkg --audit`, and ESP mounted
+read-only. The on-device fallback recovery set passed `sha256sum -c` for
+`vmlinuz`, `initrd.img`, and `dtb`. Backlight remains 1256/4095. The current
+failed units are `fwupd-refresh.service` and `geoclue.service`; no causal link
+to the kernel is established and neither was changed.
+
+A fresh schema-v1 inventory was captured at
+`2026-11-10T19:37:21.861Z` with 102 telemetry rows and 36 thermal zones. Its
+ignored output path is
+`output/phase2/sp121-readiness-after-reconnect-20261110.json`; SHA-256
+`d41ec99949243f4dbdb32286355a4b34456d3e56ccbd040b198108351d64ec90`. This
+remains readiness inventory, not workload data.

@@ -133,16 +133,17 @@ inventory are under ignored `output/`; do not add them to Git.
 
 ## Next agent actions
 
-1. Start from pushed commit `f667a48` on the feature branch; the documentation
+1. Start from pushed commit `2904356` on the feature branch; the documentation
    and test updates are already pushed. Do not stage inherited `.agents/`,
    `.codex/`, `AGENTS.md`, `RTK.md`, `phase0-work/`, or `sp121-reference/`
    files.
 2. The owner-authorized reviewed SP12 candidate install and reboot are
    complete. Do not reinstall or change boot policy. The fallback recovery
-   payload verifies. The SP12 is currently inactive over Tailscale and root
-   SSH timed out; have the owner restore connectivity before further remote
-   checks. Do not test or repair the recovery-panel entry; its ESP role and
-   active EFI chain remain unresolved.
+   payload verifies. The owner restored connectivity; Tailscale SSH works
+   again. Current boot ID and recovery checksums match the reviewed state,
+   `dpkg --audit` is clean, and the ESP remains read-only. Do not test or repair
+   the recovery-panel entry; its ESP role and active EFI chain remain
+   unresolved.
 3. The owner selected both targets, all six scenarios, and the proposed
    thresholds. Fixed workload inputs are generated, hashed, and staged on both
    targets. The owner has an APC Back-UPS XS 1500G with load-in-watts display,
@@ -150,12 +151,19 @@ inventory are under ignored `output/`; do not add them to Git.
    169–183 W (mostly 175 W) while NUT's 20% load estimates 173 W. During the
    kernel build it read about 250 W while NUT's 28% estimates 242 W. Treat
    this as a provisionally calibrated estimate; integrate raw NUT samples and
-   label Wh as estimated.
+   label Wh as estimated. The APC meters the B550I only, with a headless Mac
+   mini, two monitors, DAC, MIDI keyboard, and printer as fixed additional
+   loads. The owner cannot connect SP12 to this APC; no alternative SP12 meter
+   is identified, so its energy gate remains unavailable.
    The B550I test window is open. No local AMD64 `.deb` matched expected
-   SHA-256 `b4130c37...e948127`. A rebuild from pinned signed source completed
-   with matching config but different package and kernel hashes; it remains
-   uninstalled pending boot/rollback review. The UI driver is absent from the
-   repository; no workload trial has started.
+   SHA-256 `b4130c37...e948127`. Five retained successful CI package artifacts
+   were also checked and none matched. A rebuild from pinned signed source
+   completed with matching config but different package and kernel hashes; it
+   remains uninstalled pending boot/rollback review. The owner supplied the
+   GRUB entry IDs and confirmed 143 GB available. A guarded installer now
+   configures generic as the default, shows a five-second menu, checks hashes,
+   installs without rebooting, and verifies both entries. The UI driver is
+   absent from the repository; no workload trial has started.
 4. The full candidate-boot journal resolves the early DPU warning; the
    candidate loads SQE and GMU firmware after the initial lookup failures.
    Preserve the boot log reference in
@@ -171,9 +179,9 @@ changed. Current backlight is 1256/4095 (30.7%). Numeric ambient/start
 temperature and fixed brightness are still needed for Phase 2.
 
 The SP12 package and boot selection changes were made over the owner-authorized
-root Tailscale SSH; no local sudo was needed. Further SP12 checks currently
-require the owner to restore Tailscale connectivity. The B550I root filesystem
+root Tailscale SSH; no local sudo was needed. The B550I root filesystem
 in this execution context is read-only and sudo is blocked by
 `no_new_privileges`; installing or selecting the AMD64 local rebuild requires
-the owner's sudo-capable host context after its distinct-candidate review. No
-system-policy change or workload trial has occurred.
+the owner's sudo-capable host context after its distinct-candidate review. The
+next required operator action is `sudo bash tools/install-phase2-amd64-rebuild.sh`
+from the repository root; it will not reboot. No workload trial has occurred.

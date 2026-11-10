@@ -2,12 +2,22 @@
 
 ## Disposition
 
-The exact AMD64 package digest named in `docs/VALIDATION.md` was not found in
-the workspace or retained local `.deb` files. GitHub Actions run 11's artifact
-has a different image package digest. A local package rebuild from the pinned,
-signature-verified source is available for a separately identified controlled
-evaluation. It is not the exact approved package and must not be described as
-such or as a release artifact.
+The exact AMD64 package digests named in `docs/VALIDATION.md` were not found in
+the workspace or retained local `.deb` files. All five retained successful
+GitHub Actions artifacts with kernel packages were checked. Their image and
+headers package hashes differ from the approved pair:
+
+| Actions run | Image SHA-256 | Headers SHA-256 |
+| --- | --- | --- |
+| 3 (`13604681752`) | `0e593cd0deffb95179351e4c61b216c3b6119bce20dde63b1a6205ac4771db84` | `c844edca80605e109b049d50e3f9c06f75dcf53eca29e72b3a4d035289b835c9` |
+| 4 (`13602227838`) | `1f4f10de1d30c4724c7c868c1e394fb9fa6d6949dbb9ed6f498ceef222dfb791` | `d716606467699a576fe0d4fc9591a7dde9d1109a200ee8173680a8674f364724` |
+| 5 (`13637599075`) | `8743b5c0971448e91f8a5d84a211ec298085f5ab50ed0b1ebd7d44fa3fce19e2` | `460b84b506138b55be4687aa11e79128fccf38a68385310e8aee1c8caaed9f17` |
+| 6 (`13635890755`) | `b6ab3129f4827d48e93e3afd70675fd556b15b8c6c0fc9045c43b8b5c3ca731f` | `90e85d13390d2c8fddf815a808cb91854ec94cdbc01760c9b0355633fe5b30ba` |
+| 11 (`13705589540`) | `c8539063623430770ec1567adb67e66738da9eb73fe0587836168d52f538efdb` | not needed for rejection |
+
+A local package rebuild from pinned, signature-verified source is available
+for a separately identified controlled evaluation. It is not the exact
+approved package and must not be described as such or as a release artifact.
 
 The owner authorized continued Phase 2 work and sudo/device testing. The local
 rebuild can be evaluated as a distinct candidate after the B550I operator
@@ -56,20 +66,29 @@ the local rebuild, so installing it replaces files under the same kernel
 release path. The generic image is the available alternate kernel; do not
 remove it or run autoremove during this evaluation.
 
-Read-only host inspection reported `GRUB_DEFAULT=0` and `GRUB_TIMEOUT=0`,
-while access to generated `grub.cfg` was denied in this execution context.
-The Codex environment sees the root filesystem read-only and blocks sudo via
-`no_new_privileges`. Therefore the active menu entry order and a remote
-rollback path could not be verified here. Before installing or rebooting, the
-sudo-capable B550I operator must inspect the generated GRUB entries and confirm
-physical console access or another known recovery route. If the menu remains
-hidden, a failed candidate boot may require a physical keypress/recovery.
+The owner supplied a sudo read-only preflight from B550I. It confirms
+`GRUB_DEFAULT=0`, `GRUB_TIMEOUT_STYLE=hidden`, `GRUB_TIMEOUT=0`, and a current
+saved candidate entry. The generated menu contains both the candidate and
+generic kernel under the same verified submenu ID. There are 143 GB free on
+the filesystem containing `/boot`. The owner reports the necessary peripherals
+are available for device testing.
 
-Once that preflight is confirmed, install both local packages, check package
-state, `dpkg --audit`, generated initrd, and GRUB entries, then boot the local
-candidate once and verify display, storage, network, and error logs. Keep the
-generic kernel installed as fallback. No command that changes boot selection
-or system policy was run during this review.
+The Codex environment itself sees the root filesystem read-only and blocks
+sudo via `no_new_privileges`; it cannot perform the install. The reviewed
+installer is [tools/install-phase2-amd64-rebuild.sh](../../tools/install-phase2-amd64-rebuild.sh).
+When run with sudo on B550I, it verifies the local package hashes and required
+dependencies, saves `/etc/default/grub` and `grubenv`, sets the generic kernel
+as the saved default, exposes a five-second GRUB menu, installs both packages,
+and checks `dpkg --audit`, the candidate config hash, and both menu entries.
+It does not reboot or select the candidate. The owner must run it and return
+its output before the one-time candidate boot is queued. If candidate boot
+fails, the visible GRUB menu and saved generic default provide recovery.
+
+After install verification, select the local candidate once with
+`grub-reboot` using the recorded candidate submenu/kernel IDs. On the next
+reboot the saved generic entry remains the fallback. Verify display, storage,
+network, and error logs before starting measurements. Do not remove the generic
+kernel or run autoremove.
 
 ## Build note
 

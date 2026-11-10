@@ -184,6 +184,14 @@ configuration or battery test was performed. The repository now includes
 four valid 20% samples and a complete 6.00-second integration with no skipped
 intervals. This was a sampler smoke check, not a Phase 2 result.
 
+The owner confirms the APC currently meters the B550I only; its battery-backed
+load also includes a headless Mac mini, two monitors, DAC, MIDI keyboard, and
+printer. Those devices cannot be shut down and must stay in a fixed state for
+B550I pairs. The owner cannot connect SP12 to the APC, and no alternative
+whole-system meter has been identified. The approved SP12 energy gate is
+therefore unavailable; its time, latency, and functional results can still be
+collected, but must not be presented as passing the energy threshold.
+
 ## AMD64 rebuild review — 2026-11-10
 
 No local `.deb` matched the expected AMD64 image hash. The owner has no known
@@ -199,9 +207,20 @@ hashes and structural checks are in ignored
 ## Current access and readiness — 2026-11-10
 
 The Phase 2 UI driver is absent from the repository and staged files. No
-workload trial has started. The SP12 was online after the reviewed install,
-but is currently not answering Tailscale SSH; its last Tailscale status was
-inactive. The B550I filesystem in this Codex execution context is mounted
-read-only and sudo is blocked by `no_new_privileges`, so a package install or
-kernel selection requires the owner's sudo-capable host context. The recovery
-payload remains preserved; do not change the recovery-panel entry.
+workload trial has started. The SP12 briefly went inactive over Tailscale, then
+the owner restored connectivity. A fresh root SSH check confirms the same
+candidate boot ID, clean `dpkg --audit`, read-only ESP, and valid on-device
+fallback checksums. A fresh schema-v1 inventory was captured at
+`2026-11-10T19:37:21.861Z`, SHA-256
+`d41ec99949243f4dbdb32286355a4b34456d3e56ccbd040b198108351d64ec90`; it
+records 102 telemetry rows and 36 thermal zones. `fwupd-refresh.service` and
+`geoclue.service` currently show failed state; no causal link to the candidate
+is established and neither service was changed. The B550I filesystem in this
+Codex execution context is mounted read-only and sudo is blocked by
+`no_new_privileges`, so a package install or kernel selection requires the
+owner's sudo-capable host context. The owner provided the GRUB entry IDs and
+confirmed 143 GB free on `/boot`'s filesystem. A guarded local-rebuild
+installer now preserves current GRUB files, makes the generic kernel the
+default, enables a five-second menu, verifies package hashes, installs without
+rebooting, and checks the candidate/fallback entries. The recovery payload
+remains preserved; do not change the recovery-panel entry.

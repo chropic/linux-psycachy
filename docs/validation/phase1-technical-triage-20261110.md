@@ -152,5 +152,8 @@ candidate has now been reinstalled and booted successfully. The active ESP
 matches candidate `/boot` payloads; the on-device recovery manifest verifies
 the current fallback. The original older recovery copy remains off-host. Early
 SQE/GMU lookup warnings recovered on both candidate boots. The panel route
-remains unvalidated. Phase 2 choices were received; trials still require a
-qualified whole-system Wh meter and matched physical conditions.
+remains unvalidated and must stay untouched until its active EFI chain is
+identified. Phase 2 choices were received; the UPS load estimate passed a
+provisional display cross-check and sampler smoke test, but trials still
+require matched physical conditions, a working UI driver, and a confirmed
+AMD64 candidate/recovery path.

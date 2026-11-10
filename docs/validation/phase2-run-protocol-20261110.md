@@ -85,8 +85,13 @@ system policy between runs.
   mostly around 175 W. During a kernel build, NUT reported 28% (242 W) while
   the owner observed about 250 W. These cross-checks differ by at most about
   6% across the stated display readings, below the approved 10% energy gate.
-  Treat this as a calibrated estimate, not a precision watt-hour meter; retain
-  raw samples and integrate trapezoidally at the actual sample intervals.
+  The currently metered test target is B550I. Other UPS loads stay connected:
+  a headless Mac mini, two monitors, DAC, MIDI keyboard, and printer. Keep
+  their states constant in B550I pairs. Because `ups.load` is integer percent
+  and these devices add a steady load, this stack-level result may have less
+  sensitivity to B550I-only energy changes. Treat it as a calibrated estimate
+  for this topology, not a precision watt-hour meter; retain raw samples and
+  integrate trapezoidally at the actual sample intervals.
   The new sampler completed a six-second smoke capture from op7060 with four
   valid 20% samples, 6.00 seconds integrated, no skipped intervals, and a
   complete result. This checked NUT access and integration only; it was not a
@@ -98,6 +103,11 @@ system policy between runs.
   set a fixed brightness, and verify the intended radio/peripheral state.
   Software power-source interfaces conflict and `surface_thermal` `temp12` is
   invalid. Bluetooth is soft-blocked in current software.
+- The APC currently measures the B550I setup only; the owner confirms SP12
+  cannot be connected to it. No alternative whole-system meter is identified.
+  The approved SP12 energy gate is therefore unavailable for now. Continue
+  with SP12 time, latency, and functional comparisons where feasible, but do
+  not report Phase 2 energy acceptance for SP12 without a whole-system meter.
 - The owner opened the B550I test window for now; its desktop session is live
   and its root filesystem was read-only during the readiness inventory.
 - For the AMD64 candidate comparison, the exact latest package remains
@@ -111,8 +121,9 @@ system policy between runs.
   the on-device recovery directory. The current sysfs brightness is
   1256/4095 (30.7%); choose and hold a fixed value for comparisons.
 
-No workload trial has started. SP12 is currently offline over Tailscale and
-must be reachable again before its trial; the user may need to check its
-network/device state physically. Current inventories are documented in the
+No workload trial has started. SP12 was reconnected by the owner and now
+answers Tailscale SSH. Current boot ID is unchanged, `dpkg --audit` is clean,
+the ESP remains read-only, and the fallback recovery checksums verify. Current
+inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and
 [SP12 readiness record](phase2-sp121-readiness-20261110.md).
