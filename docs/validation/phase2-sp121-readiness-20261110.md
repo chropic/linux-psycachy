@@ -89,3 +89,8 @@ ignored output path is
 `output/phase2/sp121-readiness-after-reconnect-20261110.json`; SHA-256
 `d41ec99949243f4dbdb32286355a4b34456d3e56ccbd040b198108351d64ec90`. This
 remains readiness inventory, not workload data.
+
+Read-only application checks confirm GNOME Text Editor 50.1 and Firefox
+158.0-2 at snap revision 9056, matching the planned SP12 workloads. `xdotool`
+is not installed, and the Codex session exposes no desktop app for UI-driver
+validation. No UI interaction was performed.

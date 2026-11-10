@@ -17,6 +17,11 @@ if (( EUID != 0 )); then
   exit 1
 fi
 
+if [[ "$(dpkg --print-architecture)" != amd64 ]]; then
+  echo "Expected an amd64 package architecture; refusing." >&2
+  exit 1
+fi
+
 repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 artifact_dir="$repo_root/output/phase2-amd64-candidate-rebuild-20261110"
 headers_deb="$artifact_dir/linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb"
@@ -54,6 +59,9 @@ for package in build-essential clang-22 llvm-22 lld-22 pahole libelf1t64 libssl4
   status="$(dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null || true)"
   [[ "$status" == ii* ]] || { echo "Required build dependency is not installed: $package" >&2; exit 1; }
 done
+
+generic_status="$(dpkg-query -W -f='${db:Status-Abbrev}' linux-image-7.3.0-10-generic 2>/dev/null || true)"
+[[ "$generic_status" == ii* ]] || { echo "Generic fallback package is not installed; refusing." >&2; exit 1; }
 
 grep -Fq "'$GENERIC_SUBMENU_ID'" "$grub_cfg" && grep -Fq "'$GENERIC_KERNEL_ID'" "$grub_cfg" || {
   echo "Expected generic GRUB entry not found; refusing." >&2
@@ -124,6 +132,8 @@ fi
 
 [[ -s /boot/vmlinuz-7.3.1-psycachy ]] || { echo "Candidate kernel is missing." >&2; exit 1; }
 [[ -s /boot/initrd.img-7.3.1-psycachy ]] || { echo "Candidate initrd is missing." >&2; exit 1; }
+installed_version="$(dpkg-query -W -f='${Version}' linux-image-7.3.1-psycachy)"
+[[ "$installed_version" == 7.3.1-1psycachy1 ]] || { echo "Unexpected installed candidate version: $installed_version" >&2; exit 1; }
 printf '%s  %s\n' "$EXPECTED_CONFIG_SHA256" /boot/config-7.3.1-psycachy | sha256sum --check --status || {
   echo "Installed candidate config hash mismatch." >&2
   exit 1

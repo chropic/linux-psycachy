@@ -86,6 +86,11 @@ returned four valid 20% samples across 6.00 seconds, no skipped intervals, and
 `complete=true`. This validates NUT access and the integration path, not a
 workload baseline.
 
+Read-only application checks confirm GNOME Text Editor 50.1, VLC 3.0.24, and
+FFmpeg 8.1.2 are available on B550I. Firefox is not on its PATH, which does
+not affect the B550I video scenario that uses VLC. `xdotool` is not installed;
+the approved interactive scenarios still need a validated UI driver.
+
 ## Artifact
 
 Raw sanitized inventory: ignored

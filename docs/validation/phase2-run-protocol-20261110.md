@@ -51,6 +51,11 @@ hash, and driver version in each run manifest. The fixed inputs are staged on
 both targets; the missing UI driver and unqualified candidate comparison make
 the protocol not yet trial-ready.
 
+Read-only version checks confirm Text Editor 50.1 on both targets, VLC 3.0.24
+and FFmpeg 8.1.2 on B550I, and Firefox 158.0-2 snap revision 9056 on SP12.
+`xdotool` is not installed on either target, and this Codex session exposes no
+desktop app for interactive validation. No UI workflow was exercised.
+
 ## Collection and controls
 
 Use the existing `phase2-collector.py sample` command for target telemetry.
