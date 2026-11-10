@@ -108,18 +108,17 @@ system policy between runs.
   set a fixed brightness, and verify the intended radio/peripheral state.
   Software power-source interfaces conflict and `surface_thermal` `temp12` is
   invalid. Bluetooth is soft-blocked in current software.
-- The APC currently measures the B550I setup only; the owner confirms SP12
-  cannot be connected to it. No alternative whole-system meter is identified.
-  The approved SP12 energy gate is therefore unavailable for now. Continue
-  with SP12 time, latency, and functional comparisons where feasible, but do
-  not report Phase 2 energy acceptance for SP12 without a whole-system meter.
+- The APC measures the B550I setup only; the owner cannot connect SP12 to it
+  and no alternate whole-system meter is available. SP12 energy acceptance
+  cannot be assessed. Continue its time, latency, and functional comparisons,
+  but do not report its energy gate as passed.
 - The owner opened the B550I test window for now; its desktop session is live
   and its root filesystem was read-only during the readiness inventory.
-- For the AMD64 candidate comparison, the exact latest package remains
+- For the AMD64 candidate comparison, the exact expected package remains
   unavailable. A local rebuild from pinned, signature-verified source has
   matching final config but different image/header package and kernel payload
-  hashes. It is not the exact approved artifact and has not been installed.
-  Review identity and boot/recovery conditions in the
+  hashes. It is a distinct local candidate, not the exact expected artifact.
+  Its guarded installer is reviewed in the
   [local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
 - The reviewed SP12 candidate install is complete and the device booted the
   candidate successfully; the checksum-verified platform fallback is saved in
@@ -135,7 +134,10 @@ system policy between runs.
 No workload trial has started. SP12 was reconnected by the owner and now
 answers Tailscale SSH. After a diagnostic reboot it remains on candidate boot
 ID `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; `dpkg --audit` is clean, the ESP
-remains read-only, and the fallback recovery checksums verify. Current
-inventories are documented in the
+remains read-only, and the fallback recovery checksums verify. The owner
+reports plugged-in power at 77%, controllable brightness, working radios and
+speakers, and no unusual heat; no numeric ambient temperature was provided.
+The owner cannot connect SP12 to the APC, so its energy result remains
+unavailable. Current inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and
 [SP12 readiness record](phase2-sp121-readiness-20261110.md).
