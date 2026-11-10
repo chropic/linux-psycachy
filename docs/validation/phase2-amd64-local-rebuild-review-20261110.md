@@ -20,8 +20,9 @@ for a separately identified controlled evaluation. It is not the exact
 approved package and must not be described as such or as a release artifact.
 
 The owner authorized continued Phase 2 work and sudo/device testing. The local
-rebuild can be evaluated as a distinct candidate after the B550I operator
-confirms the live boot menu and a recovery path. No package has been installed.
+rebuild is being evaluated as a distinct candidate, not as the exact expected
+artifact or a release kernel. The generic comparison kernel remains installed
+as the saved GRUB default and recovery path.
 
 ## Identity and integrity
 
@@ -74,21 +75,23 @@ the filesystem containing `/boot`. The owner reports the necessary peripherals
 are available for device testing.
 
 The Codex environment itself sees the root filesystem read-only and blocks
-sudo via `no_new_privileges`; it cannot perform the install. The reviewed
-installer is [tools/install-phase2-amd64-rebuild.sh](../../tools/install-phase2-amd64-rebuild.sh).
-When run with sudo on B550I, it verifies the local package hashes and required
-dependencies, saves `/etc/default/grub` and `grubenv`, sets the generic kernel
-as the saved default, exposes a five-second GRUB menu, installs both packages,
-and checks `dpkg --audit`, the candidate config hash, and both menu entries.
-It does not reboot or select the candidate. The owner must run it and return
-its output before the one-time candidate boot is queued. If candidate boot
-fails, the visible GRUB menu and saved generic default provide recovery.
+sudo via `no_new_privileges`; the owner ran the reviewed installer on B550I.
+The installer verified the local package hashes and required dependencies,
+saved `/etc/default/grub` and `grubenv`, set generic as saved default, exposed
+a five-second GRUB menu, installed both packages, and checked `dpkg --audit`,
+the candidate config hash, and both menu entries. The package hooks generated
+the initrd, rebuilt and signed NVIDIA DKMS modules, and signed the kernel.
+The installer did not reboot or select the candidate. Its initial attempt
+stopped before changes because `df -Pm` was unsupported; the corrected `df
+-Pk` preflight was then used successfully. A second invocation stopped at the
+existing-backup guard and made no further changes. Full output is in the
+current conversation; no raw log was saved.
 
-After install verification, select the local candidate once with
-`grub-reboot` using the recorded candidate submenu/kernel IDs. On the next
-reboot the saved generic entry remains the fallback. Verify display, storage,
-network, and error logs before starting measurements. Do not remove the generic
-kernel or run autoremove.
+Current next step is to select the local candidate once with `grub-reboot`
+using the recorded candidate submenu/kernel IDs, then reboot. The generic
+entry remains the saved default. Verify the actual boot ID/release, display,
+storage, network, NVIDIA module state, and error logs before measurements. Do
+not remove the generic kernel or run autoremove.
 
 ## Build note
 

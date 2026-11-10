@@ -158,12 +158,11 @@ inventory are under ignored `output/`; do not add them to Git.
    The B550I test window is open. No local AMD64 `.deb` matched expected
    SHA-256 `b4130c37...e948127`. Five retained successful CI package artifacts
    were also checked and none matched. A rebuild from pinned signed source
-   completed with matching config but different package and kernel hashes; it
-   remains uninstalled pending boot/rollback review. The owner supplied the
-   GRUB entry IDs and confirmed 143 GB available. A guarded installer now
-   configures generic as the default, shows a five-second menu, checks hashes,
-   installs without rebooting, and verifies both entries. The UI driver is
-   absent from the repository; no workload trial has started.
+   completed with matching config but different package and kernel hashes.
+   After reviewed boot/rollback checks, the owner ran the guarded installer:
+   packages, initrds, NVIDIA DKMS modules, and kernel signing completed; dpkg,
+   config, menu, and generic saved-default checks passed. It did not reboot.
+   The UI driver is absent from the repository; no workload trial has started.
 4. The full candidate-boot journal resolves the early DPU warning; the
    candidate loads SQE and GMU firmware after the initial lookup failures.
    UFS RPMB and watchdog messages also occur on fallback. GeoClue timed out on
@@ -185,10 +184,13 @@ temperature and fixed brightness are still needed for Phase 2.
 The SP12 package and boot selection changes were made over the owner-authorized
 root Tailscale SSH; no local sudo was needed. The B550I root filesystem
 in this execution context is read-only and sudo is blocked by
-`no_new_privileges`; installing or selecting the AMD64 local rebuild requires
-the owner's sudo-capable host context after its distinct-candidate review. The
-next required operator action is `sudo bash tools/install-phase2-amd64-rebuild.sh`
-from the repository root; it will not reboot. No workload trial has occurred.
+`no_new_privileges`. The owner installed the separately identified local
+rebuild from B550I using the guarded installer; package/DKMS/signing/initrd
+configuration and all installer checks passed, with generic saved as default.
+It has not yet been booted. The next required operator action is the one-time
+candidate `grub-reboot` and system reboot, then read-only verification of boot,
+NVIDIA module, display, storage, network, and error logs. No workload trial has
+occurred.
 
 
 ## Continuation update — 2026-11-10
@@ -204,14 +206,14 @@ the APC, so no SP12 whole-system energy gate is available. Continue its time,
 latency, and functional checks only unless another whole-system meter is
 provided.
 
-The owner-authorized B550I guarded installer was run from the host but stopped
-at the disk-space preflight because the host's `df` command rejected `-m`.
-That check occurs before backups or mutations, so no GRUB/package changes were
-made. `tools/install-phase2-amd64-rebuild.sh` now uses POSIX `df -Pk` and
-checks available KiB. The next operator action is to pull the latest branch
-changes on B550I and rerun `sudo bash tools/install-phase2-amd64-rebuild.sh`;
-the installer still performs no reboot. If it passes, inspect its full output
-before one-time candidate boot selection.
+The first B550I installer attempt stopped at the disk-space preflight because
+`df -Pm` was unsupported; it stopped before changes. After the pushed fix to
+use `df -Pk`, the installer successfully replaced the local image and headers
+packages, regenerated initrds, rebuilt and signed NVIDIA DKMS modules, signed
+the kernel, and passed package/config/GRUB checks. The saved GRUB default is
+generic and the installer did not reboot. A second invocation stopped at its
+backup guard, with no further changes. Next, use the one-time candidate entry
+and reboot; inspect boot/runtime state before any trial.
 
 The interactive UI driver remains absent and no workload trial has started.
 The APC sampler and fixed inputs are ready; the fixed non-target UPS loads

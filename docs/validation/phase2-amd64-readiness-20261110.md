@@ -12,7 +12,8 @@ or policy was changed.
 - Board: MSI MPG B550I GAMING EDGE WIFI (MS-7C92)
 - CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
 - OS: Ubuntu 26.10
-- Running kernel: `7.3.1-psycachy` (candidate)
+- Active boot: `7.3.1-psycachy` (the pre-install instance remains in RAM;
+  candidate package replacement has not been booted yet)
 - Installed comparison kernel: `7.3.0-10-generic`
 - Running kernel image SHA-256: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
 - Running config SHA-256: `3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae`
@@ -70,15 +71,19 @@ final config hash exactly matches the running B550I config
 (`3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae`), but
 the local image package hash (`7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92`),
 headers package hash (`1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e`),
-and kernel payload differ from the expected package and installed image. No
-package has been installed. Keep this build classified as a local rebuild;
-review boot selection and rollback before considering it as a distinct
-candidate. See the [local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
+and kernel payload differ from the expected package and the pre-install
+running image. The owner installed the local package pair over the same Debian
+version after the readiness capture; the host has not rebooted into the rebuilt
+payload yet. Keep this build classified as a distinct local candidate, not the
+exact expected artifact. See the
+[local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
 
-The B550I root filesystem was read-only in this execution context; the current
-user has no sudo capability here. The UI driver is absent from the repository
-and staged artifacts, so interactive scenarios are not ready. Do not change
-the existing `performance` policy to prepare trials.
+The B550I root filesystem is read-only in this execution context; sudo is
+unavailable here. The owner ran the guarded installer from the host. Its
+package, dpkg, config, and GRUB checks passed; the generic kernel remains the
+saved default and no reboot has occurred yet. The UI driver is absent from the
+repository and staged artifacts, so interactive scenarios are not ready. Do
+not change the existing `performance` policy to prepare trials.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
