@@ -52,3 +52,12 @@ their files for this continuation. Therefore, device-dependent checks and
 trials cannot be completed or represented as passed here. The SP12 fallback
 and generic B550I recovery state remain recorded as previously verified; no
 boot policy or recovery payload was changed.
+
+## Follow-up local work
+
+A later repository-only review hardened `tools/phase2-editor-driver.py` to
+exclude the document control by its verified fixture text rather than Python
+proxy identity. Its result manifest no longer stores the fixed find/replace
+strings. The new unit test for proxy-safe field selection passes, as do Python
+syntax compilation and CLI parsing. This does not validate the real AT-SPI tree,
+20 replacements, file save, or timings; those require a live desktop session.

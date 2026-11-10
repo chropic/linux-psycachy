@@ -69,7 +69,7 @@ be set for repeatable trials. Continue to exclude the invalid
 The owner later confirmed the SP12 is plugged in at 77%, brightness is
 controllable, radios and speakers work, and the device is not hot to the
 touch. The report gives no numeric ambient temperature. Whole-system energy
-remains unavailable for SP12: it cannot be connected to the calibrated APC,
+remains unavailable for SP12: it cannot be connected to the calibrated UPS,
 and the device has no internal energy counter.
 
 ## Artifact

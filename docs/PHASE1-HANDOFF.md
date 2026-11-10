@@ -1,7 +1,7 @@
 # Phase 1 handoff
 
 Updated 2026-11-10 on branch
-`feature/linux-chropic-psycachy-b550i-sp121`. The candidate remains
+`feature branch`. The candidate remains
 experimental; this handoff is not release approval.
 
 ## Final status

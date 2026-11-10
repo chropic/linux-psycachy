@@ -8,7 +8,7 @@ Recorded 2026-11-08. This is an inventory, not build or hardware validation.
 - SP12 main: `f496b50a8c471bcb11e889f06c440b2734963348`.
 - PsyCachy proto tip: `f1a4dca4345c6819905d1c2b7cf6a5672c0c7e84`; merge base `2fd095d610baae37302ac2835e76a86cad0dd06d`. Proto was two commits ahead and 16 behind master. The remote branch was deleted at the user's explicit direction on 2026-11-08, with a lease checking the recorded tip; no local proto branch existed in this checkout.
 - Proto commits: `908750b6db349f2d9a5d0249caf1b0589feb0a29` (initial proto) and `f1a4dca4345c6819905d1c2b7cf6a5672c0c7e84` (removes remote script sourcing). The first adds a large interactive builder and older LTS config, and changes Secure Boot tooling. Its builder includes interactive scheduler, LTO, tick, preemption and CPU choices, package building, installation and updates. Its Secure Boot change lengthens key lifetime, removes expiry checks and hard-codes an older Ubuntu kernel. These are not established requirements for the pinned, noninteractive build; complete behavioral review and a decision on retention remain open.
-- Local branch: `feature/linux-chropic-psycachy-b550i-sp121`, based on the above master, in an isolated checkout. No remote feature branch or repository rename has been made.
+- Local branch: `feature branch`, based on the above master, in an isolated checkout. No remote feature branch or repository rename has been made.
 
 ## Source and evidence gate
 

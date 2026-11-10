@@ -257,6 +257,18 @@ def accessible_controls(app: Any) -> list[tuple[Any, str, str]]:
     return found
 
 
+def find_replace_fields(
+    controls: list[tuple[Any, str, str]], document_text: str
+) -> list[Any]:
+    """Return editable controls other than the document, by content identity.
+
+    AT-SPI may return different Python proxy objects for the same accessible
+    node, so object identity is not a reliable way to exclude the document.
+    The opened fixture is required to match exactly before this is called.
+    """
+    return [node for node, _role, _name in controls if node_text(node) != document_text]
+
+
 def find_named_control(
     controls: list[tuple[Any, str, str]], terms: tuple[str, ...], excluded: tuple[str, ...] = ()
 ) -> Any:
@@ -394,7 +406,7 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         if len(controls) >= 3:
             break
         time.sleep(0.05)
-    fields = [node for node, _role, _name in controls if node is not editor]
+    fields = find_replace_fields(controls, fixture_text)
     if len(fields) == 2:
         # GNOME Text Editor exposes Find before Replace in the accessible tree;
         # both entry names are empty in the tested 50.1 build.
@@ -412,7 +424,7 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         replace_text = operation["replace"]
         expected_count = document_text.count(find_text)
         if expected_count <= 0:
-            raise RuntimeError(f"operation {index} has no matching input: {find_text}")
+            raise RuntimeError(f"operation {index} has no matching input")
         expected_document = document_text.replace(find_text, replace_text)
         find_edit = editable(find_entry)
         replace_edit = editable(replace_entry)
@@ -433,8 +445,6 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         latencies_ms.append(elapsed_ms)
         result_rows.append({
             "operation": index,
-            "find": find_text,
-            "replace": replace_text,
             "replacements_expected": expected_count,
             "elapsed_ms": round(elapsed_ms, 3),
         })

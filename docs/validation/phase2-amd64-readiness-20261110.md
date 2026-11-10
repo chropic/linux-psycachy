@@ -38,7 +38,7 @@ The latest image package SHA-256 is
 [`VALIDATION.md`](../VALIDATION.md). No matching `.deb` is present in the
 workspace's `output/` or `/tmp`. A broader local search covered the local home directory and `/tmp`, then hashed
 all retained `.deb` files; no file matched the expected digest. The retained
-[GitHub Actions run 11 artifact](https://github.com/chropic/linux-psycachy/actions/runs/42642272202)
+CI run 11 artifact
 was checked, but its image package hash is
 `c8539063623430770ec1567adb67e66738da9eb73fe0587836168d52f538efdb`, which
 does not match the approved package hash, so it was discarded and will not be
@@ -115,9 +115,9 @@ Accessible `get_text` helper. The probe redacts document contents. An unrelated
 stale Bitwarden process still emits a missing-socket warning. Manual Ctrl+H
 exposed the search panel, two text widgets, and Replace All. The first
 automated smoke run failed before any replacements because the driver did not
-open the panel/detect its fields. A local uncommitted adjustment now focuses
-the document and selects the two fields by role and tree order; it still needs
-a successful smoke run. No performance trial result is available.
+open the panel/detect its fields. The driver update committed in `81187e4` focuses the document and selects the
+two fields by role and tree order. It still needs a successful live smoke
+run. No performance trial result is available.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `external UPS host`

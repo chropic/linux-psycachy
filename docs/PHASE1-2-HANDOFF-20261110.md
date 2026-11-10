@@ -6,8 +6,8 @@ The active Codex goal is to complete the remaining SP12 Phase 1 validation and
 Phase 2 preparation as far as possible without more user input, preserve the
 recovery payload, update sanitized documentation, and push the feature branch.
 
-- Repository: `github.com/chropic/linux-psycachy`
-- Branch: `feature/linux-chropic-psycachy-b550i-sp121`
+- Repository: `project Git remote`
+- Branch: `feature branch`
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
 - Prior pushed documentation tip: `e03e766`; subsequent updates record the
   latest SP12 retry and Phase 2 installer preflight.
@@ -88,11 +88,10 @@ It reports AArch64, `7.3.0-sp12-v7.3-platform`, two CPU-frequency policies,
 No workload, energy baseline, or tuning was run. On 2026-11-10 the owner
 approved both targets, all six proposed scenarios, and the proposed acceptance
 and rejection thresholds. Keep the B550I AMD64 target first, followed by SP12
-ARM64 after physical readiness checks. Remaining readiness limits include
-inconsistent SP12 AC/USB/battery source reports, an invalid
-`surface_thermal` `hwmon4/temp12_input` channel, and a UI driver that is not
-present in the repository. The UPS load-to-watts estimate passed a provisional
-owner-display cross-check. See the [owner review](validation/phase2-owner-review-20261109.md)
+ARM64 after physical readiness checks. Remaining readiness limits include inconsistent SP12 AC/USB/battery source
+reports, an invalid `surface_thermal` `hwmon4/temp12_input` channel, and an
+editor UI driver that still needs interactive validation. The UPS
+load-to-watts estimate passed a provisional owner-display cross-check. See the [owner review](validation/phase2-owner-review-20261109.md)
 and the [AMD64](validation/phase2-amd64-readiness-20261110.md) and
 [SP12](validation/phase2-sp121-readiness-20261110.md) readiness records.
 Do not change kernel config, patches, scheduler policy, or power profile to
@@ -102,9 +101,9 @@ The owner choices and approved thresholds are recorded in the
 [owner review](validation/phase2-owner-review-20261109.md); the six workload
 definitions, collection controls, and readiness gates are in the
 [Phase 2 run protocol](validation/phase2-run-protocol-20261110.md). The fixed
-input artifacts are staged on both targets and their hashes match. The protocol
-is not trial-ready until the interactive UI driver is implemented and validated
-on both desktops and target prerequisites are met. UPS readings were cross-checked at
+input artifacts are staged on both targets and their hashes match. The
+protocol is not trial-ready until the interactive UI driver is validated on both
+desktops and target prerequisites are met. UPS readings were cross-checked at
 idle and build load; retain NUT samples and report integrated results as
 estimated Wh. The exact latest AMD64 package remains unavailable.
 
@@ -204,7 +203,7 @@ verifies. GeoClue started on this retry after one prior candidate startup
 timeout; the timeout is intermittent, not a reproduced regression. The owner
 confirms the SP12 is plugged in at 77%, brightness is controllable, radios and
 speakers work, and the device is not hot to the touch. SP12 cannot connect to
-the APC, so no SP12 whole-system energy gate is available. Continue its time,
+the UPS, so no SP12 whole-system energy gate is available. Continue its time,
 latency, and functional checks only unless another whole-system meter is
 provided.
 
@@ -221,7 +220,7 @@ menu. Storage/network/kernel error-log review is still needed before trials.
 
 `tools/phase2-editor-driver.py` was added for the fixed 20-operation editor
 workload. Python syntax and CLI parsing are checked; its AT-SPI tree and full
-workflow remain unvalidated on both target desktops. The APC sampler and fixed
+workflow remain unvalidated on both target desktops. The UPS sampler and fixed
 inputs are ready; the fixed non-target UPS loads must remain in the same state for every B550I pair.
 
 The owner then completed a generic-kernel comparison boot on B550I:
@@ -248,10 +247,10 @@ still emits a missing-socket warning, but the editor itself is accessible.
 Manually opening Ctrl+H exposed the search panel, its two text widgets, and
 the `Replace All` button. The first automated smoke run failed before any
 replacement because only the document editable widget was detected and the
-find/replace panel did not open. The current uncommitted driver adjustment
-focuses the document, waits for the panel widgets, and identifies the Find and
-Replace fields in tree order. It has not been rerun; validate the field order
-and all 20 replacements before timing workloads. Hashing
+find/replace panel did not open. The driver change committed in `81187e4` focuses the document and waits for
+panel widgets, and identifies the Find and Replace fields in tree order. The
+20-operation smoke run has not passed; validate all replacements before
+timing workloads. Hashing
 `/boot/vmlinuz-7.3.0-10-generic` as the unprivileged desktop user returned
 Permission denied; use sudo for that read-only hash if a manifest requires it.
 
@@ -283,12 +282,11 @@ functional regression. B550I's UPS estimate is calibrated to its display but
 includes fixed non-target loads that must remain unchanged. SP12 cannot be connected to that UPS, so its energy
 gate remains unavailable. Do not count the editor smoke attempt as a result.
 
-The most recent push before this handoff is `81187e4`; inspect the current
+The most recent push before this handoff was `81187e4`; inspect the current
 branch and workspace diff before continuing. Do not stage inherited
 `.agents/`, `.codex/`, `AGENTS.md`, `RTK.md`, `phase0-work/`, or
-`sp121-reference/` paths. The remaining driver adjustment and this handoff
-must be committed and pushed before the next session starts.
-Interactive workload validation and all six scenario trials remain
+`sp121-reference/` paths. The driver adjustment and handoff are committed and pushed. Interactive
+workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.
 

@@ -87,11 +87,12 @@ For whole-system power, stage `tools/phase2-ups-meter.py` on the NUT host and
 run:
 
 ```sh
-python3 phase2-ups-meter.py sample --ups apcups@localhost --duration-s 1800 \
+python3 phase2-ups-meter.py sample --ups ups-name@localhost --duration-s 1800 \
   --output <run-id>-ups.json
 ```
 
-It samples `ups.load` every two seconds and
+Replace `ups-name` with the configured NUT UPS name. It samples
+`ups.load` every two seconds and
 converts percent to estimated watts as `load_pct * 865 / 100`. It integrates
 adjacent pairs by trapezoid rule over monotonic elapsed seconds and divides by
 3600 for estimated Wh. Preserve raw load samples, timestamps, the 865 W
@@ -131,7 +132,7 @@ system policy between runs.
   set a fixed brightness, and verify the intended radio/peripheral state.
   Software power-source interfaces conflict and `surface_thermal` `temp12` is
   invalid. Bluetooth is soft-blocked in current software.
-- The APC measures the B550I setup only; the owner cannot connect SP12 to it
+- The UPS measures the B550I setup only; the owner cannot connect SP12 to it
   and no alternate whole-system meter is available. SP12 energy acceptance
   cannot be assessed. Continue its time, latency, and functional comparisons,
   but do not report its energy gate as passed.
@@ -159,7 +160,7 @@ reconnected and remained on the candidate kernel, with clean `dpkg --audit`
 and the ESP read-only, and the fallback recovery checksums verify. The owner
 reports plugged-in power at 77%, controllable brightness, working radios and
 speakers, and no unusual heat; no numeric ambient temperature was provided.
-The owner cannot connect SP12 to the APC, so its energy result remains
+The owner cannot connect SP12 to the UPS, so its energy result remains
 unavailable. Current inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and
 [SP12 readiness record](phase2-sp121-readiness-20261110.md).
