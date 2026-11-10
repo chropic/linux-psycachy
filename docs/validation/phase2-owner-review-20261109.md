@@ -89,5 +89,41 @@ needs technical triage before any further physical candidate trial.
 A fresh read-only inventory after fallback restoration is recorded in ignored
 `output/phase2/sp121-arm64-inventory-after-phase1-20261110.json` (SHA-256
 `f01e62172582ffa5edbcee3fb13eee3f322468c044b081145130d83e332bb199`). It is
-not a baseline. The target/workload/metric/threshold decisions below remain
-open; no workload experiment or tuning has started.
+not a baseline. No workload experiment or tuning has started.
+
+## Owner decisions — 2026-11-10
+
+The owner selected both targets, all six scenarios in the proposed workload
+table, and approved the proposed comparison and rejection thresholds. Use the
+B550I AMD64 target first and the SP12 ARM64 target after its physical readiness
+checks. The approved gates are at least 10% lower energy for equivalent work,
+no more than 10% longer completion time, no more than 5% worse p95 latency,
+and at least three interleaved baseline/candidate pairs per scenario; extend
+the series if variation prevents a conclusion. Reject a candidate for new
+storage errors, scheduler watchdog events, failed resume, or functional
+regression, regardless of energy results.
+
+The six selected scenarios are screen-on idle, interactive use, video,
+interactive compilation, batch completion, and suspend. Exact workload inputs,
+versions, task completion metrics, and energy-meter setup still need to be
+pinned in the run manifest before starting trials. The existing collector
+pilot and inventories remain readiness checks, not baselines.
+
+## Readiness refresh — 2026-11-10
+
+The current B550I host inventory is at
+[`phase2-amd64-readiness-20261110.md`](phase2-amd64-readiness-20261110.md).
+The host is already running `7.3.1-psycachy`; Ubuntu `7.3.0-10-generic` is
+installed as the comparison kernel. The system has no whole-system energy
+counter, and an external meter is not configured in the collector. Its CPU
+frequency policies report `performance`; this is recorded as the existing
+host state and was not changed.
+
+The SP12 root SSH snapshot confirms the original fallback kernel, clean dpkg
+audit, read-only ESP, and recovery payload hashes. Power-source interfaces
+still disagree, and the `surface_thermal` `hwmon4` channel remains invalid.
+Neither target currently has a verified whole-system energy-meter feed. Do
+not treat a battery or CPU counter as a substitute for the approved energy
+gate. The owner should provide or identify suitable meter hardware and
+physically verify the actual source/charge range and display conditions before
+controlled trials. No tuning or system-policy change has been authorized.

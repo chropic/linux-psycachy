@@ -6,7 +6,7 @@ This review uses the saved Phase 1 reports and candidate boot logs. It makes no
 changes to the SP12, boot payloads, firmware, package state, or system policy.
 The candidate remains removed and the device remains expected to use the
 package-managed `7.3.0-sp12-v7.3-platform` fallback. A fresh root SSH read-only
-verification is pending the interactive Tailscale SSH check.
+verification was completed after interactive Tailscale authorization.
 
 No candidate reinstall, recovery-panel boot, initrd regeneration, or firmware
 installation is authorized by this review.
@@ -28,15 +28,29 @@ Resolute file index lists `qcom/gen71500_sqe.fw.zst` and
 `qcom/gen71500_gmu.bin.zst` in the Qualcomm graphics firmware package. Linux
 kernel documentation notes that built-in drivers may request firmware before
 the real root filesystem is available and recommends putting required
-firmware in the boot initramfs in that situation. These facts make an
-initramfs timing/content issue plausible; they do not establish the cause on
-the SP12 or prove what the installed package contained at the time.
+firmware in the boot initramfs in that situation.
 
-The next read-only check should inspect the retained candidate lifecycle
-recovery copy, if it contains the candidate initrd, and check the running
-fallback's installed `.zst` paths and initrd contents. Since the candidate is
-removed, current root state cannot on its own prove whether the candidate's
-initramfs included the blob. Do not reinstall the candidate to investigate.
+### Read-only SP12 follow-up
+
+Root SSH inspection confirmed the active kernel is
+`7.3.0-sp12-v7.3-platform`, the candidate image package is `rc`, candidate
+headers are `un`, `dpkg --audit` is clean, and `/boot/efi` is mounted read-only.
+The active fallback payload hashes match the original saved recovery set.
+The root filesystem has `gen71500_sqe.fw.zst` and `gen71500_gmu.bin.zst`.
+
+The retained candidate initrd hash is
+`f803e1bca0354084fa39558efe28d60e3396de2cdaf72bda181d245e9b599281`. Both it
+and the installed fallback initrd contain the platform-specific
+`gen71500_zap.mbn.zst`, but neither contains the generic SQE or GMU firmware.
+The current fallback boot log shows two early SQE lookup failures followed by
+successful SQE and GMU loads from the new location about seven seconds later.
+The captured candidate log has repeated lookup failures and no corresponding
+successful load. The root-filesystem firmware package was present while the
+early boot initrds lacked SQE and GMU. The fallback's successful delayed load
+shows that root-filesystem lookup eventually works on that kernel; the
+candidate capture does not show that recovery. A candidate-specific lookup or
+retry difference remains possible, but these records do not isolate its cause.
+Do not reinstall the candidate. No firmware or initrd was changed.
 
 Sources: [Ubuntu Resolute Qualcomm firmware package file list](https://packages.ubuntu.com/resolute/all/linux-firmware-qualcomm-graphics/filelist),
 [Linux kernel firmware lookup documentation](https://docs.kernel.org/driver-api/firmware/direct-fs-lookup.html).
@@ -79,8 +93,8 @@ procedure because it changes boot files or attempts a different boot path.
 ## Phase 1 and Phase 2 status
 
 The documented Phase 1 fallback and recovery lifecycle remains complete for
-the tested default boot path. These two unresolved observations prevent
-claiming full candidate hardware qualification or a validated recovery-panel
-route. Phase 2 remains at read-only preparation: the saved inventory is not a
-workload baseline, and target order, workload/equivalence metrics, and
-acceptance thresholds remain owner decisions.
+the tested default boot path. The candidate's late firmware load remains
+unverified, and the recovery-panel route remains unvalidated. Phase 2 owner
+choices were received on 2026-11-10; baseline trials still require a valid
+whole-system energy meter and verified, controlled power and workload
+conditions.

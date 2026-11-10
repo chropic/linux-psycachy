@@ -54,15 +54,16 @@ observations are recorded in
    The recovery-panel payload was left untouched. Its initrd mismatch still
    blocks testing that panel entry.
 
-Candidate boot observations requiring technical triage: the DPU driver could
-not load `qcom/gen71500_sqe.fw` although `linux-firmware` was installed; UFS
-RPMB registration failed while root storage remained usable; Surface serial
-hub unexpected-message notices and a Qualcomm APM timeout appeared. The
-recovery-panel initrd mismatch remains an explicit open issue. Full hashes and
-raw evidence are in the physical lifecycle report and ignored `output/` logs.
-The DPU firmware and recovery-panel findings received a read-only source review
-in [`validation/phase1-technical-triage-20261110.md`](validation/phase1-technical-triage-20261110.md);
-the actual cause and current device state still need confirmation.
+Candidate boot observations requiring technical qualification include repeated
+early DPU lookups failing for `qcom/gen71500_sqe.fw` with no successful late
+load in the captured candidate log, a UFS RPMB registration failure with root
+storage usable, and Surface serial-hub and Qualcomm APM messages. The rootfs
+contains the compressed SQE/GMU firmware; both saved initrds omit those two
+files, and the fallback log shows a successful delayed load. The candidate's
+different lookup/retry outcome remains unexplained. The recovery-panel initrd
+mismatch remains an explicit open issue. See the
+[`Phase 1 technical triage`](validation/phase1-technical-triage-20261110.md)
+and physical lifecycle report; raw evidence is under ignored `output/`.
 
 ## Phase 2 status
 
@@ -72,13 +73,16 @@ the fallback kernel. SHA-256:
 It reports AArch64, `7.3.0-sp12-v7.3-platform`, two CPU-frequency policies,
 36 thermal zones, and 102 telemetry metrics.
 
-No workload, energy baseline, or tuning was run. Existing readiness limits
-remain: inconsistent AC/USB/battery source reports, an invalid
-`surface_thermal` `hwmon4/temp12_input` channel, no external whole-system
-energy meter, and no owner-selected workload/equivalence metrics/acceptance
-thresholds. The owner review brief must be resolved before controlled trials.
-Do not change kernel config, patches, scheduler policy, power profile, or other
-system policy while waiting.
+No workload, energy baseline, or tuning was run. On 2026-11-10 the owner
+approved both targets, all six proposed scenarios, and the proposed acceptance
+and rejection thresholds. Keep the B550I AMD64 target first, followed by SP12
+ARM64 after physical readiness checks. Remaining readiness limits include
+inconsistent SP12 AC/USB/battery source reports, an invalid
+`surface_thermal` `hwmon4/temp12_input` channel, and no verified external
+whole-system energy meter. See the [owner review](validation/phase2-owner-review-20261109.md)
+and [AMD64 readiness record](validation/phase2-amd64-readiness-20261110.md).
+Do not change kernel config, patches, scheduler policy, or power profile to
+prepare trials.
 
 ## Committed changes and tests
 
@@ -112,10 +116,11 @@ inventory are under ignored `output/`; do not add them to Git.
 2. Do not re-install the candidate on the physical SP12. Its current state is
    restored fallback. Do not test or repair the recovery-panel entry until its
    installed/ESP initrd mismatch is reviewed and separately approved.
-3. Stop Phase 2 at read-only preparation. Ask the owner to resolve the target
-   order, workloads/equivalence metrics, and acceptance/rejection thresholds
-   in `validation/phase2-owner-review-20261109.md`. Continue only after those
-   decisions; do not treat proposed percentages as approved gates.
+3. The owner has selected both targets, all six scenarios, and the proposed
+   thresholds. Before controlled trials, pin exact workload inputs/versions
+   and task metrics, verify physical power/charge/display/radio conditions,
+   and provide a suitable whole-system energy meter. Continue to preserve
+   per-target baselines and do not alter system policy.
 4. Review the missing `qcom/gen71500_sqe.fw` DPU firmware report and other
    candidate boot warnings before considering further physical candidate work.
 

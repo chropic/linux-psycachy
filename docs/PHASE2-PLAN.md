@@ -155,11 +155,14 @@ verification before baseline trials.
   separate runs.
 
 No Phase 2 performance or power tuning has started. The requested ARM64 VM
-gates are complete. Physical SP12 install, boot, removal, fallback, recovery,
-and device-function checks remain separate hardware gates requiring review
-and authorization. Agree on target workloads and review the proposed
-acceptance thresholds before running comparative experiments; the workload
-and threshold proposals are not yet approved experiment gates.
+gates are complete. The Phase 1 fallback and recovery lifecycle has since been
+completed on the physical SP12; the candidate firmware-load behavior and
+recovery-panel route remain open technical qualification items. On 2026-11-10
+the owner approved both targets, all six proposed scenarios, and the proposed
+comparison and rejection thresholds. Run the B550I AMD64 target first, then
+the SP12 ARM64 target after its physical readiness checks. Exact workload
+inputs, versions, task metrics, and a suitable whole-system energy meter still
+need to be pinned before trials.
 The outstanding target, workload, threshold, and measurement prerequisites are
 collected in the [Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md).
 
@@ -175,10 +178,16 @@ fresh schema-v1 read-only inventory after this restoration is under ignored
 reports two CPU-frequency policies, 36 thermal zones, and 102 telemetry
 metrics. This remains inventory only. No workload or tuning was run.
 
-The next Phase 2 gate is owner review of target order, workload/equivalence
-metrics, and acceptance/rejection thresholds in
+Owner selections are recorded in
 [`validation/phase2-owner-review-20261109.md`](validation/phase2-owner-review-20261109.md).
-Previously documented source-control inconsistencies and the invalid
-`surface_thermal` hwmon channel remain unresolved readiness items. The
-recovery-panel initrd mismatch and candidate DPU firmware error also need
-technical review before any further physical candidate work.
+The current AMD64 inventory and readiness limits are in
+[`validation/phase2-amd64-readiness-20261110.md`](validation/phase2-amd64-readiness-20261110.md).
+The candidate DPU firmware observation now has a read-only current-state
+comparison in
+[`validation/phase1-technical-triage-20261110.md`](validation/phase1-technical-triage-20261110.md);
+it confirms the root firmware files are present and the platform fallback
+eventually loads them, while the candidate capture did not show a successful
+load. The recovery-panel initrd mismatch remains untouched. Before trials,
+verify the actual power source, charge range, display and radio settings, and
+provide a suitable external energy meter; the invalid `surface_thermal`
+`hwmon4` channel must not be used as an ambient-temperature reading.
