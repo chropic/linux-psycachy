@@ -295,3 +295,11 @@ generic boot and common service failures.
 See [the continuation record](validation/phase1-2-continuation-20261110.md)
 for the local-only review, outstanding checks, privacy redactions, and device
 access limitation that applies to the current continuation.
+
+## Latest read-only refresh
+
+The owner later clarified that remote device access is allowed if changes are
+non-breaking. See [the read-only refresh](validation/phase1-2-readonly-refresh-20261110.md)
+for current B550I and SP12 checks, the unsuccessful editor smoke attempt, and
+the remaining scenario gates. No boot, suspend, or recovery-panel test was
+started.

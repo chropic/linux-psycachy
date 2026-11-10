@@ -62,3 +62,11 @@ strings. The new unit test for proxy-safe field selection passes, as do Python
 syntax compilation and CLI parsing. The full repository suite then passed: 103
 tests in 3.4 seconds. This does not validate the real AT-SPI tree, 20
 replacements, file save, or timings; those require a live desktop session.
+
+## Later access clarification
+
+The owner later clarified that remote target access is permitted provided no
+breaking changes are made. The read-only device checks and unsuccessful editor
+smoke attempt from that later continuation are recorded in
+[the read-only refresh](phase1-2-readonly-refresh-20261110.md). Reboots,
+suspend, and recovery-panel tests remain deferred while the owner is away.
