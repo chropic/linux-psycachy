@@ -46,10 +46,17 @@ initrd=$target/boot/initrd.img-$kver
 real_dtb=$target$dtb
 real_boot=$(readlink -f "$target/boot")
 real_dtb_path=$(readlink -f "$real_dtb")
-case "$real_boot" in
-    "$target"/*) ;;
-    *) printf -- 'Target /boot resolves outside the target root\n' >&2; exit 2 ;;
-esac
+if [ "$target" = / ]; then
+    case "$real_boot" in
+        /boot|/boot/*) ;;
+        *) printf -- 'Target /boot resolves outside the target root\n' >&2; exit 2 ;;
+    esac
+else
+    case "$real_boot" in
+        "$target"/*) ;;
+        *) printf -- 'Target /boot resolves outside the target root\n' >&2; exit 2 ;;
+    esac
+fi
 case "$real_dtb_path" in
     "$real_boot"/*) ;;
     *) printf -- '--dtb resolves outside the target /boot directory\n' >&2; exit 2 ;;

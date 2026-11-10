@@ -139,3 +139,21 @@ state, peripherals, ambient and starting temperature, active power policy,
 workload version, and background activity. Use separate repeated trials for
 each approved workload. Battery and CPU counters alone do not measure
 whole-system energy. No tuning was performed.
+
+## Post-Phase 1 read-only refresh — 2026-11-10
+
+After the physical fallback/recovery lifecycle completed, schema-v1 inventory
+was captured again while the SP12 was running the restored
+`7.3.0-sp12-v7.3-platform`. The raw JSON is under ignored
+`output/phase2/sp121-arm64-inventory-after-phase1-20261110.json` (SHA-256
+`f01e62172582ffa5edbcee3fb13eee3f322468c044b081145130d83e332bb199`). It
+reports AArch64, two CPU-frequency policies, 36 thermal zones, and 102
+telemetry metrics. This is an inventory refresh only; it did not start a
+workload or change policy.
+
+The earlier statements that physical fallback and recovery remained untested
+describe the 2026-11-09 capture and are superseded by the
+[2026-11-10 physical lifecycle report](phase1-physical-lifecycle-20261110.md).
+The recovery-panel entry remains untested because its initrd mismatch is still
+untouched. No workload baseline or tuning has started; owner review remains
+required for target, workload, metric, and threshold choices.

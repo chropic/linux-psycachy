@@ -77,3 +77,18 @@ No physical candidate install, boot, removal, fallback, or recovery test was
 performed. Those actions still require separate review and authorization. The
 recovery-panel initrd mismatch remains untouched. Phase 2 read-only inventory
 and preparation remain as previously recorded; no tuning has started.
+
+## Physical lifecycle continuation — 2026-11-10
+
+The candidate was already installed and running on the physical SP12 when this
+continuation resumed. The later lifecycle completed candidate removal, selection
+and boot of package-owned fallback `7.3.0-sp12-v7.3-platform`, original
+recovery verification/apply, and a second fallback reboot. `dpkg --audit` is
+clean, the ESP is read-only, and active payload hashes match the original
+recovery set. The recovery-panel mismatch remains untouched. Details are in
+[`phase1-physical-lifecycle-20261110.md`](phase1-physical-lifecycle-20261110.md).
+
+A new read-only Phase 2 inventory was captured after fallback restoration. It
+is not a workload baseline; no tuning occurred. Phase 2 trials still need owner
+selection of targets, workloads, metrics, and thresholds. See
+[`../PHASE1-2-HANDOFF-20261110.md`](../PHASE1-2-HANDOFF-20261110.md).

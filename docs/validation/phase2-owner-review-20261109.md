@@ -75,3 +75,19 @@ No tuning or workload experiment has started. The next work can proceed after
 the owner reviews the target/workload/threshold choices. Physical SP12
 installation or recovery work needs separate authorization and a reviewed
 procedure.
+
+## Status update — 2026-11-10
+
+Phase 1 physical candidate removal, package-managed fallback boot, and
+recovery apply/reboot now pass; see the
+[physical lifecycle report](phase1-physical-lifecycle-20261110.md). The SP12 is
+restored to `7.3.0-sp12-v7.3-platform`, and the ESP is read-only with the
+original payload hashes. The recovery-panel initrd mismatch remains untested
+and untouched. The candidate boot exposed a missing DPU firmware file that
+needs technical triage before any further physical candidate trial.
+
+A fresh read-only inventory after fallback restoration is recorded in ignored
+`output/phase2/sp121-arm64-inventory-after-phase1-20261110.json` (SHA-256
+`f01e62172582ffa5edbcee3fb13eee3f322468c044b081145130d83e332bb199`). It is
+not a baseline. The target/workload/metric/threshold decisions below remain
+open; no workload experiment or tuning has started.

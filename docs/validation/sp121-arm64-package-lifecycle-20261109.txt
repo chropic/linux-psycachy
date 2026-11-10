@@ -210,3 +210,15 @@ directory at
 `root4.qcow2` and `esp4.qcow2` overlays were also recorded there. Those files
 are not present in the current workspace (see the artifact availability note
 above).
+
+## Physical SP12 lifecycle continuation — 2026-11-10
+
+The separate physical lifecycle completed after the candidate was found
+already installed and booted on the SP12. Candidate removal returned success;
+the pre-remove hook selected package-owned `7.3.0-sp12-v7.3-platform`, and its
+kernel, initrd, and DTB hashes matched the active ESP. The SP12 rebooted to that
+fallback, the original recovery payload was verified and applied, and a second
+reboot again reached the fallback. `dpkg --audit` remained clean and the ESP
+remained read-only. The recovery-panel mismatch remains unmodified and
+untested. Exact hashes and the recovery-copy rotation detail are in
+[`phase1-physical-lifecycle-20261110.md`](phase1-physical-lifecycle-20261110.md).

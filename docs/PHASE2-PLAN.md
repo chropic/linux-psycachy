@@ -162,3 +162,23 @@ acceptance thresholds before running comparative experiments; the workload
 and threshold proposals are not yet approved experiment gates.
 The outstanding target, workload, threshold, and measurement prerequisites are
 collected in the [Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md).
+
+## Continuation update — 2026-11-10
+
+The physical SP12 candidate/fallback/recovery lifecycle is now recorded as
+complete in the [physical Phase 1 report](validation/phase1-physical-lifecycle-20261110.md).
+The device is back on `7.3.0-sp12-v7.3-platform`, with a clean dpkg audit, the
+ESP read-only, and active ESP payloads matching the original recovery set. A
+fresh schema-v1 read-only inventory after this restoration is under ignored
+`output/phase2/sp121-arm64-inventory-after-phase1-20261110.json`; its SHA-256 is
+`f01e62172582ffa5edbcee3fb13eee3f322468c044b081145130d83e332bb199`. It
+reports two CPU-frequency policies, 36 thermal zones, and 102 telemetry
+metrics. This remains inventory only. No workload or tuning was run.
+
+The next Phase 2 gate is owner review of target order, workload/equivalence
+metrics, and acceptance/rejection thresholds in
+[`validation/phase2-owner-review-20261109.md`](validation/phase2-owner-review-20261109.md).
+Previously documented source-control inconsistencies and the invalid
+`surface_thermal` hwmon channel remain unresolved readiness items. The
+recovery-panel initrd mismatch and candidate DPU firmware error also need
+technical review before any further physical candidate work.
