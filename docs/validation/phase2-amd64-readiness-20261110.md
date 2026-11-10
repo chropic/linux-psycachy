@@ -14,6 +14,8 @@ or policy was changed.
 - OS: Ubuntu 26.10
 - Running kernel: `7.3.1-psycachy` (candidate)
 - Installed comparison kernel: `7.3.0-10-generic`
+- Running kernel image SHA-256: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
+- Running config SHA-256: `3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae`
 - Root filesystem: mounted read-only during inspection
 - Active CPU policy: `amd-pstate-epp`, `performance` governor and preference
 - CPU frequency range reported by sysfs: approximately 1.755–4.553 GHz
@@ -22,6 +24,16 @@ or policy was changed.
 The host was lightly loaded during the inventory. A desktop user session was
 active, so this capture does not establish a controlled idle state or authorize
 disrupting the live session with trials.
+
+The running kernel has the same release label as the candidate but is not the
+latest candidate image; the earlier
+[`AMD64 inventory`](phase2-amd64-inventory-20261109.md) records this mismatch.
+The latest image package SHA-256 is
+`b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127` in
+[`VALIDATION.md`](../VALIDATION.md). No matching `.deb` is present in the
+workspace's `output/` or `/tmp`. Do not treat measurements on the currently
+running image as the final candidate comparison. A matching package and
+controlled kernel-selection window are required before such a comparison.
 
 ## Measurement readiness
 

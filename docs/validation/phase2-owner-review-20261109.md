@@ -117,7 +117,11 @@ The host is already running `7.3.1-psycachy`; Ubuntu `7.3.0-10-generic` is
 installed as the comparison kernel. The system has no whole-system energy
 counter, and an external meter is not configured in the collector. Its CPU
 frequency policies report `performance`; this is recorded as the existing
-host state and was not changed.
+host state and was not changed. The running image is older than the latest
+AMD64 candidate package despite sharing its release label; the matching latest
+`.deb` is not present in this workspace. The current host session is live and
+its root filesystem is read-only, so a final-candidate comparison requires a
+matching artifact, a controlled kernel-selection window, and meter setup.
 
 The SP12 root SSH snapshot confirms the original fallback kernel, clean dpkg
 audit, read-only ESP, and recovery payload hashes. Power-source interfaces

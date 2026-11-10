@@ -121,8 +121,11 @@ inventory are under ignored `output/`; do not add them to Git.
    and task metrics, verify physical power/charge/display/radio conditions,
    and provide a suitable whole-system energy meter. Continue to preserve
    per-target baselines and do not alter system policy.
-4. Review the missing `qcom/gen71500_sqe.fw` DPU firmware report and other
-   candidate boot warnings before considering further physical candidate work.
+4. The DPU firmware and other candidate boot observations have a read-only
+   comparison in `validation/phase1-technical-triage-20261110.md`. The rootfs
+   firmware is present and the fallback loads it after early failures; the
+   candidate's lack of a successful load remains unexplained. Do not reinstall
+   the candidate to investigate.
 
 No user-run sudo command is needed at this handoff point. Any later physical
 work should be proposed only after the outstanding firmware and recovery-panel
