@@ -56,7 +56,9 @@ While awaiting a reboot window, a refreshed read-only inventory confirmed the
 same running kernel and device class. A QEMU environment check confirmed
 AAVMF files and ARM `virt` support are available, with TCG as the usable
 accelerator because `/dev/kvm` is absent. The recovery-panel initrd and GRUB
-state still need privileged read-only inspection; exact commands and results
+state were inspected with operator elevation. The ESP panel initrd differs
+from the installed panel initrd, and GRUB lists the platform and panel entries
+with a hidden zero-second timeout; neither route has been boot-tested. Results
 are tracked in the [waiting checks report](validation/phase1-sp12-waiting-checks-20261109.md).
 
 The candidate ARM64 package pair has not yet been built for this run. A config
@@ -68,7 +70,10 @@ which differs from the exact config approved for VM testing,
 `e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`. No
 package build was started. Continuing requires the previously approved config
 artifact to reproduce its hash or a separate review and approval of the new
-config. The pinned source archive, detached signature, and signer key are
+config. A remote search found no exact ARM64 config artifact in repository
+releases or the feature branch's Actions runs; the lone available artifact is
+named as a native build and was not inspected. The pinned source archive,
+detached signature, and signer key are
 staged under ignored `output/phase1/source/`; the archive matches the manifest
 hash and its signature verifies with the pinned key. Generic QEMU does not
 validate Surface firmware, the physical device tree, or recovery behavior.
