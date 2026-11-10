@@ -103,14 +103,19 @@ charge in Ah was unreadable, and powercap telemetry was absent.
 
 One hwmon temperature channel returned `-273.1 C` throughout the pilot. A
 follow-up read-only sysfs check identified it as `hwmon4`, driver
-`surface_thermal`, sensor `temp12_input`; its label attribute did not decode as
-UTF-8. Treat the channel as invalid until its mapping is reviewed; do not use
-it as an ambient or surface temperature. The other readings remain
+`surface_thermal`, sensor `temp12_input`; the associated driver is
+`surface_temp`. No enable or fault attribute is exposed for this channel, and
+its label attribute contains non-text bytes. Treat the channel as invalid until
+its mapping is reviewed; do not use it as an ambient or surface temperature.
+The other readings remain
 uncontrolled observations from the same short pilot. Raw files are retained under ignored
 `output/phase2/sp121-arm64-idle-pilot-20261109/`: `manifest.json` (SHA-256
 `a9988f0e333e1c6865df8af86ae480d4d3626656f164d88998b7bfb38d810fea`) and
 `samples.csv` (SHA-256
 `cc6bc9a6d5877ecc07789ec27a3ed26f5eb3393991e8d211a94acaa337ae20e2`).
+A separate channel-inspection log is under ignored
+`output/phase2/sp121-arm64-thermal-channel-readonly-20261110.log` (SHA-256
+`971ca55655435ee5dc1f6a8fbba1e877483918a4d86542068f44f0d1bfe2f705`).
 
 A post-pilot read-only check reconfirmed that the active ESP payload still
 matches the retained recovery set and the saved EFI/BOOT tree. Its raw log is
