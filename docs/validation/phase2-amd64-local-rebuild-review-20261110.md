@@ -96,9 +96,15 @@ and successful RTX 4070 detection. `nvidia-smi -L` also identified the RTX
 owner then explicitly restored the generic entry as the saved default and
 confirmed `GRUB_DEFAULT=saved`, a visible five-second menu,
 `GRUB_SAVEDEFAULT=false`, installed candidate and generic packages, and a
-clean `dpkg --audit`. The candidate remains running, while generic remains
-the automatic fallback. Storage/network/error-log review is still required
-before workload trials. Do not remove the generic kernel or run autoremove.
+clean `dpkg --audit`. The owner then booted generic `7.3.0-10-generic`
+(boot ID `5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`); the RTX 4070 was detected
+there as well. Generic remains the saved default and recovery path, and the
+candidate boot was independently verified. `thermald.service` fails on both
+kernels with the same non-mobile-platform error. GeoClue also timed out after
+90 seconds on both kernel boots. These common service failures are not
+candidate-specific based on current evidence. Interactive-driver validation
+remains a prerequisite for workload trials. Do not remove the generic kernel
+or run autoremove.
 
 ## Build note
 

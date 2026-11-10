@@ -226,3 +226,25 @@ workload. Python syntax and CLI parsing are checked; its AT-SPI tree and full
 workflow remain unvalidated on both target desktops. The APC sampler and fixed
 inputs are ready; the fixed non-target UPS loads (Mac mini, two monitors, DAC,
 MIDI keyboard, printer) must remain in the same state for every B550I pair.
+
+The owner then completed a generic-kernel comparison boot on B550I:
+`7.3.0-10-generic`, boot ID
+`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the RTX 4070 is detected there. The
+generic kernel is the current running kernel and saved GRUB default, with its
+visible five-second menu retained. `thermald.service` and `geoclue.service`
+both timed out/fail on candidate and generic boots. thermald reports
+“Non mobile platform” / `THD engine init failed`; the logs and boot checks so
+far do not show a candidate-specific kernel error. TDX unsupported and the
+Logitech HID++ ping mismatch also appear on both kernel choices.
+
+The first generic-boot editor probe encountered an existing Text Editor with
+no AT-SPI socket. A retry first referenced `/tmp`, which the reboot had
+cleared; using the persistent repository fixture still did not expose the
+document over AT-SPI. The driver now launches a standalone editor with
+`GTK_A11Y=atspi` scoped to that process, requires the exact document in the
+accessibility tree, and redacts document text in probe output. Per-user
+diagnostics show the bus and registry running but the GNOME
+`toolkit-accessibility` preference set to `false`; the owner is enabling it
+for a retry. Interactive workload validation and all six scenario trials
+remain outstanding. The local rebuild and readiness records were updated
+with the generic boot and common service failures.

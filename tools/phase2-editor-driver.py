@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import shutil
 import subprocess
 import sys
@@ -89,12 +90,48 @@ def matching_apps(Atspi: Any) -> list[Any]:
     return apps
 
 
-def probe(Atspi: Any) -> int:
+def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-editor") -> int:
+    fixture_text = None
+    if fixture is not None:
+        fixture = fixture.resolve(strict=True)
+        fixture_text = fixture.read_text(encoding="utf-8")
+        executable = shutil.which(editor)
+        if executable is None:
+            raise RuntimeError(f"editor executable not found: {editor}")
+        editor_env = os.environ.copy()
+        editor_env["GTK_A11Y"] = "atspi"
+        subprocess.Popen(
+            [executable, "--standalone", str(fixture)],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=None,
+            env=editor_env,
+            start_new_session=True,
+        )
+        deadline = time.monotonic() + 30.0
+        found = False
+        while time.monotonic() < deadline:
+            for candidate in matching_apps(Atspi):
+                try:
+                    find_editor(candidate, fixture_text)
+                    found = True
+                    break
+                except RuntimeError:
+                    continue
+            else:
+                time.sleep(0.25)
+                continue
+            break
+        if not found:
+            raise RuntimeError(
+                "Text Editor did not expose the requested fixture over AT-SPI; "
+                "close older editor instances and retry"
+            )
     apps = matching_apps(Atspi)
     if not apps:
         raise RuntimeError(
             "GNOME Text Editor is not exposed on this session's AT-SPI bus; "
-            "open the editor and retry"
+            "close old editor instances, then retry probe --fixture PATH"
         )
     for app_index, app in enumerate(apps):
         print(f"application[{app_index}] role={safe_role(app)!r} name={safe_name(app)!r}")
@@ -103,6 +140,8 @@ def probe(Atspi: Any) -> int:
                 continue
             name = safe_name(node).replace("\n", " ")[:100]
             role = safe_role(node)
+            if node_text(node) is not None:
+                name = "[document text redacted]"
             try:
                 interfaces = ",".join(str(x) for x in node.get_interfaces())
             except Exception:
@@ -266,11 +305,14 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
     if editor_command is None:
         raise RuntimeError(f"editor executable not found: {args.editor}")
     app_version = args.app_version
+    editor_env = os.environ.copy()
+    editor_env["GTK_A11Y"] = "atspi"
     _proc = subprocess.Popen(
-        [editor_command, str(working_copy)],
+        [editor_command, "--standalone", str(working_copy)],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
+        env=editor_env,
         start_new_session=True,
     )
 
@@ -371,6 +413,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     probe_parser = subparsers.add_parser("probe", help="print Text Editor's AT-SPI tree")
+    probe_parser.add_argument("--fixture", type=Path, help="open this fixture in a fresh editor process")
+    probe_parser.add_argument("--editor", default="gnome-text-editor")
     probe_parser.set_defaults(handler="probe")
 
     run_parser = subparsers.add_parser("run", help="run the fixed 20-operation workload")
@@ -396,7 +440,7 @@ def main() -> int:
     try:
         Atspi = atspi_api()
         if args.handler == "probe":
-            return probe(Atspi)
+            return probe(Atspi, args.fixture, args.editor)
         report = run_workload(args, Atspi)
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0

@@ -12,8 +12,10 @@ or policy was changed.
 - Board: MSI MPG B550I GAMING EDGE WIFI (MS-7C92)
 - CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
 - OS: Ubuntu 26.10
-- Active boot: `7.3.1-psycachy`, boot ID
-  `66e20dc7-2233-44a7-8ae1-f3e0438817e2` (local rebuilt candidate)
+- Latest reported boot: `7.3.0-10-generic`, boot ID
+  `5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the local rebuilt candidate was
+  also booted successfully with ID
+  `66e20dc7-2233-44a7-8ae1-f3e0438817e2`.
 - Installed comparison kernel: `7.3.0-10-generic`
 - Pre-install `/boot/vmlinuz-7.3.1-psycachy` SHA-256 from the readiness
   snapshot: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
@@ -93,6 +95,24 @@ both candidate packages and the generic image are installed, and
 the in-place package replacement. Do not change the existing `performance`
 policy to prepare trials.
 
+The owner then rebooted once to generic `7.3.0-10-generic` (boot ID
+`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`). `nvidia-smi -L` identified the RTX
+4070 on generic. The only failed unit in the captured `systemctl --failed`
+output was `thermald.service`; its journal says “Non mobile platform” and
+`THD engine init failed` on both the candidate and generic boots, so this is
+not a candidate-specific failure. Kernel error-priority output on generic
+again included TDX unsupported and a Logitech HID++ protocol ping mismatch,
+also observed on candidate. `geoclue.service` timed out after 90 seconds on
+both the candidate and generic boots. This reproduces a GeoClue startup issue
+on both B550I kernel choices rather than a candidate-only failure. The initial
+AT-SPI probe encountered an already-open Text Editor process with no
+session accessibility-bus socket. A later probe used the persistent fixture
+from `output/phase2-inputs/` but still could not expose it over AT-SPI. The
+owner's read-only diagnostics confirm that the accessibility bus and registry
+are running, while GNOME's `toolkit-accessibility` preference is `false`. The
+owner is enabling that per-user setting for another probe. This remains an
+application/accessibility validation blocker, and no editor workload has run.
+
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
 returned four valid 20% samples across 6.00 seconds, no skipped intervals, and
@@ -105,7 +125,8 @@ not affect the B550I video scenario that uses VLC. The shared
 `tools/phase2-editor-driver.py` implements the fixed 20-operation
 find/replace workflow over GNOME AT-SPI. Its syntax and CLI were checked; the
 AT-SPI tree and full workload still need validation in the B550I desktop and
-SP12 desktop before interactive comparisons.
+SP12 desktop before interactive comparisons. The fixture-opening probe fails
+closed if the requested document is not accessible.
 
 ## Artifact
 

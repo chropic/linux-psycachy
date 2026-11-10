@@ -44,9 +44,17 @@ directory. `tools/phase2-editor-driver.py` implements this workflow over
 GNOME AT-SPI, using a monotonic clock and verifying document contents after
 each replacement. Its syntax and command-line interface are checked, but the
 accessibility tree and 20-operation workflow still require validation on both
-desktop sessions. Run `python3 tools/phase2-editor-driver.py probe` from a
-terminal in each logged-in GNOME session and inspect the accessible
-find/replace controls before the first workload trial.
+desktop sessions. The driver launches Text Editor with `GTK_A11Y=atspi`
+scoped to that process and `--standalone` to force an isolated editor
+instance; this requests GTK's AT-SPI backend without changing session-wide
+settings. Then run
+`python3 tools/phase2-editor-driver.py probe --fixture
+output/phase2-inputs/editor-fixture-64k.txt` from the repository root in each
+logged-in GNOME session. Keep the fixture in the repository output directory;
+`/tmp` is cleared by reboot. The command waits for the requested document to
+appear in the accessibility tree and exits with an error if it cannot find
+that exact fixture. Probe output redacts document text; inspect the exposed
+find, replace, Replace All, and document controls.
 Measure p95 over the same 20 operations in interactive-use and
 interactive-compilation runs. Record fixture/clip hashes, app and driver
 versions, compiler version, build config hash, source hash, candidate package
@@ -57,8 +65,13 @@ candidate boot health review and controlled conditions.
 
 Read-only version checks confirm Text Editor 50.1 on both targets, VLC 3.0.24
 and FFmpeg 8.1.2 on B550I, and Firefox 158.0-2 snap revision 9056 on SP12.
-`xdotool` is not installed on either target, and this Codex session exposes no
-desktop app for interactive validation. No UI workflow was exercised.
+The first B550I probe encountered an existing editor process with no AT-SPI
+socket; its retry failed to expose the fixture even with the corrected
+persistent fixture path. The driver now uses `--standalone` and redacts
+document text in probe output. Read-only diagnostics confirmed the AT-SPI bus
+and registry are running, while GNOME's `toolkit-accessibility` preference
+was `false`; the owner is enabling that per-user setting for a retry. No UI
+workflow was exercised.
 
 ## Collection and controls
 
