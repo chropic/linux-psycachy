@@ -35,3 +35,17 @@ The owner approved this exact candidate config for Phase 1 VM testing on
 approve hardware deployment or release. The candidate remains experimental
 until runtime boot-trust behavior is tested and the policies are reviewed for
 the intended hardware use.
+
+## Final Phase 1 VM build correspondence
+
+The approved build input was recovered from the SP12's existing build artifacts
+and has SHA-256
+`04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659`. Pinned
+Kconfig resolution produced the package-embedded config above, hash
+`e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c`; the only
+text difference is the explicit no-set comment for
+`CONFIG_DRM_MSM_VALIDATE_XML`. The final build audit found no unexpected
+changes, and the policy-sensitive values in this review are unchanged. The
+approved input, resolved config, and build audit are retained with raw package
+artifacts under ignored `output/phase1/`. The VM-only approval boundary remains
+unchanged.

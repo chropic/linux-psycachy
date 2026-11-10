@@ -64,10 +64,15 @@ verification before baseline trials.
 
 - The AMD64 candidate's dependency-resolved install, candidate boot, package
   removal, and generic fallback reboot have passed in a disposable TCG VM. For
-  ARM64, the generic UEFI/GRUB stock-fallback reboot now passes in a disposable
-  Ubuntu guest. Candidate-package install, boot, removal, and normal
-  installed-system checks remain open as documented in [the handoff](PHASE1-HANDOFF.md).
-  The blank-ESP first-install hook and FAT payload comparison have passed.
+  ARM64, the fresh Phase 1 disposable-VM lifecycle passed candidate
+  install/configure, initrd and ESP synchronization, candidate direct boot,
+  package removal, package-managed fallback selection, clean dpkg audit, and
+  fallback direct boot. See the [B550i retry report](validation/phase1-b550i-retry-20261109.md).
+  The fallback's package-owned ARM64 image was extracted from its EFI wrapper
+  for QEMU direct boot. The fresh installed-system UEFI/GRUB path did not reach
+  userspace; neither QEMU result establishes SP12 firmware or hardware
+  behavior. The blank-ESP first-install hook and FAT payload comparison have
+  passed.
 - Keep physical SP12 installation, suspend/resume, display, storage, Wi-Fi,
   fallback boot, and recovery as separate hardware validation gates. Generic
   QEMU `virt` boot evidence does not validate the SP12 device tree or hardware.
@@ -149,7 +154,9 @@ verification before baseline trials.
   completion, and suspend as distinct workload outcomes; intrusive traces are
   separate runs.
 
-No Phase 2 performance or power tuning has started. Complete the outstanding
-Phase 1 checks and agree on the target workloads and acceptance thresholds
-before running comparative experiments. These proposed thresholds and
-workloads need owner review before they become experiment gates.
+No Phase 2 performance or power tuning has started. The requested ARM64 VM
+gates are complete. Physical SP12 install, boot, removal, fallback, recovery,
+and device-function checks remain separate hardware gates requiring review
+and authorization. Agree on target workloads and review the proposed
+acceptance thresholds before running comparative experiments; the workload
+and threshold proposals are not yet approved experiment gates.
