@@ -162,7 +162,9 @@ inventory are under ignored `output/`; do not add them to Git.
    After reviewed boot/rollback checks, the owner ran the guarded installer:
    packages, initrds, NVIDIA DKMS modules, and kernel signing completed; dpkg,
    config, menu, and generic saved-default checks passed. It did not reboot.
-   The UI driver is absent from the repository; no workload trial has started.
+   `tools/phase2-editor-driver.py` now implements the shared AT-SPI editor
+   workload; it still needs probe and workflow validation in both desktops.
+   No workload trial has started.
 4. The full candidate-boot journal resolves the early DPU warning; the
    candidate loads SQE and GMU firmware after the initial lookup failures.
    UFS RPMB and watchdog messages also occur on fallback. GeoClue timed out on
@@ -186,11 +188,13 @@ root Tailscale SSH; no local sudo was needed. The B550I root filesystem
 in this execution context is read-only and sudo is blocked by
 `no_new_privileges`. The owner installed the separately identified local
 rebuild from B550I using the guarded installer; package/DKMS/signing/initrd
-configuration and all installer checks passed, with generic saved as default.
-It has not yet been booted. The next required operator action is the one-time
-candidate `grub-reboot` and system reboot, then read-only verification of boot,
-NVIDIA module, display, storage, network, and error logs. No workload trial has
-occurred.
+configuration and all installer checks passed. The owner completed
+activation and booted the rebuilt candidate as `7.3.1-psycachy` (boot ID
+`66e20dc7-2233-44a7-8ae1-f3e0438817e2`); Secure Boot and NVIDIA RTX 4070
+checks passed. The activation flow initially saved PsyCachy as default; the
+owner restored generic as saved default, with the five-second menu retained.
+Further boot health/error-log review and UI-driver validation remain before
+trials. No workload trial has occurred.
 
 
 ## Continuation update — 2026-11-10
@@ -210,12 +214,15 @@ The first B550I installer attempt stopped at the disk-space preflight because
 `df -Pm` was unsupported; it stopped before changes. After the pushed fix to
 use `df -Pk`, the installer successfully replaced the local image and headers
 packages, regenerated initrds, rebuilt and signed NVIDIA DKMS modules, signed
-the kernel, and passed package/config/GRUB checks. The saved GRUB default is
-generic and the installer did not reboot. A second invocation stopped at its
-backup guard, with no further changes. Next, use the one-time candidate entry
-and reboot; inspect boot/runtime state before any trial.
+the kernel, and passed package/config/GRUB checks. A second invocation stopped
+at its backup guard, with no further changes. The owner then booted the rebuilt
+candidate and reported activation checks and NVIDIA RTX 4070 detection passed.
+The active boot ID is `66e20dc7-2233-44a7-8ae1-f3e0438817e2`; the generic
+kernel is again the saved default and GRUB retains its visible five-second
+menu. Storage/network/kernel error-log review is still needed before trials.
 
-The interactive UI driver remains absent and no workload trial has started.
-The APC sampler and fixed inputs are ready; the fixed non-target UPS loads
-(Mac mini, two monitors, DAC, MIDI keyboard, printer) must remain in the same
-state for every B550I pair.
+`tools/phase2-editor-driver.py` was added for the fixed 20-operation editor
+workload. Python syntax and CLI parsing are checked; its AT-SPI tree and full
+workflow remain unvalidated on both target desktops. The APC sampler and fixed
+inputs are ready; the fixed non-target UPS loads (Mac mini, two monitors, DAC,
+MIDI keyboard, printer) must remain in the same state for every B550I pair.

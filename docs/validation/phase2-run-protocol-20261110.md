@@ -40,16 +40,20 @@ B550I by `tools/prepare-phase2-inputs.py`; the ignored manifest is
 All three files were copied over the approved Tailscale connection to
 `/tmp/phase2-inputs/` on SP12 and their hashes matched on 2026-11-10. Pin the
 build source commit and per-target config; each run starts with an empty output
-directory. A UI driver is not present in the repository or staged artifacts.
-Before interactive scenarios, implement and validate a driver on each desktop
-that timestamps operations with a monotonic clock and verifies resulting
-document state.
+directory. `tools/phase2-editor-driver.py` implements this workflow over
+GNOME AT-SPI, using a monotonic clock and verifying document contents after
+each replacement. Its syntax and command-line interface are checked, but the
+accessibility tree and 20-operation workflow still require validation on both
+desktop sessions. Run `python3 tools/phase2-editor-driver.py probe` from a
+terminal in each logged-in GNOME session and inspect the accessible
+find/replace controls before the first workload trial.
 Measure p95 over the same 20 operations in interactive-use and
 interactive-compilation runs. Record fixture/clip hashes, app and driver
 versions, compiler version, build config hash, source hash, candidate package
 hash, and driver version in each run manifest. The fixed inputs are staged on
-both targets; the missing UI driver and unqualified candidate comparison make
-the protocol not yet trial-ready.
+both targets. The interactive scenarios remain unready until the driver is
+validated on both desktops; workload trials also require the current
+candidate boot health review and controlled conditions.
 
 Read-only version checks confirm Text Editor 50.1 on both targets, VLC 3.0.24
 and FFmpeg 8.1.2 on B550I, and Firefox 158.0-2 snap revision 9056 on SP12.

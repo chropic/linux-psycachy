@@ -12,12 +12,14 @@ or policy was changed.
 - Board: MSI MPG B550I GAMING EDGE WIFI (MS-7C92)
 - CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
 - OS: Ubuntu 26.10
-- Active boot: `7.3.1-psycachy` (the pre-install instance remains in RAM;
-  candidate package replacement has not been booted yet)
+- Active boot: `7.3.1-psycachy`, boot ID
+  `66e20dc7-2233-44a7-8ae1-f3e0438817e2` (local rebuilt candidate)
 - Installed comparison kernel: `7.3.0-10-generic`
-- Running kernel image SHA-256: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
+- Pre-install `/boot/vmlinuz-7.3.1-psycachy` SHA-256 from the readiness
+  snapshot: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
+  (not the currently installed, signed local rebuild payload)
 - Running config SHA-256: `3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae`
-- Root filesystem: mounted read-only during inspection
+- Root filesystem: mounted read-only during the initial inventory
 - Active CPU policy: `amd-pstate-epp`, `performance` governor and preference
 - CPU frequency range reported by sysfs: approximately 1.755–4.553 GHz
 - `acpi_idle` driver with `menu` governor; platform-profile interface absent
@@ -39,9 +41,10 @@ all retained `.deb` files; no file matched the expected digest. The retained
 was checked, but its image package hash is
 `c8539063623430770ec1567adb67e66738da9eb73fe0587836168d52f538efdb`, which
 does not match the approved package hash, so it was discarded and will not be
-used. Do not treat measurements on the currently running image as the final
-candidate comparison. A matching package and controlled kernel-selection
-window are required before such a comparison.
+used. The approved expected package remains unavailable. The local rebuild is
+a separately identified candidate. Results on this boot can be compared against
+the installed generic kernel, but must remain labelled as measurements of the
+local rebuild rather than the exact expected package.
 
 ## Measurement readiness
 
@@ -79,11 +82,16 @@ exact expected artifact. See the
 [local rebuild review](phase2-amd64-local-rebuild-review-20261110.md).
 
 The B550I root filesystem is read-only in this execution context; sudo is
-unavailable here. The owner ran the guarded installer from the host. Its
-package, dpkg, config, and GRUB checks passed; the generic kernel remains the
-saved default and no reboot has occurred yet. The UI driver is absent from the
-repository and staged artifacts, so interactive scenarios are not ready. Do
-not change the existing `performance` policy to prepare trials.
+unavailable here. The owner ran the guarded installer from the host, then
+booted the rebuilt candidate. The activation utility reported Secure Boot
+enabled, both signing certificates enrolled, NVIDIA module checks passed, and
+the RTX 4070 was visible. The owner then restored the generic kernel as the
+saved default without rebooting; GRUB is `saved` with a visible five-second
+menu and `GRUB_SAVEDEFAULT=false`. The candidate remains the running kernel,
+both candidate packages and the generic image are installed, and
+`dpkg --audit` is clean. The original running-image inventory hash predates
+the in-place package replacement. Do not change the existing `performance`
+policy to prepare trials.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
@@ -93,8 +101,11 @@ workload baseline.
 
 Read-only application checks confirm GNOME Text Editor 50.1, VLC 3.0.24, and
 FFmpeg 8.1.2 are available on B550I. Firefox is not on its PATH, which does
-not affect the B550I video scenario that uses VLC. `xdotool` is not installed;
-the approved interactive scenarios still need a validated UI driver.
+not affect the B550I video scenario that uses VLC. The shared
+`tools/phase2-editor-driver.py` implements the fixed 20-operation
+find/replace workflow over GNOME AT-SPI. Its syntax and CLI were checked; the
+AT-SPI tree and full workload still need validation in the B550I desktop and
+SP12 desktop before interactive comparisons.
 
 ## Artifact
 

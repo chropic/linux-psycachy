@@ -87,11 +87,18 @@ stopped before changes because `df -Pm` was unsupported; the corrected `df
 existing-backup guard and made no further changes. Full output is in the
 current conversation; no raw log was saved.
 
-Current next step is to select the local candidate once with `grub-reboot`
-using the recorded candidate submenu/kernel IDs, then reboot. The generic
-entry remains the saved default. Verify the actual boot ID/release, display,
-storage, network, NVIDIA module state, and error logs before measurements. Do
-not remove the generic kernel or run autoremove.
+The one-time candidate boot and activation completed on 2026-11-10. The owner
+reported running release `7.3.1-psycachy`, boot ID
+`66e20dc7-2233-44a7-8ae1-f3e0438817e2`. The activation utility reported Secure
+Boot enabled, both certificates enrolled, NVIDIA modules signed and installed,
+and successful RTX 4070 detection. `nvidia-smi -L` also identified the RTX
+4070 after boot. The activation utility saved PsyCachy as the default; the
+owner then explicitly restored the generic entry as the saved default and
+confirmed `GRUB_DEFAULT=saved`, a visible five-second menu,
+`GRUB_SAVEDEFAULT=false`, installed candidate and generic packages, and a
+clean `dpkg --audit`. The candidate remains running, while generic remains
+the automatic fallback. Storage/network/error-log review is still required
+before workload trials. Do not remove the generic kernel or run autoremove.
 
 ## Build note
 
