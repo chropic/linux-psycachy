@@ -101,14 +101,21 @@ readings ranged from 8.1% to 12.2%, indicating background activity during the
 pilot. GPU busy telemetry was unsupported, GPU identity was partial, battery
 charge in Ah was unreadable, and powercap telemetry was absent.
 
-One hwmon temperature channel returned `-273.1 C` throughout the pilot. Treat
-that channel as invalid until its sensor mapping is reviewed; do not use it as
-an ambient or surface temperature. The other readings remain uncontrolled
-observations from the same short pilot. Raw files are retained under ignored
+One hwmon temperature channel returned `-273.1 C` throughout the pilot. A
+follow-up read-only sysfs check identified it as `hwmon4`, driver
+`surface_thermal`, sensor `temp12_input`; its label attribute did not decode as
+UTF-8. Treat the channel as invalid until its mapping is reviewed; do not use
+it as an ambient or surface temperature. The other readings remain
+uncontrolled observations from the same short pilot. Raw files are retained under ignored
 `output/phase2/sp121-arm64-idle-pilot-20261109/`: `manifest.json` (SHA-256
 `a9988f0e333e1c6865df8af86ae480d4d3626656f164d88998b7bfb38d810fea`) and
 `samples.csv` (SHA-256
 `cc6bc9a6d5877ecc07789ec27a3ed26f5eb3393991e8d211a94acaa337ae20e2`).
+
+A post-pilot read-only check reconfirmed that the active ESP payload still
+matches the retained recovery set and the saved EFI/BOOT tree. Its raw log is
+`output/phase1/phase1-recovery-and-sensor-recheck-20261110.log` (SHA-256
+`25befbc0e16fa07532517d97e54fdbb53c83cc52f54f3b3f65043c29dc1b5b3e`).
 
 Before baseline trials, record power source and charge range, brightness, radio
 state, peripherals, ambient and starting temperature, active power policy,
