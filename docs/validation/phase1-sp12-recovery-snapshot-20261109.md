@@ -35,6 +35,11 @@ retained under ignored `output/phase1/phase1-recovery-apply-20261109.log`
 (SHA-256 `5ae247237d23f1f5c12ef911d0ffef8e96ac8d25e870cee2b2103aa0564b644c`).
 
 This verifies the physical restore operation and retained payload integrity.
-The device has not rebooted since apply, so booting the restored set and the
-recovery-panel entry remain unverified. Candidate package install, removal,
-candidate boot, and physical fallback boot are also still open.
+At the time this report was written, the device had not rebooted since apply.
+The operator later confirmed a reboot into `7.3.0-sp12-v7.3-platform`, the
+restored default kernel. `/boot/efi` was mounted from `/dev/sda1` as `vfat`
+read-only. This confirms the restored default boot path; the recovery-panel
+entry remains untested. Candidate package install, removal, candidate boot,
+and physical fallback boot are also still open. The operator's raw post-reboot
+report is retained in ignored
+`output/phase1/phase1-restored-default-boot-20261109.log`.
