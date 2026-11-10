@@ -32,9 +32,12 @@ This is a physical boot observation, not a complete hardware qualification.
 
 Observed candidate boot issues were recorded for review:
 
-- `msm_dpu` repeatedly could not load `qcom/gen71500_sqe.fw` (`error -2`); the
-  file was absent from both `/lib/firmware/qcom` and
-  `/usr/lib/firmware/qcom` although `linux-firmware` was installed.
+- `msm_dpu` logged repeated early `qcom/gen71500_sqe.fw` lookup failures
+  (`error -2`). The retained candidate boot journal later shows successful
+  SQE and GMU loads from the rootfs at 9.022 seconds and `Loaded GMU firmware
+  v4.6.4` at 9.024 seconds. The initrd lacks the generic SQE/GMU files while
+  the compressed versions are present in rootfs firmware; the early warnings
+  therefore recovered during this boot.
 - UFS RPMB registration failed; the root filesystem remained available.
 - Surface serial hub unexpected-message notices and a Qualcomm APM timeout
   appeared in the boot log.
@@ -71,8 +74,8 @@ payload before synchronizing the fallback. That lifecycle behavior captured
 the candidate set as recovery. The original verified recovery set was restored
 from the ignored, off-host copy and the candidate set was retained separately
 under `/var/lib/sp12-linux/candidate-lifecycle-recovery-20261110`. Both sets
-were checked; the active recovery directory again matches the original hashes
-above.
+were checked; at the end of that lifecycle sequence the active recovery
+directory matched the original hashes above.
 
 After the first fallback boot, `sp12-restore-recovery --apply` restored the
 original payload to the active ESP and remounted it read-only. A second reboot
@@ -102,7 +105,25 @@ Machine-specific transcripts and inventory JSON are under ignored `output/`:
 
 The fresh Phase 2 inventory reports AArch64, the restored platform kernel,
 two CPU-frequency policies, 36 thermal zones, and 102 telemetry metrics. It is
-inventory only; no workload, energy baseline, or tuning was performed. Review
-the open Phase 2 target/workload/threshold choices before trials. The
-recovery-panel boot mismatch and missing DPU firmware also need separate
-technical review.
+inventory only; no workload, energy baseline, or tuning was performed. The
+owner has since selected both targets, all six scenarios, and the proposed
+thresholds.
+
+A subsequent read-only inspection after the owner's restart found that host
+package configuration had regenerated the fallback initrd:
+`/boot/initrd.img-7.3.0-sp12-v7.3-platform` and active ESP `sp12/initrd.img`
+both now hash to
+`0b37595fbe6d03647ce48df946c0e84bbc54f372d2f37052825e86a562481b58`. The
+active kernel and DTB still match the original recovery hashes. The verified
+original recovery initrd (`f396c44d...e4a4fa`) remains in the ignored off-host
+copy, and the current active fallback trio is separately preserved in
+`output/phase1/sp12-pre-candidate-fallback-20261110/`. The on-device recovery
+snapshot was not re-written during this later inspection. Re-verify these
+sets before candidate selection because the sync helper rotates the on-device
+recovery snapshot.
+
+The candidate's early DPU firmware lookup errors later recovered, as recorded
+in the technical triage. The recovery-panel mismatch remains unresolved. The
+captured root GRUB config uses the installed `/boot` panel initrd, but the
+actual EFI chain was not identified; do not test or repair that path as part
+of candidate review.

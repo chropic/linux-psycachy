@@ -142,3 +142,16 @@ SP12 source/charge/display/radio state, a B550I test window, the exact latest
 AMD64 candidate package, and UI-driver validation. The run protocol also
 requires interleaved pairs and matched conditions; no workload trial has
 started.
+
+## Owner follow-up — 2026-11-10
+
+The owner reports a UPS is available but does not know its accuracy; no make,
+model, energy-reading capability, or B550I trial window has been provided, so
+it is not yet qualified as the whole-system Wh meter. The owner explicitly
+authorized a reviewed SP12 candidate install after physical readiness checks.
+This is conditional approval: do not install until the current fallback state,
+power/charge/display/radio/temperature conditions, package hashes, and the
+install/rollback procedure have been reviewed. The owner also reported that
+speakers were not working and restarted the SP12; the current software audio
+path enumerates, but audible output after reboot still needs the owner's
+confirmation.

@@ -5,8 +5,9 @@
 The owner approved both targets, all six scenarios, and the proposed gates.
 Run the B550I AMD64 target first and SP12 ARM64 only after its physical setup
 is verified. Keep measurements and candidate artifacts separate by target.
-The scope does not authorize system-policy changes, a SP12 candidate reinstall,
-or a recovery-panel boot.
+The scope authorizes a reviewed SP12 candidate install only after physical
+readiness checks and install/rollback review. It does not authorize
+system-policy changes or a recovery-panel boot.
 
 For every scenario, run at least three interleaved baseline/candidate pairs.
 Require at least 10% lower whole-system energy for equivalent work, no more
@@ -61,7 +62,9 @@ system policy between runs.
 
 ## Readiness gates before the first trial
 
-- Provide an external whole-system energy meter for the target under test.
+- Qualify a meter that reports or can integrate whole-system Wh. The owner has
+  a UPS, but its model, measurement method, and accuracy are unknown; do not
+  treat it as a meter until those details are verified.
 - Validate the same UI driver on both desktops before interactive scenarios.
 - Physically verify SP12 power source, main-battery charge range, brightness,
   radio/peripheral state, and an acceptable ambient/start temperature. Its
@@ -72,9 +75,10 @@ system policy between runs.
 - For the AMD64 candidate comparison, obtain the exact latest candidate
   package. The running `7.3.1-psycachy` image predates that package despite
   sharing the release label; the `.deb` is absent from the workspace.
-- The SP12 currently runs the fallback. This protocol does not reinstall the
-  candidate there; collect no SP12 candidate comparison under the current
-  authorization boundary.
+- The post-restart SP12 state has been re-confirmed as the fallback. The owner
+  restarted it after reporting a speaker issue; audible output still needs the
+  owner's confirmation. A candidate install is authorized only after the
+  physical checks and review above.
 
 No workload trial has started. Current inventories are documented in the
 [AMD64 readiness record](phase2-amd64-readiness-20261110.md) and

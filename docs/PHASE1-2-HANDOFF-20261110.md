@@ -9,7 +9,7 @@ recovery payload, update sanitized documentation, and push the feature branch.
 - Repository: `github.com/chropic/linux-psycachy`
 - Branch: `feature/linux-chropic-psycachy-b550i-sp121`
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
-- Completed continuation commit: `5043a51` (pushed with `[skip ci]`)
+- Current continuation tip: `9873da2` (pushed with `[skip ci]`)
 - Build host: `CS-B550i` (x86_64 Ryzen 7 5800X3D)
 - SP12 access: root Tailscale SSH to `cs-sp12` was authorized by the user and
   verified from the host context.
@@ -54,14 +54,13 @@ observations are recorded in
    The recovery-panel payload was left untouched. Its initrd mismatch still
    blocks testing that panel entry.
 
-Candidate boot observations requiring technical qualification include repeated
-early DPU lookups failing for `qcom/gen71500_sqe.fw` with no successful late
-load in the captured candidate log, a UFS RPMB registration failure with root
-storage usable, and Surface serial-hub and Qualcomm APM messages. The rootfs
-contains the compressed SQE/GMU firmware; both saved initrds omit those two
-files, and the fallback log shows a successful delayed load. The candidate's
-different lookup/retry outcome remains unexplained. The recovery-panel initrd
-mismatch remains an explicit open issue. See the
+The retained candidate boot journal confirms that the early DPU lookup errors
+recover: SQE and GMU load at 9.022 seconds and GMU firmware v4.6.4 initializes
+at 9.024 seconds. The fallback has the same early-warning/delayed-load pattern;
+the candidate-specific missing-firmware concern is resolved. UFS RPMB
+registration, Surface serial-hub notices, and Qualcomm APM/audio remain
+qualification observations. The recovery-panel initrd mismatch remains an
+explicit open issue. See the
 [`Phase 1 technical triage`](validation/phase1-technical-triage-20261110.md)
 and physical lifecycle report; raw evidence is under ignored `output/`.
 
@@ -119,24 +118,40 @@ inventory are under ignored `output/`; do not add them to Git.
 
 ## Next agent actions
 
-1. Start from pushed commit `5043a51` on the feature branch; the documentation
+1. Start from pushed commit `9873da2` on the feature branch; the documentation
    and test updates are already pushed. Do not stage inherited `.agents/`,
    `.codex/`, `AGENTS.md`, `RTK.md`, `phase0-work/`, or `sp121-reference/`
    files.
-2. Do not re-install the candidate on the physical SP12. Its current state is
-   restored fallback. Do not test or repair the recovery-panel entry until its
-   installed/ESP initrd mismatch is reviewed and separately approved.
-3. The owner has selected both targets, all six scenarios, and the proposed
-   thresholds. Before controlled trials, pin exact workload inputs/versions
-   and task metrics, verify physical power/charge/display/radio conditions,
-   and provide a suitable whole-system energy meter. Continue to preserve
-   per-target baselines and do not alter system policy.
-4. The DPU firmware and other candidate boot observations have a read-only
-   comparison in `validation/phase1-technical-triage-20261110.md`. The rootfs
-   firmware is present and the fallback loads it after early failures; the
-   candidate's lack of a successful load remains unexplained. Do not reinstall
-   the candidate to investigate.
+2. The owner has authorized a reviewed SP12 candidate install after physical
+   readiness checks. Do not install yet: confirm the device is reachable after
+   the owner reboot, review package hashes and the install/rollback procedure,
+   and verify physical power, main-battery charge, display, radios, ambient
+   temperature, and speaker status. A suitable meter is still required before
+   Phase 2 energy trials. Do not test or repair the recovery-panel entry; its
+   ESP role and active EFI chain remain unresolved.
+3. The owner selected both targets, all six scenarios, and the proposed
+   thresholds. Fixed workload inputs are generated, hashed, and staged on both
+   targets. The owner has a UPS but its accuracy and whole-system metering
+   capability are unknown; no suitable energy meter is verified. The owner
+   still needs to provide the B550I test window, package location, and actual
+   SP12 power/charge/display/radio/temperature readings. The owner also needs
+   to confirm whether the speakers work after the recent reboot.
+4. The full candidate-boot journal resolves the early DPU warning; the
+   candidate loads SQE and GMU firmware after the initial lookup failures.
+   Preserve the boot log reference in
+   `validation/phase1-technical-triage-20261110.md`. No firmware change or
+   candidate reinstall is needed to resolve that concern.
 
-No user-run sudo command is needed at this handoff point. Any later physical
-work should be proposed only after the outstanding firmware and recovery-panel
-questions are reviewed.
+The reviewed package identity and conditional install/rollback checklist are
+in `validation/phase1-candidate-install-review-20261110.md`. The post-restart
+active fallback initrd is newer than the original recovery initrd; both
+complete payload sets are preserved off-host. The sync helper rotates the
+on-device recovery snapshot before candidate payload promotion, so verify the
+current sets again before any selection or reboot.
+
+No `sudo` command or package/kernel/boot-payload change has been performed in
+this review. Earlier Phase 2 input files were staged under SP12 `/tmp`; no
+system policy was changed. A candidate package install and kernel selection
+will require root privileges and a reboot. Complete the owner-approved
+physical readiness checks and verify the target-side state before those steps.
+The recovery-panel route remains untouched.
