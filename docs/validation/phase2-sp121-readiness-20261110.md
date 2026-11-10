@@ -13,7 +13,7 @@ change was made.
 - Target: Microsoft Surface Pro 12in 1st Edition, AArch64, 8 logical CPUs
 - OS: Ubuntu 26.10
 - Running kernel: `7.3.1-psycachy-sp121` (latest checked boot ID
-  `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; the earlier install boot is
+  `[redacted boot ID]`; the earlier install boot is
   recorded below)
 - CPUFreq: 2 policies; CPUIdle `psci_idle` / `menu`
 - Thermal zones: 36
@@ -35,7 +35,7 @@ system reports a main-battery energy value of 28.552 Wh and `Not charging`,
 while a separate HID battery reports 0% with unknown status. Earlier direct
 read-only sysfs checks show USB power online at one interface and conflicting
 AC/USB source states at others. The owner confirms the whole setup is
-connected to an APC Back-UPS XS 1500G and says its battery warning is a false
+connected to an external UPS and says its battery warning is a false
 alarm. The owner clarified that normal idle is 140–160 W; the front display
 showed 169–183 W, mostly around 175 W. During a kernel build it showed about
 250 W. NUT polls every two seconds and exposes load percent plus nominal
@@ -84,7 +84,7 @@ Captured at `2026-11-10T15:33:43.782Z` with collector version `0.1.0`.
 The owner restored the SP12's Tailscale connectivity after a transient
 offline state. Read-only root SSH confirmed release
 `7.3.1-psycachy-sp121`, boot ID
-`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`, clean `dpkg --audit`, and ESP mounted
+`[redacted boot ID]`, clean `dpkg --audit`, and ESP mounted
 read-only. The on-device fallback recovery set passed `sha256sum -c` for
 `vmlinuz`, `initrd.img`, and `dtb`. Backlight remains 1256/4095. The current
 failed units were `fwupd-refresh.service` and `geoclue.service`; subsequent
@@ -107,7 +107,7 @@ validation. No UI interaction was performed.
 
 A subsequent diagnostic reboot again reached candidate release
 `7.3.1-psycachy-sp121`, boot ID
-`39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`. The fallback recovery checksums
+`[redacted boot ID]`. The fallback recovery checksums
 remained valid. `geoclue.service` started successfully on this candidate boot
 after one earlier candidate boot had timed out at its 90-second start limit;
 the timeout did not reproduce on this retry, so it is an intermittent

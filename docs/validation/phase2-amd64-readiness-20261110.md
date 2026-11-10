@@ -13,9 +13,9 @@ or policy was changed.
 - CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
 - OS: Ubuntu 26.10
 - Latest reported boot: `7.3.0-10-generic`, boot ID
-  `5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the local rebuilt candidate was
+  `[redacted boot ID]`; the local rebuilt candidate was
   also booted successfully with ID
-  `66e20dc7-2233-44a7-8ae1-f3e0438817e2`.
+  `[redacted boot ID]`.
 - Installed comparison kernel: `7.3.0-10-generic`
 - Pre-install `/boot/vmlinuz-7.3.1-psycachy` SHA-256 from the readiness
   snapshot: `38c6665ebfce60f1b3ef95c2e0fddb0031e0a21401094ded85d9dee1084ec5fd`
@@ -36,8 +36,7 @@ latest candidate image; the earlier
 The latest image package SHA-256 is
 `b4130c37bc50eafe0af6ca0430893ba3bb59f2a09e9f732879676d9f8e948127` in
 [`VALIDATION.md`](../VALIDATION.md). No matching `.deb` is present in the
-workspace's `output/` or `/tmp`. After the owner suggested a B550I Codex docs
-folder, a broader local search covered `/home/charlie` and `/tmp` and hashed
+workspace's `output/` or `/tmp`. A broader local search covered the local home directory and `/tmp`, then hashed
 all retained `.deb` files; no file matched the expected digest. The retained
 [GitHub Actions run 11 artifact](https://github.com/chropic/linux-psycachy/actions/runs/42642272202)
 was checked, but its image package hash is
@@ -58,9 +57,9 @@ component temperatures, not ambient temperature. Exact starting temperature,
 display brightness, radio/peripheral state, and background activity remain to
 be recorded for each trial.
 
-The owner confirms the entire setup is connected to an APC Back-UPS XS 1500G
-and says the battery warning is a false alarm. On connected host `op7060`, NUT
-polls the USB UPS every two seconds and exposes `ups.load` percent and nominal
+The owner confirms the setup is connected to an external UPS and says the
+battery warning is a false alarm. The external UPS host exposes NUT samples
+every two seconds and reports `ups.load` percent with nominal
 865 W, not measured watts or Wh. At idle, five samples were 20% (173 W
 estimated) while the owner observed 169–183 W, mostly around 175 W. During a
 kernel build, NUT reported 28% (242 W) while the owner observed about 250 W.
@@ -96,7 +95,7 @@ the in-place package replacement. Do not change the existing `performance`
 policy to prepare trials.
 
 The owner then rebooted once to generic `7.3.0-10-generic` (boot ID
-`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`). `nvidia-smi -L` identified the RTX
+`[redacted boot ID]`). `nvidia-smi -L` identified the RTX
 4070 on generic. The only failed unit in the captured `systemctl --failed`
 output was `thermald.service`; its journal says “Non mobile platform” and
 `THD engine init failed` on both the candidate and generic boots, so this is
@@ -121,7 +120,7 @@ the document and selects the two fields by role and tree order; it still needs
 a successful smoke run. No performance trial result is available.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
-trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
+trapezoidal estimated-Wh integral. A six-second smoke capture on `external UPS host`
 returned four valid 20% samples across 6.00 seconds, no skipped intervals, and
 `complete=true`. This validates NUT access and the integration path, not a
 workload baseline.

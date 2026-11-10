@@ -43,7 +43,7 @@ begin on the build host and first test Tailscale SSH to the SP12.
 
 ## Remaining sequence
 
-1. On the B550i, verify Tailscale SSH into `cs-sp12` and collect a fresh
+1. On the B550i, verify Tailscale SSH into the SP12 host alias and collect a fresh
    read-only status, recovery-hash, and package-audit report.
 2. Build the ARM64 image and headers packages on the B550i with
    `SP121_EXPECT_CONFIG_SHA256=04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659`.
@@ -65,7 +65,7 @@ the checks above rather than treating those records as current evidence.
 ## Continuation closeout — 2026-11-09
 
 The sequence above was completed on the Linux B550i build host. Tailscale SSH
-to `cs-sp12` succeeded and the fresh read-only physical checks and recovery
+to the SP12 host alias succeeded and the fresh read-only physical checks and recovery
 hashes passed. The exact approved config was recovered from the SP12's existing
 artifacts, the expected-hash-guarded ARM64 build passed, and the fresh
 copy-on-write QEMU lifecycle passed through candidate boot, removal, fallback

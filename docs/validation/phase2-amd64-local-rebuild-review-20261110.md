@@ -89,7 +89,7 @@ current conversation; no raw log was saved.
 
 The one-time candidate boot and activation completed on 2026-11-10. The owner
 reported running release `7.3.1-psycachy`, boot ID
-`66e20dc7-2233-44a7-8ae1-f3e0438817e2`. The activation utility reported Secure
+`[redacted boot ID]`. The activation utility reported Secure
 Boot enabled, both certificates enrolled, NVIDIA modules signed and installed,
 and successful RTX 4070 detection. `nvidia-smi -L` also identified the RTX
 4070 after boot. The activation utility saved PsyCachy as the default; the
@@ -97,7 +97,7 @@ owner then explicitly restored the generic entry as the saved default and
 confirmed `GRUB_DEFAULT=saved`, a visible five-second menu,
 `GRUB_SAVEDEFAULT=false`, installed candidate and generic packages, and a
 clean `dpkg --audit`. The owner then booted generic `7.3.0-10-generic`
-(boot ID `5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`); the RTX 4070 was detected
+(boot ID `[redacted boot ID]`); the RTX 4070 was detected
 there as well. Generic remains the saved default and recovery path, and the
 candidate boot was independently verified. `thermald.service` fails on both
 kernels with the same non-mobile-platform error. GeoClue also timed out after

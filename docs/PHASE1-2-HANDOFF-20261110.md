@@ -11,8 +11,8 @@ recovery payload, update sanitized documentation, and push the feature branch.
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
 - Prior pushed documentation tip: `e03e766`; subsequent updates record the
   latest SP12 retry and Phase 2 installer preflight.
-- Build host: `CS-B550i` (x86_64 Ryzen 7 5800X3D)
-- SP12 access: root Tailscale SSH to `cs-sp12` was authorized by the user and
+- Build host: the AMD64 build host (x86_64 Ryzen 7 5800X3D)
+- SP12 access: root Tailscale SSH to the SP12 host alias was authorized by the user and
   verified from the host context.
 
 ## Phase 1 status
@@ -61,7 +61,7 @@ observations are recorded in
 6. The candidate image and headers were reinstalled from exact SHA-verified
    ARM64 packages. Candidate kernel, initrd, and DTB matched across `/boot` and
    the read-only ESP before reboot. Install boot ID
-   `6bf2c7ea-122a-4bb4-9436-2ae07d28773b` confirms release
+   `[redacted boot ID]` confirms release
    `7.3.1-psycachy-sp121`; `dpkg --audit` is clean and the fallback recovery
    manifest verifies. Tailscale returned after about a minute without
    physical intervention. Details are in
@@ -140,20 +140,18 @@ inventory are under ignored `output/`; do not add them to Git.
 2. The owner-authorized reviewed SP12 candidate install and reboot are
    complete. Do not reinstall or change boot policy. The fallback recovery
    payload verifies. The owner restored connectivity; Tailscale SSH works
-   again. Current boot ID and recovery checksums match the reviewed state,
+   again. Current boot and recovery checksums match the reviewed state,
    `dpkg --audit` is clean, and the ESP remains read-only. Do not test or repair
    the recovery-panel entry; its ESP role and active EFI chain remain
    unresolved.
 3. The owner selected both targets, all six scenarios, and the proposed
    thresholds. Fixed workload inputs are generated, hashed, and staged on both
-   targets. The owner has an APC Back-UPS XS 1500G with load-in-watts display,
-   and says the battery warning is a false alarm. At idle the display read
+   targets. An external UPS with a load-in-watts display was provisionally cross-checked;
+   the owner says its battery warning is a false alarm. At idle the display read
    169–183 W (mostly 175 W) while NUT's 20% load estimates 173 W. During the
    kernel build it read about 250 W while NUT's 28% estimates 242 W. Treat
    this as a provisionally calibrated estimate; integrate raw NUT samples and
-   label Wh as estimated. The APC meters the B550I only, with a headless Mac
-   mini, two monitors, DAC, MIDI keyboard, and printer as fixed additional
-   loads. The owner cannot connect SP12 to this APC; no alternative SP12 meter
+   label Wh as estimated. The external UPS meters the B550I only, with fixed non-target loads. The owner cannot connect SP12 to this UPS; no alternative SP12 meter
    is identified, so its energy gate remains unavailable.
    The B550I test window is open. No local AMD64 `.deb` matched expected
    SHA-256 `b4130c37...e948127`. Five retained successful CI package artifacts
@@ -190,7 +188,7 @@ in this execution context is read-only and sudo is blocked by
 rebuild from B550I using the guarded installer; package/DKMS/signing/initrd
 configuration and all installer checks passed. The owner completed
 activation and booted the rebuilt candidate as `7.3.1-psycachy` (boot ID
-`66e20dc7-2233-44a7-8ae1-f3e0438817e2`); Secure Boot and NVIDIA RTX 4070
+`[redacted boot ID]`); Secure Boot and NVIDIA RTX 4070
 checks passed. The activation flow initially saved PsyCachy as default; the
 owner restored generic as saved default, with the five-second menu retained.
 Further boot health/error-log review and UI-driver validation remain before
@@ -201,7 +199,7 @@ trials. No workload trial has occurred.
 
 After the owner reconnected the SP12, a diagnostic reboot again reached
 `7.3.1-psycachy-sp121` (boot ID
-`39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`). The fallback recovery manifest still
+`[redacted boot ID]`). The fallback recovery manifest still
 verifies. GeoClue started on this retry after one prior candidate startup
 timeout; the timeout is intermittent, not a reproduced regression. The owner
 confirms the SP12 is plugged in at 77%, brightness is controllable, radios and
@@ -217,19 +215,18 @@ packages, regenerated initrds, rebuilt and signed NVIDIA DKMS modules, signed
 the kernel, and passed package/config/GRUB checks. A second invocation stopped
 at its backup guard, with no further changes. The owner then booted the rebuilt
 candidate and reported activation checks and NVIDIA RTX 4070 detection passed.
-The active boot ID is `66e20dc7-2233-44a7-8ae1-f3e0438817e2`; the generic
+The active boot ID is `[redacted boot ID]`; the generic
 kernel is again the saved default and GRUB retains its visible five-second
 menu. Storage/network/kernel error-log review is still needed before trials.
 
 `tools/phase2-editor-driver.py` was added for the fixed 20-operation editor
 workload. Python syntax and CLI parsing are checked; its AT-SPI tree and full
 workflow remain unvalidated on both target desktops. The APC sampler and fixed
-inputs are ready; the fixed non-target UPS loads (Mac mini, two monitors, DAC,
-MIDI keyboard, printer) must remain in the same state for every B550I pair.
+inputs are ready; the fixed non-target UPS loads must remain in the same state for every B550I pair.
 
 The owner then completed a generic-kernel comparison boot on B550I:
 `7.3.0-10-generic`, boot ID
-`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the RTX 4070 is detected there. The
+`[redacted boot ID]`; the RTX 4070 is detected there. The
 generic kernel is the current running kernel and saved GRUB default, with its
 visible five-second menu retained. `thermald.service` and `geoclue.service`
 both timed out/fail on candidate and generic boots. thermald reports
@@ -264,14 +261,14 @@ The owner is physically leaving the location of B550I and SP12. Continue only
 with work that can be done remotely until the owner returns; do not request
 keyboard, monitor, power, cable, reboot recovery, or other onsite actions as
 routine next steps. Root Tailscale SSH to SP12 is authorized. The current
-Codex execution environment could not start `tailscale ssh root@cs-sp12`
+Codex execution environment could not start `tailscale ssh <authorized-SP12-account>`
 because access to `/var/run/tailscale/tailscaled.sock` was denied by the local
 sandbox (`operation not permitted`). Recheck connectivity from the next
 session before asking the owner; an unavailable local daemon is an execution
 environment limit, not evidence SP12 is offline.
 
 B550I is currently on generic `7.3.0-10-generic`, boot ID
-`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the local rebuilt PsyCachy kernel was
+`[redacted boot ID]`; the local rebuilt PsyCachy kernel was
 previously booted and NVIDIA was verified on both. Generic is the saved GRUB
 default, with a five-second visible menu. Keep the generic recovery kernel and
 the SP12 fallback/recovery set. The recovery-panel EFI chain remains
@@ -282,9 +279,8 @@ No Phase 2 scenario trial has been completed. Approved scope is both targets,
 all six scenarios, at least three interleaved pairs, >=10% lower whole-system
 energy, <=10% longer completion time, and <=5% p95 latency regression when
 applicable; reject on new storage errors, watchdog events, failed resume, or
-functional regression. B550I's APC estimate is calibrated to its display but
-includes fixed Mac mini, monitors, DAC, MIDI keyboard, and printer loads that
-must remain unchanged. SP12 cannot be connected to that APC, so its energy
+functional regression. B550I's UPS estimate is calibrated to its display but
+includes fixed non-target loads that must remain unchanged. SP12 cannot be connected to that UPS, so its energy
 gate remains unavailable. Do not count the editor smoke attempt as a result.
 
 The most recent push before this handoff is `81187e4`; inspect the current
@@ -295,3 +291,9 @@ must be committed and pushed before the next session starts.
 Interactive workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.
+
+## Latest continuation
+
+See [the continuation record](validation/phase1-2-continuation-20261110.md)
+for the local-only review, outstanding checks, privacy redactions, and device
+access limitation that applies to the current continuation.

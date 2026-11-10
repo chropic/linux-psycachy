@@ -70,7 +70,7 @@ lines is in ignored
 
 After the reviewed reinstall, the SP12 booted release
 `7.3.1-psycachy-sp121` with boot ID
-`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`. Its newly generated initrd is
+`[redacted boot ID]`. Its newly generated initrd is
 `55c4796998b575d491ceaebc830934e5addbcbf49af46bb4a4d4a5e5f8fd05db`; this
 is distinct from the earlier retained candidate initrd hash
 `f803e1bca0354084fa39558efe28d60e3396de2cdaf72bda181d245e9b599281`.

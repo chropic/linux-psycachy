@@ -102,7 +102,7 @@ fallback recovery manifest verifies. The original older recovery initrd
 remains in the off-host recovery copy.
 
 The candidate booted successfully with boot ID
-`6bf2c7ea-122a-4bb4-9436-2ae07d28773b` and release
+`[redacted boot ID]` and release
 `7.3.1-psycachy-sp121`. Installed package status is `ii` for image and
 headers; the platform fallback image remains installed and `dpkg --audit` is
 clean. The active ESP is read-only. Its candidate hashes match `/boot`:

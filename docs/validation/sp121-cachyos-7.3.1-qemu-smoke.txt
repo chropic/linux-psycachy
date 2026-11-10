@@ -1,6 +1,6 @@
 Kernel SHA-256: a95137ea48f902817b658e42d9d7a2a4fd7fa1031fd12d5e279fcdb331ed867e
 [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x000f0510]
-[    0.000000] Linux version 7.3.1-sp12-v7.3-platform (charlie@CS-B550i) (Ubuntu clang version 22.1.8 (1ubuntu1), Ubuntu LLD 22.1.8) #1 SMP PREEMPT_DYNAMIC Sun Nov  8 12:17:51 MST 2026
+[    0.000000] Linux version 7.3.1-sp12-v7.3-platform (redacted-builder-identity) (Ubuntu clang version 22.1.8 (1ubuntu1), Ubuntu LLD 22.1.8) #1 SMP PREEMPT_DYNAMIC Sun Nov  8 12:17:51 MST 2026
 [    0.000000] KASLR enabled
 [    0.000000] random: crng init done
 [    0.000000] Machine model: linux,dummy-virt

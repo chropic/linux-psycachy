@@ -101,7 +101,7 @@ matched `/boot`, the fallback recovery manifest verified, and the ESP was
 read-only before reboot.
 
 The reboot reached release `7.3.1-psycachy-sp121` (boot ID
-`6bf2c7ea-122a-4bb4-9436-2ae07d28773b`). Tailscale returned after about a
+`[redacted boot ID]`). Tailscale returned after about a
 minute without physical intervention. `dpkg --audit` remained clean, the
 fallback package remains installed, and the checksum-verified fallback is
 available in `/var/lib/sp12-linux/recovery`. The older original recovery

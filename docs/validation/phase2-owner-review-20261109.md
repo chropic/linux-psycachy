@@ -153,8 +153,7 @@ not hot to the touch, with controllable brightness, working radios, and
 working speakers. The reviewed candidate install and reboot completed; see the
 [physical lifecycle report](phase1-physical-lifecycle-20261110.md).
 
-The owner identified the UPS as an APC Back-UPS XS 1500; subsequent USB
-inspection identifies it as model 1500G. The B550I trial window and package
+The owner identified the UPS; subsequent USB inspection confirmed its class. The B550I trial window and package
 location were unknown at the time of this update. A local search under the
 B550I home, Codex, project, and temporary folders found no `.deb` matching
 expected SHA-256
@@ -167,9 +166,8 @@ telemetry discrepancy and current qualification status.
 
 ## Meter topology follow-up — 2026-11-10
 
-Read-only inspection of the owner's `op7060` host identifies the connected
-UPS as APC Back-UPS XS 1500G over USB. NUT `usbhid-ups` polls every two
-seconds. It exposes `ups.load` percent and nominal 865 W, but no measured
+Read-only inspection confirms the external UPS connection over USB. NUT
+`usbhid-ups` polls every two seconds. It exposes `ups.load` percent and nominal 865 W, but no measured
 watts or Wh value. The owner confirms the whole setup is connected and says
 the battery warning is a false alarm. NUT showed 20% load (173 W estimated)
 in five idle samples while the owner observed 169–183 W, mostly about 175 W.
@@ -180,16 +178,12 @@ energy comparisons against the approved 10% threshold. Treat the result as
 estimated Wh, retain raw samples, and integrate trapezoidally over monotonic
 sample intervals. It is not a calibrated or direct Wh reading. No UPS
 configuration or battery test was performed. The repository now includes
-`tools/phase2-ups-meter.py`; a six-second smoke capture on `op7060` returned
-four valid 20% samples and a complete 6.00-second integration with no skipped
-intervals. This was a sampler smoke check, not a Phase 2 result.
+`tools/phase2-ups-meter.py`; a six-second smoke capture returned four valid
+20% samples and a complete 6.00-second integration with no skipped intervals. This was a sampler smoke check, not a Phase 2 result.
 
-The owner confirms the APC currently meters the B550I only; its battery-backed
-load also includes a headless Mac mini, two monitors, DAC, MIDI keyboard, and
-printer. Those devices cannot be shut down and must stay in a fixed state for
-B550I pairs. The owner cannot connect SP12 to the APC, and no alternative
-whole-system meter has been identified. The approved SP12 energy gate is
-therefore unavailable; its time, latency, and functional results can still be
+The external UPS meters the B550I setup only, along with fixed non-target
+loads that must remain unchanged during B550I pairs. The SP12 cannot use this
+meter, and no alternative whole-system meter has been identified. The approved SP12 energy gate is therefore unavailable; its time, latency, and functional results can still be
 collected, but must not be presented as passing the energy threshold.
 
 ## AMD64 rebuild review — 2026-11-10
@@ -220,7 +214,7 @@ fails after attempting an LVFS refresh on both candidate and fallback boots.
 candidate boot. The timeout did not reproduce and is recorded as an
 intermittent observation to monitor, not an established regression. No service
 was restarted or reconfigured. A later diagnostic reboot reached candidate
-boot ID `39d7fabd-1636-4ecb-8ab3-6cd4fec94d93`; the checksum-verified fallback
+boot ID `[redacted boot ID]`; the checksum-verified fallback
 remained intact. The B550I filesystem in this
 Codex execution context is mounted read-only and sudo is blocked by
 `no_new_privileges`, so a package install or kernel selection requires the
