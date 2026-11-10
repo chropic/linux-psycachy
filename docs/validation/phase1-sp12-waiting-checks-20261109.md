@@ -30,21 +30,21 @@ workspace filesystem had 145 GiB available at inspection time. These checks
 confirm the emulator inputs are present; they do not test a candidate package
 or SP12-specific hardware.
 
-## Remaining read-only checks requiring operator elevation
+## Operator-assisted read-only panel and GRUB check
 
-The installed recovery-panel initrd and GRUB state are root-readable only to
-the current shell. When convenient, an operator can collect these read-only
-results before reboot:
+The operator compared the installed recovery-panel initrd and ESP copy; they
+do not match. The installed file SHA-256 is
+`719b13ac767edd184f62f45fa2b6fb9a1e5363122b51d63722cba470afb99cf2`, and
+`cmp` returned 1. The ESP copy SHA-256 remains
+`b2e5bfcc05e7f070581a197d3a6d7a3a8a34833bb825d0979d54d444bc8b10e4`. The GRUB
+saved environment listed no variables. `/etc/default/grub` has default index 0
+and a hidden zero-second timeout. Filtered GRUB configuration output lists
+the 7.3 platform and 7.2 panel entries, including panel recovery mode, but does
+not prove which exact entry is index 0. No files or firmware variables were
+changed.
 
-```bash
-sudo sha256sum /boot/initrd.img-7.2.0-rc7-sp12-panel
-sudo cmp -s /boot/initrd.img-7.2.0-rc7-sp12-panel /boot/efi/sp12-recovery-panel/initrd.img
-printf 'panel_initrd_cmp_exit=%s\n' "$?"
-sudo grub-editenv /boot/grub/grubenv list
-sudo grep -n -E 'sp12-recovery-panel|7\.2\.0-rc7-sp12-panel|7\.3\.0-sp12-v7\.3-platform|recovery' /boot/grub/grub.cfg
-```
-
-These results can establish whether the panel initrd matches and what GRUB
-entries/default are configured. They cannot establish that either route boots;
-the restored payload and recovery-panel boot checks still require an operator
+The combined read-only results are retained at
+`output/phase1/phase1-panel-grub-readonly-20261110.log`; the initrd mismatch was
+left untouched. These checks do not establish that either route boots. The
+restored payload and recovery-panel boot checks still require an operator
 reboot window.

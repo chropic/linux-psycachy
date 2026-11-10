@@ -25,11 +25,17 @@ signature table. Secure Boot is disabled, but this does not establish that the
 file is usable or part of the active boot path.
 
 The recovery-panel kernel at `/boot/efi/sp12-recovery-panel/vmlinuz` matches
-`/boot/vmlinuz-7.2.0-rc7-sp12-panel`; its DTB matches `/boot/dtb`. The
-corresponding `/boot/initrd.img-7.2.0-rc7-sp12-panel` is root-readable only, so
-the unprivileged session could not compare it with the recovery-panel initrd.
-The installed GRUB configuration and saved GRUB environment are also
-root-readable only; no menu-entry or saved-default conclusion was drawn. No
+`/boot/vmlinuz-7.2.0-rc7-sp12-panel`; its DTB matches `/boot/dtb`. An operator
+later compared the panel initrds with elevated read-only commands: the ESP
+initrd SHA-256 is
+`b2e5bfcc05e7f070581a197d3a6d7a3a8a34833bb825d0979d54d444bc8b10e4`, while
+`/boot/initrd.img-7.2.0-rc7-sp12-panel` has SHA-256
+`719b13ac767edd184f62f45fa2b6fb9a1e5363122b51d63722cba470afb99cf2`; `cmp`
+returned 1. The mismatch was left untouched. GRUB's saved environment listed
+no variables. `/etc/default/grub` sets default index 0 with a hidden zero-second
+timeout. The filtered config output includes entries for the running 7.3
+platform kernel and the 7.2 panel kernel, including its recovery-mode entry;
+the filtered output does not establish which exact entry is index 0. No
 recovery-panel boot was attempted.
 
 Raw UEFI inspection, including firmware entries and file hashes, is retained
@@ -41,3 +47,8 @@ GRUB inspection attempt is retained at
 `output/phase1/phase1-grub-static-inventory-20261109.log` (SHA-256
 `50e38d6e81cecf0a6c3ea826ef489111406d4f5e28de163419d0085bca4b9c8c4`). The
 restored payload set still has not been boot-tested.
+
+The operator-assisted panel-initrd and GRUB check is retained at
+`output/phase1/phase1-panel-grub-readonly-20261110.log` (SHA-256
+`1eb850943075b244fe015be025e286bced2819f3e404f924e43c13ea82bcfe95`). It
+contains no root filesystem UUID.

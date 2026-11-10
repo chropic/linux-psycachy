@@ -1,5 +1,16 @@
 # SP12 ARM64 package lifecycle check — 2026-11-09
 
+## Current artifact availability
+
+This report records a prior disposable-guest run. A check on 2026-11-10 found
+that the referenced `output/phase1-lifecycle-vm/` directory, transcript files,
+and qcow2 overlays are not present in the current worktree or searched local
+temporary directories. The SHA-256 values below are historical values recorded
+by that earlier run and cannot be recomputed from current files. Treat the
+results as historical documentation, not freshly reverified evidence. Repeat
+the package lifecycle test after the exact approved config/package artifacts
+are available.
+
 The candidate image and headers packages (`7.3.1-1psycachy1`) were installed
 in a disposable ARM64 QEMU guest from a local APT repository with dependency
 resolution. The persistent root and ESP backing images were unchanged; this
@@ -107,11 +118,11 @@ root image is derived from live media and includes casper initramfs hooks, so
 the attempt does not establish a normal installed-system reboot. A boot through
 the ESP/GRUB path and a normal reboot remain open.
 
-The direct-boot transcript is retained locally at
-`output/phase1-lifecycle-vm/candidate-direct-boot.log` (SHA-256
+The earlier session recorded the direct-boot transcript at
+`output/phase1-lifecycle-vm/candidate-direct-boot.log` (recorded SHA-256
 `de11d1fa658efb326e780a640c90fbf88c8f257d27291f12fa9c172ea97ad15d`). The
-initrd-boot serial log is at `output/phase1-lifecycle-vm/normal-boot-serial.log`
-(SHA-256 `0b6501330bcd6e70553b404b06dcff9bf94a3935fd813ecefaa93346a6e44d5f`).
+initrd-boot serial log was recorded at `output/phase1-lifecycle-vm/normal-boot-serial.log`
+(recorded SHA-256 `0b6501330bcd6e70553b404b06dcff9bf94a3935fd813ecefaa93346a6e44d5f`).
 
 ## Package-managed fallback removal check — 2026-11-09
 
@@ -157,9 +168,9 @@ package-owned generic kernel. The pre-remove hook selected
 This verifies package removal and fallback payload selection in the disposable
 guest. The guest remained booted from the candidate kernel passed directly to
 QEMU; this is not a boot of the fallback from ESP/GRUB. A normal initrd/UEFI
-reboot and SP12 hardware boot remain unverified. The successful serial
-transcript is retained locally at
-`output/phase1-lifecycle-vm/fallback-removal-test3.log` (SHA-256
+reboot and SP12 hardware boot remain unverified. The earlier session recorded
+the successful serial transcript at
+`output/phase1-lifecycle-vm/fallback-removal-test3.log` (recorded SHA-256
 `5767d3470066175150cbff42af2e3b0071e9ef645a88be835732441cfba3435a`).
 
 ## ARM64 UEFI fallback payload smoke check — 2026-11-09
@@ -174,7 +185,7 @@ its UEFI device. GRUB loaded the existing fallback kernel and initrd from
 machine.
 
 The kernel reached `/init`, ran the initramfs `casper-premount` hook, and
-mounted root UUID `048bbb9c-e82e-42ad-bf34-e5d675e981bb` read-only. The
+mounted its copied guest root read-only. The
 initramfs then unmounted it and stopped progressing through the copied live
 media's Casper path; no systemd target or login was recorded. This is UEFI,
 GRUB, kernel, initrd, and root-mount smoke evidence. It is not a normal
@@ -183,16 +194,19 @@ or validation of the SP12 DTB or Surface hardware.
 
 This confirms firmware-to-GRUB-to-kernel/initrd loading from an ESP copy. It
 does not verify the package or installer supplied an EFI loader, and it does
-not complete a normal installed-system reboot. The serial transcript is
-retained locally at
-`output/phase1-lifecycle-vm/uefi-fallback-tcg/serial-esp-loader.log` (SHA-256
+not complete a normal installed-system reboot. The earlier session recorded
+the serial transcript at
+`output/phase1-lifecycle-vm/uefi-fallback-tcg/serial-esp-loader.log` (recorded SHA-256
 `9b637aec2fedd2e646d47f4633204231a4ed168cc284cc244d4fcf76d1059fc4`). The
 temporary EFI loader, raw ESP copies, extracted payload copies, and new qcow2
-overlays are under the same ignored output directory.
+overlays were recorded under the same ignored output directory.
 
-## Evidence retained locally
+## Historical evidence references
 
-The serial transcript is retained in the ignored output directory at
-`output/phase1-lifecycle-vm/serial-transcript.log` (SHA-256
+The earlier session recorded a serial transcript in the ignored output
+directory at
+`output/phase1-lifecycle-vm/serial-transcript.log` (recorded SHA-256
 `7f7dd182b65110ba2204082179c18aca1b83af7cb685ea38e09bb1139f70a17e`). The
-`root4.qcow2` and `esp4.qcow2` overlays are also retained there. QEMU powered
+`root4.qcow2` and `esp4.qcow2` overlays were also recorded there. Those files
+are not present in the current workspace (see the artifact availability note
+above).

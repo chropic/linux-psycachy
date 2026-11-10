@@ -18,9 +18,13 @@ but the shell is unprivileged and elevation requires interactive
 authentication; the ESP remains read-only. The running kernel predates the
 branch's 7.3.1 candidate. Hash checks show the active ESP kernel and DTB match
 the running kernel; the separate recovery-panel kernel matches an installed
-older kernel. The system-side initrds are not readable by the unprivileged
-shell, so the initial inventory could not compare complete payload sets. The
-operator has since preserved the active kernel, initramfs, and DTB under the
+older kernel. The system-side initrds were not readable by the unprivileged
+shell. A later elevated comparison found the recovery-panel ESP initrd differs
+from the installed panel initrd; the mismatch was left untouched. GRUB lists
+the platform and panel entries, has default index 0 with a hidden zero-second
+timeout, and its saved environment lists no variables. The initial inventory
+could not compare complete payload sets. The operator has since preserved the
+active kernel, initramfs, and DTB under the
 root filesystem and verified their checksums. The existing EFI boot directory
 was copied and compared with the ESP. The operator then applied the saved set
 to the ESP; a follow-up check confirmed byte-for-byte payload matches, a
@@ -31,7 +35,7 @@ also remain open. A read-only firmware inspection found Secure Boot disabled,
 a vendor-specific current boot entry, and a root-level EFI staging file outside
 the saved `EFI/BOOT` tree; the file was copied to ignored `output/` and left
 untouched. The recovery-panel kernel and DTB match installed `/boot` files,
-but its protected initrd was not compared. See the [recovery snapshot and apply report](validation/phase1-sp12-recovery-snapshot-20261109.md),
+but its ESP initrd differs from the installed panel initrd. See the [recovery snapshot and apply report](validation/phase1-sp12-recovery-snapshot-20261109.md),
 [EFI inventory](validation/phase1-sp12-efi-inventory-20261109.md), and
 [SP12 inventory report](validation/phase2-sp121-inventory-20261109.md); raw
 machine-specific files remain under ignored `output/`.
@@ -78,7 +82,10 @@ payload verification. Its UEFI fallback smoke loaded the fallback kernel and
 initrd and mounted root, but stopped in the copied live-media initramfs before
 systemd/login. The package-produced ESP had no EFI loader. Repeating the guest
 once the candidate packages and seed image are prepared could fill that generic
-guest boot gap; it would not close the physical-device gates. Details are in the
+guest boot gap; it would not close the physical-device gates. The raw logs and
+qcow2 overlays from that prior lifecycle run are not present in the current
+workspace, so their recorded hashes cannot be reverified here. Details and this
+evidence limitation are in the
 [package lifecycle record](validation/sp121-arm64-package-lifecycle-20261109.txt).
 
 Current-session isolated regression checks passed for boot synchronization and

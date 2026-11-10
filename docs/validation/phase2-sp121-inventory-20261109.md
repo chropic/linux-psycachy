@@ -36,7 +36,9 @@ After the inventory, an operator used the repository helper to save and verify
 the active payload set under the root filesystem, and copied the EFI boot
 directory there. The snapshot report is recorded in
 [`phase1-sp12-recovery-snapshot-20261109.md`](phase1-sp12-recovery-snapshot-20261109.md).
-The snapshot has not been applied, and no fallback or recovery boot has been
+After the inventory was captured, the operator applied the saved payload set
+and retained the recovery copy. Follow-up checks confirmed byte-for-byte
+matches and the ESP remounted read-only. No fallback or recovery boot has been
 tested.
 
 A read-only hash comparison showed that the active ESP kernel and DTB match the
