@@ -160,3 +160,5 @@ and device-function checks remain separate hardware gates requiring review
 and authorization. Agree on target workloads and review the proposed
 acceptance thresholds before running comparative experiments; the workload
 and threshold proposals are not yet approved experiment gates.
+The outstanding target, workload, threshold, and measurement prerequisites are
+collected in the [Phase 2 owner-review brief](validation/phase2-owner-review-20261109.md).
