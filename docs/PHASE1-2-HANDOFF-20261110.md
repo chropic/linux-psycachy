@@ -247,8 +247,10 @@ diagnostics show the bus and registry running. The GNOME
 `toolkit-accessibility` preference was false, and enabling it did not fix
 document discovery. Its desktop dump showed the editor's hyphenated name,
 which the original filter missed. The filter now normalizes punctuation, and
-the latest probe prints safe process, tree, and text-length diagnostics if
-needed. Rerun before concluding the editor is inaccessible.
+the tree showed its text widget. PyGObject had also resolved a deprecated
+Accessible `get_text` helper rather than the Text interface; the driver now
+calls the explicit interface method. Rerun before concluding the editor is
+inaccessible.
 Interactive workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.

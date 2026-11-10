@@ -69,9 +69,11 @@ The first B550I probe encountered an existing editor process with no AT-SPI
 socket. Later diagnostics confirmed the AT-SPI bus and registry are running,
 and GNOME's `toolkit-accessibility` preference was false; the owner enabled
 it. The probe dump showed the editor as `gnome-text-editor`, but the driver
-filter missed hyphens. The filter now normalizes punctuation, and failed
-probes emit redacted app/tree metadata. Rerun the probe before judging the
-accessibility interface. No UI workflow was exercised.
+filter missed hyphens. The tree exposed the text widget, but PyGObject method
+resolution also selected a deprecated Accessible `get_text` helper instead
+of the Text interface method. Both issues are fixed; failed probes emit
+redacted app/tree metadata. Rerun before judging the accessibility interface.
+No UI workflow was exercised.
 
 ## Collection and controls
 

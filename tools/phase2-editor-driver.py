@@ -18,6 +18,7 @@ from typing import Any
 
 
 VERSION = "0.1.0"
+_ATSPI_API: Any = None
 
 
 def utc_now() -> str:
@@ -33,6 +34,7 @@ def sha256(path: Path) -> str:
 
 
 def atspi_api() -> Any:
+    global _ATSPI_API
     try:
         import gi
 
@@ -44,6 +46,7 @@ def atspi_api() -> Any:
             "package that provides gir1.2-atspi-2.0, then log out and back in"
         ) from exc
     Atspi.init()
+    _ATSPI_API = Atspi
     return Atspi
 
 
@@ -213,7 +216,11 @@ def node_text(node: Any) -> str | None:
         if interface is None:
             return None
         count = interface.get_character_count()
-        return interface.get_text(0, count)
+        if _ATSPI_API is None:
+            return None
+        # Atspi.Accessible.get_text() shadows Atspi.Text.get_text() on some
+        # PyGObject versions; dispatch explicitly through the Text interface.
+        return _ATSPI_API.Text.get_text(interface, 0, count)
     except Exception:
         return None
 
