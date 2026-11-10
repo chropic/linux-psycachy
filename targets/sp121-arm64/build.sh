@@ -16,6 +16,12 @@ die() { echo "error: $*" >&2; exit 1; }
 expected_config_sha256=${SP121_EXPECT_CONFIG_SHA256:-}
 [[ -z $expected_config_sha256 || $expected_config_sha256 =~ ^[a-f0-9]{64}$ ]] || \
   die 'SP121_EXPECT_CONFIG_SHA256 must be a lowercase SHA-256 digest'
+approved_config=${SP121_CONFIG_FILE:-}
+if [[ -n $approved_config ]]; then
+  [[ -n $expected_config_sha256 ]] || die 'SP121_CONFIG_FILE requires SP121_EXPECT_CONFIG_SHA256'
+  [[ -f $approved_config && ! -L $approved_config ]] || die 'SP121_CONFIG_FILE must name a regular non-symlink file'
+  [[ $approved_config = /* ]] || approved_config="$PWD/$approved_config"
+fi
 # The working directory changes into the extracted source tree below. Resolve
 # caller-relative outputs first so EXIT cleanup cannot remove the deliverables.
 [[ $output = /* ]] || output="$PWD/$output"
@@ -97,22 +103,52 @@ done
 # whitespace-free temporary source tree even when the checkout path has spaces.
 cd "$source_dir"
 
-# Generate ARM64 config from seed
+# Generate ARM64 config from seed, or import and normalize a previously
+# approved exact file using the pinned source tree's Kconfig parser.
 mkdir "$work/config"
-cp "$target_dir/config.seed" "$work/config/.config"
-"$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
-make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
+if [[ -n $approved_config ]]; then
+  cp -- "$approved_config" "$work/approved-config.config"
+  cp -- "$work/approved-config.config" "$work/config/.config"
+  make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
+  python3 - "$approved_config" "$work/config/.config" <<'PY'
+from pathlib import Path
+import sys
 
-config_sha256=$(sha256sum "$work/config/.config")
-config_sha256=${config_sha256%% *}
-if [[ -n $expected_config_sha256 && $config_sha256 != "$expected_config_sha256" ]]; then
-  die "generated ARM64 config SHA-256 mismatch: $config_sha256"
+approved = Path(sys.argv[1]).read_text()
+generated = Path(sys.argv[2]).read_text()
+default_n = "# CONFIG_DRM_MSM_VALIDATE_XML is not set\n"
+if generated.count(default_n) != 1 or default_n in approved or generated.replace(default_n, "", 1) != approved:
+    raise SystemExit("Kconfig-normalized file differs from the approved config beyond the known default-n comment")
+PY
+  config_sha256=$(sha256sum "$work/approved-config.config")
+  config_sha256=${config_sha256%% *}
+  echo 'Imported approved config; Kconfig resolved only CONFIG_DRM_MSM_VALIDATE_XML=n as an explicit unset comment.'
+else
+  cp "$target_dir/config.seed" "$work/config/.config"
+  "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
+  make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
+  config_sha256=$(sha256sum "$work/config/.config")
+  config_sha256=${config_sha256%% *}
 fi
-python3 "$root/tools/audit-sp121-config.py" "$work/config/.config" \
+
+if [[ -n $expected_config_sha256 && $config_sha256 != "$expected_config_sha256" ]]; then
+  die "approved ARM64 config SHA-256 mismatch: $config_sha256"
+fi
+resolved_config_sha256=$(sha256sum "$work/config/.config")
+resolved_config_sha256=${resolved_config_sha256%% *}
+audit_config="$work/config/.config"
+if [[ -n $approved_config ]]; then
+  audit_config="$work/approved-config.config"
+fi
+python3 "$root/tools/audit-sp121-config.py" "$audit_config" \
   --output "$work/config-audit.json"
 
-release=$(make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
+release=$(KCONFIG_NOSILENTUPDATE=1 make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
 [[ $release == "$KERNEL_VERSION-psycachy-sp121" ]] || die "unexpected ARM64 kernel release: $release"
+config_sha256_after_prepare=$(sha256sum "$work/config/.config")
+config_sha256_after_prepare=${config_sha256_after_prepare%% *}
+[[ $config_sha256_after_prepare == "$resolved_config_sha256" ]] || \
+  die "ARM64 config changed during kernel release preparation: $config_sha256_after_prepare"
 
 # Build kernel packages (bindeb-pkg for ARM64)
 pkg_version="${KERNEL_VERSION}-1psycachy1"
@@ -122,15 +158,25 @@ export KBUILD_BUILD_TIMESTAMP="$timestamp"
 export KBUILD_BUILD_VERSION="$pkg_revision"
 
 # Pre-compile payloads in parallel, then package serially to avoid DTB installation race
-make -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" \
+KCONFIG_NOSILENTUPDATE=1 make -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" \
   Image modules dtbs vmlinuz.efi
+
+config_sha256_after_compile=$(sha256sum "$work/config/.config")
+config_sha256_after_compile=${config_sha256_after_compile%% *}
+[[ $config_sha256_after_compile == "$resolved_config_sha256" ]] || \
+  die "ARM64 config changed during compilation: $config_sha256_after_compile"
 
 CROSS_COMPILE=aarch64-linux-gnu- \
 DEB_BUILD_PROFILES=pkg.linux-psycachy-sp121.nokerneldbg \
 DEBFULLNAME="PsyCachy Builder" DEBEMAIL="builder@example.invalid" \
-make -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j1 bindeb-pkg \
+KCONFIG_NOSILENTUPDATE=1 make -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j1 bindeb-pkg \
   KDEB_PKGVERSION="$pkg_version" \
   KBUILD_DEBARCH=arm64 KDEB_SOURCENAME=linux-psycachy-sp121
+
+config_sha256_after_package=$(sha256sum "$work/config/.config")
+config_sha256_after_package=${config_sha256_after_package%% *}
+[[ $config_sha256_after_package == "$resolved_config_sha256" ]] || \
+  die "ARM64 config changed during package build: $config_sha256_after_package"
 
 # Comprehensive package audit and verification
 python3 "$root/tools/verify-arm64-packages.py" "$work" \
@@ -149,7 +195,14 @@ for package in "${images[@]}" "${headers[@]}"; do
   cp -- "$package" "$output/"
 done
 cp -- "$work/package-verification.json" "$output/"
-cp -- "$work/config/.config" "$output/arm64-candidate.config"
+if [[ -n $approved_config ]]; then
+  cp -- "$work/approved-config.config" "$output/arm64-candidate.config"
+else
+  cp -- "$work/config/.config" "$output/arm64-candidate.config"
+fi
+if [[ $resolved_config_sha256 != "$config_sha256" ]]; then
+  cp -- "$work/config/.config" "$output/kconfig-resolved.config"
+fi
 cp -- "$work/config-audit.json" "$output/config-audit.json"
 
 (cd "$output" && sha256sum ./*.deb > SHA256SUMS)
@@ -159,6 +212,12 @@ cp -- "$work/config-audit.json" "$output/config-audit.json"
   echo "source=$RELEASE"
   echo "source_sha256=$SOURCE_SHA256"
   echo "config_sha256=$config_sha256"
+  echo "kconfig_resolved_config_sha256=$resolved_config_sha256"
+  if [[ -n $approved_config ]]; then
+    echo 'config_input=approved-file'
+  else
+    echo 'config_input=generated-from-seed'
+  fi
   echo 'cpu_target=arm64; packages are for Surface Pro 12 (Qualcomm SC8280XP)'
   clang-22 --version | head -n 1
   ld.lld-22 --version

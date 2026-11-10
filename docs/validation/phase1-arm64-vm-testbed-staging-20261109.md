@@ -46,3 +46,12 @@ that peer were refused. The inbound build-host-to-SP12 SSH path was not tested.
 The next agent should run on the build host, verify Tailscale SSH to the SP12,
 build there, and use SSH to collect read-only SP12 state. The raw local checks
 are retained under ignored `output/phase1/phase1-current-handoff-20261109.log`.
+
+## Fresh retry result — 2026-11-09
+
+The later B550i retry completed the guarded ARM64 build and a fresh disposable
+QEMU lifecycle, including candidate configure/initrd/ESP sync, candidate boot,
+removal, package-managed fallback selection, and a successful fallback boot.
+The final sanitized results are in
+[`phase1-b550i-retry-20261109.md`](phase1-b550i-retry-20261109.md). Earlier
+staging hashes and transcripts above describe their historical overlays.

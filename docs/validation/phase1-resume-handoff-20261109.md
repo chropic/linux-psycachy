@@ -61,3 +61,19 @@ Existing lifecycle notes in
 [`sp121-arm64-package-lifecycle-20261109.txt`](sp121-arm64-package-lifecycle-20261109.txt)
 contain historical evidence whose original raw overlays are missing; rerun
 the checks above rather than treating those records as current evidence.
+
+## Continuation closeout — 2026-11-09
+
+The sequence above was completed on the Linux B550i build host. Tailscale SSH
+to `cs-sp12` succeeded and the fresh read-only physical checks and recovery
+hashes passed. The exact approved config was recovered from the SP12's existing
+artifacts, the expected-hash-guarded ARM64 build passed, and the fresh
+copy-on-write QEMU lifecycle passed through candidate boot, removal, fallback
+selection, clean dpkg state, and fallback boot. See
+[`phase1-b550i-retry-20261109.md`](phase1-b550i-retry-20261109.md) for hashes
+and sanitized evidence.
+
+No physical candidate install, boot, removal, fallback, or recovery test was
+performed. Those actions still require separate review and authorization. The
+recovery-panel initrd mismatch remains untouched. Phase 2 read-only inventory
+and preparation remain as previously recorded; no tuning has started.

@@ -49,3 +49,19 @@ static checks, and the 100-test Python suite passed after this change. A
 package build has not started because the SP12 environment lacks the locally
 extracted Rust 1.97 toolchain used during config reproduction; the next test
 run is planned on the more powerful Linux build host.
+
+## Final build result — 2026-11-09
+
+The earlier artifact-unavailable finding applied to the local workspace and
+public CI artifacts. The exact approved config was later recovered read-only
+from the SP12's existing build artifacts and verified at the approved SHA-256
+above. The ARM64 builder imported that file under the expected-hash guard,
+retained it with its audit and the package outputs, and verified that pinned
+Kconfig resolution differed only by the explicit no-set comment for
+`CONFIG_DRM_MSM_VALIDATE_XML`.
+
+The guarded build completed on the B550i and emitted verified ARM64 image and
+headers packages. The fresh disposable VM lifecycle, including candidate boot,
+removal, package-managed fallback selection, and fallback boot, is recorded in
+[`phase1-b550i-retry-20261109.md`](phase1-b550i-retry-20261109.md). The
+physical-device authorization boundary remains unchanged.
