@@ -30,8 +30,10 @@ was copied and compared with the ESP. The operator then applied the saved set
 to the ESP; a follow-up check confirmed byte-for-byte payload matches, a
 retained recovery copy, and the ESP remounted read-only. The device has not
 rebooted since apply, so the restored boot path and recovery-panel entry remain
-untested. Candidate package installation/removal and physical fallback boot
-also remain open. A read-only firmware inspection found Secure Boot disabled,
+untested. A fresh package-state check found `dpkg --audit` empty and no
+7.3.1-psycachy-sp121 candidate image or headers installed; the host remains on
+the 7.3.0 platform kernel. Candidate package installation/removal and physical
+fallback boot also remain open. A read-only firmware inspection found Secure Boot disabled,
 a vendor-specific current boot entry, and a root-level EFI staging file outside
 the saved `EFI/BOOT` tree; the file was copied to ignored `output/` and left
 untouched. The recovery-panel kernel and DTB match installed `/boot` files,

@@ -48,3 +48,14 @@ The combined read-only results are retained at
 left untouched. These checks do not establish that either route boots. The
 restored payload and recovery-panel boot checks still require an operator
 reboot window.
+
+## Package-manager preflight — 2026-11-10
+
+The device remains on `7.3.0-sp12-v7.3-platform`; the root filesystem is
+read-write and the ESP is read-only. `dpkg --audit` is empty. The installed
+image and headers packages include the running 7.3.0 platform kernel and the
+7.2 recovery-panel kernel, but no `7.3.1-psycachy-sp121` candidate package is
+installed. The raw package and `/boot` inventory is retained at
+`output/phase1/phase1-package-state-readonly-20261110.log` (SHA-256
+`36155485f8f1034310ba675c7b63c7f0bfb62f2308300ac5a0c05742749fd48a`). No
+package or boot-storage changes occurred.
