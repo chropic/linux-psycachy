@@ -60,6 +60,9 @@ RPMB registration failed while root storage remained usable; Surface serial
 hub unexpected-message notices and a Qualcomm APM timeout appeared. The
 recovery-panel initrd mismatch remains an explicit open issue. Full hashes and
 raw evidence are in the physical lifecycle report and ignored `output/` logs.
+The DPU firmware and recovery-panel findings received a read-only source review
+in [`validation/phase1-technical-triage-20261110.md`](validation/phase1-technical-triage-20261110.md);
+the actual cause and current device state still need confirmation.
 
 ## Phase 2 status
 
