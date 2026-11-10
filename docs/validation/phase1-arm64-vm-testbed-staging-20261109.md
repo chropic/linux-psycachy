@@ -29,6 +29,20 @@ under ignored `output/phase1/vm-guest/`; the fallback boot audit has SHA-256
 This confirms a generic Ubuntu fallback reboot only. The SP12 candidate
 package pair has not yet been built or installed in this guest. The guest does
 not validate Surface firmware, candidate boot, physical device behavior, or
-recovery on the SP12. The package build is waiting on reproduction or separate
-approval of the exact ARM64 candidate config; see the
-[config reproduction report](phase1-config-reproduction-20261109.md).
+recovery on the SP12. The candidate config is now approved for VM-only testing;
+see the [config reproduction report](phase1-config-reproduction-20261109.md).
+
+## Current continuation status — 2026-11-09
+
+The operator approved the reproduced ARM64 config for disposable QEMU testing
+only. Its SHA-256 is
+`04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659`. The
+builder now has an expected-config hash guard and retains the config and audit
+with package outputs. A package build and candidate lifecycle run remain open.
+
+The SP12 Tailscale node reports Tailscale SSH enabled. A Linux build-host peer
+was online and answered a Tailscale ping, but SSH attempts from the SP12 to
+that peer were refused. The inbound build-host-to-SP12 SSH path was not tested.
+The next agent should run on the build host, verify Tailscale SSH to the SP12,
+build there, and use SSH to collect read-only SP12 state. The raw local checks
+are retained under ignored `output/phase1/phase1-current-handoff-20261109.log`.

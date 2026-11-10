@@ -13,6 +13,9 @@ jobs=${2:?job count is required}
 die() { echo "error: $*" >&2; exit 1; }
 
 [[ $jobs =~ ^[1-9][0-9]*$ ]] || die 'job count must be positive'
+expected_config_sha256=${SP121_EXPECT_CONFIG_SHA256:-}
+[[ -z $expected_config_sha256 || $expected_config_sha256 =~ ^[a-f0-9]{64}$ ]] || \
+  die 'SP121_EXPECT_CONFIG_SHA256 must be a lowercase SHA-256 digest'
 # The working directory changes into the extracted source tree below. Resolve
 # caller-relative outputs first so EXIT cleanup cannot remove the deliverables.
 [[ $output = /* ]] || output="$PWD/$output"
@@ -100,6 +103,14 @@ cp "$target_dir/config.seed" "$work/config/.config"
 "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
 make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
 
+config_sha256=$(sha256sum "$work/config/.config")
+config_sha256=${config_sha256%% *}
+if [[ -n $expected_config_sha256 && $config_sha256 != "$expected_config_sha256" ]]; then
+  die "generated ARM64 config SHA-256 mismatch: $config_sha256"
+fi
+python3 "$root/tools/audit-sp121-config.py" "$work/config/.config" \
+  --output "$work/config-audit.json"
+
 release=$(make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
 [[ $release == "$KERNEL_VERSION-psycachy-sp121" ]] || die "unexpected ARM64 kernel release: $release"
 
@@ -138,6 +149,8 @@ for package in "${images[@]}" "${headers[@]}"; do
   cp -- "$package" "$output/"
 done
 cp -- "$work/package-verification.json" "$output/"
+cp -- "$work/config/.config" "$output/arm64-candidate.config"
+cp -- "$work/config-audit.json" "$output/config-audit.json"
 
 (cd "$output" && sha256sum ./*.deb > SHA256SUMS)
 
@@ -145,6 +158,7 @@ cp -- "$work/package-verification.json" "$output/"
 {
   echo "source=$RELEASE"
   echo "source_sha256=$SOURCE_SHA256"
+  echo "config_sha256=$config_sha256"
   echo 'cpu_target=arm64; packages are for Surface Pro 12 (Qualcomm SC8280XP)'
   clang-22 --version | head -n 1
   ld.lld-22 --version
