@@ -66,12 +66,12 @@ candidate boot health review and controlled conditions.
 Read-only version checks confirm Text Editor 50.1 on both targets, VLC 3.0.24
 and FFmpeg 8.1.2 on B550I, and Firefox 158.0-2 snap revision 9056 on SP12.
 The first B550I probe encountered an existing editor process with no AT-SPI
-socket; its retry failed to expose the fixture even with the corrected
-persistent fixture path. The driver now uses `--standalone`, redacts document
-text, and emits safe app/document metadata on a failed probe. Read-only
-diagnostics confirmed the AT-SPI bus and registry are running. GNOME's
-`toolkit-accessibility` preference was false and the owner enabled it, but the
-probe still failed. No UI workflow was exercised.
+socket. Later diagnostics confirmed the AT-SPI bus and registry are running,
+and GNOME's `toolkit-accessibility` preference was false; the owner enabled
+it. The probe dump showed the editor as `gnome-text-editor`, but the driver
+filter missed hyphens. The filter now normalizes punctuation, and failed
+probes emit redacted app/tree metadata. Rerun the probe before judging the
+accessibility interface. No UI workflow was exercised.
 
 ## Collection and controls
 

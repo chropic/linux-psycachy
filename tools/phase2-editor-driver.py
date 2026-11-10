@@ -84,8 +84,8 @@ def matching_apps(Atspi: Any) -> list[Any]:
     desktop = Atspi.get_desktop(0)
     apps = []
     for node in children(desktop):
-        identity = safe_name(node).casefold()
-        if "text editor" in identity or "org.gnome.texteditor" in identity:
+        identity = "".join(char for char in safe_name(node).casefold() if char.isalnum())
+        if "texteditor" in identity:
             apps.append(node)
     return apps
 
@@ -127,6 +127,10 @@ def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-edi
             print(f"AT-SPI desktop applications visible: {len(desktop_apps)}")
             expected_hash = hashlib.sha256(fixture_text.encode("utf-8")).hexdigest()
             for app_index, candidate in enumerate(desktop_apps):
+                identity = "".join(
+                    char for char in safe_name(candidate).casefold() if char.isalnum()
+                )
+                is_editor = "texteditor" in identity
                 try:
                     process_id = candidate.get_process_id()
                 except Exception:
@@ -136,8 +140,22 @@ def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-edi
                     f"name={safe_name(candidate)!r} pid={process_id} "
                     f"children={len(children(candidate))}"
                 )
-                for node in walk(candidate):
+                for node_index, node in enumerate(walk(candidate)):
                     text = node_text(node)
+                    if is_editor:
+                        name = safe_name(node).replace("\n", " ")[:80]
+                        if text is not None:
+                            name = "[text redacted]"
+                        try:
+                            interfaces = ",".join(str(item) for item in node.get_interfaces())
+                        except Exception:
+                            interfaces = ""
+                        text_info = "none" if text is None else str(len(text))
+                        print(
+                            f"  node[{node_index}] role={safe_role(node)!r} "
+                            f"name={name!r} interfaces={interfaces} "
+                            f"text_characters={text_info}"
+                        )
                     if text is not None and len(text) > 1024:
                         actual_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
                         print(

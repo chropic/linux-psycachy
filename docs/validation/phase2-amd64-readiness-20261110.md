@@ -110,10 +110,13 @@ session accessibility-bus socket. A later probe used the persistent fixture
 from `output/phase2-inputs/` but still could not expose it over AT-SPI. The
 owner's read-only diagnostics confirm that the accessibility bus and registry
 are running. GNOME's `toolkit-accessibility` preference was `false`; the owner
-enabled it, but the probe still failed to locate the fixture. The driver now
-prints app names, process IDs, accessible document lengths, and fixture-hash
-matches without exposing document text. This remains an
-application/accessibility validation blocker, and no editor workload has run.
+enabled it, but the probe still failed to locate the fixture. Its desktop dump
+showed the standalone app as `gnome-text-editor` (PID 12312), while the driver
+filter only recognized spaces or dots, so it missed the hyphenated app name.
+The filter now normalizes punctuation, and failed probes print app/tree
+metadata, accessible text lengths, and fixture-hash matches without exposing
+document contents. Rerun validation before treating this as an application
+accessibility failure. No editor workload has run.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`

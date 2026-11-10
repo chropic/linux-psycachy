@@ -245,8 +245,10 @@ document over AT-SPI. The driver now launches a standalone editor with
 accessibility tree, and redacts document text in probe output. Per-user
 diagnostics show the bus and registry running. The GNOME
 `toolkit-accessibility` preference was false, and enabling it did not fix
-document discovery. The latest probe now prints safe process and text-length
-diagnostics to separate an app-name mismatch from an AT-SPI export failure.
+document discovery. Its desktop dump showed the editor's hyphenated name,
+which the original filter missed. The filter now normalizes punctuation, and
+the latest probe prints safe process, tree, and text-length diagnostics if
+needed. Rerun before concluding the editor is inaccessible.
 Interactive workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.
