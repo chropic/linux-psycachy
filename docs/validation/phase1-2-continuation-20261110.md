@@ -59,5 +59,6 @@ A later repository-only review hardened `tools/phase2-editor-driver.py` to
 exclude the document control by its verified fixture text rather than Python
 proxy identity. Its result manifest no longer stores the fixed find/replace
 strings. The new unit test for proxy-safe field selection passes, as do Python
-syntax compilation and CLI parsing. This does not validate the real AT-SPI tree,
-20 replacements, file save, or timings; those require a live desktop session.
+syntax compilation and CLI parsing. The full repository suite then passed: 103
+tests in 3.4 seconds. This does not validate the real AT-SPI tree, 20
+replacements, file save, or timings; those require a live desktop session.
