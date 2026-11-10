@@ -109,8 +109,10 @@ AT-SPI probe encountered an already-open Text Editor process with no
 session accessibility-bus socket. A later probe used the persistent fixture
 from `output/phase2-inputs/` but still could not expose it over AT-SPI. The
 owner's read-only diagnostics confirm that the accessibility bus and registry
-are running, while GNOME's `toolkit-accessibility` preference is `false`. The
-owner is enabling that per-user setting for another probe. This remains an
+are running. GNOME's `toolkit-accessibility` preference was `false`; the owner
+enabled it, but the probe still failed to locate the fixture. The driver now
+prints app names, process IDs, accessible document lengths, and fixture-hash
+matches without exposing document text. This remains an
 application/accessibility validation blocker, and no editor workload has run.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a

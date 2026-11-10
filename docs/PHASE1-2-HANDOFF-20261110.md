@@ -243,8 +243,10 @@ cleared; using the persistent repository fixture still did not expose the
 document over AT-SPI. The driver now launches a standalone editor with
 `GTK_A11Y=atspi` scoped to that process, requires the exact document in the
 accessibility tree, and redacts document text in probe output. Per-user
-diagnostics show the bus and registry running but the GNOME
-`toolkit-accessibility` preference set to `false`; the owner is enabling it
-for a retry. Interactive workload validation and all six scenario trials
-remain outstanding. The local rebuild and readiness records were updated
-with the generic boot and common service failures.
+diagnostics show the bus and registry running. The GNOME
+`toolkit-accessibility` preference was false, and enabling it did not fix
+document discovery. The latest probe now prints safe process and text-length
+diagnostics to separate an app-name mismatch from an AT-SPI export failure.
+Interactive workload validation and all six scenario trials remain
+outstanding. The local rebuild and readiness records were updated with the
+generic boot and common service failures.

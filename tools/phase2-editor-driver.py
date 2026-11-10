@@ -123,9 +123,31 @@ def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-edi
                 continue
             break
         if not found:
+            desktop_apps = children(Atspi.get_desktop(0))
+            print(f"AT-SPI desktop applications visible: {len(desktop_apps)}")
+            expected_hash = hashlib.sha256(fixture_text.encode("utf-8")).hexdigest()
+            for app_index, candidate in enumerate(desktop_apps):
+                try:
+                    process_id = candidate.get_process_id()
+                except Exception:
+                    process_id = None
+                print(
+                    f"application[{app_index}] role={safe_role(candidate)!r} "
+                    f"name={safe_name(candidate)!r} pid={process_id} "
+                    f"children={len(children(candidate))}"
+                )
+                for node in walk(candidate):
+                    text = node_text(node)
+                    if text is not None and len(text) > 1024:
+                        actual_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                        print(
+                            f"  accessible text role={safe_role(node)!r} "
+                            f"characters={len(text)} fixture_match="
+                            f"{actual_hash == expected_hash}"
+                        )
             raise RuntimeError(
                 "Text Editor did not expose the requested fixture over AT-SPI; "
-                "close older editor instances and retry"
+                "review the redacted application diagnostics above"
             )
     apps = matching_apps(Atspi)
     if not apps:
