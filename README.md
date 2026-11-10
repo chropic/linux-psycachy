@@ -34,11 +34,13 @@ keep a working recovery option before testing.
 
 ## Build kernel packages
 
-Target selection is experimental. `--target b550i-amd64` selects the existing
+Target selection is experimental. `--target b550i-amd64` selects the AMD64
 builder; the legacy invocation without `--target` still selects it. Use
 `bash build.sh --target b550i-amd64 --dry-run` to review its plan without
-writing output. Dry runs also describe the experimental `sp121-arm64` package
-path and the unimplemented `all` target. SP12 supports authenticated
+writing output. `--target all` builds both package sets sequentially into
+`output/packages/amd64` and `output/packages/arm64` (or corresponding
+subdirectories of `--output-dir`). Dry runs also describe the experimental
+`sp121-arm64` package path. SP12 supports authenticated
 source/configuration preparation, a pinned ARM64 kernel candidate, and a
 verified target payload bundle, but no ARM64 ISO build yet. Kernel and module
 compilation completed; `.deb` generation has produced candidate ARM64 image and

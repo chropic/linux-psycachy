@@ -59,8 +59,8 @@ class TargetSelectionTests(unittest.TestCase):
                 self.assertIn("Target: b550i-amd64", result.stdout)
                 self.assertFalse(output.exists())
 
-    def test_unimplemented_and_invalid_targets_fail_closed(self):
-        for target in ("all", "unknown"):
+    def test_invalid_target_fails_closed(self):
+        for target in ("unknown",):
             result = self.run_builder("--target", target)
             self.assertNotEqual(result.returncode, 0)
             self.assertNotIn("Target: b550i-amd64", result.stdout)
@@ -71,7 +71,11 @@ class TargetSelectionTests(unittest.TestCase):
             for target in ("sp121-arm64", "all"):
                 result = self.run_builder("--target", target, "--dry-run", "--output-dir", str(output))
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn("SP12 ARM64: experimental source/config preparation", result.stdout)
+                if target == "sp121-arm64":
+                    self.assertIn("SP12 ARM64: experimental source/config preparation", result.stdout)
+                else:
+                    self.assertIn("AMD64: existing Ubuntu 26.10 AMD64 kernel package builder", result.stdout)
+                    self.assertIn("SP12 ARM64: experimental source/config preparation", result.stdout)
                 self.assertFalse(output.exists())
 
     def test_sp12_default_output_paths_distinguish_prepare_and_packages(self):

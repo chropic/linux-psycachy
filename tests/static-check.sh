@@ -48,6 +48,10 @@ python3 tests/test_source_tree_hash.py
 python3 tests/test_archive_packages.py
 python3 tests/test_iso_late_logging.py
 python3 tests/test_iso_select_disk.py
+target_plan=$(bash build.sh --target all --dry-run)
+grep -q '^Target: all$' <<<"$target_plan"
+grep -q '^AMD64: existing Ubuntu 26.10 AMD64 kernel package builder\.$' <<<"$target_plan"
+grep -q '^SP12 ARM64: experimental source/config preparation and candidate package build path\.$' <<<"$target_plan"
 bash tests/mokutil-check-test.sh
 report=$(mktemp "${TMPDIR:-/tmp}/psycachy-static-config.XXXXXX")
 trap 'rm -f "$report"' EXIT

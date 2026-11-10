@@ -73,6 +73,17 @@ if $dry_run; then
   printf 'Prepare only: %s\nJobs: %s\nOutput directory: %s\n' "$prepare_only" "$jobs" "$output_dir"
   exit 0
 fi
+if [[ $target == all ]]; then
+  mkdir -p -- "$output_dir"
+  common_args=(--jobs "$jobs")
+  if $prepare_only; then common_args+=(--prepare-only); fi
+  bash "$root/build.sh" --target b550i-amd64 "${common_args[@]}" \
+    --output-dir "$output_dir/amd64"
+  bash "$root/build.sh" --target sp121-arm64 "${common_args[@]}" \
+    --output-dir "$output_dir/arm64"
+  printf 'Both target builds completed under %s\n' "$output_dir"
+  exit 0
+fi
 if [[ $target == sp121-arm64 ]]; then
   if $prepare_only; then
     exec bash "$root/targets/sp121-arm64/prepare.sh" "$output_dir" "$jobs"
