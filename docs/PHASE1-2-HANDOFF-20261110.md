@@ -248,8 +248,50 @@ diagnostics showed the bus and registry running. The GNOME
 probe exposes the exact 64 KiB fixture in Text Editor; the app-name filter and
 PyGObject Text-interface dispatch both needed fixes. A stale Bitwarden process
 still emits a missing-socket warning, but the editor itself is accessible.
-The find/replace controls and complete 20-operation workflow remain to be
-validated.
+Manually opening Ctrl+H exposed the search panel, its two text widgets, and
+the `Replace All` button. The first automated smoke run failed before any
+replacement because only the document editable widget was detected and the
+find/replace panel did not open. The current uncommitted driver adjustment
+focuses the document, waits for the panel widgets, and identifies the Find and
+Replace fields in tree order. It has not been rerun; validate the field order
+and all 20 replacements before timing workloads. Hashing
+`/boot/vmlinuz-7.3.0-10-generic` as the unprivileged desktop user returned
+Permission denied; use sudo for that read-only hash if a manifest requires it.
+
+## Owner departure / remote-only handoff — 2026-11-10
+
+The owner is physically leaving the location of B550I and SP12. Continue only
+with work that can be done remotely until the owner returns; do not request
+keyboard, monitor, power, cable, reboot recovery, or other onsite actions as
+routine next steps. Root Tailscale SSH to SP12 is authorized. The current
+Codex execution environment could not start `tailscale ssh root@cs-sp12`
+because access to `/var/run/tailscale/tailscaled.sock` was denied by the local
+sandbox (`operation not permitted`). Recheck connectivity from the next
+session before asking the owner; an unavailable local daemon is an execution
+environment limit, not evidence SP12 is offline.
+
+B550I is currently on generic `7.3.0-10-generic`, boot ID
+`5f50e1aa-df86-487c-8b60-e0a2d8a8b6a3`; the local rebuilt PsyCachy kernel was
+previously booted and NVIDIA was verified on both. Generic is the saved GRUB
+default, with a five-second visible menu. Keep the generic recovery kernel and
+the SP12 fallback/recovery set. The recovery-panel EFI chain remains
+unresolved; inspect read-only evidence first and do not boot or modify that
+route without a verified chain and rollback plan.
+
+No Phase 2 scenario trial has been completed. Approved scope is both targets,
+all six scenarios, at least three interleaved pairs, >=10% lower whole-system
+energy, <=10% longer completion time, and <=5% p95 latency regression when
+applicable; reject on new storage errors, watchdog events, failed resume, or
+functional regression. B550I's APC estimate is calibrated to its display but
+includes fixed Mac mini, monitors, DAC, MIDI keyboard, and printer loads that
+must remain unchanged. SP12 cannot be connected to that APC, so its energy
+gate remains unavailable. Do not count the editor smoke attempt as a result.
+
+The most recent push before this handoff is `81187e4`; inspect the current
+branch and workspace diff before continuing. Do not stage inherited
+`.agents/`, `.codex/`, `AGENTS.md`, `RTK.md`, `phase0-work/`, or
+`sp121-reference/` paths. The remaining driver adjustment and this handoff
+must be committed and pushed before the next session starts.
 Interactive workload validation and all six scenario trials remain
 outstanding. The local rebuild and readiness records were updated with the
 generic boot and common service failures.

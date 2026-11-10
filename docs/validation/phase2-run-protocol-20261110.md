@@ -73,8 +73,12 @@ and GNOME's `toolkit-accessibility` preference was false; the owner enabled
 it. The probe exposed the exact fixture in the standalone editor after two
 driver fixes: hyphen-tolerant app-name matching and explicit AT-SPI Text
 interface dispatch. A stale Bitwarden process still emits a missing-socket
-warning, but Text Editor is exposed. The find/replace controls and complete
-workflow have not yet been exercised.
+warning, but Text Editor is exposed. Manual Ctrl+H confirmed the search
+panel, its text widgets, and Replace All button. The first automated smoke
+run failed before replacements because the panel fields were not detected;
+the current local driver changes add document focus and identify two text
+fields by role and tree order. Rerun the 20-operation smoke workflow before
+using it in paired measurements. No UI performance trial has been exercised.
 
 ## Collection and controls
 

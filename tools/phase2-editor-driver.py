@@ -251,8 +251,9 @@ def find_editor(app: Any, fixture_text: str) -> Any:
 def accessible_controls(app: Any) -> list[tuple[Any, str, str]]:
     found = []
     for node in walk(app):
-        if editable(node) is not None:
-            found.append((node, safe_role(node), safe_name(node)))
+        role = safe_role(node)
+        if role in {"text", "entry", "search box"} and editable(node) is not None:
+            found.append((node, role, safe_name(node)))
     return found
 
 
@@ -381,11 +382,26 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         raise RuntimeError("Text Editor did not expose the opened document over AT-SPI")
 
     editor = find_editor(app, fixture_text)
+    editor_component = editor.get_component_iface()
+    if editor_component is None or not editor_component.grab_focus():
+        raise RuntimeError("could not focus the editor document before opening Replace")
+    time.sleep(0.1)
     hotkey_ctrl(Atspi, ord("h"))
-    time.sleep(0.2)
-    controls = accessible_controls(app)
-    find_entry = find_named_control(controls, ("find", "search"), ("replace",))
-    replace_entry = find_named_control(controls, ("replace",), ("button",))
+    controls = []
+    controls_deadline = time.monotonic() + 3.0
+    while time.monotonic() < controls_deadline:
+        controls = accessible_controls(app)
+        if len(controls) >= 3:
+            break
+        time.sleep(0.05)
+    fields = [node for node, _role, _name in controls if node is not editor]
+    if len(fields) == 2:
+        # GNOME Text Editor exposes Find before Replace in the accessible tree;
+        # both entry names are empty in the tested 50.1 build.
+        find_entry, replace_entry = fields
+    else:
+        find_entry = find_named_control(controls, ("find", "search"), ("replace",))
+        replace_entry = find_named_control(controls, ("replace",), ("button",))
     replace_all = find_replace_button(app)
 
     result_rows = []

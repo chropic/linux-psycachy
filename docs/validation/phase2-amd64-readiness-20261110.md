@@ -113,9 +113,12 @@ successfully exposed the exact 64 KiB fixture in Text Editor 50.1. It required
 two driver fixes: normalize punctuation in the app name and call the AT-SPI
 Text interface explicitly to avoid PyGObject selecting the deprecated
 Accessible `get_text` helper. The probe redacts document contents. An unrelated
-stale Bitwarden process still emits a missing-socket warning. Find/replace
-controls and the full 20-operation workload remain to be validated; no editor
-workload has run.
+stale Bitwarden process still emits a missing-socket warning. Manual Ctrl+H
+exposed the search panel, two text widgets, and Replace All. The first
+automated smoke run failed before any replacements because the driver did not
+open the panel/detect its fields. A local uncommitted adjustment now focuses
+the document and selects the two fields by role and tree order; it still needs
+a successful smoke run. No performance trial result is available.
 
 `tools/phase2-ups-meter.py` was added to produce raw NUT samples and a
 trapezoidal estimated-Wh integral. A six-second smoke capture on `op7060`
