@@ -55,6 +55,10 @@ as a baseline; unknown radios, omitted brightness/ambient metadata, background
 CPU activity, missing GPU/powercap channels, and one invalid temperature
 channel limit its use. Raw files and details are recorded in
 [`validation/phase2-sp121-inventory-20261109.md`](validation/phase2-sp121-inventory-20261109.md).
+A separate read-only controls snapshot found backlight and rfkill interfaces
+and the balanced power profile, but conflicting power-supply status means the
+actual connected source and main battery charge range still need operator
+verification before baseline trials.
 
 ## Readiness checks
 

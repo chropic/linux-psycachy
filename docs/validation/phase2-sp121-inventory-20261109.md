@@ -117,6 +117,18 @@ matches the retained recovery set and the saved EFI/BOOT tree. Its raw log is
 `output/phase1/phase1-recovery-and-sensor-recheck-20261110.log` (SHA-256
 `25befbc0e16fa07532517d97e54fdbb53c83cc52f54f3b3f65043c29dc1b5b3e`).
 
+A separate read-only control-interface snapshot found an exposed backlight at
+about 31% of its reported range, WLAN not rfkill-blocked, Bluetooth soft-
+blocked, and the active power profile set to `balanced`. Power-source
+interfaces were inconsistent: the AC supply reported offline, one USB source
+reported online/charging, and the main battery reported not charging. An
+auxiliary battery interface reported 0% with unknown status. Do not infer the
+system charge level or connected power source from these interfaces alone;
+verify them manually before controlled baseline trials. This is a readiness
+snapshot only. Raw output is retained under ignored
+`output/phase2/sp121-arm64-baseline-controls-readonly-20261110.log` (SHA-256
+`37546825178a2f3f8e321192675dd04f6ba49b9acfd71a7db29ad288c57690fc`).
+
 Before baseline trials, record power source and charge range, brightness, radio
 state, peripherals, ambient and starting temperature, active power policy,
 workload version, and background activity. Use separate repeated trials for
