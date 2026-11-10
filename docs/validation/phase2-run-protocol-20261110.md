@@ -125,6 +125,11 @@ system policy between runs.
   candidate successfully; the checksum-verified platform fallback is saved in
   the on-device recovery directory. The current sysfs brightness is
   1256/4095 (30.7%); choose and hold a fixed value for comparisons.
+- A current candidate boot timed out starting `geoclue.service` after 90
+  seconds; the retained fallback boot started the service and it exited
+  normally after 60 idle seconds. Treat this candidate-associated functional
+  regression as an open rejection gate until its cause and reproducibility
+  are resolved. The service was not restarted or reconfigured.
 
 No workload trial has started. SP12 was reconnected by the owner and now
 answers Tailscale SSH. Current boot ID is unchanged, `dpkg --audit` is clean,

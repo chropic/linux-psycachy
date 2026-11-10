@@ -86,14 +86,19 @@ Sources: [Ubuntu Resolute Qualcomm firmware package file list](https://packages.
 
 ## Other candidate boot warnings
 
-The earlier `7.3.0-sp12-v7.3-platform` hardware smoke record already reports
-UFS RPMB registration against an unregistered `ufs_rpmb` bus and a Qualcomm
-APM command timeout; it says root storage worked and RPMB functionality and
-audio playback were not tested. This makes those messages pre-existing in the
-platform-kernel record, rather than evidence of a new candidate regression.
-The candidate capture also shows root storage working, but it does not qualify
-RPMB operations, audio, or all storage behavior. The prior record is
+The retained previous-boot journal identifies the fallback kernel as
+`7.3.0-sp12-v7.3-platform`. Both fallback and candidate logs show
+`CONFIG_RPMB=m`, the same UFS RPMB unregistered-bus message, and failure to
+register `ufs_rpmb0`. Neither log shows a storage I/O or filesystem error;
+root storage works on both boots. This is pre-existing in the fallback, not a
+new candidate regression, but RPMB operations remain unqualified. The earlier
+fallback smoke record also notes a Qualcomm APM command timeout. The prior
+record is
 [`boot-smoke.json`](../../sp121-reference/kernel/ports/v7.3/validation/boot-smoke.json).
+
+The watchdog messages also match across both boots: the platform reports NMI
+watchdog unsupported and hard watchdog disabled, while the SBSA generic
+watchdog initializes. No scheduler watchdog event was found in either boot.
 
 The two candidate `surface_serial_hub` unexpected-message notices have no
 matching comparison in the saved platform-kernel boot record. Their functional
@@ -101,11 +106,15 @@ effect is therefore undetermined. After the later candidate reboot, the owner
 confirmed that speakers work. The X1P42100 audio card enumerates in read-only
 inspection; no tone was played and no mixer control was changed. Wi-Fi is
 unblocked; Bluetooth is soft-blocked in software despite the owner's report
-that radios work. The radio state was not changed. The earlier
-`fwupd-refresh.service` failure was not attributed to the candidate. The
-current candidate boot lists `geoclue.service` as failed, but no causal link
-to the kernel is established. These remain qualification observations; no
-system policy or hardware change was made. Earlier sanitized audio-path
+that radios work. The radio state was not changed. The `fwupd-refresh.service`
+failure appears in both fallback and candidate journals after attempting to
+refresh LVFS metadata; it is not candidate-specific. `geoclue.service` differs:
+it starts and exits normally after 60 idle seconds on fallback, but times out
+after its 90-second start limit on the candidate. This is a candidate-associated
+service regression with no established mechanism; it remains open against the
+functional-regression acceptance gate. Neither service was restarted or
+reconfigured. These checks made no system-policy or hardware change. Earlier
+sanitized audio-path
 evidence is in ignored
 `output/phase1/sp12-audio-readonly-20261110.txt` (SHA-256
 `5d83f105ccca43efa25490c9210a11a4409254ad0b0feb5ffa0800d273c03af9`).

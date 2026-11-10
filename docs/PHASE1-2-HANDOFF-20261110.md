@@ -168,7 +168,10 @@ inventory are under ignored `output/`; do not add them to Git.
    candidate loads SQE and GMU firmware after the initial lookup failures.
    Preserve the boot log reference in
    `validation/phase1-technical-triage-20261110.md`. No firmware change or
-   candidate reinstall is needed to resolve that concern.
+   candidate reinstall is needed to resolve that concern. The latest fallback
+   comparison confirms UFS RPMB and watchdog messages predate the candidate,
+   but `geoclue.service` starts normally on fallback and times out on the
+   candidate; this remains an open functional-regression gate.
 
 The reviewed package identity and completed install/boot verification are in
 `validation/phase1-candidate-install-review-20261110.md`. The owner physically
