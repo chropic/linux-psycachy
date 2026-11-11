@@ -74,7 +74,59 @@ active set, or `success` for a delayed-writeback completion. The host trace
 and exact target-sector positive control must be retained alongside the guest
 record. If `/boot/efi` is already mounted, the guest tool accepts it only when
 the mount source is the same serial-validated fixture disk or one of its
-partitions.
+partitions. A pre-mounted fixture remains mounted by its owner; in that case
+the guest record marks `fsck_read_only_rc=deferred-host` and the host must run
+`fsck.vfat -n -v` after guest shutdown. The guest checker unmounts only a mount
+it created itself.
+
+The committed mapper, positive control, and guest checker are useful pieces,
+but they do not yet form a one-command host/guest runner. To reproduce an EIO
+case without guessing, first make a fresh disposable FAT image and map that
+copy (never reuse sectors from another image):
+
+```sh
+python3 tools/sp12-fat-sector-map.py "$RUN_DIR/fat-base.raw" --directory /sp12
+cp --reflink=auto "$RUN_DIR/fat-base.raw" "$RUN_DIR/fat-eio.raw"
+python3 tools/sp12-fat-eio-positive-control.py "$RUN_DIR/fat-base.raw" 32 \
+  --work-dir "$RUN_DIR" --evidence-json "$RUN_DIR/fat-control-sector32.json"
+```
+
+Write a case-specific QEMU `blkdebug` rule using the mapped sector, then
+launch a fresh disposable ARM64 guest overlay and fresh firmware-variable
+copy. Attach the fault image as one whole raw disk using a unique serial, for
+example `-drive if=none,id=fatfixture,format=raw,file=blkdebug:$RUN_DIR/blkdebug.conf:$RUN_DIR/fat-eio.raw`
+and `-device virtio-blk-device,drive=fatfixture,serial=sp12-fat-fixture-case01`.
+The rule file must contain the same exact-sector rule as the positive
+control:
+
+```ini
+[inject-error]
+event = "write_aio"
+errno = "5"
+sector = "SECTOR"
+once = "on"
+```
+
+Keep the guest kernel command line token `sp12-fat-fixture=1`, add the QEMU
+system option `-trace enable=blk_co_pwritev,file=$RUN_DIR/block-trace.log`,
+and use a host-only SSH forward to the disposable guest. The guest image must
+have the SP12 helper, `fsck.vfat`, Python, and the guest-check script installed;
+the serial-identified FAT disk must be labeled `SP12TEST` with a valid active
+`/sp12` payload set and marker. Inside that guest run
+`sudo env SP12_TEST_DISPOSABLE=1 tools/sp12-fat-eio-guest-check.sh sp12-fat-fixture-case01 SECTOR eio`;
+the `success` mode is for a separately controlled delayed-writeback case.
+After guest shutdown, confirm the trace overlaps the requested byte range,
+save the guest log, and run `fsck.vfat -n -v` on the now-unmounted fault image.
+An absent trace overlap is an invalid injection result even if the guest
+reports an error. Each scenario needs a new guest disk/firmware copy and a
+new mapped sector plan, followed by the boot-selection check for incomplete or
+mixed payloads.
+Retain the control, trace, guest record, and read-only fsck output together.
+The recorded script currently checks helper safety state; it does not prove
+UEFI/GRUB loader selection at an interruption point. That still requires a
+separate boot-from-fresh-copy check before this gate closes. Estimated peak
+storage is 6–10 GiB for one disposable guest overlay, FAT copies, and firmware
+variables; run one VM at a time. No VM was started in this follow-up.
 
 Existing helper tests and the retained VM log cover simulated interruption
 during snapshot rotation, payload promotion, and recovery restore. They do not
@@ -109,6 +161,37 @@ series](https://www.mail-archive.com/qemu-devel%40nongnu.org/msg1238658.html).
 
 No physical RPMB device was exposed. No key provisioning or RPMB write-data
 operation was attempted.
+
+## Firmware-to-rescue retry assessment
+
+The retained first UEFI log records AAVMF loading and starting Boot0009
+`Ubuntu` from the target root disk's partition 15 at `\\EFI\\ubuntu\\shimaa64.efi`.
+The serial file ends immediately after the firmware handoff. This does not
+prove that the guest failed to boot: the QEMU argv used VNC and did not add a
+serial console to the guest kernel, so successful graphical progress could be
+silent in this log. The retry should first inspect the existing VNC outcome or
+SSH-forward health records before calling the first run a failed guest boot.
+
+The blank-variable retry selected Boot0002 `UEFI Misc Device` via a VenHw path
+and likewise emitted no guest output. Its explicit boot indexes prioritized a
+rescue root disk but did not establish a valid UEFI loader path for that disk.
+The rescue command script itself writes only its disposable target copies, but
+it includes an `efibootmgr --create` and one-shot selection when EFI runtime
+variables are available; those operations are safe only against the copied
+firmware-variable file.
+
+If the existing display/SSH evidence confirms no usable rescue session, one
+bounded retry is justified: clone the retained target root/ESP/data and rescue
+images into a new run directory, copy the known Boot0009 variable file (or
+create one explicit entry in a fresh variable copy only after checking its
+partition GUID), retain the old blank-vars failure, and boot with VNC
+recording plus guest-kernel serial-console arguments and a bounded SSH health
+poll. Require evidence that the rescue userspace is running before invoking
+the restore script. Then verify payload hashes, marker, mounted ESP source,
+and read-only filesystem check; remove the rescue disk and boot the restored
+target from UEFI using the cloned firmware state. This retry is not started;
+the previous logs do not show that the rescue environment itself was reached.
+All of these images and firmware variables must remain disposable copies.
 
 ## Focused checks performed
 

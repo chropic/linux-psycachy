@@ -52,6 +52,7 @@ helper=/usr/local/sbin/sp12-sync-boot
     exit 2
 }
 fixture_mount=0
+mounted_by_script=0
 if mountpoint -q "$esp"; then
     mounted_source=$(findmnt -rn -o SOURCE --mountpoint "$esp")
     mounted_real=$(readlink -f -- "$mounted_source")
@@ -75,7 +76,7 @@ kver=
 cleanup() {
     result=$?
     trap - EXIT INT TERM HUP
-    if mountpoint -q "$esp"; then
+    if [[ $mounted_by_script -eq 1 ]] && mountpoint -q "$esp"; then
         umount "$esp" || result=1
     fi
     if [[ -f $original_config ]]; then
@@ -107,6 +108,7 @@ PY
 
 if [[ $fixture_mount -eq 0 ]]; then
     mount -o noatime "$device" "$esp"
+    mounted_by_script=1
 fi
 findmnt -rn -o TARGET,SOURCE,FSTYPE,OPTIONS "$esp" | tee "$run_dir/mount.before.txt"
 if [[ ! -d $esp/sp12 || ! -f $esp/sp12/SP12BOOT ]]; then
@@ -181,16 +183,22 @@ if ! findmnt -rn -o OPTIONS --mountpoint "$esp" | tr ',' '\n' | grep -qx ro; the
 fi
 printf 'marker_after=%s\n' "$([[ -f $esp/sp12/SP12BOOT ]] && echo present || echo absent)" | tee -a "$run_dir/metadata.txt"
 cat "$run_dir/active.after.sha256"
-umount "$esp"
-set +e
-fsck.vfat -n -v "$device" > "$run_dir/fsck-read-only.txt" 2>&1
-fsck_rc=$?
-set -e
-printf 'fsck_read_only_rc=%s\n' "$fsck_rc" | tee -a "$run_dir/metadata.txt"
-cat "$run_dir/fsck-read-only.txt"
-if [[ $fsck_rc -ne 0 ]]; then
-    echo 'ERROR: read-only FAT check failed; do not repair this fixture until evidence is copied' | tee -a "$run_dir/metadata.txt"
-    failed=1
+if [[ $mounted_by_script -eq 1 ]]; then
+    umount "$esp"
+    mounted_by_script=0
+    set +e
+    fsck.vfat -n -v "$device" > "$run_dir/fsck-read-only.txt" 2>&1
+    fsck_rc=$?
+    set -e
+    printf 'fsck_read_only_rc=%s\n' "$fsck_rc" | tee -a "$run_dir/metadata.txt"
+    cat "$run_dir/fsck-read-only.txt"
+    if [[ $fsck_rc -ne 0 ]]; then
+        echo 'ERROR: read-only FAT check failed; do not repair this fixture until evidence is copied' | tee -a "$run_dir/metadata.txt"
+        failed=1
+    fi
+else
+    printf 'fsck_read_only_rc=deferred-host\n' | tee -a "$run_dir/metadata.txt"
+    echo 'FAT check deferred: /boot/efi was pre-mounted from the fixture and remains mounted by its owner.' | tee "$run_dir/fsck-read-only.txt"
 fi
 if [[ $failed -ne 0 ]]; then
     echo "fixture_case=FAIL evidence=$run_dir"
