@@ -308,6 +308,9 @@ implementation commit `f136b5490fdea3352b7698f82d1c3d42a3179156` and closeout
 commit `5965c6db6b0ccec17e40e15afd3a2ee9fa0274ae` were pushed successfully.
 This extension started with local and remote HEAD at `5965c6d`. The GRUB and
 guest-checker changes and the interrupted-promotion evidence were cross-reviewed.
+The guard/tooling/evidence commit `516e246` was pushed to the existing feature
+branch as a fast-forward from that baseline. This final report closeout is
+included in the branch-tip commit.
 `tests/test_sp121_fallback_installer.py` passed 7 tests,
 `tests/test_sp12_fat_guest_cleanup.py` passed 2 tests, shell syntax and
 `git diff --check` passed, and `bash tests/static-check.sh` passed after the
