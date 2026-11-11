@@ -11,7 +11,7 @@ recovery payload, update sanitized documentation, and push the feature branch.
 - Starting handoff commit: `7702e31ff7268ca4d4fc85b5c9da9c960e4d39b2`
 - Prior pushed documentation tip: `e03e766`; subsequent updates record the
   latest SP12 retry and Phase 2 installer preflight.
-- Build host: the AMD64 build host (x86_64 Ryzen 7 5800X3D)
+- Build host: the AMD64 build host (x86_64 AMD processor)
 - SP12 access: root Tailscale SSH to the SP12 host alias was authorized by the user and
   verified from the host context.
 
@@ -303,3 +303,11 @@ non-breaking. See [the read-only refresh](validation/phase1-2-readonly-refresh-2
 for current B550I and SP12 checks, the unsuccessful editor smoke attempt, and
 the remaining scenario gates. No boot, suspend, or recovery-panel test was
 started.
+
+## Dual-target bootable ISO continuation — 2026-11-11
+
+The active objective is the AMD64 and ARM64 builder/installer system. See the
+[updated dual-ISO continuation record](validation/dual-iso-and-phase-continuation-20261110.md)
+for the pinned builds, disposable VM results, privacy redactions, and remaining
+installer checks. The Phase 1 and Phase 2 reports above remain historical; no
+Phase 2 workload pairs were run during the ISO continuation.

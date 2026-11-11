@@ -231,7 +231,7 @@ BdsDxe: starting Boot0002 "UEFI Misc Device" from PciRoot(0x0)/Pci(0x1,0x0)
 [    0.807107] usbcore: registered new interface driver hub
 [    0.807268] usbcore: registered new device driver usb
 [    0.808710] pps_core: LinuxPPS API ver. 1 registered
-[    0.808732] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.808732] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <[redacted]>
 [    0.808814] PTP clock support registered
 [    0.811198] EDAC MC: Ver: 3.0.0
 [    0.813077] scmi_core: SCMI protocol bus registered
@@ -281,7 +281,7 @@ BdsDxe: starting Boot0002 "UEFI Misc Device" from PciRoot(0x0)/Pci(0x1,0x0)
 [    1.075874] ACPI: button: Power Button [PWRB]
 [    1.168502] ACPI: \_SB_.L001: Enabled at IRQ 36
 [    1.169585] virtio-pci 0000:00:01.0: enabling device (0005 -> 0007)
-[    1.177506] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.177506] [redacted]/16550 driver, 32 ports, IRQ sharing enabled
 [    1.221048] msm_serial: driver initialized
 [    1.222900] SuperH (H)SCI(F) driver initialized
 [    1.229697] ACPI: bus type drm_connector registered
@@ -297,7 +297,7 @@ BdsDxe: starting Boot0002 "UEFI Misc Device" from PciRoot(0x0)/Pci(0x1,0x0)
 [    1.308220] i2c_dev: i2c /dev entries driver
 [    1.313162] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
 [    1.313293] device-mapper: uevent: version 1.0.3
-[    1.314678] device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: dm-devel@lists.linux.dev
+[    1.314678] device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: [redacted]
 [    1.328825] hw perfevents: enabled with armv8_pmuv3_0 PMU driver, 7 (0,8000003f) counters available
 [    1.330222] watchdog: NMI not fully supported
 [    1.330241] watchdog: Hard watchdog permanently disabled

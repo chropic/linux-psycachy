@@ -227,7 +227,7 @@ was redirected to `/tmp` because `/var/tmp` is read-only here. This covers the
 argument/version guards, missing-command refusal, and checksum refusal. The
 stable AMD64 full build used the authenticated
 source archive and signer, Clang/LLD 22, and native CPU target `znver3` on the
-Ryzen 7 5800X3D host; packages are CPU-specific. The host also has the ARM64
+AMD64 host; packages are CPU-specific. The host also has the ARM64
 cross compiler and target development libraries. The final ARM64 package image
 passed generic QEMU direct and UEFI/GRUB boots using the previously unpacked
 QEMU bundle; logs and hashes are recorded in `PHASE1-HANDOFF.md`. Disposable

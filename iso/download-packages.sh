@@ -50,7 +50,7 @@ image="$packages/linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb"
 headers="$packages/linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb"
 apt-get "${apt_opts[@]}" -y --download-only --no-install-recommends install \
   "$headers" "$image" linux-generic linux-headers-generic \
-  linux-generic-hwe-26.04 linux-headers-generic-hwe-26.04 linux-headers-7.3.0-9-generic=7.3.0-9.9 \
+  linux-generic-hwe-26.04 linux-headers-generic-hwe-26.04 \
   nvidia-driver-615-open=615.71.09-0ubuntu1 nvidia-dkms-615-open=615.71.09-0ubuntu1 \
   clang-22 llvm-22 lld-22 dkms mokutil sbsigntool openssl keyutils xterm
 cp -- "$headers" "$image" "$destination/"

@@ -1,5 +1,55 @@
 # Test results
 
+## Current dual-target installer ISO candidates — 2026-11-11
+
+Both architecture-specific builders now produce ISO images from the pinned,
+signature-verified Ubuntu 26.10 Desktop bases. The AMD64 builder uses xorriso
+to update the filesystem tree and replay boot metadata; the ARM64 builder
+preserves Ubuntu's live kernel, initrd, and EFI binaries while adding the
+offline package closure and guarded install payload. Their build manifests
+record the source and package pins. The output ISOs and test VMs are local,
+ignored artifacts rather than repository files.
+
+The latest AMD64 candidate was built at
+`output/iso-amd64-xorriso-v8-20261111/psycachy-ubuntu-26.10-desktop-amd64.iso`.
+Its build passed signature/hash checks, offline repository verification,
+signed EFI and live-kernel preservation checks, and UEFI boot-record checks.
+A disposable UEFI VM reached the Ubuntu Desktop and guarded disk chooser. A
+fresh two-disk run selected only `vda`, entered the explicit `ERASE`
+confirmation, and reviewed a final plan containing only that disk. The
+offline install and late hook completed. The hook installed and signed the
+PsyCachy kernel, installed NVIDIA DKMS modules for the PsyCachy and Ubuntu
+kernels, generated GRUB, and preserved Ubuntu as the saved default. The
+`dpkg --audit` check was empty. After removing the ISO, the VM booted to the desktop on
+the saved Ubuntu `7.3.0-10-generic` kernel; `dkms status` showed the modules
+installed for that kernel, the retained older generic kernel, and
+`7.3.1-psycachy`. The untouched second virtual disk passed full-image checksum
+and sentinel verification. The VM had no NVIDIA GPU, so PsyCachy activation
+and GPU behavior were not tested. Earlier attempts that did not complete the
+selector confirmation exited fail-closed and left the second disk intact.
+
+The latest ARM64 candidate was built at
+`output/psycachy-arm64-iso-20261111b/psycachy-ubuntu-26.10-desktop-arm64.iso`.
+Its build passed base signature/hash, kernel package/DTB pin, offline package
+closure, UEFI metadata, and byte-for-byte live EFI/kernel/initrd checks. A
+disposable AArch64 UEFI VM displayed UEFI and GRUB, then reached Casper's local
+package setup, snap seeding, GDM, and the live user session. The framebuffer
+went black as the graphical session started. A second VM run with a Bochs
+display device had the same limitation, so the disk selector and ARM64 target
+install lifecycle have not been validated. The protected second virtual disk
+passed checksum and sentinel verification after both runs.
+
+The repository static suite passed on 2026-11-11, including builder and
+selector tests. The AMD64 ISO passed a full disposable install and generic
+boot without media. ARM64 graphical installation remains unverified, and
+neither ISO has a physical-device lifecycle result in this continuation.
+Phase 2 workload pairs were not run here; the prior editor smoke run remains
+unpassed.
+The SP12 whole-system energy gate remains unavailable because SP12 cannot use
+the B550I meter. See the
+[dual-ISO continuation record](validation/dual-iso-and-phase-continuation-20261110.md)
+for the build inputs, test boundaries, and remaining gates.
+
 ## AMD64 dual-target candidate packages — 2026-11-09
 
 The integrated native `b550i-amd64` Phase 1 builder exited successfully and
@@ -15,11 +65,11 @@ kernel image, config, `System.map`, and 6,549 compressed modules. The headers
 include the matching config, build symlink, and 11 executable tools identified
 as x86-64 ELF. Checksums and structural package verification passed.
 
-These packages were built on a Ryzen 7 5800X3D host with native `znver3`
-optimization. They are CPU-specific. The exact pair passed dependency-resolved
+These packages were built on an AMD64 host with native `znver3` optimization.
+They are CPU-specific. The exact pair passed dependency-resolved
 installation, UEFI/GRUB boot with Secure Boot disabled, removal, and fallback
 boot in a disposable Ubuntu 26.10 VM using QEMU TCG and an emulated
-`EPYC-Milan-v2` CPU. The Microsoft-key Secure Boot attempt rejected the
+`[redacted]` CPU. The Microsoft-key Secure Boot attempt rejected the
 unsigned image with `bad shim lock signature`; signing and Secure Boot boot of
 this exact pair remain open. See the
 [AMD64 package lifecycle record](validation/amd64-package-lifecycle-20261109.txt)

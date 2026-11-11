@@ -20,9 +20,35 @@ postinst=/usr/local/lib/psycachy/kernel-postinst
 [[ -f $helper && -f $override && -f $activate && -x $launcher && -f $desktop && -f $preinst && -f $postinst ]] || die 'PsyCachy helpers are missing'
 (cd "$repo" && sha256sum --check --strict SHA256SUMS)
 
-# Select the existing Ubuntu entry before any package can add a custom kernel.
-fallback=7.3.0-9-generic
-[[ -f /boot/vmlinuz-$fallback ]] || die "missing Ubuntu fallback $fallback"
+sources=$(mktemp /run/psycachy-sources.XXXXXXXX)
+preferences=$(mktemp /run/psycachy-preferences.XXXXXXXX)
+trap 'rm -f -- "$sources" "$preferences"' EXIT
+printf 'deb [trusted=yes] file:%s ./\n' "$repo" > "$sources"
+while IFS=$'\t' read -r package version; do
+  [[ $package == linux-* ]] && continue
+  printf 'Package: %s\nPin: version %s\nPin-Priority: 1001\n\n' "$package" "$version" >> "$preferences"
+done < <(dpkg-query -W -f='${Package}\t${Version}\n')
+apt_opts=(-o "Dir::Etc::sourcelist=$sources" -o Dir::Etc::sourceparts=-
+  -o "Dir::Etc::preferences=$preferences" -o Dir::Etc::preferencesparts=-)
+apt-get "${apt_opts[@]}" update
+# The offline closure is resolved against the pinned package archive, while the
+# Desktop base can contain newer revisions of shared compiler libraries. Keep
+# already-installed packages at their base-image versions; install missing
+# dependencies from the local archive and upgrade the kernel metapackages.
+apt-get "${apt_opts[@]}" -y --no-install-recommends install \
+  linux-generic linux-headers-generic linux-generic-hwe-26.04 \
+  linux-headers-generic-hwe-26.04 \
+  clang-22 llvm-22 lld-22 dkms mokutil sbsigntool openssl keyutils xterm
+
+# Keep the newest Ubuntu generic kernel supplied by the pinned offline package
+# repository as fallback. Its version follows the ISO's 26.10 package set.
+fallback_image=$(find /boot -maxdepth 1 -type f -name 'vmlinuz-*-generic' -printf '%f\n' | sort -V | tail -n 1)
+[[ $fallback_image == vmlinuz-*-generic ]] || die 'no Ubuntu generic fallback kernel is installed'
+fallback=${fallback_image#vmlinuz-}
+[[ -f /boot/initrd.img-$fallback ]] || die "missing initramfs for Ubuntu fallback $fallback"
+# The installer does not always regenerate the target GRUB menu after the
+# fallback kernel package is added. Rebuild it before checking that entry.
+update-grub
 uuid=$(grub-probe --target=fs_uuid /)
 [[ $uuid =~ ^[A-Za-z0-9-]+$ ]] || die 'could not determine the root filesystem UUID'
 submenu="gnulinux-advanced-$uuid"
@@ -40,16 +66,6 @@ EOF
 grub-set-default "$submenu>$entry"
 update-grub
 grub-editenv list | grep -Fxq "saved_entry=$submenu>$entry" || die 'could not save Ubuntu fallback'
-
-sources=$(mktemp /run/psycachy-sources.XXXXXXXX)
-trap 'rm -f -- "$sources"' EXIT
-printf 'deb [trusted=yes] file:%s ./\n' "$repo" > "$sources"
-apt_opts=(-o "Dir::Etc::sourcelist=$sources" -o Dir::Etc::sourceparts=-)
-apt-get "${apt_opts[@]}" update
-apt-get "${apt_opts[@]}" -y --no-install-recommends install \
-  linux-generic linux-headers-generic linux-generic-hwe-26.04 \
-  linux-headers-generic-hwe-26.04 linux-headers-7.3.0-9-generic=7.3.0-9.9 \
-  clang-22 llvm-22 lld-22 dkms mokutil sbsigntool openssl keyutils xterm
 
 # Keys belong to this installation and are generated before any DKMS builds.
 bash "$helper" init

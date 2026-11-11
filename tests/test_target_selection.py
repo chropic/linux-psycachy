@@ -44,6 +44,18 @@ class TargetSelectionTests(unittest.TestCase):
         self.assertIn('python3 "$root/tools/deb_dependencies.py" amd64 "$image_depends" kmod linux-base', builder)
         self.assertIn('python3 "$root/tools/deb_dependencies.py" amd64 "$headers_depends"', builder)
 
+    def test_iso_installer_keeps_newest_offline_generic_kernel_as_fallback(self):
+        installer = (ROOT / "iso/install-target.sh").read_text()
+        self.assertIn("fallback_image=$(find /boot -maxdepth 1 -type f -name 'vmlinuz-*-generic'", installer)
+        self.assertIn("sort -V | tail -n 1", installer)
+        self.assertIn("Pin-Priority: 1001", installer)
+        self.assertIn("[[ $package == linux-* ]] && continue", installer)
+        self.assertLess(installer.index("update-grub\nuuid=$(grub-probe --target=fs_uuid /)"),
+                        installer.index("Ubuntu fallback GRUB entry is missing"))
+        self.assertNotIn("7.3.0-9-generic", installer)
+        for name in ("iso/download-packages.sh", "iso/check-offline-packages.sh"):
+            self.assertNotIn("linux-headers-7.3.0-9-generic=", (ROOT / name).read_text())
+
     def run_builder(self, *args):
         return subprocess.run(
             ["bash", str(ROOT / "build.sh"), *args],

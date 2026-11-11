@@ -5,14 +5,13 @@ IFS=$'\n\t'
 export LC_ALL=C
 die() { echo "PsyCachy ISO: $*" >&2; exit 1; }
 if (( $# < 3 || $# > 4 )); then
-  echo "Usage: sudo bash $0 UBUNTU_ISO KERNEL_PACKAGE_DIRECTORY OUTPUT_DIRECTORY [OFFLINE_PACKAGE_DIRECTORY]" >&2
+  echo "Usage: bash $0 UBUNTU_ISO KERNEL_PACKAGE_DIRECTORY OUTPUT_DIRECTORY [OFFLINE_PACKAGE_DIRECTORY]" >&2
   exit 2
 fi
-(( EUID == 0 )) || die 'run as root'
 # shellcheck source=/dev/null
 . /etc/os-release
 [[ ${ID:-} == ubuntu && ${VERSION_ID:-} == 26.10 && $(dpkg --print-architecture) == amd64 ]] || die 'Ubuntu 26.10 amd64 is required'
-for cmd in git python3 xorriso mksquashfs unsquashfs gpgv sha256sum mount umount mountpoint findmnt losetup truncate dpkg-scanpackages diff cmp; do
+for cmd in git python3 xorriso gpgv sha256sum dpkg-scanpackages diff cmp; do
   command -v "$cmd" >/dev/null || die "missing $cmd"
 done
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
@@ -24,30 +23,12 @@ iso="$output/psycachy-ubuntu-26.10-desktop-amd64.iso"
 for name in "$iso" "$output/build.log" "$output/SHA256SUMS" "$output/manifest.txt" "$output/offline-packages"; do
   [[ ! -e $name && ! -L $name ]] || die "output already exists: $name"
 done
-(( $(df -Pk "$output" | awk 'NR==2 {print $4}') >= 26214400 )) || die 'at least 25 GiB free is required in the output filesystem'
-(( $(df -Pk /var/tmp | awk 'NR==2 {print $4}') >= 26214400 )) || die 'at least 25 GiB free is required in /var/tmp'
-[[ $(stat -f -c %T /var/tmp) != 9p ]] || die '/var/tmp must be on a Linux filesystem'
+(( $(df -Pk "$output" | awk 'NR==2 {print $4}') >= 14680064 )) || die 'at least 14 GiB free is required in the output filesystem'
 bash "$root/iso/verify-ubuntu-iso.sh" "$source_iso" "${source_iso%/*}/SHA256SUMS" "${source_iso%/*}/SHA256SUMS.gpg"
 bash "$root/iso/verify-kernel-packages.sh" "$kernels"
 work=$(mktemp -d /var/tmp/psycachy-iso.XXXXXXXX)
-cleanup() {
-  mountpoint -q "$work/mount-check" && umount "$work/mount-check" || true
-  if [[ -n ${loop_probe:-} ]]; then losetup --detach "$loop_probe" || true; fi
-  if findmnt -rn -o TARGET | awk -v base="$work/" 'index($0,base)==1 {found=1} END {exit !found}'; then
-    echo "Mounts remain under $work; leaving it in place for manual cleanup." >&2
-  else
-    rm -rf -- "$work"
-  fi
-}
-trap cleanup EXIT
-mkdir "$work/mount-check"
-mount -t tmpfs -o size=1m tmpfs "$work/mount-check" || die 'mount support is required'
-umount "$work/mount-check"
+trap 'rm -rf -- "$work"' EXIT
 exec > >(tee "$output/build.log") 2>&1
-truncate -s 1M "$work/loop-probe.img"
-loop_probe=$(losetup --find --show "$work/loop-probe.img") || die 'working loop-device access is required to edit the live ISO'
-losetup --detach "$loop_probe" || die 'unable to release the loop-device preflight'
-loop_probe=
 
 if (( $# == 4 )); then
   repo=$(realpath -- "$4")
@@ -58,17 +39,6 @@ fi
 bash "$root/iso/check-offline-packages.sh" "$repo"
 [[ -f $repo/Packages && -f $repo/Packages.gz ]] || die 'offline repository indexes are missing'
 bash "$root/iso/verify-archive-packages.sh" "$repo"
-
-# Pin the exact editor revision used for the Desktop probe.
-editor_revision=118cf3cdc2c5f7ef05061ddc4d76cc16f2fd439c
-git init -q "$work/livefs-editor"
-git -C "$work/livefs-editor" fetch -q --depth 1 https://github.com/mwhudson/livefs-editor.git "$editor_revision"
-git -C "$work/livefs-editor" checkout -q --detach FETCH_HEAD
-[[ $(git -C "$work/livefs-editor" rev-parse HEAD) == "$editor_revision" ]] || die 'unexpected livefs-editor revision'
-python3 -m venv --system-site-packages "$work/venv"
-"$work/venv/bin/pip" install --disable-pip-version-check --require-hashes \
-  --requirement "$root/iso/build-requirements.txt"
-"$work/venv/bin/pip" install --no-build-isolation "$work/livefs-editor"
 
 mkdir -p "$work/payload/helpers" "$work/payload/repo"
 cp -L -- "$repo"/*.deb "$repo/Packages" "$repo/Packages.gz" "$repo/SHA256SUMS" "$work/payload/repo/"
@@ -81,10 +51,38 @@ install -m 755 "$root/iso/select-disk.py" "$work/payload/select-disk.py"
 install -m 755 "$root/tools/psycachy-secureboot.sh" "$work/payload/helpers/psycachy-secureboot.sh"
 install -m 755 "$root/tools/configure-nvidia-dkms.sh" "$work/payload/helpers/configure-nvidia-dkms.sh"
 install -m 644 "$root/iso/psycachy-activation.desktop" "$work/payload/helpers/psycachy-activation.desktop"
-printf -v payload_quoted '%q' "$work/payload"
-TMPDIR="$work" "$work/venv/bin/livefs-edit" "$source_iso" "$iso" \
-  --add-autoinstall-config "$root/iso/autoinstall.yaml" \
-  --shell "cp -a -- $payload_quoted new/iso/psycachy"
+xorriso -osirrox on -indev "$source_iso" -extract /boot/grub/grub.cfg "$work/grub.cfg"
+python3 - "$work/grub.cfg" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+lines = path.read_text(encoding="utf-8").splitlines(keepends=True)
+changed = 0
+kernel_commands = 0
+for index, line in enumerate(lines):
+    stripped = line.lstrip()
+    command = stripped.split(None, 1)[0] if stripped else ""
+    if command not in {"linux", "linuxefi"}:
+        if "---" in line:
+            raise SystemExit("pinned GRUB config has a separator outside a kernel command")
+        continue
+    kernel_commands += 1
+    if "---" not in line:
+        raise SystemExit("pinned GRUB kernel command has no --- argument separator")
+    before, after = line.split("---", 1)
+    if "autoinstall" not in before.split():
+        lines[index] = before.rstrip() + " autoinstall ---" + after
+        changed += 1
+if kernel_commands < 1:
+    raise SystemExit("pinned GRUB config has no kernel commands to enable autoinstall")
+path.write_text("".join(lines), encoding="utf-8")
+print(f"Enabled autoinstall on {kernel_commands} GRUB kernel command lines ({changed} changed).")
+PY
+xorriso -indev "$source_iso" -outdev "$iso" -boot_image any replay \
+  -map "$root/iso/autoinstall.yaml" /autoinstall.yaml \
+  -map "$work/grub.cfg" /boot/grub/grub.cfg \
+  -map "$work/payload" /psycachy -commit -end
 
 # Ensure customization did not replace Ubuntu's signed EFI files or live kernel.
 for kind in source result; do
@@ -103,8 +101,8 @@ grep -Eq 'El Torito boot img :[[:space:]]+[0-9]+[[:space:]]+UEFI[[:space:]]+y' "
   sha256sum "$source_iso" "$kernels"/*.deb
   sha256sum "$root/config/amd64-iso-base.json"
   sha256sum "$root/config/amd64-iso-kernel.json"
-  printf 'livefs-editor revision: %s\n' "$editor_revision"
-  "$work/venv/bin/pip" show setuptools livefs-edit | awk '/^(Name|Version):/ {print "Python build " $0}'
+  printf 'ISO customization: xorriso boot-image replay\n'
+  xorriso -version | head -n 1
   printf 'PsyCachy source revision: %s\n' "$(git -C "$root" rev-parse HEAD)"
   git -C "$root" status --short
   for input in "$root"/iso/*; do

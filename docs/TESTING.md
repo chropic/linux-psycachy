@@ -126,7 +126,7 @@ bash tests/uefi-vm.sh init output/uefi
 bash tests/uefi-vm.sh run output/uefi
 ```
 
-Keep that terminal open. Connect a VNC viewer to `127.0.0.1:5902` to see
+Keep that terminal open. Connect a VNC viewer to `localhost:5902` to see
 the VM and use MOK Manager. The VM also accepts SSH connections on port 2223.
 After the VM starts for the first time, open another terminal and copy the
 repository and the two checked packages into it:
@@ -136,8 +136,8 @@ tar --exclude='./output' --exclude='./.git' -czf output/uefi/psycachy-repo.tar.g
 scp -i output/uefi/id_ed25519 -P 2223 output/uefi/psycachy-repo.tar.gz \
   output/packages/linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
   output/packages/linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb \
-  output/packages/SHA256SUMS tester@127.0.0.1:/home/tester/
-ssh -i output/uefi/id_ed25519 -p 2223 tester@127.0.0.1
+  output/packages/SHA256SUMS tester@localhost:/home/tester/
+ssh -i output/uefi/id_ed25519 -p 2223 tester@localhost
 ```
 
 The helper stores the VM disk, firmware settings, and SSH key in

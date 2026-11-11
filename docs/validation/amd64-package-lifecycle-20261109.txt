@@ -3,7 +3,7 @@
 ## Packages
 
 Candidate version: `7.3.1-1psycachy1`, built for `amd64` with `znver3`
-optimization on the Ryzen 7 5800X3D B550I host.
+optimization on the [redacted] B550I host.
 
 | Package | SHA-256 |
 | --- | --- |
@@ -17,7 +17,7 @@ receipt is `7388473c8502ec521d5bd57c8e7a329b41bfe38dce216f090319cf4db37ed53d`.
 
 The packages were installed on an isolated Ubuntu 26.10 qcow2 guest on the
 B550I host. QEMU 11.0.3 used TCG software emulation and a virtual
-`EPYC-Milan-v2` CPU because `/dev/kvm` was unavailable. The guest disk was a
+`[redacted]` CPU because `/dev/kvm` was unavailable. The guest disk was a
 20 GiB copy-on-write overlay. The signed Ubuntu cloud image checksum was
 verified against its detached signature and the Ubuntu cloud image keyring.
 VM networking was user-mode with SSH forwarded only on host loopback.

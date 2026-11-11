@@ -9,7 +9,7 @@ Its SHA-256 matches the published `SHA256SUMS` entry:
 The ignored `output/phase1/vm-guest/` directory holds the cloud image, an
 initialized qcow2 base, a copy-on-write test overlay, a NoCloud seed ISO, and a
 temporary SSH key. AAVMF UEFI booted the image under QEMU TCG. SSH access was
-forwarded only to `127.0.0.1:2222` on the host. The guest reached Ubuntu
+forwarded only to `[redacted]:2222` on the host. The guest reached Ubuntu
 userspace and was cleanly shut down.
 
 The guest includes the package-owned Ubuntu fallback kernel

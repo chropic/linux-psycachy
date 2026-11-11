@@ -10,7 +10,7 @@ or policy was changed.
 ## Target and kernel state
 
 - Board: MSI MPG B550I GAMING EDGE WIFI (MS-7C92)
-- CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
+- CPU: AMD [redacted], 16 logical CPUs
 - OS: Ubuntu 26.10
 - Latest reported boot: `7.3.0-10-generic`, boot ID
   `[redacted boot ID]`; the local rebuilt candidate was

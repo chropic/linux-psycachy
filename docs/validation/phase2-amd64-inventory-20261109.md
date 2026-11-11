@@ -7,7 +7,7 @@ energy measurement, thermal trial, or configuration change was performed.
 ## System and kernel identity
 
 - Architecture: `x86_64`
-- CPU: AMD Ryzen 7 5800X3D, 16 logical CPUs
+- CPU: AMD [redacted], 16 logical CPUs
 - Running kernel: `7.3.1-psycachy`, built Thu Nov 5 18:12:20 MST 2026
 - Installed image and headers: `7.3.1-1psycachy1`, `amd64`
 - Running `/boot/config-7.3.1-psycachy` SHA-256:
@@ -46,7 +46,7 @@ complete host-state inventory:
 - PCI inventory exposes an NVIDIA AD104 (GeForce RTX 4070).
 - Installed packages include `mesa-vulkan-drivers` and `mesa-libgallium`
   `26.2.4-1ubuntu1`, `libdrm-amdgpu1` `2.4.134-3`, and `vulkan-tools`
-  `1.4.341.0+dfsg1-1`. Installed Mesa packages do not prove which graphics ICD
+  `[redacted]+dfsg1-1`. Installed Mesa packages do not prove which graphics ICD
   is active for a workload.
 - The visible PCI ASPM policy reads `default`; USB core autosuspend reads `2`.
   These sysfs values do not establish persistent configuration.

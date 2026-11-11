@@ -165,7 +165,7 @@ Kernel SHA-256: a95137ea48f902817b658e42d9d7a2a4fd7fa1031fd12d5e279fcdb331ed867e
 [    0.625959] usbcore: registered new interface driver hub
 [    0.626123] usbcore: registered new device driver usb
 [    0.629487] pps_core: LinuxPPS API ver. 1 registered
-[    0.629505] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <giometti@linux.it>
+[    0.629505] pps_core: Software ver. 5.3.6 - Copyright 2005-2007 Rodolfo Giometti <[redacted]>
 [    0.629596] PTP clock support registered
 [    0.634789] EDAC MC: Ver: 3.0.0
 [    0.638514] scmi_core: SCMI protocol bus registered
@@ -223,7 +223,7 @@ Kernel SHA-256: a95137ea48f902817b658e42d9d7a2a4fd7fa1031fd12d5e279fcdb331ed867e
 [    0.947890] pci_bus 0000:00: resource 4 [io  0x0000-0xffff]
 [    0.947923] pci_bus 0000:00: resource 5 [mem 0x10000000-0x3efeffff]
 [    0.947942] pci_bus 0000:00: resource 6 [mem 0x8000000000-0xffffffffff]
-[    1.029494] Serial: 8250/16550 driver, 32 ports, IRQ sharing enabled
+[    1.029494] [redacted]/16550 driver, 32 ports, IRQ sharing enabled
 [    1.073936] msm_serial: driver initialized
 [    1.075989] SuperH (H)SCI(F) driver initialized
 [    1.108003] loop: module loaded
@@ -233,7 +233,7 @@ Kernel SHA-256: a95137ea48f902817b658e42d9d7a2a4fd7fa1031fd12d5e279fcdb331ed867e
 [    1.130854] i2c_dev: i2c /dev entries driver
 [    1.137516] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
 [    1.137645] device-mapper: uevent: version 1.0.3
-[    1.138947] device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: dm-devel@lists.linux.dev
+[    1.138947] device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: [redacted]
 [    1.159794] hw perfevents: enabled with armv8_pmuv3 PMU driver, 7 (0,8000003f) counters available
 [    1.161350] watchdog: NMI not fully supported
 [    1.161368] watchdog: Hard watchdog permanently disabled
