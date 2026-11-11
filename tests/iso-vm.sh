@@ -77,13 +77,14 @@ case $action in
       media=()
     fi
     echo "VNC display: 127.0.0.1:$display; QEMU monitor port: $monitor."
+    # Keep the protected second disk read-only throughout the VM run.
     exec "${launcher[@]}" -name psycachy-iso-test -machine "q35,accel=$accel,smm=$smm" \
       -cpu "$cpu" -smp "${PSYCACHY_VM_CPUS:-1}" -m "$memory" \
       -drive if=pflash,format=raw,readonly=on,file="$firmware" \
       -drive if=pflash,format=raw,file="$dir/vars.fd" \
       -drive if=none,id=linuxdisk,format=qcow2,file="$dir/linux.qcow2" \
       -device virtio-blk-pci,drive=linuxdisk,serial=psycachy-linux \
-      -drive if=none,id=otherdisk,format=qcow2,file="$dir/other.qcow2" \
+      -drive if=none,id=otherdisk,format=qcow2,readonly=on,file="$dir/other.qcow2" \
       -device virtio-blk-pci,drive=otherdisk,serial=psycachy-other \
       "${media[@]}" -boot "$boot" -nic "$network" -device virtio-vga -device qemu-xhci -device usb-tablet \
       -device virtio-rng-pci -vnc "127.0.0.1:$display" \

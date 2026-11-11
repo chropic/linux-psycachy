@@ -14,10 +14,10 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   were installed and signed. PsyCachy trial boot, Secure Boot/MOK flow, GPU
   behavior, and physical ISO installation remain unverified.
 - **ARM64 ISO:** The pinned candidate passed source, package, EFI, kernel,
-  initrd, and UEFI checks. Disposable UEFI QEMU reached GDM and started a live
-  user session, but the graphical framebuffer remained black with virtio,
-  Bochs, and GL-backed display paths. Disk selection and installation remain
-  unverified.
+  initrd, and UEFI checks. Disposable UEFI QEMU reaches GDM, but its graphical
+  session is not visible with the tested virtio, Bochs, and GL-backed display
+  paths. Existing evidence does not identify an ISO-side defect; a supported
+  graphical environment is still needed for disk selection and installation.
 - **Phase 1: BLOCKED pending physical RPMB qualification.** The refreshed AMD64
   and ARM64 package pairs build and pass generic-QEMU runtime policy checks.
   Disposable FAT data-write EIO and direct-Linux rescue tests pass; FAT
@@ -163,8 +163,10 @@ candidates rather than release ISOs.
 - Freeze the exact candidate package, kernel payload, config, and source hashes
   on each target. The ISO and trial candidate must identify the same artifact.
 - Pass the complete 20-operation editor smoke workflow on both desktops before
-  timing interactive use or interactive compilation. The B550I fixture probe
-  works; the smoke run did not pass. The SP12 workflow is unvalidated.
+  timing interactive use or interactive compilation. B550I passed twice from
+  fresh fixtures with matching saved-document hashes; SP12 remains unvalidated
+  because the root Tailscale SSH preflight required a new authentication check.
+  See the [editor smoke report](archive/validation/phase2-editor-smoke-20261111.md).
 - Record and hold constant power source, charge range, brightness, radios,
   peripherals, ambient/start temperature, active policy, workload version,
   and background activity. Do not use the invalid SP12 `surface_thermal`

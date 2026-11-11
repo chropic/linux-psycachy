@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import hashlib
 import json
 import math
@@ -103,7 +104,7 @@ def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-edi
             raise RuntimeError(f"editor executable not found: {editor}")
         editor_env = os.environ.copy()
         editor_env["GTK_A11Y"] = "atspi"
-        subprocess.Popen(
+        proc = subprocess.Popen(
             [executable, "--standalone", str(fixture)],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
@@ -111,6 +112,7 @@ def probe(Atspi: Any, fixture: Path | None = None, editor: str = "gnome-text-edi
             env=editor_env,
             start_new_session=True,
         )
+        atexit.register(stop_owned_process, proc)
         deadline = time.monotonic() + 30.0
         found = False
         while time.monotonic() < deadline:
@@ -320,6 +322,67 @@ def activate(node: Any) -> None:
     raise RuntimeError("accessible button has no working action")
 
 
+def activate_replace_all(app: Any, editor: Any, expected_document: str) -> None:
+    """Retry the live Replace All control until AT-SPI reports activation."""
+    deadline = time.monotonic() + 5.0
+    last_error: RuntimeError | None = None
+    while time.monotonic() < deadline:
+        try:
+            button = find_replace_button(app)
+            activate(button)
+            return
+        except RuntimeError as exc:
+            last_error = exc
+            try:
+                editor.clear_cache_single()
+            except Exception:
+                pass
+            if node_text(editor) == expected_document:
+                return
+            time.sleep(0.05)
+    raise RuntimeError("Replace All control did not become actionable") from last_error
+
+
+def activate_named_action(root: Any, names: tuple[str, ...]) -> str:
+    """Activate one uniquely named AT-SPI action beneath ``root``."""
+    wanted = {name.casefold() for name in names}
+    matches = []
+    for node in walk(root):
+        try:
+            action = node.get_action_iface()
+            if action is None:
+                continue
+            for index in range(action.get_n_actions()):
+                name = str(action.get_action_name(index) or "").casefold()
+                if name in wanted:
+                    matches.append((action, index, name))
+        except Exception:
+            continue
+    if len(matches) != 1:
+        raise RuntimeError(
+            f"expected one accessible action matching {names}; found {len(matches)}"
+        )
+    action, index, name = matches[0]
+    if not action.do_action(index):
+        raise RuntimeError(f"accessible action did not activate: {name}")
+    return name
+
+
+def stop_owned_process(proc: subprocess.Popen[Any]) -> None:
+    """Close only the editor process started by this driver invocation."""
+    if proc.poll() is not None:
+        return
+    try:
+        proc.terminate()
+    except ProcessLookupError:
+        return
+    try:
+        proc.wait(timeout=5.0)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.wait(timeout=5.0)
+
+
 def percentile(values: list[float], fraction: float) -> float:
     ordered = sorted(values)
     if not ordered:
@@ -346,6 +409,32 @@ def wait_for_document(editor: Any, predicate: Any, timeout_s: float = 5.0) -> st
     raise RuntimeError("editor document did not reach the expected state in 5 seconds")
 
 
+def wait_for_control_text(control: Any, expected: str, timeout_s: float = 5.0) -> None:
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        try:
+            control.clear_cache_single()
+        except Exception:
+            pass
+        if node_text(control) == expected:
+            return
+        time.sleep(0.05)
+    raise RuntimeError("find/replace field did not expose the requested value")
+
+
+def wait_for_saved_file(path: Path, expected: str, timeout_s: float = 10.0) -> bytes:
+    deadline = time.monotonic() + timeout_s
+    while time.monotonic() < deadline:
+        try:
+            data = path.read_bytes()
+            if data.decode("utf-8") == expected:
+                return data
+        except (OSError, UnicodeDecodeError):
+            pass
+        time.sleep(0.05)
+    raise RuntimeError("saved file did not reach the verified editor document")
+
+
 def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
     fixture = args.fixture.resolve(strict=True)
     operations_path = args.operations.resolve(strict=True)
@@ -367,7 +456,7 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
     app_version = args.app_version
     editor_env = os.environ.copy()
     editor_env["GTK_A11Y"] = "atspi"
-    _proc = subprocess.Popen(
+    proc = subprocess.Popen(
         [editor_command, "--standalone", str(working_copy)],
         stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
@@ -375,6 +464,7 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         env=editor_env,
         start_new_session=True,
     )
+    atexit.register(stop_owned_process, proc)
 
     deadline = time.monotonic() + args.startup_timeout_s
     app = None
@@ -394,11 +484,12 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         raise RuntimeError("Text Editor did not expose the opened document over AT-SPI")
 
     editor = find_editor(app, fixture_text)
-    editor_component = editor.get_component_iface()
-    if editor_component is None or not editor_component.grab_focus():
-        raise RuntimeError("could not focus the editor document before opening Replace")
-    time.sleep(0.1)
-    hotkey_ctrl(Atspi, ord("h"))
+    # Component.grab_focus() fails with atspi_error on this Wayland session,
+    # and synthesized Ctrl+H is then sent to the previously active window.
+    # Text Editor 50.1 exposes these named window actions over AT-SPI, which
+    # both activates the dedicated window and opens its Replace panel.
+    activate_named_action(app, ("default.activate",))
+    activate_named_action(app, ("page.begin-replace",))
     controls = []
     controls_deadline = time.monotonic() + 3.0
     while time.monotonic() < controls_deadline:
@@ -414,8 +505,6 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
     else:
         find_entry = find_named_control(controls, ("find", "search"), ("replace",))
         replace_entry = find_named_control(controls, ("replace",), ("button",))
-    replace_all = find_replace_button(app)
-
     result_rows = []
     latencies_ms: list[float] = []
     document_text = fixture_text
@@ -436,7 +525,12 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
             raise RuntimeError(f"operation {index}: could not set find text")
         if not replace_edit.set_text_contents(replace_text):
             raise RuntimeError(f"operation {index}: could not set replacement text")
-        activate(replace_all)
+        wait_for_control_text(find_entry, find_text)
+        wait_for_control_text(replace_entry, replace_text)
+        try:
+            activate_replace_all(app, editor, expected_document)
+        except RuntimeError as exc:
+            raise RuntimeError(f"operation {index}: {exc}") from exc
         document_text = wait_for_document(
             editor,
             lambda text, expected=expected_document: text == expected,
@@ -449,11 +543,15 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
             "elapsed_ms": round(elapsed_ms, 3),
         })
 
-    hotkey_ctrl(Atspi, ord("s"))
-    time.sleep(0.3)
-    disk_bytes = working_copy.read_bytes()
-    if disk_bytes.decode("utf-8") != document_text:
-        raise RuntimeError("saved file contents differ from the verified editor document")
+    activate_named_action(app, ("page.save",))
+    # Text Editor 50.1 writes a final LF when the source fixture has none.
+    # Verify that stable save normalization explicitly instead of treating it
+    # as an unexplained document mismatch.
+    saved_text = document_text
+    added_terminal_lf = not saved_text.endswith("\n")
+    if added_terminal_lf:
+        saved_text += "\n"
+    disk_bytes = wait_for_saved_file(working_copy, saved_text)
 
     report = {
         "schema_version": 1,
@@ -472,11 +570,12 @@ def run_workload(args: argparse.Namespace, Atspi: Any) -> dict[str, Any]:
         "fixture_sha256": sha256(fixture),
         "operations_sha256": sha256(operations_path),
         "saved_document_sha256": hashlib.sha256(disk_bytes).hexdigest(),
+        "saved_document_added_terminal_lf": added_terminal_lf,
         "operation_count": len(result_rows),
         "median_operation_ms": round(percentile(latencies_ms, 0.5), 3),
         "p95_operation_ms": round(percentile(latencies_ms, 0.95), 3),
         "operations": result_rows,
-        "ui_state": "editor remains open after capture",
+        "ui_state": "driver-owned editor process closed after capture",
     }
     report_path = output / "editor-driver-results.json"
     report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")

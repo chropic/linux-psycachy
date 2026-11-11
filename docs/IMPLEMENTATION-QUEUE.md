@@ -10,13 +10,16 @@ conditions stated below.
 
 ### I-1: Make the Phase 2 editor workflow pass its smoke run
 
-**State:** Implemented driver, failing live smoke workflow.
+**State:** The driver passes two fresh-fixture smoke runs on B550I. SP12 is
+unvalidated because its Tailscale SSH preflight required a new authentication
+check.
 
-`tools/phase2-editor-driver.py` can probe the fixture on B550I, but the
-20-operation smoke has not passed; SP12's full workflow is not yet validated.
-Reproduce the current failure, then adjust focus/control discovery and
-verification only where the failure demonstrates a driver defect. Keep
-document contents redacted from logs.
+`tools/phase2-editor-driver.py` now uses named AT-SPI window actions because
+document `grab_focus()` fails on the B550I Wayland session. It waits for the
+find/replace fields, re-discovers the Replace All button, verifies each result,
+checks the saved file including Text Editor's terminal-LF normalization, and
+closes only the process it started. Keep document contents redacted from logs.
+See the [B550I smoke evidence](archive/validation/phase2-editor-smoke-20261111.md).
 
 **Done when:** the same 20 operations complete on both desktops, each result
 is verified, repeat runs are deterministic, and the driver/version is
@@ -24,12 +27,15 @@ recorded. This closes the smoke gate; timed trials remain in the checklist.
 
 ### I-2: Diagnose the ARM64 graphical installer handoff
 
-**State:** Root cause not identified; no confirmed ISO source-code defect.
+**State:** No ISO-side defect demonstrated. Existing evidence supports a
+generic-QEMU graphical-session limitation but lacks compositor and renderer
+diagnostics; no source change was made.
 
-The ARM64 ISO reaches GDM and starts the live user session. QEMU's tested
-virtio, Bochs, and GL-backed paths show a black framebuffer after graphical
-startup. Determine whether the failure is in the ISO, the generic VM display,
-or the guest desktop session before changing the builder or installer.
+Serial logs show the ARM64 ISO reaching GDM, while retained captures from the
+virtio, Bochs, and GL-backed QEMU display attempts do not show a usable
+graphical installer. The captured logs do not include the guest compositor or
+renderer state. Do not change the builder or installer unless a reproducible
+ISO-side cause is demonstrated.
 
 **Done when:** either a reproducible ISO-side cause is fixed and the selector
 is visible in the disposable test, or supported ARM hardware is used to
