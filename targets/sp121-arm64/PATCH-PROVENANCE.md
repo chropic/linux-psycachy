@@ -1,12 +1,12 @@
 # SP12 platform patch provenance review
 
-This inventory records provenance evidence for the six retained platform
-patches. It does not determine copyright ownership, license compatibility, or
-redistribution permission. Treat those as open review gates before publishing
-the patch series or binaries.
+This inventory records provenance evidence for the six retained vendor
+platform patches. It does not determine copyright ownership, license
+compatibility, or redistribution permission. Treat those as open review gates
+before publishing the patch series or binaries.
 
-All six source paths and patch hashes are recorded in [`inputs.json`](inputs.json)
-and pinned to source repository commit
+The six platform source paths and patch hashes are recorded in
+[`inputs.json`](inputs.json) and pinned to source repository commit
 `f496b50a8c471bcb11e889f06c440b2734963348`.
 
 The owner identifies Harrison Van der Byl (GitHub) as the author/source of the
@@ -27,3 +27,22 @@ The retained source paths and hashes establish which files were used; they do
 not establish authorship, licensing, permission to redistribute, or complete
 equivalence to upstream patches. Preserve the original vendor inputs and
 request independent provenance/redistribution review before release.
+
+## Phase 1 local patches
+
+The ARM64 input series also contains one local kexec-signature-force policy
+patch and three local RPMB repair patches. The RPMB patches adapt the reviewed
+upstream v5 series to the authenticated CachyOS 7.3.1-1 source, whose UFS RPMB
+code differs from the posting's base:
+
+| Patch | Upstream reference | Scope |
+| --- | --- | --- |
+| `08-rpmb-core-serialize-teardown.patch` | [v5 1/3](https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16378.html) | Serialize RPMB frame requests and block new work during unregister. |
+| `09-ufs-rpmb-lifetime.patch` | [v5 2/3](https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16377.html) | Pin the UFS RPMB WLUN and tie provider memory to device references. |
+| `10-ufs-rpmb-drop-unregistered-bus.patch` | [v5 3/3](https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16449.html) | Remove the unused bus that the source never registered. |
+
+The adapted patches and source-path references are hashed in `inputs.json`.
+They are local changes, not evidence that the series has been merged upstream.
+Their source build, UFS runtime behavior, and physical RPMB behavior must be
+qualified independently. The local patch does not authorize RPMB key
+programming or data writes.

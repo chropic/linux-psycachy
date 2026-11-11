@@ -75,6 +75,11 @@ update staging files, retains the recovery copy on the target's `/var/lib`, and
 remounts the ESP read-only. The same command can be run from the installed
 system without `--root` when it is bootable.
 
+Before promoting any restored payload, the helper removes and syncs the
+`SP12BOOT` marker. It syncs the complete restored trio before recreating the
+marker. An interruption during those individual promotions therefore leaves
+the marker absent; rerun the verified restore command to finish recovery.
+
 This tool does not replace the removable EFI loader. The fallback installer
 keeps any previous loader at
 `/boot/efi/EFI/BOOT/BOOTAA64.EFI.pre-sp12`; inspect that file separately if the
@@ -87,3 +92,9 @@ manual recovery restores it from the saved payload set. The retained
 root-filesystem snapshot and host fault-injection test provide a manual recovery
 route, not a guarantee against FAT corruption, root-filesystem failure, or
 power loss during firmware writes.
+
+Before removing the marker, `sp12-sync-boot` flushes each staged payload and
+the ESP filesystem so delayed FAT write errors are reported while the old set
+is still active. A flush failure leaves the update on the rollback path. Some
+FAT I/O failures remount the ESP read-only; in that case, inspect the retained
+recovery snapshot and any `.new` files before retrying the update.

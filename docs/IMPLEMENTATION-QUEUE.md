@@ -36,40 +36,60 @@ is visible in the disposable test, or supported ARM hardware is used to
 complete the installer lifecycle and the QEMU display limitation is clearly
 classified.
 
-### I-3: Validate and, if required, harden FAT boot-sync writes
+### I-3: Repair UFS RPMB registration and lifetime safely
 
-**State:** Safety gap in evidence; code change depends on disposable FAT tests.
+**State:** Physical failure reproduced; adapted three-patch source repair is
+pinned and built into the refreshed ARM64 candidate. Generic QEMU boot and
+policy checks pass; UFS RPMB transaction and teardown behavior remain
+unqualified.
 
-Current fault injection does not establish FAT metadata atomicity or
-power-loss safety. Exercise torn/interrupted writes against disposable EFI
-storage. If a reproducible unsafe state appears, implement a recovery-safe
-write path and regression tests. Do not claim power-loss safety from mocked
-filesystem tests.
+SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
+ufs_rpmb bus. The authenticated source assigns that bus in
+drivers/ufs/core/ufs-rpmb.c but contains no registration call. Do not fix this
+by registering the bus alone or by only clearing dev.bus: once RPMB devices
+register, the current devm allocation and unpinned SCSI WLUN leave a request
+versus host-removal use-after-free risk. The reviewed upstream v5 series
+combines RPMB-core request serialization, UFS device lifetime handling, and
+dropping the unused bus in that order. The adapted series is included in the
+pinned SP12 source inputs and compiled into the current ARM64 package pair.
+The image/headers pair and target bundle verify against the refreshed pin.
+Generic QEMU validates boot, module-signature policy, lockdown, unprivileged
+BPF, and kexec denial, but does not exercise UFS RPMB requests. Ordinary QEMU
+returns INVALID OPCODE for RPMB SECURITY PROTOCOL IN/OUT, so a controllable
+UFS fixture is still required.
 
-### I-4: Resolve AMD64 candidate package identity
+**Done when:** module and built-in configurations compile; a disposable UFS
+fixture passes registration, read-only requests, concurrent requests, and
+teardown checks under KASAN/locking diagnostics; and the exact rebuilt
+package passes target-specific physical qualification without RPMB
+program-key or write-data operations. Keep Phase 1 blocked until then.
 
-**State:** Prior expected package hash unavailable; local rebuild is distinct.
-
-Choose and pin the exact AMD64 image/headers pair for ISO and Phase 2 use.
-Update only the relevant pin/manifest and documentation so the same package
-hashes identify the installed candidate, ISO payload, and test results.
-
-## Deferred; no implementation until the condition is met
+## Recorded decision; no route changes
 
 ### Recovery-panel route
 
-The active EFI chain is not identified and the ESP initrd differs from the
-installed initrd. Do not modify or boot this route until the project decides
-whether it remains supported, the chain is traced, and a rollback plan exists.
-If the route is retired, record that decision rather than making a code change.
+The route is retired from supported recovery because its active EFI chain
+remains unidentified and its ESP initrd differs from the installed initrd.
+Its files and firmware entries remain unchanged. The documented manual rescue
+path is the supported recovery procedure.
 
 ## Already implemented; avoid duplicate work
 
 - AMD64 and ARM64 ISO builders, pinned inputs, offline package checks, and
   installer payloads are present.
-- SP12 boot-sync, fallback selection, recovery snapshot, and candidate install
-  paths have unit and physical lifecycle evidence. Preserve the verified
-  fallback.
+- Phase 1 policy fragments, audits, AMD64 and ARM64 candidate package pins,
+  and generic-QEMU runtime policy probes are implemented. The rebuilt ISO and
+  physical target gates remain in the ship checklist.
+- The RPMB source repair is pinned and compiled into the refreshed SP12
+  candidate; UFS fixture runtime tests and physical qualification remain open
+  in I-3.
+- SP12 boot-sync and restore helpers flush staged payloads, preserve the
+  invalid marker across interrupted promotion, and pass focused tests. FAT
+  metadata atomicity and physical power-loss safety remain unqualified.
+- The AMD64 local image/headers pair is pinned; the previously expected
+  package hash remains unavailable. The ISO must be rebuilt from the pin.
+- The Phase 1 restore procedure passed in a direct-Linux disposable rescue VM;
+  firmware-to-rescue boot remains unqualified.
 - The Phase 2 UPS sampler and fixed editor/video inputs already exist. Their
   measurement and workload validation remains in the ship checklist.
 

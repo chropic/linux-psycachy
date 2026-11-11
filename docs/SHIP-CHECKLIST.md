@@ -18,10 +18,13 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   user session, but the graphical framebuffer remained black with virtio,
   Bochs, and GL-backed display paths. Disk selection and installation remain
   unverified.
-- **Phase 1:** Package build checks, candidate/fallback lifecycle, and SP12
-  recovery snapshot checks are recorded as passed. Independent policy/runtime
-  review, FAT/power-loss safety evidence, boot-log qualification, and the
-  recovery-panel route decision remain open.
+- **Phase 1: BLOCKED pending physical RPMB qualification.** The refreshed AMD64
+  and ARM64 package pairs build and pass generic-QEMU runtime policy checks.
+  Disposable FAT data-write EIO and direct-Linux rescue tests pass; FAT
+  metadata fault injection and firmware-to-rescue boot remain unqualified.
+  The recovery-panel route is retired from supported recovery, with its files
+  and firmware entries unchanged. The physical SP12 fallback and recovery set
+  remain intact; no rebuilt candidate was installed or booted on hardware.
 - **Phase 2:** No workload pairs have been run. The editor fixture probe works
   on B550I; the 20-operation smoke workflow has not passed. SP12's whole-system
   energy gate is unavailable because it cannot use the B550I meter.
@@ -35,43 +38,64 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 
 ### 1.1 Freeze the candidate artifacts
 
-- Select the exact AMD64 image/headers pair for qualification. The previously
-  expected `.deb` hash was unavailable; the local rebuild has different
-  package and kernel hashes. Record one approved pair and its source, config,
-  package, and payload hashes, then use those same bytes in the ISO and Phase
-  2 trials.
-- Keep the ARM64 kernel package and DTB pins together and verify that the
-  installed files, ESP copies, and removable fallback payloads match.
+- The exact local AMD64 image/headers pair and refreshed ARM64 image/headers
+  pair are pinned with source, config, package, payload, DTB, policy, and
+  signer-certificate hashes. Both are VM-tested candidates; replacement bytes
+  still need their target-specific physical qualification.
+- Keep the ARM64 kernel package and DTB pins together. The rebuilt ARM64 DTB
+  hash matches the retained pin, but the package has not been installed on
+  SP12; existing physical files and removable fallback remain unchanged.
+- Keep unprivileged BPF disabled by default. `CONFIG_BPF_UNPRIV_DEFAULT_OFF=y`
+  starts `kernel.unprivileged_bpf_disabled` at `2`; an administrator can set it
+  to `0` to re-enable unprivileged `bpf()` calls, or to `1` to disable them
+  until reboot with no in-boot re-enable. While disabled, calls without
+  `CAP_BPF` or `CAP_SYS_ADMIN` fail with `EPERM`.
 
-**Evidence to add:** final pin manifests, input hashes, verifier output, and
-the build source/config identity.
+**Evidence:** [Phase 1 closeout report](archive/validation/phase1-closeout-20261110.md),
+the final pin manifests, and retained build/verifier output under the ignored
+`output/.phase1-closeout-20261110T192001-0700/` run directory.
 
 ### 1.2 Review boot and recovery safety
 
-- Complete an independent review of the candidate kernel policy, config, and
-  runtime behavior. Record accepted exceptions and the review result.
-- Exercise FAT metadata failures and interrupted writes on disposable EFI
-  storage. Existing fault injection does not prove FAT atomicity or power-loss
-  safety. Do not represent this as a physical power-loss guarantee.
-- Boot the documented manual rescue procedure in a disposable VM and verify
-  that it restores a known-good kernel/initrd/DTB set. This is separate from
-  the unresolved recovery-panel EFI route and must not use the physical SP12
-  fallback as a test target.
+- Independent source/config review is complete. Generic QEMU passed trusted,
+  unsigned, and untrusted module checks; integrity lockdown; unprivileged BPF
+  denial; legacy kexec disablement; and rejection of unsigned file-kexec
+  images on both architectures. Production signer-key ownership and trust
+  deployment remain unresolved.
+- Disposable FAT tests passed interrupted rotations/promotions, restore
+  retries, preflight and mid-write ENOSPC, read-only remount failure, and a
+  data-sector EIO detected by explicit flush before marker removal. FAT table
+  and directory metadata EIO injection is not qualified. These results do not
+  prove FAT metadata atomicity or physical power-loss safety.
+- The documented restore command recovered a damaged disposable target from a
+  direct-Linux rescue VM; hashes and marker state verified. The UEFI firmware
+  path into rescue did not reach that environment, so firmware-to-rescue boot
+  remains unqualified. No physical SP12 fallback was used as a test target.
 - Recheck the current SP12 fallback trio and recovery manifest before any
   future boot-payload change. Keep the verified fallback intact.
-- Decide whether the recovery-panel route remains supported. Its active EFI
-  chain is unidentified and its ESP initrd differs from the installed initrd.
-  If retained, trace the chain and establish rollback before a separate test
-  or repair. If retired, document that decision. Do not modify or boot that
-  route before this decision and plan exist.
-- Review boot logs against fallback baselines. Early SQE/GMU lookup warnings
-  have recovered; UFS RPMB remains unqualified. Track only new storage errors,
-  watchdog events, or functional regressions as candidate regressions.
+- The recovery-panel route is retired from supported recovery because its
+  active EFI chain remains unidentified and its ESP initrd differs from the
+  installed initrd. Its files and firmware entries were left unchanged.
+- Two SP12 boot intervals record `bus_add_device: cannot add device
+  'ufs_rpmb0' to unregistered bus 'ufs_rpmb'`, followed by failed UFS RPMB
+  device registration. The authenticated ARM64 source assigns that bus to the
+  device but never registers it. The root filesystem still mounted and the
+  matched intervals contain no corresponding storage or filesystem failure.
+  A registration-only change is unsafe: the current driver also ties an
+  embedded device to host devres without pinning its RPMB WLUN, creating a
+  teardown race when requests overlap host removal. The adapted core
+  serialization, UFS lifetime, and unused-bus patches are now pinned and
+  compiled into the refreshed ARM64 candidate; package verification and
+  generic QEMU boot/policy checks pass. A controllable UFS fixture is still
+  needed for RPMB request and teardown tests before physical qualification.
+  See the [RPMB follow-up packet](archive/validation/phase1-closeout-20261110.md#rpmb-follow-up-packet).
+- Early SQE/GMU lookup warnings have recovered. Continue comparing matched
+  candidate and fallback intervals for new storage errors, watchdog events,
+  and functional regressions.
 
-**Evidence to add:** review sign-off, disposable FAT failure transcripts,
-rescue-boot transcript and restored-payload hashes, current fallback/recovery
-checksums, the recovery-route decision, and concise candidate-versus-fallback
-health results.
+**Evidence:** the closeout report and its linked policy, FAT, rescue, and
+read-only physical-state logs. Physical RPMB qualification remains a required
+blocking gate; no provisioning or repair was attempted.
 
 ## 2. Finish both installer ISOs
 
@@ -123,7 +147,9 @@ candidates rather than release ISOs.
 
 ### 2.3 Produce release images
 
-- Rebuild both ISOs from the final pins after any fixes.
+- Existing installer ISOs are stale relative to the refreshed package pins;
+  do not use them to qualify these candidate bytes. Rebuild both ISOs from the
+  final pins after the remaining Phase 1 and installer gates are resolved.
 - Re-run source-signature, package-closure, boot-metadata, signed EFI/live
   payload, and manifest checks.
 - Run the full install, boot-without-media, fallback, and protected-disk

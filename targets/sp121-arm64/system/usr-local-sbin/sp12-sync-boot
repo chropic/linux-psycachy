@@ -133,7 +133,7 @@ cleanup() {
         result=1
     fi
     if [ "$writable" -eq 1 ]; then
-        sync || result=1
+        sync -f "$esp" || result=1
         mount -o remount,ro "$esp" || result=1
     fi
     exit "$result"
@@ -166,21 +166,32 @@ for name in $changes; do
     staged="$staged $name"
     cp -f "$source" "$dest/$name.new"
     cmp -s "$source" "$dest/$name.new"
+    # FAT may defer writeback errors until the page cache is flushed. Durably
+    # flush each staged payload before its marker can be removed or it can be
+    # promoted into the active set.
+    if ! sync -d "$dest/$name.new"; then
+        printf 'sp12-sync-boot: failed to flush staged payload: %s\n' "$name" >&2
+        exit 1
+    fi
 done
+if ! sync -f "$dest"; then
+    printf 'sp12-sync-boot: failed to flush staged ESP metadata\n' >&2
+    exit 1
+fi
 # Keep the fallback loader from booting a mixed kernel/initramfs/DTB set after
 # a hard power loss during promotion. Restore the marker only after rollback or
 # a complete successful update.
 if [ "$had_marker" -eq 1 ]; then
     rm -f "$dest/SP12BOOT"
-    sync
+    sync -f "$dest"
 fi
 for name in $changes; do
     promoted="$promoted $name"
     mv -f "$dest/$name.new" "$dest/$name"
 done
-sync
+sync -f "$dest"
 touch "$dest/SP12BOOT"
-sync
+sync -f "$dest"
 committed=1
 
 printf 'sp12-sync-boot: installed %s with %s\n' "$kver" "$dtb"

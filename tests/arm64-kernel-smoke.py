@@ -50,8 +50,14 @@ MODULE_SETUP = r"""
     mov x8, #273
     svc #0
     tbnz x0, #63, module_failed
+    mov x0, #1
+    adr x1, module_loaded
+    mov x2, #23
+    mov x8, #64
+    svc #0
 """
 MODULE_TAIL = r"""
+.balign 4
 module_failed:
     mov x0, #1
     adr x1, module_error
@@ -59,6 +65,7 @@ module_failed:
     mov x8, #64
     svc #0
     b shutdown
+module_loaded: .ascii "PSYCACHY_MODULE_LOADED\n"
 module_name: .asciz "/probe.ko"
 empty_string: .asciz ""
 module_error: .ascii "PSYCACHY_MODULE_ERR\n"
@@ -86,7 +93,9 @@ def main():
     parser.add_argument("--grub-directory", type=pathlib.Path, help="ARM64 EFI GRUB modules")
     parser.add_argument("--grub-mkstandalone", default="grub-mkstandalone")
     parser.add_argument("--module", type=pathlib.Path,
-                        help="signed test module that prints PSYCACHY_MODULE_LOADED when loaded")
+                        help="ARM64 module to pass to init_module")
+    parser.add_argument("--expect-module-rejection", action="store_true",
+                        help="expect init_module to reject the supplied module")
     args = parser.parse_args()
     if not args.kernel.is_file() or args.timeout <= 0:
         parser.error("kernel must exist and timeout must be positive")
@@ -100,6 +109,8 @@ def main():
         parser.error("UEFI firmware path must not contain a comma")
     if args.module and not args.module.is_file():
         parser.error("test module must be an existing file")
+    if args.expect_module_rejection and not args.module:
+        parser.error("--expect-module-rejection requires --module")
 
     digest = hashlib.sha256()
     with args.kernel.open("rb") as image:
@@ -164,8 +175,26 @@ def main():
             print((exc.stdout or b"").decode(errors="replace") if isinstance(exc.stdout, bytes) else exc.stdout or "")
             raise SystemExit("ARM64 VM smoke test timed out") from exc
         print(run.stdout, end="")
-        if (run.returncode or MARKER not in run.stdout or
-                (args.module and "PSYCACHY_MODULE_LOADED" not in run.stdout)):
+        if args.module:
+            expected_module_marker = (
+                "PSYCACHY_MODULE_ERR" if args.expect_module_rejection
+                else "PSYCACHY_MODULE_LOADED"
+            )
+            module_result_ok = expected_module_marker in run.stdout
+            if args.expect_module_rejection:
+                module_result_ok = module_result_ok and MARKER not in run.stdout
+                module_result_ok = module_result_ok and any(
+                    phrase in run.stdout.lower()
+                    for phrase in (
+                        "unsigned module", "module signature", "key was rejected",
+                        "unavailable key", "required key",
+                    )
+                )
+            else:
+                module_result_ok = module_result_ok and MARKER in run.stdout
+        else:
+            module_result_ok = MARKER in run.stdout
+        if run.returncode or not module_result_ok:
             raise SystemExit(f"ARM64 VM smoke test failed (QEMU exit {run.returncode})")
         print(f"PASS: generic ARM64 {'UEFI' if args.uefi else 'direct-kernel'} VM reached the test init and powered off")
 

@@ -6,17 +6,22 @@
   "architecture": "amd64",
   "cpu_target": "znver3",
   "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
-  "resolved_config_sha256": "3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae",
+  "resolved_config_sha256": "c6ab15474731c035fc3906a907ecbfa1f92b6a2174af03e42420693b72dc3733",
   "packages": [
     {
       "name": "linux-headers-7.3.1-psycachy",
       "filename": "linux-headers-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb",
-      "sha256": "1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e"
+      "sha256": "cccd88818bdcbae2789d98725b754a9253744b42a2ec16458dbc0a424cb0b872"
     },
     {
       "name": "linux-image-7.3.1-psycachy",
       "filename": "linux-image-7.3.1-psycachy_7.3.1-1psycachy1_amd64.deb",
-      "sha256": "7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92"
+      "sha256": "a3e89bb7091640abad457a55184555533a6cde72d6b79a78c97f1b25dc111fa6"
     }
-  ]
+  ],
+  "source_tree_sha256": "a28d2b1b640f6e30aeb35b84d0ad2c9d996ce1dd0ab98d808a294ef676857784",
+  "policy_fragment_sha256": "dfe52ac1538983f5ee815363222329a9b717ae8178d780e8c389b38f1fb556ef",
+  "kernel_payload_sha256": "3c96cb771d4b0bd9077b8f8a761c7212157643a1bd9b80e2a15621bd96a2e814",
+  "module_signing_certificate_sha256": "a653ce20ea1484619d3256e4ec4daadcb6801b04b75a3be02a382534ad019809",
+  "module_signing_fingerprint_sha256": "a653ce20ea1484619d3256e4ec4daadcb6801b04b75a3be02a382534ad019809"
 }

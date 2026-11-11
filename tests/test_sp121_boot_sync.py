@@ -188,6 +188,22 @@ printf '%s\\n' "$*" >> "$SP12_TEST_MOUNT_LOG"
             ).returncode,
         )
 
+    def test_staged_flush_error_keeps_the_active_set_and_marker(self):
+        self.command(
+            "sync",
+            'if [ "${1:-}" = "-d" ]; then '
+            'echo "fault-injected staged fsync failure" >&2; exit 5; fi\n'
+            "exit 0",
+        )
+
+        result = self.run_tool()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("failed to flush staged payload", result.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertFalse(list(self.dest.glob("*.new")))
+
     def test_power_loss_during_promotion_can_be_manually_recovered(self):
         promoted_vmlinuz = str(self.dest / "vmlinuz")
         self.command(
@@ -260,6 +276,54 @@ exec /bin/mv "$@"
         self.assertIn("checksum mismatch", result.stderr)
         self.assertEqual(before_restore, self.snapshot())
         self.assertIn("remount,ro", self.log.read_text())
+
+    def _assert_restore_interruption_keeps_marker_absent(self, promoted_name):
+        self.run_tool()
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        promoted_path = str(self.dest / promoted_name)
+        self.command(
+            "mv",
+            """
+/bin/mv "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_RESTORE_PROMOTE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_RESTORE_PROMOTE"] = promoted_path
+        interrupted = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertFalse((self.dest / "SP12BOOT").exists())
+        for name in self.sources:
+            expected = (self.recovery_path / name).read_bytes()
+            self.assertIn((self.dest / name).read_bytes(), (expected, f"candidate-{name}".encode()))
+
+        self.env.pop("SP12_TEST_KILL_ON_RESTORE_PROMOTE")
+        (self.bin / "mv").unlink()
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_restore_interruption_during_vmlinuz_promotion_keeps_marker_absent(self):
+        self._assert_restore_interruption_keeps_marker_absent("vmlinuz")
+
+    def test_restore_interruption_during_initrd_promotion_keeps_marker_absent(self):
+        self._assert_restore_interruption_keeps_marker_absent("initrd.img")
+
+    def test_restore_interruption_during_dtb_promotion_keeps_marker_absent(self):
+        self._assert_restore_interruption_keeps_marker_absent("dtb")
 
     def test_restore_refuses_symlinked_boot_marker_before_payload_writes(self):
         self.run_tool()
@@ -343,6 +407,23 @@ exec /bin/mv "$@"
         last_promotion = max(
             i for i, line in enumerate(lines)
             if line.strip() == 'mv -f "$dest/$name.new" "$dest/$name"'
+        )
+        marker = next(i for i, line in enumerate(lines) if line.strip() == 'touch "$dest/SP12BOOT"')
+        self.assertLess(invalidate, first_promotion)
+        self.assertEqual('sync -f "$dest"', lines[invalidate + 1].strip())
+        self.assertTrue(any(last_promotion < i < marker and line.strip() == 'sync -f "$dest"'
+                            for i, line in enumerate(lines)))
+
+    def test_restore_marker_is_invalidated_before_payload_promotion(self):
+        lines = (SYSTEM_DIR / "sp12-restore-recovery").read_text().splitlines()
+        invalidate = next(i for i, line in enumerate(lines) if line.strip() == 'rm -f "$dest/SP12BOOT"')
+        first_promotion = next(
+            i for i, line in enumerate(lines)
+            if line.strip() == 'mv -f "$dest/$name.restore.new" "$dest/$name"'
+        )
+        last_promotion = max(
+            i for i, line in enumerate(lines)
+            if line.strip() == 'mv -f "$dest/$name.restore.new" "$dest/$name"'
         )
         marker = next(i for i, line in enumerate(lines) if line.strip() == 'touch "$dest/SP12BOOT"')
         self.assertLess(invalidate, first_promotion)

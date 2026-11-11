@@ -33,6 +33,51 @@ class ConfigAuditTests(unittest.TestCase):
         self.assertEqual({item["symbol"] for item in result["newly_enabled_unreviewed"]},
                          {"CONFIG_EXAMPLE", "CONFIG_CACHY"})
 
+    def test_phase1_policy_changes_are_explicit_and_exact(self):
+        seed = {
+            "CONFIG_KEXEC": "y",
+            "CONFIG_KEXEC_HANDOVER": "y",
+            "CONFIG_KEXEC_HANDOVER_DEBUGFS": "y",
+            "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT": "y",
+            "CONFIG_LIBFDT": "y",
+            "CONFIG_LIVEUPDATE": "y",
+            "CONFIG_LIVEUPDATE_MEMFD": "y",
+            "CONFIG_MEMBLOCK_KHO_SCRATCH": "y",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE": "y",
+            "CONFIG_MODULE_SIG_FORCE": "n",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY": "n",
+        }
+        candidate = {
+            "CONFIG_KEXEC": "n",
+            "CONFIG_KEXEC_HANDOVER": "n",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE": "n",
+            "CONFIG_MODULE_SIG_FORCE": "y",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY": "y",
+            "CONFIG_KEXEC_SIG_FORCE": "y",
+            "CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE": "y",
+        }
+        report = AUDIT.compare(seed, candidate)
+        self.assertEqual(report["unexpected_changes"], [])
+        changes = {item["symbol"] for item in report["approved_policy_changes"]}
+        self.assertEqual(changes, {
+            "CONFIG_KEXEC",
+            "CONFIG_KEXEC_HANDOVER",
+            "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+            "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT",
+            "CONFIG_LIBFDT",
+            "CONFIG_LIVEUPDATE",
+            "CONFIG_LIVEUPDATE_MEMFD",
+            "CONFIG_MEMBLOCK_KHO_SCRATCH",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+        })
+        additions = {item["symbol"] for item in report["approved_policy_additions"]}
+        self.assertEqual(additions, {
+            "CONFIG_MODULE_SIG_FORCE",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY",
+            "CONFIG_KEXEC_SIG_FORCE",
+            "CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE",
+        })
+
     def test_duplicate_symbols_are_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             path = pathlib.Path(directory) / "config"

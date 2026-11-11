@@ -118,9 +118,14 @@ for name in vmlinuz initrd.img dtb; do
     cp -f "$recovery/$name" "$stage"
     cmp -s "$recovery/$name" "$stage"
 done
+# Keep the fallback loader from selecting a mixed set if restoration is
+# interrupted after any individual payload promotion.
+rm -f "$dest/SP12BOOT"
+sync
 for name in vmlinuz initrd.img dtb; do
     mv -f "$dest/$name.restore.new" "$dest/$name"
 done
+sync
 touch "$dest/SP12BOOT"
 for name in vmlinuz initrd.img dtb; do
     rm -f -- "$dest/$name.new"

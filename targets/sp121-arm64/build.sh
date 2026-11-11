@@ -83,7 +83,7 @@ for entry in json.load(open(sys.argv[1], encoding="utf-8"))["series"]:
     print(entry["path"])
 PY
 )
-[[ ${#patches[@]} == 6 ]] || die 'unexpected SP12 patch count'
+[[ ${#patches[@]} == 10 ]] || die 'unexpected SP12 patch count'
 for patch in "${patches[@]}"; do
   git -C "$source_dir" apply --check --no-index "$target_dir/$patch"
   git -C "$source_dir" apply --no-index "$target_dir/$patch"
@@ -98,6 +98,8 @@ for packaging_patch in \
   git -C "$source_dir" apply --check --no-index "$packaging_patch"
   git -C "$source_dir" apply --no-index "$packaging_patch"
 done
+
+python3 "$root/tools/hash-source-tree.py" "$source_dir" > "$work/source-tree.sha256"
 
 # Kbuild passes PWD to recursive host-tool recipes. Keep it rooted in the
 # whitespace-free temporary source tree even when the checkout path has spaces.
@@ -116,9 +118,8 @@ import sys
 
 approved = Path(sys.argv[1]).read_text()
 generated = Path(sys.argv[2]).read_text()
-default_n = "# CONFIG_DRM_MSM_VALIDATE_XML is not set\n"
-if generated.count(default_n) != 1 or default_n in approved or generated.replace(default_n, "", 1) != approved:
-    raise SystemExit("Kconfig-normalized file differs from the approved config beyond the known default-n comment")
+if generated != approved:
+    raise SystemExit("Kconfig-normalized file differs from the approved config")
 PY
   config_sha256=$(sha256sum "$work/approved-config.config")
   config_sha256=${config_sha256%% *}
@@ -126,6 +127,9 @@ PY
 else
   cp "$target_dir/config.seed" "$work/config/.config"
   "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
+  cp -- "$target_dir/policy.fragment" "$work/policy.fragment"
+  (cd "$source_dir" && KCONFIG_CONFIG="$work/config/.config" \
+    scripts/kconfig/merge_config.sh -m "$work/config/.config" "$work/policy.fragment")
   make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
   config_sha256=$(sha256sum "$work/config/.config")
   config_sha256=${config_sha256%% *}
@@ -140,6 +144,8 @@ audit_config="$work/config/.config"
 if [[ -n $approved_config ]]; then
   audit_config="$work/approved-config.config"
 fi
+python3 "$root/tools/audit-release-policy.py" --arch arm64 \
+  --output "$work/policy-audit.json" "$audit_config"
 python3 "$root/tools/audit-sp121-config.py" "$audit_config" \
   --output "$work/config-audit.json"
 
@@ -195,6 +201,7 @@ for package in "${images[@]}" "${headers[@]}"; do
   cp -- "$package" "$output/"
 done
 cp -- "$work/package-verification.json" "$output/"
+cp -- "$work/policy-audit.json" "$work/source-tree.sha256" "$output/"
 if [[ -n $approved_config ]]; then
   cp -- "$work/approved-config.config" "$output/arm64-candidate.config"
 else
@@ -204,6 +211,9 @@ if [[ $resolved_config_sha256 != "$config_sha256" ]]; then
   cp -- "$work/config/.config" "$output/kconfig-resolved.config"
 fi
 cp -- "$work/config-audit.json" "$output/config-audit.json"
+if [[ -f $work/config/certs/signing_key.x509 ]]; then
+  cp -- "$work/config/certs/signing_key.x509" "$output/module-signing-cert.x509"
+fi
 
 (cd "$output" && sha256sum ./*.deb > SHA256SUMS)
 
@@ -211,8 +221,10 @@ cp -- "$work/config-audit.json" "$output/config-audit.json"
 {
   echo "source=$RELEASE"
   echo "source_sha256=$SOURCE_SHA256"
+  printf 'source_tree_sha256='; cat "$work/source-tree.sha256"
   echo "config_sha256=$config_sha256"
   echo "kconfig_resolved_config_sha256=$resolved_config_sha256"
+  printf 'policy_fragment_sha256='; sha256sum "$target_dir/policy.fragment" | cut -d ' ' -f 1
   if [[ -n $approved_config ]]; then
     echo 'config_input=approved-file'
   else
@@ -226,6 +238,13 @@ cp -- "$work/config-audit.json" "$output/config-audit.json"
   clang-22 --target=aarch64-linux-gnu -### -E -x c /dev/null 2>&1 | head -20
   echo 'Installed toolchain package versions:'
   dpkg-query -W clang-22 llvm-22 lld-22 2>/dev/null || echo 'Package query not available'
+  if [[ -f $work/config/certs/signing_key.x509 ]]; then
+    sha256sum "$work/config/certs/signing_key.x509"
+    if command -v openssl >/dev/null 2>&1; then
+      openssl x509 -inform DER -in "$work/config/certs/signing_key.x509" -noout -subject -fingerprint -sha256
+    fi
+    echo 'module_signing_private_key=ephemeral build-work file; not copied to artifacts'
+  fi
 } > "$output/build-metadata.txt"
 
 echo "SP12 ARM64 packages written to $output"

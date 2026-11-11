@@ -53,7 +53,7 @@ for entry in json.load(open(sys.argv[1], encoding="utf-8"))["series"]:
     print(entry["path"])
 PY
 )
-[[ ${#patches[@]} == 6 ]] || die 'unexpected SP12 patch count'
+[[ ${#patches[@]} == 10 ]] || die 'unexpected SP12 patch count'
 for patch in "${patches[@]}"; do
   git -C "$source_dir" apply --check --no-index "$target_dir/$patch"
   git -C "$source_dir" apply --no-index "$target_dir/$patch"
@@ -63,11 +63,15 @@ python3 "$root/tools/hash-source-tree.py" "$source_dir" > "$work/source-tree.sha
 mkdir "$work/config"
 cp "$target_dir/config.seed" "$work/config/.config"
 "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
+cp -- "$target_dir/policy.fragment" "$work/policy.fragment"
+(cd "$source_dir" && KCONFIG_CONFIG="$work/config/.config" \
+  scripts/kconfig/merge_config.sh -m "$work/config/.config" "$work/policy.fragment")
 make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
 release=$(make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
 [[ $release == "$KERNEL_VERSION-psycachy-sp121" ]] || die "unexpected ARM64 kernel release: $release"
 python3 "$source_dir/scripts/diffconfig" "$target_dir/config.seed" "$work/config/.config" > "$work/config-diff.txt"
 cp "$work/config/.config" "$work/arm64-candidate.config"
+python3 "$root/tools/audit-release-policy.py" --arch arm64 "$work/arm64-candidate.config"
 python3 "$root/tools/audit-sp121-config.py" "$work/arm64-candidate.config" --output "$work/config-preservation.json"
 python3 - "$work" "$target_dir/inputs.json" "$RELEASE" "$SOURCE_SHA256" "$SIGNER" "$release" <<'PY'
 import hashlib, json, pathlib, shutil, subprocess, sys
@@ -81,6 +85,7 @@ report = {
     "target": "sp121-arm64", "source_release": release, "source_sha256": source_hash,
     "source_signer_fingerprint": signer, "sp12_input_manifest_sha256": sha(manifest),
     "source_tree_sha256_v1": (work / "source-tree.sha256").read_text().strip(),
+    "policy_fragment_sha256": sha(manifest.parent / "policy.fragment"),
     "kernel_release": kernel_release, "architecture": "arm64", "compiler": version("clang-22"),
     "linker": version("ld.lld-22"), "pahole": version("pahole"),
     "rustc": version("rustc"), "bindgen": version("bindgen"),

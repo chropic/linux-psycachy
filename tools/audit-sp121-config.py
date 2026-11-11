@@ -27,6 +27,23 @@ EXCEPTIONS = {
         "CONFIG_DRM_AMD_DC_FP", "CONFIG_DRM_AMD_SECURE_DISPLAY", "CONFIG_SAMPLE_AUXDISPLAY",
         "CONFIG_SAMPLE_WATCHDOG")},
 }
+POLICY_REMOVALS = {
+    "CONFIG_KEXEC": ("y", "n", "legacy unsigned kexec disabled by Phase 1 policy"),
+    "CONFIG_KEXEC_HANDOVER": ("y", "n", "kexec handover disabled by Phase 1 policy"),
+    "CONFIG_KEXEC_HANDOVER_DEBUGFS": ("y", None, "handover debugfs controls removed with handover"),
+    "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT": ("y", None, "handover default removed with handover"),
+    "CONFIG_LIBFDT": ("y", None, "handover-only dependency removed with handover"),
+    "CONFIG_LIVEUPDATE": ("y", None, "live update removed with handover"),
+    "CONFIG_LIVEUPDATE_MEMFD": ("y", None, "live update removed with handover"),
+    "CONFIG_MEMBLOCK_KHO_SCRATCH": ("y", None, "handover-only scratch support removed with handover"),
+    "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE": ("y", "n", "integrity lockdown selected by Phase 1 policy"),
+}
+POLICY_ADDITIONS = {
+    "CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE": ("y", "ARM64 force-signature capability patch"),
+    "CONFIG_KEXEC_SIG_FORCE": ("y", "mandatory file-based kexec signatures"),
+    "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY": ("y", "integrity lockdown default"),
+    "CONFIG_MODULE_SIG_FORCE": ("y", "reject unsigned and untrusted modules"),
+}
 ASSIGN = re.compile(r"^(CONFIG_[A-Za-z0-9_]+)=(.*)$")
 DISABLED = re.compile(r"^# (CONFIG_[A-Za-z0-9_]+) is not set$")
 
@@ -46,7 +63,7 @@ def read_config(path):
 
 
 def compare(seed, candidate):
-    exceptions, unexpected = [], []
+    exceptions, policy_changes, unexpected = [], [], []
     for key, before in seed.items():
         if before not in ("y", "m"):
             continue
@@ -54,17 +71,29 @@ def compare(seed, candidate):
         if after == before:
             continue
         allowed = EXCEPTIONS.get(key)
+        policy = POLICY_REMOVALS.get(key)
         item = {"symbol": key, "before": before, "after": after}
-        if allowed and before == allowed[0] and after is None:
+        if policy and before == policy[0] and after == policy[1]:
+            item["reason"] = policy[2]
+            policy_changes.append(item)
+        elif allowed and before == allowed[0] and after is None:
             item["reason"] = allowed[1]
             exceptions.append(item)
         else:
             unexpected.append(item)
-    newly_enabled = [{"symbol": key, "before": seed.get(key), "after": value}
-                     for key, value in candidate.items()
-                     if value in ("y", "m") and seed.get(key) not in ("y", "m")]
+    policy_additions, newly_enabled = [], []
+    for key, value in candidate.items():
+        if value not in ("y", "m") or seed.get(key) in ("y", "m"):
+            continue
+        approved = POLICY_ADDITIONS.get(key)
+        if approved and value == approved[0]:
+            policy_additions.append({"symbol": key, "before": seed.get(key),
+                                     "after": value, "reason": approved[1]})
+        else:
+            newly_enabled.append({"symbol": key, "before": seed.get(key), "after": value})
     return {"schema": 1, "enabled_seed_symbols": sum(v in ("y", "m") for v in seed.values()),
-            "known_unreviewed_exceptions": exceptions, "unexpected_changes": unexpected,
+            "known_unreviewed_exceptions": exceptions, "approved_policy_changes": policy_changes,
+            "approved_policy_additions": policy_additions, "unexpected_changes": unexpected,
             "newly_enabled_unreviewed": newly_enabled,
             "limitations": ["added or previously disabled symbols still require review",
                             "passing does not establish runtime or hardware support"]}

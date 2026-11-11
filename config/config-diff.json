@@ -2,9 +2,10 @@
   "base": "cachyos-7.3.1-normalized.config",
   "base_sha256": "ce2176b8a3bd123e33c01a1641a0e5feb925490b9de0eac70279f687cc9a73a4",
   "final": "psycachy-7.3.1.config",
-  "final_sha256": "3f5fce90b5f91eef3a6d8842f3b7c40c44f24b1c32f700d84db905e83fceb4ae",
+  "final_sha256": "c6ab15474731c035fc3906a907ecbfa1f92b6a2174af03e42420693b72dc3733",
   "fragment_allowlist": [
     "CONFIG_AYANEO_EC",
+    "CONFIG_BPF_UNPRIV_DEFAULT_OFF",
     "CONFIG_CACHY",
     "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE",
     "CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE_O3",
@@ -18,15 +19,37 @@
     "CONFIG_IMA_DEFAULT_HASH_SHA1",
     "CONFIG_IMA_DEFAULT_HASH_SHA256",
     "CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT",
+    "CONFIG_KEXEC",
+    "CONFIG_KEXEC_FILE",
+    "CONFIG_KEXEC_HANDOVER",
+    "CONFIG_KEXEC_SIG",
+    "CONFIG_KEXEC_SIG_FORCE",
+    "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY",
     "CONFIG_LTO_CLANG_THIN",
     "CONFIG_LTO_NONE",
     "CONFIG_MODULE_SIG",
     "CONFIG_MODULE_SIG_ALL",
+    "CONFIG_MODULE_SIG_FORCE",
     "CONFIG_MZEN4",
     "CONFIG_OXP_EC",
+    "CONFIG_SECURITY_LOCKDOWN_LSM",
+    "CONFIG_SECURITY_LOCKDOWN_LSM_EARLY",
     "CONFIG_SYSTEM_REVOCATION_KEYS",
     "CONFIG_SYSTEM_TRUSTED_KEYS",
     "CONFIG_X86_NATIVE_CPU"
+  ],
+  "fragment_dependency_allowlist": [
+    "CONFIG_KEXEC_HANDOVER_DEBUG",
+    "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+    "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT",
+    "CONFIG_KEXEC_JUMP",
+    "CONFIG_LIBFDT",
+    "CONFIG_LIVEUPDATE",
+    "CONFIG_LIVEUPDATE_MEMFD",
+    "CONFIG_LIVEUPDATE_TEST",
+    "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+    "CONFIG_MEMBLOCK_KHO_SCRATCH",
+    "CONFIG_TEST_KEXEC_HANDOVER"
   ],
   "migration_allowlist": [
     "CONFIG_BINDGEN_VERSION_TEXT",
@@ -298,6 +321,84 @@
       "reason": "approved-migration"
     },
     {
+      "symbol": "CONFIG_KEXEC",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_DEBUG",
+      "before": "n",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT",
+      "before": "n",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_JUMP",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_SIG_FORCE",
+      "before": "n",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_LIBFDT",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE_MEMFD",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE_TEST",
+      "before": "n",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY",
+      "before": "n",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+      "before": "y",
+      "after": "n",
+      "reason": "fragment-dependency"
+    },
+    {
       "symbol": "CONFIG_LTO",
       "before": null,
       "after": "y",
@@ -319,6 +420,18 @@
       "symbol": "CONFIG_LTO_NONE",
       "before": "y",
       "after": "n",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_MEMBLOCK_KHO_SCRATCH",
+      "before": "y",
+      "after": null,
+      "reason": "fragment-dependency"
+    },
+    {
+      "symbol": "CONFIG_MODULE_SIG_FORCE",
+      "before": "n",
+      "after": "y",
       "reason": "fragment"
     },
     {
@@ -380,6 +493,18 @@
       "before": "y",
       "after": null,
       "reason": "approved-migration"
+    },
+    {
+      "symbol": "CONFIG_SECURITY_LOCKDOWN_LSM_EARLY",
+      "before": "n",
+      "after": "y",
+      "reason": "fragment"
+    },
+    {
+      "symbol": "CONFIG_TEST_KEXEC_HANDOVER",
+      "before": "n",
+      "after": null,
+      "reason": "fragment-dependency"
     },
     {
       "symbol": "CONFIG_X86_64_VERSION",

@@ -44,6 +44,31 @@ class ConfigPolicyTests(unittest.TestCase):
         self.assertEqual(status, 0)
         self.assertFalse(report["violations"])
 
+    def test_release_policy_dependencies_are_recorded_separately(self):
+        base = (
+            "CONFIG_KEXEC=y\nCONFIG_KEXEC_JUMP=y\nCONFIG_KEXEC_HANDOVER=y\n"
+            "CONFIG_KEXEC_HANDOVER_DEBUGFS=y\nCONFIG_LIVEUPDATE=y\n"
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE=y\n"
+        )
+        fragment = (
+            "# CONFIG_KEXEC is not set\n# CONFIG_KEXEC_HANDOVER is not set\n"
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY=y\n"
+        )
+        final = (
+            "# CONFIG_KEXEC is not set\n# CONFIG_KEXEC_HANDOVER is not set\n"
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY=y\n"
+        )
+        status, report = self.run_policy(base, fragment, final)
+        self.assertEqual(status, 0)
+        dependent = {item["symbol"] for item in report["changed"]
+                     if item["reason"] == "fragment-dependency"}
+        self.assertEqual(dependent, {
+            "CONFIG_KEXEC_JUMP",
+            "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+            "CONFIG_LIVEUPDATE",
+            "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+        })
+
     def test_committed_snapshot_report_matches_configs(self):
         config = SCRIPT.parent.parent / "config"
         with tempfile.TemporaryDirectory() as tmp:

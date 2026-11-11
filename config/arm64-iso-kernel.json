@@ -6,19 +6,24 @@
   "architecture": "arm64",
   "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
   "config_seed_sha256": "04460993adeda6687ea68fcb91ef8c991c60ab071c9946b59f18d8e2ce989659",
-  "resolved_config_sha256": "e6238f1f409bdad999ad589378eb27f7e702e4d50327a4eab26253e8ed6c579c",
+  "resolved_config_sha256": "83c8306ddaf388f29742310c0bf7c9705decbcfdec526f82cb2b26df1ee30bd4",
   "dtb_path": "qcom/x1p42100-microsoft-sp12in.dtb",
   "dtb_sha256": "5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc",
   "packages": [
     {
       "name": "linux-headers-7.3.1-psycachy-sp121",
       "filename": "linux-headers-7.3.1-psycachy-sp121_7.3.1-1psycachy1_arm64.deb",
-      "sha256": "908ec65e415247af5c80361f243ebcd8b866c79186daa489a02471f13a0afad7"
+      "sha256": "afd18724799a45ab5184bf1ad31be5166f7e1ff15fb4300531fe705bcd6d5f50"
     },
     {
       "name": "linux-image-7.3.1-psycachy-sp121",
       "filename": "linux-image-7.3.1-psycachy-sp121_7.3.1-1psycachy1_arm64.deb",
-      "sha256": "8382f741b7472f24fb6ef6b505cb67a2b5f882cf15fa0984af32cdc23b30f3d5"
+      "sha256": "a06be14dadb33b370b49f2a1d9ed0922374c6b3f057563598ce52d3357a7ce54"
     }
-  ]
+  ],
+  "source_tree_sha256": "70216e65b8ede910b20b8069720b7a9a02dbe891b1f4a903ebfe3d0fab7cd04f",
+  "policy_fragment_sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb",
+  "kernel_payload_sha256": "904745e83a01d3b7b46462518aa27764e207d39224c18baeae1bc967d28d5115",
+  "module_signing_certificate_sha256": "9d46b68f06e5fc73e41224f01e34f82079fc96b96ec45ac8042eac8914e0e60e",
+  "module_signing_fingerprint_sha256": "9d46b68f06e5fc73e41224f01e34f82079fc96b96ec45ac8042eac8914e0e60e"
 }

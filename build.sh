@@ -152,6 +152,7 @@ for patch in dkms-clang.patch headers-config.patch ubuntu-package-dependencies.p
   git -C "$source_dir" apply --check --no-index "$root/config/patches/$patch"
   git -C "$source_dir" apply --no-index "$root/config/patches/$patch"
 done
+python3 "$root/tools/hash-source-tree.py" "$source_dir" > "$output_dir/source-tree.sha256"
 # Use the extracted source as the inherited PWD for recursive Kbuild commands.
 cd "$source_dir"
 cp "$root/config/cachyos-7.3.config" "$source_dir/.config"
@@ -165,9 +166,12 @@ cp "$source_dir/.config" "$output_dir/psycachy-$KERNEL_VERSION.config"
 python3 "$root/tools/config_diff.py" --base "$output_dir/cachyos-$KERNEL_VERSION-normalized.config" --fragment "$root/config/psycachy.fragment" \
   --final "$output_dir/psycachy-$KERNEL_VERSION.config" --report "$output_dir/config-diff.json" \
   --migration-allowlist "$root/config/kconfig-migration-allowlist.json"
+python3 "$root/tools/audit-release-policy.py" --arch amd64 --output "$output_dir/policy-audit.json" "$output_dir/psycachy-$KERNEL_VERSION.config"
 {
   echo "source=$RELEASE"
   echo "source_sha256=$SOURCE_SHA256"
+  printf 'source_tree_sha256='; cat "$output_dir/source-tree.sha256"
+  printf 'policy_fragment_sha256='; sha256sum "$root/config/psycachy.fragment" | cut -d ' ' -f 1
   echo 'cpu_target=native; packages are specific to the build CPU'
   clang-22 --version | head -n 1
   rustc --version
@@ -216,4 +220,15 @@ for package in "${images[@]}" "${headers[@]}"; do
   cp "$package" "$output_dir/"
 done
 (cd "$output_dir" && sha256sum ./*.deb > SHA256SUMS)
+if [[ -f "$source_dir/certs/signing_key.x509" ]]; then
+  cp -- "$source_dir/certs/signing_key.x509" "$output_dir/module-signing-cert.x509"
+  {
+    echo 'module_signing_certificate=generated during this build'
+    sha256sum "$source_dir/certs/signing_key.x509"
+    if command -v openssl >/dev/null 2>&1; then
+      openssl x509 -inform DER -in "$source_dir/certs/signing_key.x509" -noout -subject -fingerprint -sha256
+    fi
+    echo 'module_signing_private_key=ephemeral build-work file; not copied to artifacts'
+  } >> "$output_dir/build-metadata.txt"
+fi
 echo "Packages written to $output_dir"
