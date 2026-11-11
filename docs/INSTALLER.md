@@ -58,9 +58,9 @@ The live session boots Ubuntu's signed generic kernel; this does not validate
 SP12-specific live hardware support. The current candidate passed ISO
 construction checks and booted through GRUB, Casper package setup, snap
 seeding, and GDM startup in disposable AArch64 UEFI QEMU. The framebuffer went
-black when the graphical session started, including with a second virtual
-display device, so the disk selector and target install lifecycle remain
-unverified. Physical SP12 validation is separate.
+black when the graphical session started, including with virtio, Bochs, and
+GL-backed QEMU display paths, so the disk selector and target install
+lifecycle remain unverified. Physical SP12 validation is separate.
 
 ## Installation behavior
 

@@ -34,10 +34,11 @@ Its build passed base signature/hash, kernel package/DTB pin, offline package
 closure, UEFI metadata, and byte-for-byte live EFI/kernel/initrd checks. A
 disposable AArch64 UEFI VM displayed UEFI and GRUB, then reached Casper's local
 package setup, snap seeding, GDM, and the live user session. The framebuffer
-went black as the graphical session started. A second VM run with a Bochs
-display device had the same limitation, so the disk selector and ARM64 target
-install lifecycle have not been validated. The protected second virtual disk
-passed checksum and sentinel verification after both runs.
+went black as the graphical session started. Bochs and GL-backed QEMU display
+runs had the same limitation; a direct VNC framebuffer capture also remained
+black. The disk selector and ARM64 target install lifecycle have not been
+validated. The protected second virtual disk passed checksum and sentinel
+verification after all runs.
 
 The repository static suite passed on 2026-11-11, including builder and
 selector tests. The AMD64 ISO passed a full disposable install and generic

@@ -49,11 +49,11 @@ The signed base, package/DTB pins, offline closure, UEFI metadata, and
 byte-for-byte live EFI/kernel/initrd checks passed. A disposable AArch64 UEFI
 VM displayed UEFI and GRUB, then reached Casper's local package setup, snap
 seeding, GDM, and the live user session. The framebuffer went black when the
-graphical session started. A second run with a Bochs display device had the
-same limitation, so disk selection and target installation were not
-validated. The protected second virtual disk passed checksum and sentinel
-checks after both runs. ARM64 installer UI and lifecycle validation remain
-open.
+graphical session started. Bochs and GL-backed QEMU display runs had the same
+limitation, and a direct VNC framebuffer capture remained black. Disk
+selection and target installation were not validated. The protected second
+virtual disk passed checksum and sentinel checks after all runs. ARM64
+installer UI and lifecycle validation remain open.
 
 ## Other project gates
 
