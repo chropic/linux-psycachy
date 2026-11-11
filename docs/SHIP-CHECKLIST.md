@@ -35,10 +35,10 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   recovery set is intact and no BootNext selection is pending. B550I remains
   on the previously observed generic `7.3.0-10-generic`; fresh root SSH was
   refused, so this run could not refresh its physical state or trial it.
-- **Status baseline:** reviewed starting commit was
-  `e43b9efc3264a6290ef3be3d35d12e921714dce2`; local implementation commits
-  through `2a4eaca0b35635a5a8bafe672f1cd9826d310059` precede this continuation.
-  See the [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
+- **Status baseline:** the reviewed starting commit was
+  `e43b9efc3264a6290ef3be3d35d12e921714dce2`. Continuation commit
+  `f136b5490fdea3352b7698f82d1c3d42a3179156` has been pushed to the existing
+  feature branch; see the [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
   for full evidence and delivery status.
 
 ## 1. Phase 1 closeout

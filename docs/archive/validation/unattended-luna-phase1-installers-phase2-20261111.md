@@ -221,9 +221,12 @@ more than 5% worse p95 latency where applicable, and no functional regression.
 ## Integration and cleanup
 
 Before this continuation, four verified local commits were integrated on the
-feature branch: `a2b9c68`, `0a6d027`, `6680abe`, and `2a4eaca`. The final
-continuation commit hash and feature-branch push result are added to this
-section after integration. `bash tests/static-check.sh` passed; its captured
+feature branch: `a2b9c68`, `0a6d027`, `6680abe`, and `2a4eaca`. The continuation
+implementation and evidence commit `f136b5490fdea3352b7698f82d1c3d42a3179156`
+was pushed successfully to the existing feature branch after confirming the
+remote still pointed to the reviewed starting commit. The closeout report and
+checklist status update were included in a subsequent closeout commit pushed
+without force. The requested `bash tests/static-check.sh` passed; its captured
 output is retained at
 `output/.unattended-luna-20261111135015Z/static-check.log`. The trial helper's
 focused suite passed 19 tests. No generated artifact is added to Git.
