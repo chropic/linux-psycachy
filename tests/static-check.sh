@@ -24,10 +24,16 @@ for script in build.sh config/source-pin.sh targets/sp121-arm64/prepare.sh targe
   iso/kernel-preinst iso/kernel-postinst iso/offline-install.sh tests/iso-inputs.sh \
   tests/arm64-iso-vm.sh \
   tests/iso-offline-inputs.sh tests/iso-vm.sh tests/iso-unsigned-module.sh \
-  tests/iso-signing-failure.sh tests/iso-update-fallback.sh tests/iso-offline-policy.sh; do
+  tests/iso-signing-failure.sh tests/iso-update-fallback.sh tests/iso-offline-policy.sh \
+  tools/install-phase2-amd64-rebuild.sh; do
   bash -n "$script"
 done
 python3 -m py_compile tools/config_diff.py tools/deb_dependencies.py tools/audit-release-policy.py iso/select-disk.py iso/kernel_package_pin.py iso/verify-kernel-packages.py iso/verify-archive-packages.py iso/arm64_iso.py tests/test_release_policy.py tests/test_kernel_package_pin.py tests/test_arm64_iso_pin.py tests/test_arm64_iso_builder.py tests/test_iso_vm_protected_disk.py tests/test_sp12_fat_guest_cleanup.py tests/iso-no-io-uring.py tests/arm64-kernel-smoke.py tests/kernel-policy-smoke.py tools/verify-arm64-packages.py
+python3 -m py_compile tools/phase2-kernel-trial.py tests/test_phase2_kernel_trial.py
+python3 tests/test_phase2_kernel_trial.py
+legacy_install_status=0
+bash tools/install-phase2-amd64-rebuild.sh >/dev/null 2>&1 || legacy_install_status=$?
+[[ "$legacy_install_status" == 64 ]]
 python3 tests/test_release_policy.py
 python3 tests/test_config_diff.py
 python3 tests/test_deb_dependencies.py

@@ -8,41 +8,48 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 
 ## Current state
 
-- **AMD64 ISO:** The pinned candidate built successfully. A disposable UEFI
-  VM completed the guarded offline install and booted from disk using the
-  saved Ubuntu `7.3.0-10-generic` kernel. PsyCachy and NVIDIA DKMS packages
-  were installed and signed. PsyCachy trial boot, Secure Boot/MOK flow, GPU
-  behavior, and physical ISO installation remain unverified.
-- **ARM64 ISO:** The pinned candidate passed source, package, EFI, kernel,
-  initrd, and UEFI checks. Disposable UEFI QEMU reaches GDM, but its graphical
-  session is not visible with the tested virtio, Bochs, and GL-backed display
-  paths. Existing evidence does not identify an ISO-side defect; a supported
-  graphical environment is still needed for disk selection and installation.
-- **Phase 1: BLOCKED pending physical RPMB qualification.** The refreshed AMD64
-  and ARM64 package pairs build and pass generic-QEMU runtime policy checks.
-  Disposable FAT data-write EIO and direct-Linux rescue tests pass; FAT
-  metadata fault injection and firmware-to-rescue boot remain unqualified.
-  The recovery-panel route is retired from supported recovery, with its files
-  and firmware entries unchanged. The physical SP12 fallback and recovery set
-  remain intact; no rebuilt candidate was installed or booted on hardware.
-- **Phase 2:** No workload pairs have been run. The editor fixture probe works
-  on B550I; the 20-operation smoke workflow has not passed. SP12's whole-system
-  energy gate is unavailable because it cannot use the B550I meter.
-- **Phase 2 starting kernels:** B550I is on generic `7.3.0-10-generic`; SP12
-  is on `7.3.1-psycachy-sp121` with its platform fallback and recovery set
-  preserved.
-- **Status baseline:** pushed implementation and validation through
-  `e43b9efc3264a6290ef3be3d35d12e921714dce2` on
-  `feature/linux-chropic-psycachy-b550i-sp121`.
+- **AMD64 ISO candidate:** refreshed candidate SHA-256 is
+  `b9b7cb320651ab562312bab8f059ee7a53c253e7d52488bb604a66f6782bd474`.
+  The disposable UEFI lifecycle completed guarded offline installation,
+  package checks, fallback boot, and protected-disk verification. The PsyCachy
+  candidate was not booted because the VM Secure Boot/MOK prompt was refused.
+  Physical NVIDIA behavior and hardware installation remain unqualified.
+- **ARM64 ISO candidate:** refreshed candidate SHA-256 is
+  `10e3b63ff5d1b1491af8935ac536c0768d2d13f4ee35b79efe22f3be4b4c0169`.
+  QEMU reaches GDM and a live user, but the display stays black across tested
+  paths. No ISO-side defect was demonstrated; disk selection and installation
+  remain untested.
+- **Phase 1: BLOCKED pending exact-candidate physical RPMB qualification.**
+  The repair is pinned and its module configuration compiled. No faithful
+  disposable RPMB fixture was available, built-in compilation was not run,
+  and request/lifetime runtime coverage is incomplete. FAT metadata-sector
+  positive controls pass, but guest metadata EIO, delayed writeback,
+  interruption, and loader-selection cases remain open. The UEFI rescue VM
+  restored the damaged target and passed read-only FAT checks, but the restored
+  target did not reach userspace on the follow-up firmware boot.
+- **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
+  fixtures on both desktops with matching saved-file hashes. No paired
+  performance scenarios have been run; every scenario remains at `0/3` pairs.
+  SP12 whole-system energy remains unavailable.
+- **Physical targets:** SP12 remains on `7.3.1-psycachy-sp121`; its verified
+  recovery set is intact and no BootNext selection is pending. B550I remains
+  on the previously observed generic `7.3.0-10-generic`; fresh root SSH was
+  refused, so this run could not refresh its physical state or trial it.
+- **Status baseline:** reviewed starting commit was
+  `e43b9efc3264a6290ef3be3d35d12e921714dce2`; local implementation commits
+  through `2a4eaca0b35635a5a8bafe672f1cd9826d310059` precede this continuation.
+  See the [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
+  for full evidence and delivery status.
 
 ## 1. Phase 1 closeout
 
 ### 1.1 Freeze the candidate artifacts
 
-- The exact local AMD64 image/headers pair and refreshed ARM64 image/headers
-  pair are pinned with source, config, package, payload, DTB, policy, and
-  signer-certificate hashes. Both are VM-tested candidates; replacement bytes
-  still need their target-specific physical qualification.
+- The AMD64 image/headers pair and refreshed ARM64 image/headers pair are
+  pinned with source, config, package, payload, DTB, policy, and
+  signer-certificate hashes. Refreshed ISO candidates are retained under
+  ignored `output/`; hashes are in the continuation report. These are
+  candidates, not release images, and still need target-specific qualification.
 - Keep the ARM64 kernel package and DTB pins together. The rebuilt ARM64 DTB
   hash matches the retained pin, but the package has not been installed on
   SP12; existing physical files and removable fallback remain unchanged.
@@ -63,15 +70,17 @@ the final pin manifests, and retained build/verifier output under the ignored
   denial; legacy kexec disablement; and rejection of unsigned file-kexec
   images on both architectures. Production signer-key ownership and trust
   deployment remain unresolved.
-- Disposable FAT tests passed interrupted rotations/promotions, restore
-  retries, preflight and mid-write ENOSPC, read-only remount failure, and a
-  data-sector EIO detected by explicit flush before marker removal. FAT table
-  and directory metadata EIO injection is not qualified. These results do not
-  prove FAT metadata atomicity or physical power-loss safety.
-- The documented restore command recovered a damaged disposable target from a
-  direct-Linux rescue VM; hashes and marker state verified. The UEFI firmware
-  path into rescue did not reach that environment, so firmware-to-rescue boot
-  remains unqualified. No physical SP12 fallback was used as a test target.
+- Earlier disposable FAT tests passed interrupted rotations/promotions,
+  restore retries, ENOSPC, read-only remount failure, and data-sector EIO. This
+  continuation added positive controls proving exact-sector EIO injection at
+  FAT copies 32/2049, directory metadata sector 4067, and data sector 4068.
+  Guest-side metadata faults and loader selection remain unqualified; simulated
+  interruption does not guarantee physical power-loss safety.
+- A disposable UEFI rescue environment restored a deliberately damaged target
+  ESP from its recovery set. Payload hashes, marker state, and read-only FAT
+  checks passed. The follow-up UEFI boot loaded GRUB but did not reach the
+  restored target userspace, so firmware-to-restored-target qualification
+  remains open. No physical SP12 fallback was used as a test target.
 - Recheck the current SP12 fallback trio and recovery manifest before any
   future boot-payload change. Keep the verified fallback intact.
 - The recovery-panel route is retired from supported recovery because its
@@ -87,8 +96,9 @@ the final pin manifests, and retained build/verifier output under the ignored
   teardown race when requests overlap host removal. The adapted core
   serialization, UFS lifetime, and unused-bus patches are now pinned and
   compiled into the refreshed ARM64 candidate; package verification and
-  generic QEMU boot/policy checks pass. A controllable UFS fixture is still
-  needed for RPMB request and teardown tests before physical qualification.
+  generic QEMU boot/policy checks pass. The module configuration compiled;
+  built-in compilation and runtime request/lifetime tests remain unrun because
+  a faithful controllable UFS fixture was unavailable.
   See the [RPMB follow-up packet](archive/validation/phase1-closeout-20261110.md#rpmb-follow-up-packet).
 - Early SQE/GMU lookup warnings have recovered. Continue comparing matched
   candidate and fallback intervals for new storage errors, watchdog events,
@@ -103,8 +113,9 @@ blocking gate; no provisioning or repair was attempted.
 ### 2.1 ARM64 installer lifecycle
 
 - Make the live graphical installer visible in a supported ARM environment,
-  or isolate and fix an ISO-side display problem. The tested generic QEMU
-  display paths all went black after GDM startup.
+  or isolate and fix an ISO-side display problem. Two QEMU runs reached GDM and
+  a live user, but virtio, Bochs, GL-backed output, and VT switching remained
+  black; captured evidence lacks compositor and renderer diagnostics.
 - Reach the disk selector; verify it lists only eligible disks, requires an
   explicit choice and typed `ERASE`, and generates a partition plan for only
   the chosen disposable disk.
@@ -127,11 +138,15 @@ results; protected-disk checksum/sentinel.
 
 ### 2.2 AMD64 installer lifecycle
 
-- In a disposable UEFI VM, activate the installed PsyCachy kernel as a
-  one-time trial, verify its boot and module signatures, then verify automatic
-  rollback and the saved generic fallback.
-- Exercise the Secure Boot/MOK enrollment and signing path. Confirm both
-  generic and PsyCachy kernels remain bootable after enrollment.
+- In a disposable UEFI VM, run `tools/phase2-kernel-trial.py` end-to-end with a
+  reviewed displaced-payload archive, then verify candidate acknowledgement,
+  timeout rollback, and the saved generic fallback. The existing installer VM
+  exercised the earlier one-shot hook and returned to generic after declining
+  MOK; it did not exercise this helper's acknowledgement/timeout path.
+- Resolve production signing ownership and trust before an approved Secure
+  Boot candidate trial. The disposable VM refused the untrusted candidate's
+  MOK prompt; no enrollment occurred. Confirm both kernels only after an
+  approved trust path is available.
 - Validate NVIDIA DKMS behavior on a GPU-equipped test target; the current VM
   had no NVIDIA GPU.
 - Validate the ISO on supported AMD64 hardware using a disposable target disk
@@ -148,13 +163,13 @@ candidates rather than release ISOs.
 
 ### 2.3 Produce release images
 
-- Existing installer ISOs are stale relative to the refreshed package pins;
-  do not use them to qualify these candidate bytes. Rebuild both ISOs from the
-  final pins after the remaining Phase 1 and installer gates are resolved.
-- Re-run source-signature, package-closure, boot-metadata, signed EFI/live
-  payload, and manifest checks.
-- Run the full install, boot-without-media, fallback, and protected-disk
-  checks for each architecture.
+- Refreshed AMD64 and ARM64 ISO candidates have been rebuilt from the frozen
+  pins and passed source-signature, offline-closure, boot-metadata, EFI/live
+  payload, and manifest checks. Older candidates remain stale; do not use them
+  to qualify these bytes.
+- Rebuild both ISOs after the remaining Phase 1 and installer gates are
+  resolved, then repeat install, boot-without-media, fallback, and
+  protected-disk checks.
 - Save final ISO checksums and manifests with the release records. Current ISO
   candidates are ignored local artifacts, not pushed files.
 
@@ -162,11 +177,11 @@ candidates rather than release ISOs.
 
 - Freeze the exact candidate package, kernel payload, config, and source hashes
   on each target. The ISO and trial candidate must identify the same artifact.
-- Pass the complete 20-operation editor smoke workflow on both desktops before
-  timing interactive use or interactive compilation. B550I passed twice from
-  fresh fixtures with matching saved-document hashes; SP12 remains unvalidated
-  because the root Tailscale SSH preflight required a new authentication check.
-  See the [editor smoke report](archive/validation/phase2-editor-smoke-20261111.md).
+- The complete 20-operation editor smoke passed twice from fresh fixtures on
+  both desktops with matching saved-document hashes. This establishes workload
+  readiness, not performance. See the
+  [editor smoke report](archive/validation/phase2-editor-smoke-20261111.md)
+  and continuation report.
 - Record and hold constant power source, charge range, brightness, radios,
   peripherals, ambient/start temperature, active policy, workload version,
   and background activity. Do not use the invalid SP12 `surface_thermal`

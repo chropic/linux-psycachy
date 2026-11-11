@@ -70,3 +70,13 @@ errors, watchdog events, failed resume, or functional regression. Keep the
 B550I's other UPS loads fixed. The SP12 whole-system energy gate remains
 unavailable because it cannot use the B550I meter. The 20-operation editor
 smoke run has not passed; validate the latest driver before timing workloads.
+
+## Coordinator continuation — 2026-11-11
+
+The candidate paths and smoke status above describe this earlier continuation
+and remain historical evidence. The refreshed ISO candidates, both-desktop
+editor results, installer VM outcome, recovery/RPMB status, physical state,
+and current Phase 2 pair counts are recorded in the
+[unattended Luna continuation report](unattended-luna-phase1-installers-phase2-20261111.md).
+The ISO files named above are stale relative to the refreshed package pins;
+the refreshed images remain local VM-test candidates and are not releases.

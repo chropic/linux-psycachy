@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# Install the reviewed local AMD64 rebuild while keeping generic as GRUB default.
+# Historical helper retained for audit. Its package/config hashes are superseded.
 set -Eeuo pipefail
+
+echo "Refusing to run: this historical helper embeds superseded hashes. Use the current config/amd64-iso-kernel.json pin and the guarded snapshot/trial workflow." >&2
+exit 64
 
 readonly EXPECTED_IMAGE_SHA256="7351db485023013210a597c0f6161ea9db52160515aeb0666a6c8b7af1a0da92"
 readonly EXPECTED_HEADERS_SHA256="1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e"

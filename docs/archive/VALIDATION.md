@@ -1,6 +1,17 @@
 # Test results
 
-## Current dual-target installer ISO candidates — 2026-11-11
+## Unattended Luna continuation — 2026-11-11
+
+The current status, refreshed package and ISO hashes, editor smoke on both
+desktops, FAT metadata positive controls, partial UEFI rescue result, RPMB
+blocker, disposable installer lifecycles, physical device state, Phase 2 pair
+counts, and remaining gates are recorded in the
+[unattended Luna continuation report](validation/unattended-luna-phase1-installers-phase2-20261111.md).
+The refreshed ISO files are ignored local candidates, not release artifacts.
+The [guarded trial interface](validation/phase2-kernel-trial-tool-20261111.md)
+documents its reviewed backup manifest and refusal conditions.
+
+## Earlier dual-target installer ISO candidates — 2026-11-11 (superseded)
 
 Both architecture-specific builders now produce ISO images from the pinned,
 signature-verified Ubuntu 26.10 Desktop bases. The AMD64 builder uses xorriso

@@ -8,28 +8,12 @@ conditions stated below.
 
 ## Active or conditional code work
 
-### I-1: Make the Phase 2 editor workflow pass its smoke run
-
-**State:** The driver passes two fresh-fixture smoke runs on B550I. SP12 is
-unvalidated because its Tailscale SSH preflight required a new authentication
-check.
-
-`tools/phase2-editor-driver.py` now uses named AT-SPI window actions because
-document `grab_focus()` fails on the B550I Wayland session. It waits for the
-find/replace fields, re-discovers the Replace All button, verifies each result,
-checks the saved file including Text Editor's terminal-LF normalization, and
-closes only the process it started. Keep document contents redacted from logs.
-See the [B550I smoke evidence](archive/validation/phase2-editor-smoke-20261111.md).
-
-**Done when:** the same 20 operations complete on both desktops, each result
-is verified, repeat runs are deterministic, and the driver/version is
-recorded. This closes the smoke gate; timed trials remain in the checklist.
-
 ### I-2: Diagnose the ARM64 graphical installer handoff
 
-**State:** No ISO-side defect demonstrated. Existing evidence supports a
-generic-QEMU graphical-session limitation but lacks compositor and renderer
-diagnostics; no source change was made.
+**State:** No ISO-side defect demonstrated. Two serial runs reached GDM and a
+live user, but virtio, Bochs, GL-backed output, and VT switching remained
+black. Compositor, renderer, and framebuffer diagnostics were not recovered;
+no source change was made.
 
 Serial logs show the ARM64 ISO reaching GDM, while retained captures from the
 virtio, Bochs, and GL-backed QEMU display attempts do not show a usable
@@ -45,9 +29,9 @@ classified.
 ### I-3: Repair UFS RPMB registration and lifetime safely
 
 **State:** Physical failure reproduced; adapted three-patch source repair is
-pinned and built into the refreshed ARM64 candidate. Generic QEMU boot and
-policy checks pass; UFS RPMB transaction and teardown behavior remain
-unqualified.
+pinned and compiled into the refreshed ARM64 module configuration. Generic
+QEMU boot and policy checks pass; built-in compilation and UFS RPMB transaction
+and teardown runtime checks remain unqualified.
 
 SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
 ufs_rpmb bus. The authenticated source assigns that bus in
@@ -82,20 +66,30 @@ path is the supported recovery procedure.
 ## Already implemented; avoid duplicate work
 
 - AMD64 and ARM64 ISO builders, pinned inputs, offline package checks, and
-  installer payloads are present.
+  installer payloads are present. Refreshed local VM-test ISO candidates have
+  passed source, closure, EFI/live payload, and manifest verification.
 - Phase 1 policy fragments, audits, AMD64 and ARM64 candidate package pins,
   and generic-QEMU runtime policy probes are implemented. The rebuilt ISO and
   physical target gates remain in the ship checklist.
-- The RPMB source repair is pinned and compiled into the refreshed SP12
-  candidate; UFS fixture runtime tests and physical qualification remain open
-  in I-3.
+- The RPMB source repair is pinned and compiled into the refreshed SP12 module
+  candidate; built-in compile, UFS fixture runtime tests, and physical
+  qualification remain open in I-3.
+- The 20-operation editor smoke passes twice on both desktops from fresh
+  fixtures with matching saved-document hashes. Timed Phase 2 trials remain
+  open in the ship checklist.
 - SP12 boot-sync and restore helpers flush staged payloads, preserve the
-  invalid marker across interrupted promotion, and pass focused tests. FAT
-  metadata atomicity and physical power-loss safety remain unqualified.
-- The AMD64 local image/headers pair is pinned; the previously expected
-  package hash remains unavailable. The ISO must be rebuilt from the pin.
-- The Phase 1 restore procedure passed in a direct-Linux disposable rescue VM;
-  firmware-to-rescue boot remains unqualified.
+  invalid marker across interrupted promotion, and pass focused tests. Exact
+  FAT metadata-sector EIO positive controls pass; guest metadata EIO, loader
+  selection, and physical power-loss safety remain unqualified.
+- `tools/phase2-kernel-trial.py` consumes existing pins and records exact
+  candidate/fallback identities. It refuses unresolved Secure Boot trust,
+  package errors, ambiguous GRUB entries, changed fallback state, and a backup
+  manifest or volume without reviewed identities. Unit tests pass; an
+  end-to-end VM lifecycle and physical use remain open in the ship checklist.
+- Refreshed AMD64 and ARM64 package pairs and local ISO candidates verify
+  against their pins; production signing ownership/trust remains unresolved.
+- The UEFI rescue VM restored damaged target payloads and passed read-only FAT
+  checks, but the follow-up firmware boot did not reach the restored userspace.
 - The Phase 2 UPS sampler and fixed editor/video inputs already exist. Their
   measurement and workload validation remains in the ship checklist.
 

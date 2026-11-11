@@ -38,6 +38,21 @@ manifests are `smoke-run-08-results/editor-driver-results.json` and
 match. No SP12 editor run was attempted: root Tailscale SSH required a new
 authentication check, so SP12 remains unvalidated pending access.
 
+## Coordinator continuation — 2026-11-11
+
+The earlier no-SP12 statement above records the state at that point and is
+retained as historical evidence. After SSH identity verification, the
+coordinator ran the same driver in the logged-in SP12 desktop session twice
+from fresh fixtures. All 20 ordered operations passed; both saved-document
+hashes matched the B550I result above. The two result-manifest hashes are
+`e53ea1babad71087280a863f27ddbd31517babc7f7a74b530ed1071255daf049` and
+`c9e9876d20f23c5a2bb1e47977d5cd597b676166a53f0906f90b80aff6c585cc`. The
+SP12 session bus and accessibility environment were discovered from its
+logged-in GNOME session. Document contents remained redacted. This closes
+editor smoke readiness only; it does not establish workload performance.
+Detailed logs are under
+`output/.unattended-luna-20261111135015Z/sp12-editor-smoke-*.log`.
+
 ## ARM64 graphical installer diagnosis
 
 The retained UEFI/QEMU serial evidence reaches GDM startup. Existing VNC
