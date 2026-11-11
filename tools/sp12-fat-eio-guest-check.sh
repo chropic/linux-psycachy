@@ -37,14 +37,16 @@ read -r device found_serial device_type size_bytes fstype label <<<"${matches[0]
 [[ $found_serial == "$serial" && $device_type == disk ]] || { echo 'refusing: serial did not resolve to one whole disk' >&2; exit 2; }
 [[ $size_bytes =~ ^[0-9]+$ && $size_bytes -le 1073741824 ]] || { echo 'refusing: fixture disk exceeds 1 GiB' >&2; exit 2; }
 [[ $fstype == vfat && $label == SP12TEST ]] || { echo 'refusing: fixture disk must be FAT with label SP12TEST' >&2; exit 2; }
+esp=/boot/efi
 while read -r component; do
-    if findmnt -rn -S "$component" >/dev/null; then
-        echo "refusing: fixture disk is already mounted: $component" >&2
-        exit 2
-    fi
+    while IFS= read -r mount_target; do
+        [[ $mount_target == "$esp" ]] || {
+            echo "refusing: fixture disk component is mounted outside /boot/efi: $component on $mount_target" >&2
+            exit 2
+        }
+    done < <(findmnt -rn -S "$component" -o TARGET)
 done < <(lsblk -nrpo NAME "$device")
 
-esp=/boot/efi
 config=/etc/sp12-linux/boot.conf
 helper=/usr/local/sbin/sp12-sync-boot
 [[ -d $esp && ! -L $esp && -f $config && ! -L $config && -x $helper ]] || {

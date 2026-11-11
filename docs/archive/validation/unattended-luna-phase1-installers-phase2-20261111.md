@@ -8,12 +8,17 @@
 
 The work completed the editor smoke on both desktops, refreshed both local ISO
 candidates, verified AMD64's disposable install lifecycle, added FAT metadata
-sector positive controls, and restored a damaged disposable target from a UEFI
-rescue environment. Phase 1 remains blocked: a faithful RPMB fixture and exact
-candidate physical qualification are still missing. The rescue helper passed,
-but the restored target did not reach userspace on the follow-up UEFI boot.
-Neither refreshed ISO is a release image. No physical package, boot, firmware,
-partition, or RPMB state was changed; no Phase 2 performance pair was run.
+sector positive controls, exercised one guest FAT metadata-EIO helper path,
+verified marker-present/absent GRUB selection in disposable ARM64 UEFI, and
+interrupted one real helper run after the first payload promotion. The mixed
+payload remained unselectable through the GRUB marker guard. A write-throttled
+helper success case also passed, but exact delayed-writeback injection and the
+broader interruption matrix remain open. The UEFI rescue helper restored a
+damaged disposable target, but the restored target did not reach userspace on
+the follow-up firmware boot. Phase 1 remains blocked: a faithful RPMB fixture
+and exact-candidate physical qualification are still missing. Neither refreshed
+ISO is a release image. No physical package, boot, firmware, partition, or RPMB
+state was changed; no Phase 2 performance pair was run.
 
 ## Gate ledger
 
@@ -21,8 +26,12 @@ partition, or RPMB state was changed; no Phase 2 performance pair was run.
 | --- | --- | --- |
 | Refreshed pins, source signatures, offline closure, EFI/live payloads, ISO manifests, retained generic-VM policy results | **Passed** | [Artifact identities](#exact-package-and-iso-candidates) |
 | Ordered 20-operation editor smoke, two fresh runs per desktop | **Passed** | [Editor results](#editor-workflow--passed-for-smoke-readiness) |
-| FAT sector map and exact-sector EIO positive controls | **Passed** | [FAT results](#fat-fault-qualification--positive-controls-passed-guest-matrix-open) |
-| FAT guest metadata EIO, delayed writeback, staging/marker/promotion/rotation interruptions, loader selection | **Not run** | [FAT results](#fat-fault-qualification--positive-controls-passed-guest-matrix-open) |
+| FAT sector map and exact-sector EIO positive controls | **Passed** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| One guest FAT allocation-metadata EIO through the real helper | **Passed; one case** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| Marker-present/absent selection through disposable ARM64 UEFI | **Passed in generic QEMU; platform payload not qualified** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| Write-throttled successful helper update | **Passed; bounded write-rate stress** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| Exact delayed-writeback injection | **Not run; local QEMU lacks documented `delay-ns` support** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| Interrupted staging/marker/promotion/rotation matrix | **Partial; first payload promotion case passed, other points remain open** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
 | Recovery restore helper, payload hashes, marker, read-only FAT check | **Passed** | [UEFI rescue](#uefi-rescue--restoration-passed-final-firmware-boot-incomplete) |
 | Follow-up firmware boot of restored target | **Failed to reach userspace** | [UEFI rescue](#uefi-rescue--restoration-passed-final-firmware-boot-incomplete) |
 | UFS RPMB fixture and module runtime qualification | **Blocked** | [RPMB](#rpmb--blocked) |
@@ -83,7 +92,7 @@ Content stayed redacted in logs. These are readiness checks, not timing data.
 SP12 manifests have SHA-256 `e53ea1babad71087280a863f27ddbd31517babc7f7a74b530ed1071255daf049`
 and `c9e9876d20f23c5a2bb1e47977d5cd597b676166a53f0906f90b80aff6c585cc`.
 
-### FAT fault qualification — positive controls passed; guest matrix open
+### FAT fault qualification — partial guest coverage; matrix open
 
 The retained harness maps FAT copies to sectors 32 and 2049, the `/sp12`
 directory free-entry sector to 4067, and data cluster 4 to 4068. Exact 512-byte
@@ -92,11 +101,84 @@ returned EIO and retained the target sector hash. Evidence is in
 `output/.unattended-luna-20261111135015Z/recovery/fat-positive-control-sector*.json`
 and `fat-map-existing-test.json`.
 
-Not run: guest-side metadata EIO, delayed writeback, interruption around
-staging/marker/promotion/rotation, loader selection, and read-only filesystem
-checks before repair. These positive controls prove the fault mechanism hits
-the selected sectors; they do not prove helper behavior or physical
-power-loss guarantees.
+A disposable ARM64 guest then exercised one real helper failure. QEMU injected
+`EIO` on `write_aio` to sector 2098, the second FAT copy of the first-free
+cluster allocation entry, while `sp12-sync-boot` flushed `vmlinuz.new`. The
+helper returned 1 with a flush error. All three active payload hashes and the
+`SP12BOOT` marker stayed unchanged; no `.new` payload remained; and the ESP was
+read-only. The block trace contains two writes overlapping the exact target
+sector. After orderly shutdown, host `fsck.vfat -n -v` returned 0 with no FAT
+errors. This is one simulated metadata-EIO staging case, not a physical
+power-loss guarantee.
+
+A separate success case ran the helper with QEMU's disposable block throttle
+limiting writes to 64 KiB/s. It returned 0 after 53.4 seconds, installed the
+expected source hashes, retained the marker, removed staged files, and left the
+ESP read-only. After unmounting inside the guest, read-only `fsck.vfat -n -v`
+returned 0, and guest dmesg had no I/O or FAT errors. This verifies a successful
+update under a bounded write rate. It is not a sector-specific delayed
+writeback injection. The installed QEMU is 11.0.3; the documented blkdebug
+`delay-ns` option was added in QEMU 11.1, and no host package upgrade was made
+([QEMU QMP reference](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html)).
+
+Marker selection was tested through disposable AAVMF firmware with fresh
+variable copies and one-time `BootNext` entries. Two GPT ESPs contained
+byte-identical standalone ARM64 GRUB loaders and the same test kernel/initrd;
+the positive ESP had `SP12BOOT`, and the negative ESP did not. The positive
+firmware entry loaded the candidate `BOOTAA64.EFI`, GRUB reported
+`SP12_KERNEL_SELECTED`, and Linux reached userspace from the disposable
+`/sp12/vmlinuz`; its command line included `sp12-loader-test=selected`. The
+negative entry loaded its candidate loader, reported that `/sp12/SP12BOOT` was
+missing, printed `SP12_MARKER_MISSING`, and halted. QEMU exited, with no
+candidate `/sp12/vmlinuz` command line or userspace boot. The negative VM had
+booted its cloud bootstrap kernel before the one-time candidate selection.
+
+This loader test exercised the source marker-search branch and halt behavior
+on a generic kernel, not the pinned SP12 production kernel or its Surface DTB.
+Both candidate image hashes were unchanged after UEFI boot; the builder's
+read-only FAT checks therefore still apply. The recovery reviewer confirmed
+that the GRUB conditional confines kernel/initrd/DTB/boot commands to successful
+marker search and that the pre-mounted fixture guard remains constrained to
+the serial-validated `/boot/efi` source. The source-shape unit tests do not
+replace runtime coverage; the UEFI run supplies that coverage for the generic
+test payload.
+
+A separate fresh ESP image then interrupted the real `/bin/sh` helper after
+its first payload promotion. The seed image SHA-256 was
+`c3397cb13a8846c0c795a9ce3fb2e3a660ab96c24d31b3946572745fbef13965`; an
+immutable input copy is retained. The helper removed and synced `SP12BOOT`,
+promoted `vmlinuz.new` to `vmlinuz`, and paused before initrd promotion and the
+later payload flush. The DTB already matched its source and did not change.
+After the fixture QEMU process was forcibly terminated, the image retained the
+new kernel, old initrd, staged `initrd.img.new`, and no marker. Read-only
+`fsck.vfat -n -v` returned 1 because the volume was dirty and the boot sector
+differed from its backup; no repair was run. A fresh cloud-rescue VM selected
+the candidate EFI loader through BootNext. GRUB reported the missing marker and
+printed `SP12_MARKER_MISSING`; the candidate kernel branch did not run. The raw
+ESP hash was unchanged through UEFI boot. This is one simulated interruption
+at the first promotion point, not a power-loss guarantee or Surface
+qualification.
+
+Evidence is in the ignored run directory
+`output/.unattended-luna-20261111135015Z/recovery-fat-guest-20261111/`:
+`helper-guest-check.txt`, `helper-eio-trace-summary.json`,
+`helper-fault-fsck-readonly.txt`, `guest-evidence.tar`,
+`delay-helper-output.txt`, `delay-post-fsck.txt`, `delay-guest-evidence.tar`,
+`loader-positive-runtime.txt`, `loader-positive-serial.log`,
+`loader-negative-runtime.txt`, `loader-negative-serial.log`, and the
+`loader-uefi-evidence.sha256` manifest. The interruption evidence is summarized
+by `interrupt-retry-evidence.sha256`, including the preconditions, mixed-state
+hashes, read-only filesystem check, BootNext setup, and serial logs.
+`fat-guest-evidence.sha256` covers the EIO, throttled-success, loader-selection,
+interruption, and worklog evidence; its SHA-256 is
+`925da4bde3f72fe1340b15d5208983964b80e034a78650f53ee2771daed7a1ba`. The
+concise worklog is `fat-guest-worklog.txt`.
+
+Still not run: exact delayed-writeback injection; interruption before and
+during staging, during marker updates, later payload promotions, post-marker
+commit, and recovery rotation; and the remaining metadata fault matrix.
+Simulated interruption evidence does not establish physical power-loss
+guarantees.
 
 ### UEFI rescue — restoration passed; final firmware boot incomplete
 
@@ -220,31 +302,41 @@ more than 5% worse p95 latency where applicable, and no functional regression.
 
 ## Integration and cleanup
 
-Before this continuation, four verified local commits were integrated on the
-feature branch: `a2b9c68`, `0a6d027`, `6680abe`, and `2a4eaca`. The continuation
-implementation and evidence commit `f136b5490fdea3352b7698f82d1c3d42a3179156`
-was pushed successfully to the existing feature branch after confirming the
-remote still pointed to the reviewed starting commit. The closeout report and
-checklist status update were included in a subsequent closeout commit pushed
-without force. The requested `bash tests/static-check.sh` passed; its captured
-output is retained at
-`output/.unattended-luna-20261111135015Z/static-check.log`. The trial helper's
-focused suite passed 19 tests. No generated artifact is added to Git.
+Before the previous continuation, four verified local commits were integrated
+on the feature branch: `a2b9c68`, `0a6d027`, `6680abe`, and `2a4eaca`. Its
+implementation commit `f136b5490fdea3352b7698f82d1c3d42a3179156` and closeout
+commit `5965c6db6b0ccec17e40e15afd3a2ee9fa0274ae` were pushed successfully.
+This extension started with local and remote HEAD at `5965c6d`. The GRUB and
+guest-checker changes and the interrupted-promotion evidence were cross-reviewed.
+`tests/test_sp121_fallback_installer.py` passed 7 tests,
+`tests/test_sp12_fat_guest_cleanup.py` passed 2 tests, shell syntax and
+`git diff --check` passed, and `bash tests/static-check.sh` passed after the
+interruption test. Its log is at
+`output/.unattended-luna-20261111135015Z/recovery-fat-guest-20261111/static-check-final.log`;
+the optional root-only `mokutil` check was skipped. All entries in
+`fat-guest-evidence.sha256` verified; the manifest SHA-256 is
+`925da4bde3f72fe1340b15d5208983964b80e034a78650f53ee2771daed7a1ba`. No
+generated artifact is added to Git.
 Disposable rescue/installer VM disks, firmware-variable copies, and the rescue
 seed ISO were removed after checksums and logs were preserved; refreshed ISO
 candidates remain in ignored `output/`.
 No QEMU process, run-owned mount, temporary service, or run-owned sleep
 inhibitor remained at cleanup.
-Physical devices have no pending trial selection, and the SP12 fallback and
-recovery hashes above remain the verified set.
+Physical devices have no pending trial selection. SP12 was rechecked read-only
+through Tailscale SSH: it remains on `7.3.1-psycachy-sp121`, package audit is
+clean, root is read/write, the ESP is read-only, current payload hashes match
+the recorded values, and the recovery payload files remain present. BootNext is
+absent; BootCurrent is `MsTemp`, which is not in persistent BootOrder. Secure
+Boot remains disabled and firmware is in Setup Mode. B550I's remote peer
+remained offline; no SSH approval request or link was available.
 
 **Remaining owner-dependent gates:** restore B550I SSH reachability and capture
 its exact root/fallback state; establish production signing ownership/trust;
 run the trial helper through its full disposable UEFI lifecycle; complete ARM64
 installer qualification on a supported graphical target; establish a faithful
-RPMB fixture and built-in compile; finish the FAT guest-fault/loader matrix and
-firmware-to-restored-target boot; prove independent pre-userspace physical
-recovery; then qualify approved physical candidates and run the required Phase
-2 pairs. No approval prompt was issued because there was no pending SSH
-authentication link and the remaining blockers did not require an owner action
-to continue this work.
+RPMB fixture and built-in compile; finish exact FAT delayed-writeback and
+remaining interruption coverage and firmware-to-restored-target boot; prove
+independent pre-userspace physical recovery; then qualify approved physical
+candidates and run the required Phase 2 pairs. No approval prompt was issued
+because no SSH authentication link appeared and the remaining blockers did not
+require an owner action to continue this work.

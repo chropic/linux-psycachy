@@ -117,6 +117,25 @@ class FallbackInstallerTests(unittest.TestCase):
         self.assertTrue(any(marker < index < loader for index in syncs))
         self.assertLess(marker, loader)
 
+    def test_fallback_loader_halts_before_kernel_when_marker_search_fails(self):
+        lines = INSTALLER.read_text().splitlines()
+        search = lines.index(
+            "    printf '%s\\n' 'if search --no-floppy --file --set=root /sp12/SP12BOOT; then'"
+        )
+        kernel = next(i for i, line in enumerate(lines) if line.startswith("    printf 'linux /sp12/vmlinuz"))
+        marker_missing = lines.index("    printf '%s\\n' 'echo SP12_MARKER_MISSING'")
+        halt = lines.index("    printf '%s\\n' 'halt'")
+        close = lines.index("    printf '%s\\n' 'fi'", halt)
+        standalone = next(
+            line for line in lines if "--modules='part_gpt fat search search_fs_file linux halt'" in line
+        )
+
+        self.assertLess(search, kernel)
+        self.assertLess(kernel, marker_missing)
+        self.assertLess(marker_missing, halt)
+        self.assertLess(halt, close)
+        self.assertIn("halt", standalone)
+
     def test_previous_payload_set_is_saved_before_fallback_replacement(self):
         lines = INSTALLER.read_text().splitlines()
         save = lines.index(

@@ -79,8 +79,17 @@ path is the supported recovery procedure.
   open in the ship checklist.
 - SP12 boot-sync and restore helpers flush staged payloads, preserve the
   invalid marker across interrupted promotion, and pass focused tests. Exact
-  FAT metadata-sector EIO positive controls pass; guest metadata EIO, loader
-  selection, and physical power-loss safety remain unqualified.
+  FAT metadata-sector EIO positive controls pass. One guest allocation-metadata
+  EIO during staged `vmlinuz.new` flush preserved active hashes and marker;
+  a write-throttled success update also passed. Generic ARM64 UEFI selected the
+  marker-present test loader and halted on marker absence. A simulated
+  interruption after the first payload promotion left a mixed kernel/initrd
+  state without a marker; read-only fsck reported the dirty volume, and fresh
+  UEFI selection halted at the marker guard before the candidate kernel branch.
+  Exact delayed-write injection, other stage/marker/promotion/rotation
+  interruption points, Surface DTB selection, and physical power-loss safety
+  remain unqualified.
+  See the [continuation evidence](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#fat-fault-qualification--partial-guest-coverage-matrix-open).
 - `tools/phase2-kernel-trial.py` consumes existing pins and records exact
   candidate/fallback identities. It refuses unresolved Secure Boot trust,
   package errors, ambiguous GRUB entries, changed fallback state, and a backup

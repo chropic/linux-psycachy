@@ -23,10 +23,16 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   The repair is pinned and its module configuration compiled. No faithful
   disposable RPMB fixture was available, built-in compilation was not run,
   and request/lifetime runtime coverage is incomplete. FAT metadata-sector
-  positive controls pass, but guest metadata EIO, delayed writeback,
-  interruption, and loader-selection cases remain open. The UEFI rescue VM
-  restored the damaged target and passed read-only FAT checks, but the restored
-  target did not reach userspace on the follow-up firmware boot.
+  positive controls pass. One guest metadata-EIO helper case and generic ARM64
+  UEFI marker-present/absent loader selection passed; a write-throttled helper
+  success case also passed. An abrupt disposable QEMU interruption after the
+  first payload promotion left a mixed kernel/initrd set without its marker;
+  generic UEFI halted at the marker guard. Read-only fsck reported a dirty
+  volume, and no repair was made. Exact delayed-writeback injection and the
+  remaining stage/marker/promotion/rotation interruption cases remain open.
+  The UEFI rescue VM restored the damaged target and passed read-only FAT
+  checks, but the restored target did not reach userspace on the follow-up
+  firmware boot.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
   fixtures on both desktops with matching saved-file hashes. No paired
   performance scenarios have been run; every scenario remains at `0/3` pairs.
@@ -35,11 +41,12 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   recovery set is intact and no BootNext selection is pending. B550I remains
   on the previously observed generic `7.3.0-10-generic`; fresh root SSH was
   refused, so this run could not refresh its physical state or trial it.
-- **Status baseline:** the reviewed starting commit was
-  `e43b9efc3264a6290ef3be3d35d12e921714dce2`. Continuation commit
-  `f136b5490fdea3352b7698f82d1c3d42a3179156` has been pushed to the existing
-  feature branch; see the [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
-  for full evidence and delivery status.
+- **Status baseline:** the reviewed starting commit for the original campaign
+  was `e43b9efc3264a6290ef3be3d35d12e921714dce2`. The most recent pushed
+  handoff before this extension was `5965c6db6b0ccec17e40e15afd3a2ee9fa0274ae`,
+  and both local and remote HEAD matched it at the extension start. See the
+  [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
+  for the new evidence and final delivery status.
 
 ## 1. Phase 1 closeout
 
@@ -73,9 +80,21 @@ the final pin manifests, and retained build/verifier output under the ignored
 - Earlier disposable FAT tests passed interrupted rotations/promotions,
   restore retries, ENOSPC, read-only remount failure, and data-sector EIO. This
   continuation added positive controls proving exact-sector EIO injection at
-  FAT copies 32/2049, directory metadata sector 4067, and data sector 4068.
-  Guest-side metadata faults and loader selection remain unqualified; simulated
-  interruption does not guarantee physical power-loss safety.
+  FAT copies 32/2049, directory metadata sector 4067, and data sector 4068. One
+  guest metadata EIO during staged `vmlinuz.new` flush preserved active hashes,
+  marker, and read-only ESP state; post-shutdown `fsck.vfat -n` was clean. A
+  write-throttled successful update also passed and its guest-side read-only
+  FAT check was clean. In generic ARM64 AAVMF, the marker-present loader booted
+  its test kernel and the marker-absent loader halted before its kernel branch.
+  A separate interruption after the first payload promotion left a mixed
+  kernel/initrd state without a marker. Read-only fsck reported the dirty
+  volume, and fresh AAVMF BootNext selection halted at `SP12_MARKER_MISSING`
+  before the candidate kernel branch. No filesystem repair was run. Exact
+  delayed-writeback injection and other staging/marker/promotion/rotation
+  interruption points remain open; simulated interruption does not guarantee
+  physical power-loss safety. See the
+  [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#fat-fault-qualification--partial-guest-coverage-matrix-open)
+  for the limited runtime scope and evidence.
 - A disposable UEFI rescue environment restored a deliberately damaged target
   ESP from its recovery set. Payload hashes, marker state, and read-only FAT
   checks passed. The follow-up UEFI boot loaded GRUB but did not reach the

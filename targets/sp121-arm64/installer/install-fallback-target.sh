@@ -204,11 +204,15 @@ chmod 0755 "$target/usr/local/sbin/sp12-restore-recovery"
     printf '%s\n' 'insmod part_gpt'
     printf '%s\n' 'insmod fat'
     printf '%s\n' 'insmod search_fs_file'
-    printf '%s\n' 'search --no-floppy --file --set=root /sp12/SP12BOOT'
+    printf '%s\n' 'if search --no-floppy --file --set=root /sp12/SP12BOOT; then'
     printf 'linux /sp12/vmlinuz root=UUID=%s ro clk_ignore_unused pd_ignore_unused cma=128M efi=noruntime quiet splash console=tty0 stubble.dtb_override=true\n' "$root_uuid"
     printf '%s\n' 'initrd /sp12/initrd.img'
     printf '%s\n' 'devicetree /sp12/dtb'
     printf '%s\n' 'boot'
+    printf '%s\n' 'else'
+    printf '%s\n' 'echo SP12_MARKER_MISSING'
+    printf '%s\n' 'halt'
+    printf '%s\n' 'fi'
 } > "$config"
 
 staging_started=1
@@ -225,7 +229,7 @@ cmp -s "$target_dtb.new" "$dest/dtb.new"
 if [ "${SP12_TEST_MOCK_MOUNTS:-0}" -ne 1 ]; then
     loader_started=1
     chroot "$target" grub-mkstandalone --format=arm64-efi \
-        --modules='part_gpt fat search search_fs_file linux' \
+        --modules='part_gpt fat search search_fs_file linux halt' \
         --output=/boot/efi/EFI/BOOT/BOOTAA64.NEW \
         "boot/grub/grub.cfg=$config_inside"
     chroot "$target" grub-file --is-arm64-efi /boot/efi/EFI/BOOT/BOOTAA64.NEW
