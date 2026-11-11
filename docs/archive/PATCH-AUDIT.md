@@ -2,7 +2,7 @@
 
 Patches are files that change the kernel source before it is built. This
 project uses the signed CachyOS source and the fixed versions listed in
-[source details](../config/cachyos-7.3-provenance.txt). Each patch has a saved
+[source details](../../config/cachyos-7.3-provenance.txt). Each patch has a saved
 checksum and must pass `git apply --check` before the builder applies it.
 
 | Change | Status |

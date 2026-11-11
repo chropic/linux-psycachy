@@ -12,8 +12,8 @@ uses `xorriso` to update the ISO file tree and replay its boot metadata, so
 the ISO assembly itself does not require root or loop devices. It requires the
 Ubuntu 26.10 AMD64v3 Desktop ISO with Canonical's
 `SHA256SUMS` and `SHA256SUMS.gpg` beside it, and the image and headers package pair pinned
-in [`config/amd64-iso-kernel.json`](../config/amd64-iso-kernel.json), along
-with the base ISO pinned in [`config/amd64-iso-base.json`](../config/amd64-iso-base.json).
+in [`config/amd64-iso-kernel.json`](../../config/amd64-iso-kernel.json), along
+with the base ISO pinned in [`config/amd64-iso-base.json`](../../config/amd64-iso-base.json).
 The pins record source and package hashes and the resolved configuration. The builder
 checks source signatures, package metadata and hashes, Ubuntu package
 provenance, offline dependency resolution, retained EFI files and live kernel,
@@ -34,8 +34,8 @@ Local inputs, the output ISO, checksum, build log, and manifest are not in Git.
 
 `iso/build-arm64.sh` builds the ARM64 Desktop installer from the signed Ubuntu
 26.10 ARM64 base pin and exact kernel package/DTB pin in
-[`config/arm64-iso-base.json`](../config/arm64-iso-base.json) and
-[`config/arm64-iso-kernel.json`](../config/arm64-iso-kernel.json). The builder
+[`config/arm64-iso-base.json`](../../config/arm64-iso-base.json) and
+[`config/arm64-iso-kernel.json`](../../config/arm64-iso-kernel.json). The builder
 replays the ISO boot metadata with `xorriso`, keeps Ubuntu's live kernel,
 initrd and EFI binaries byte-for-byte, and injects the pinned package closure,
 autoinstall configuration, boot-sync hooks and removable fallback helpers.

@@ -72,7 +72,7 @@ socket. Later diagnostics confirmed the AT-SPI bus and registry are running,
 and GNOME's `toolkit-accessibility` preference was false; the owner enabled
 it. The probe exposed the exact fixture in the standalone editor after two
 driver fixes: hyphen-tolerant app-name matching and explicit AT-SPI Text
-interface dispatch. A stale Bitwarden process still emits a missing-socket
+interface dispatch. A unrelated stale application process still emits a missing-socket
 warning, but Text Editor is exposed. Manual Ctrl+H confirmed the search
 panel, its text widgets, and Replace All button. The first automated smoke
 run failed before replacements because the panel fields were not detected;

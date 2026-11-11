@@ -64,7 +64,7 @@ whole-system energy.
 
 Before changing kernel configuration or patches, review the
 [ARM64 config policy findings](../PHASE1-CONFIG-REVIEW.md) and
-[patch provenance](../../targets/sp121-arm64/PATCH-PROVENANCE.md). The current
+[patch provenance](../../../targets/sp121-arm64/PATCH-PROVENANCE.md). The current
 review identifies module-signing and lockdown behavior, kexec policy, kexec
 handover, BPF JIT, and unresolved patch provenance as open decisions. Physical
 suspend/RTC behavior for the retained workaround also remains unverified.

@@ -94,7 +94,7 @@ root storage works on both boots. This is pre-existing in the fallback, not a
 new candidate regression, but RPMB operations remain unqualified. The earlier
 fallback smoke record also notes a Qualcomm APM command timeout. The prior
 record is
-[`boot-smoke.json`](../../sp121-reference/kernel/ports/v7.3/validation/boot-smoke.json).
+[`boot-smoke.json`](../../../sp121-reference/kernel/ports/v7.3/validation/boot-smoke.json).
 
 The watchdog messages also match across both boots: the platform reports NMI
 watchdog unsupported and hard watchdog disabled, while the SBSA generic

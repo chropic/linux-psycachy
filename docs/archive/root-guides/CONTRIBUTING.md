@@ -2,7 +2,7 @@
 
 This guide is for people and coding agents working in this repository. Read
 the relevant documentation
-linked from the [README](README.md). For kernel or Ubuntu upgrades, follow
+linked from the [README](../../../README.md). For kernel or Ubuntu upgrades, follow
 [UPDATING.md](UPDATING.md).
 
 ## Start a task
@@ -28,18 +28,18 @@ bash tests/static-check.sh
 ```
 
 For kernel or build changes, also run preparation and the relevant build and
-negative tests in [docs/TESTING.md](docs/TESTING.md). Use a fresh output
+negative tests in [docs/TESTING.md](../TESTING.md). Use a fresh output
 directory; do not overwrite prior packages. Installer, signing, bootloader, and
 DKMS changes need the applicable disposable VM tests in that guide and
-[docs/INSTALLER.md](docs/INSTALLER.md). These tests can modify or erase their
+[docs/INSTALLER.md](../INSTALLER.md). These tests can modify or erase their
 guest: never run destructive tests against a real disk or installed system.
 The full build is CPU-specific and may take hours. CI runs the build and tests
-in [.github/workflows/ubuntu-2610.yml](.github/workflows/ubuntu-2610.yml).
+in [.github/workflows/ubuntu-2610.yml](../../../.github/workflows/ubuntu-2610.yml).
 
 For documentation-only changes, check the affected links, commands, and
 `git diff --check`; run additional tests when the changes warrant them. Record
 what passed, what failed, and what could not be run. VM results are not proof of
-physical hardware behavior. Update [docs/VALIDATION.md](docs/VALIDATION.md) when new evidence or next steps change.
+physical hardware behavior. Update [docs/VALIDATION.md](../VALIDATION.md) when new evidence or next steps change.
 
 ## Finish
 

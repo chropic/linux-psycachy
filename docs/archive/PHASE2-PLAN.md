@@ -14,7 +14,7 @@ settings, manifests, and candidate packages separate. Change one variable at a
 time and retain a change only when repeatable measurements show a useful gain.
 
 The first implementation deliverable is a read-only collector with `inventory`,
-timed `sample`, and `compare` commands in [`../tools/phase2-collector.py`](../tools/phase2-collector.py).
+timed `sample`, and `compare` commands in [`../tools/phase2-collector.py`](../../tools/phase2-collector.py).
 It stores versioned JSON metadata, timestamped CSV samples, and a Markdown
 comparison report in a new experiment output directory. Missing and unreadable
 interfaces are recorded as data. Sampling does not change system policy or

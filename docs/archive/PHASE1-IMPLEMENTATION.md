@@ -4,7 +4,7 @@ Recorded 2026-11-08. Implements Phase 1 build integration, package audit automat
 
 ## 1. Target Build & Packaging Automation
 
-The main builder [`build.sh`](../build.sh) now routes `--target sp121-arm64` to [`targets/sp121-arm64/build.sh`](../targets/sp121-arm64/build.sh).
+The main builder [`build.sh`](../../build.sh) now routes `--target sp121-arm64` to [`targets/sp121-arm64/build.sh`](../../targets/sp121-arm64/build.sh).
 
 ### Kbuild & Debian Packaging Specification
 - **Kernel Release**: `7.3.1-psycachy-sp121`
@@ -18,7 +18,7 @@ The main builder [`build.sh`](../build.sh) now routes `--target sp121-arm64` to 
 
 ## 2. Automated Package Verification
 
-The dedicated verification tool [`tools/verify-arm64-packages.py`](../tools/verify-arm64-packages.py) performs deterministic validation on built `.deb` packages before they can be staged or deployed:
+The dedicated verification tool [`tools/verify-arm64-packages.py`](../../tools/verify-arm64-packages.py) performs deterministic validation on built `.deb` packages before they can be staged or deployed:
 
 - **Architecture Check**: Enforces `Architecture: arm64` on both `linux-image-*` and `linux-headers-*` packages.
 - **Naming & Version Agreement**: Confirms exact package names `linux-image-7.3.1-psycachy-sp121` and `linux-headers-7.3.1-psycachy-sp121`, with identical package version `7.3.1-1psycachy1`.
@@ -36,7 +36,7 @@ The dedicated verification tool [`tools/verify-arm64-packages.py`](../tools/veri
 
 ## 3. Boot Synchronization Architecture
 
-System templates and hooks are staged in [`targets/sp121-arm64/system/`](../targets/sp121-arm64/system/):
+System templates and hooks are staged in [`targets/sp121-arm64/system/`](../../targets/sp121-arm64/system/):
 
 | Path | Purpose |
 | --- | --- |
@@ -114,7 +114,7 @@ exercise dry-run behavior, refusal of unexpected helper state, and diversion
 creation in a disposable root.
 
 Automated coverage includes:
-- [`tests/test_arm64_package_verification.py`](../tests/test_arm64_package_verification.py):
+- [`tests/test_arm64_package_verification.py`](../../tests/test_arm64_package_verification.py):
   - Valid package pair passes full verification and emits audit dictionary.
   - Rejection of mismatched architecture (`amd64` on ARM64 package).
   - Rejection of missing DTB.
@@ -122,11 +122,11 @@ Automated coverage includes:
   - Rejection of missing runtime dependencies (`kmod`, `linux-base`).
   - Rejection of image/headers version mismatch.
   - Rejection of x86-64 ELF tools anywhere in the ARM64 headers package.
-- [`tests/test_deb_dependencies.py`](../tests/test_deb_dependencies.py):
+- [`tests/test_deb_dependencies.py`](../../tests/test_deb_dependencies.py):
   - Exact package-name matching, Debian alternatives/version/architecture
     syntax, and rejection of foreign-architecture or `:any` qualifiers for
     native dependencies.
-- [`tests/test_sp121_boot_sync.py`](../tests/test_sp121_boot_sync.py):
+- [`tests/test_sp121_boot_sync.py`](../../tests/test_sp121_boot_sync.py):
   - Full ESP refusal before payload writes.
   - Successful sync promotes all files through staged per-file renames and creates `SP12BOOT`.
   - Idempotent execution (zero writes when ESP matches).
@@ -138,25 +138,25 @@ Automated coverage includes:
   - Removes and syncs `SP12BOOT` before promotion, leaves it absent after an
     injected hard interruption, and restores it after manual recovery or a
     handled rollback.
-- [`tests/test_sp121_grub_guard_installer.py`](../tests/test_sp121_grub_guard_installer.py):
+- [`tests/test_sp121_grub_guard_installer.py`](../../tests/test_sp121_grub_guard_installer.py):
   - Dry-run leaves the target untouched.
   - Unexpected helper state is rejected.
   - Apply mode records a diversion and installs the target guard symlink.
-- [`tests/test_sp121_fallback_installer.py`](../tests/test_sp121_fallback_installer.py):
+- [`tests/test_sp121_fallback_installer.py`](../../tests/test_sp121_fallback_installer.py):
   - Confirms payloads and marker are flushed before loader promotion.
   - Confirms the previous complete payload set is saved before replacement.
   - Applies a fallback install to a disposable target and checks the recovery
     snapshot, restore command, and prior-loader backup are installed.
-- [`tests/test_sp121_boot_sync_installer.py`](../tests/test_sp121_boot_sync_installer.py):
+- [`tests/test_sp121_boot_sync_installer.py`](../../tests/test_sp121_boot_sync_installer.py):
   - Confirms the target installer stages both recovery commands, installs the
     GRUB guard before setting its mode, and completes apply-mode installation.
-- [`tests/test_sp121_fallback_installer.py`](../tests/test_sp121_fallback_installer.py):
+- [`tests/test_sp121_fallback_installer.py`](../../tests/test_sp121_fallback_installer.py):
   - Confirms a refusal after an ESP read-write remount returns it read-only,
     `/boot` cannot resolve outside the target root, and cleanup does not
     traverse a rejected symlink; signal traps exit through the same cleanup path.
-- [`tests/test_sp121_target_inspection.py`](../tests/test_sp121_target_inspection.py):
+- [`tests/test_sp121_target_inspection.py`](../../tests/test_sp121_target_inspection.py):
   - Rejects missing, non-ARM64, non-Ubuntu, and wrong-version targets.
-- [`tests/static-check.sh`](../tests/static-check.sh) passes in the current
+- [`tests/static-check.sh`](../../tests/static-check.sh) passes in the current
   worktree with the target-inspection tests included; its root-only `mokutil`
   check is skipped. The suite runs 96 test cases across 17 unittest groups; Python
   unittest discovery is not the test runner and discovers no tests.

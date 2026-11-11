@@ -187,7 +187,7 @@ in this execution context is read-only and sudo is blocked by
 rebuild from B550I using the guarded installer; package/DKMS/signing/initrd
 configuration and all installer checks passed. The owner completed
 activation and booted the rebuilt candidate as `7.3.1-psycachy` (boot ID
-`[redacted boot ID]`); Secure Boot and NVIDIA RTX 4070
+`[redacted boot ID]`); Secure Boot and NVIDIA GPU
 checks passed. The activation flow initially saved PsyCachy as default; the
 owner restored generic as saved default, with the five-second menu retained.
 Further boot health/error-log review and UI-driver validation remain before
@@ -213,7 +213,7 @@ use `df -Pk`, the installer successfully replaced the local image and headers
 packages, regenerated initrds, rebuilt and signed NVIDIA DKMS modules, signed
 the kernel, and passed package/config/GRUB checks. A second invocation stopped
 at its backup guard, with no further changes. The owner then booted the rebuilt
-candidate and reported activation checks and NVIDIA RTX 4070 detection passed.
+candidate and reported activation checks and NVIDIA GPU detection passed.
 The active boot ID is `[redacted boot ID]`; the generic
 kernel is again the saved default and GRUB retains its visible five-second
 menu. Storage/network/kernel error-log review is still needed before trials.
@@ -225,13 +225,13 @@ inputs are ready; the fixed non-target UPS loads must remain in the same state f
 
 The owner then completed a generic-kernel comparison boot on B550I:
 `7.3.0-10-generic`, boot ID
-`[redacted boot ID]`; the RTX 4070 is detected there. The
+`[redacted boot ID]`; the NVIDIA GPU is detected there. The
 generic kernel is the current running kernel and saved GRUB default, with its
 visible five-second menu retained. `thermald.service` and `geoclue.service`
 both timed out/fail on candidate and generic boots. thermald reports
 “Non mobile platform” / `THD engine init failed`; the logs and boot checks so
 far do not show a candidate-specific kernel error. TDX unsupported and the
-Logitech HID++ ping mismatch also appear on both kernel choices.
+USB HID protocol ping mismatch also appear on both kernel choices.
 
 The first generic-boot editor probe encountered an existing Text Editor with
 no AT-SPI socket. A retry first referenced `/tmp`, which the reboot had
@@ -242,7 +242,7 @@ accessibility tree, and redacts document text in probe output. Per-user
 diagnostics showed the bus and registry running. The GNOME
 `toolkit-accessibility` preference was false and is now enabled. The updated
 probe exposes the exact 64 KiB fixture in Text Editor; the app-name filter and
-PyGObject Text-interface dispatch both needed fixes. A stale Bitwarden process
+PyGObject Text-interface dispatch both needed fixes. A unrelated stale application process
 still emits a missing-socket warning, but the editor itself is accessible.
 Manually opening Ctrl+H exposed the search panel, its two text widgets, and
 the `Replace All` button. The first automated smoke run failed before any

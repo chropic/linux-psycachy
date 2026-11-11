@@ -31,7 +31,7 @@ trust before changing the ISO name or release.
 
 1. Update the source release, version, verified hashes, signer if legitimately
    changed, config and patch paths/hashes, and any toolchain checks in
-   [build.sh](build.sh). Refresh the pinned upstream configuration
+   [build.sh](../../../build.sh). Refresh the pinned upstream configuration
    in `config/`; check and adapt all three `config/patches/` patches against the new source.
    Review package names, versions, and dependencies in the builder and patches.
 2. Review `config/psycachy.fragment` against the new Kconfig and the intended
@@ -51,9 +51,9 @@ trust before changing the ISO name or release.
    Refresh the tracked normalized and final configs and diff report from the successful output, and update their references and checks
    in the tests and documentation. Update the pinned checks in
    `tests/static-check.sh`, then run it. See
-   [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+   [docs/CONFIGURATION.md](../CONFIGURATION.md).
 4. Build matching image and headers packages in a fresh output directory and
-   run the negative and integration tests in [docs/TESTING.md](docs/TESTING.md).
+   run the negative and integration tests in [docs/TESTING.md](../TESTING.md).
    Record the build CPU and toolchain: `-march=native` makes the packages
    CPU-specific. Do not describe preparation alone as a successful build.
 
@@ -75,7 +75,7 @@ dependency resolution with the supplied scripts; do not reuse stale pins.
 
 After building and validating the new kernel packages, update the exact image
 and headers filenames and hashes in `iso/verify-kernel-packages.sh`. Follow
-[docs/INSTALLER.md](docs/INSTALLER.md) to verify the official Ubuntu ISO and
+[docs/INSTALLER.md](../INSTALLER.md) to verify the official Ubuntu ISO and
 build a new installer. Keep its ISO checksum, manifest, logs, package provenance,
 and build inputs; never overwrite the known working candidate. Review all
 remaining version-specific references, including VM tests and recovery guides.
@@ -86,7 +86,7 @@ Run the static, preparation, package-build, negative, signing, and DKMS tests
 that apply, and inspect the GitHub Actions result. In disposable VMs test the
 offline installation, preservation of the other virtual disk, media-free boot,
 fallback/update behavior, Secure Boot, and signed/unsigned module behavior;
-see [docs/TESTING.md](docs/TESTING.md) and [docs/VALIDATION.md](docs/VALIDATION.md).
+see [docs/TESTING.md](../TESTING.md) and [docs/VALIDATION.md](../VALIDATION.md).
 Record exact versions, artifact hashes, results, and failures in the validation
 and handoff documents. A new ISO requires its own testing: prior VM or physical
 results do not automatically carry forward. Physical installation and testing

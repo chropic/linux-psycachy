@@ -84,7 +84,7 @@ package-artifact directory.
 The historical ISO package pair was unavailable locally. A separate rebuild
 from the pinned, signature-verified source produced a candidate pair with the
 same resolved configuration as the installed kernel. The exact pair is pinned
-in [`config/amd64-iso-kernel.json`](../config/amd64-iso-kernel.json): headers
+in [`config/amd64-iso-kernel.json`](../../config/amd64-iso-kernel.json): headers
 SHA-256
 `1be581b2ab4ff1398cdbffa53456652d43451400b018e055894379243dbdea4e` and image
 SHA-256
@@ -110,8 +110,8 @@ user namespace does not have host loop-device permission. No ISO was produced.
 ## SP12 ARM64 ISO inputs — 2026-11-10
 
 The current ARM64 kernel package pair and official Ubuntu 26.10 ARM64 base ISO
-are pinned in [`config/arm64-iso-kernel.json`](../config/arm64-iso-kernel.json)
-and [`config/arm64-iso-base.json`](../config/arm64-iso-base.json). Package
+are pinned in [`config/arm64-iso-kernel.json`](../../config/arm64-iso-kernel.json)
+and [`config/arm64-iso-base.json`](../../config/arm64-iso-base.json). Package
 structure, AArch64 headers tools, DTB identity, physical candidate boot, and
 fallback recovery lifecycle have evidence elsewhere in this validation set.
 The target payload bundler now enforces the exact package hashes. No ARM64 live

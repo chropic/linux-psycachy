@@ -43,7 +43,7 @@ complete host-state inventory:
 
 - SMBIOS reports American Megatrends International BIOS `1.L2`, dated
   `2026-08-14`.
-- PCI inventory exposes an NVIDIA AD104 (GeForce RTX 4070).
+- PCI inventory exposes an NVIDIA GPU.
 - Installed packages include `mesa-vulkan-drivers` and `mesa-libgallium`
   `26.2.4-1ubuntu1`, `libdrm-amdgpu1` `2.4.134-3`, and `vulkan-tools`
   `[redacted]+dfsg1-1`. Installed Mesa packages do not prove which graphics ICD

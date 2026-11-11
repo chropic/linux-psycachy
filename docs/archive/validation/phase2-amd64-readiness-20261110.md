@@ -9,7 +9,7 @@ or policy was changed.
 
 ## Target and kernel state
 
-- Board: MSI MPG B550I GAMING EDGE WIFI (MS-7C92)
+- Board: B550I AMD64 system
 - CPU: AMD [redacted], 16 logical CPUs
 - OS: Ubuntu 26.10
 - Latest reported boot: `7.3.0-10-generic`, boot ID
@@ -86,7 +86,7 @@ The B550I root filesystem is read-only in this execution context; sudo is
 unavailable here. The owner ran the guarded installer from the host, then
 booted the rebuilt candidate. The activation utility reported Secure Boot
 enabled, both signing certificates enrolled, NVIDIA module checks passed, and
-the RTX 4070 was visible. The owner then restored the generic kernel as the
+the NVIDIA GPU was visible. The owner then restored the generic kernel as the
 saved default without rebooting; GRUB is `saved` with a visible five-second
 menu and `GRUB_SAVEDEFAULT=false`. The candidate remains the running kernel,
 both candidate packages and the generic image are installed, and
@@ -100,7 +100,7 @@ The owner then rebooted once to generic `7.3.0-10-generic` (boot ID
 output was `thermald.service`; its journal says “Non mobile platform” and
 `THD engine init failed` on both the candidate and generic boots, so this is
 not a candidate-specific failure. Kernel error-priority output on generic
-again included TDX unsupported and a Logitech HID++ protocol ping mismatch,
+again included TDX unsupported and a USB HID protocol ping mismatch,
 also observed on candidate. `geoclue.service` timed out after 90 seconds on
 both the candidate and generic boots. This reproduces a GeoClue startup issue
 on both B550I kernel choices rather than a candidate-only failure. The initial
@@ -112,7 +112,7 @@ successfully exposed the exact 64 KiB fixture in Text Editor 50.1. It required
 two driver fixes: normalize punctuation in the app name and call the AT-SPI
 Text interface explicitly to avoid PyGObject selecting the deprecated
 Accessible `get_text` helper. The probe redacts document contents. An unrelated
-stale Bitwarden process still emits a missing-socket warning. Manual Ctrl+H
+unrelated stale application process still emits a missing-socket warning. Manual Ctrl+H
 exposed the search panel, two text widgets, and Replace All. The first
 automated smoke run failed before any replacements because the driver did not
 open the panel/detect its fields. The driver update committed in `81187e4` focuses the document and selects the
