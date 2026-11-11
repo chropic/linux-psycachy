@@ -31,7 +31,8 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 - **Phase 2 starting kernels:** B550I is on generic `7.3.0-10-generic`; SP12
   is on `7.3.1-psycachy-sp121` with its platform fallback and recovery set
   preserved.
-- **Status baseline:** pushed implementation and validation through `9b23f78` on
+- **Status baseline:** pushed implementation and validation through
+  `e43b9efc3264a6290ef3be3d35d12e921714dce2` on
   `feature/linux-chropic-psycachy-b550i-sp121`.
 
 ## 1. Phase 1 closeout

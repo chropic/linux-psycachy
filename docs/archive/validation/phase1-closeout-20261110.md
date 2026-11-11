@@ -76,9 +76,12 @@ new block I/O or filesystem error.
 
 ### Exact package identities
 
-These are the local candidate bytes associated with the current closeout.
-They are reference identities for the observed source, **not** hashes for a
-fixed RPMB candidate. No fixed candidate was built.
+These are exact hashes for the refreshed local build artifacts recorded in
+the current pin manifests. The ARM64 pair includes the three-patch RPMB repair.
+The earlier statement that these were not hashes for a fixed RPMB candidate
+and that no such candidate was built was incorrect: the table does identify
+the pinned RPMB-repaired candidate bytes. It does not indicate that those new
+bytes were installed or booted on SP12; physical qualification remains open.
 
 | Artifact | AMD64 | ARM64 |
 | --- | --- | --- |
