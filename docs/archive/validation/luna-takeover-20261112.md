@@ -218,7 +218,9 @@ fault-injection/TMR v3 mbox SHA
 `e71f12d961ad50e9f2632a2bd6e910670174a214fcd08ce2202b4f3a36eb4046`. All
 seven RPMB patches (mbox SHA
 `63beeb5f025aee9112052013b2fc1410238ade4380b378a335e1cdde53990a8e`) apply
-cleanly through tree tip `723cd2313a3891d50a6b111bc46cc1ae9883b0ce`.
+cleanly through tree tip `723cd2313a3891d50a6b111bc46cc1ae9883b0ce`. Patchew's
+tested-master application failed because the Zoned UFS prerequisite context
+was missing; the reconstructed dependency chain supplies that context.
 
 The separate SP12 QEMU 11.1.50 build and 11,455-file source manifest verify;
 the QEMU and `qos-test` binary hashes are `1092edf9ec875dce70c8cd7322282d4712f23480d33da9d1804598cf607df8d6` and
@@ -232,6 +234,24 @@ These tests qualify the QEMU emulation only. Built-in kernel compilation,
 Linux-driver request/concurrency/teardown tests, KASAN/lockdep behavior, and
 physical exact-candidate registration/health checks remain open. Physical
 RPMB key programming and data writes are prohibited.
+
+The pinned kernel source archive and signature verified, and applying the ten
+SP12 patches plus three packaging patches reproduced source-tree SHA-256
+`70216e65b8ede910b20b8069720b7a9a02dbe891b1f4a903ebfe3d0fab7cd04f`. The
+built-in config SHA is
+`e6f4639839b600cd379c5b9b64ad58a0c5f5a72b2f79a6029afdf4f8f62302c9`; the
+KASAN/lockdep config SHA is
+`ea9e1ed94b956d215def3acb14008a981c6dec95594f194d33d48003427dc553`; the
+guest diagnostic variant with UFS HCD and PCI built in is
+`55993eff382d4da79e980f8d7890be18bcd25b46d5559827aa1f0edc2d30d78b`. At the
+last reachable sample, built-in Kbuild was active with about 10,072 log lines
+and no reported errors. SP12 then went offline on Tailscale; completion and
+output are unknown. The diagnostic build and guest boot did not start. The
+21-entry local input packet manifest SHA is
+`77daab4618a50934215f08dd13d3e10743234869cd6436afa8f036986eac35c6`, and all
+entries verified. The packet is under
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/`;
+the remote scratch directory is `/var/tmp/luna-kernel-rpmb-validation-20261112/`.
 
 SP12 internal installation/update remains blocked until a restorable
 independent backup and displaced-payload archive exist. A separate blank
