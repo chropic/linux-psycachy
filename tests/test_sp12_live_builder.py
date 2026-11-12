@@ -104,6 +104,8 @@ class Sp12LiveBuilderTests(unittest.TestCase):
         self.assertIn("Try SP12 Ubuntu 26.10 (private local live)", result)
         self.assertIn("boot=casper", live_line)
         self.assertIn("layerfs-path=" + BUILDER.LAYER, live_line)
+        self.assertIn("insmod fdt\n", result)
+        self.assertNotIn("insmod devicetree", result)
         self.assertIn("devicetree " + BUILDER.LIVE_DTB, result)
         self.assertNotIn("maybe-ubiquity", live_line)
         self.assertNotIn("autoinstall", live_line)

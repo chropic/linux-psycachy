@@ -128,7 +128,7 @@ def grub_config(text, private_support=False):
             'Base live GRUB command already contains conflicting casper layer arguments')
     lines[index] = ' '.join(words) + ' ---' + after
     indentation = line[:len(line) - len(line.lstrip())]
-    lines[index:index] = [indentation + 'insmod devicetree\n',
+    lines[index:index] = [indentation + 'insmod fdt\n',
                           indentation + 'devicetree ' + LIVE_DTB + '\n']
     label = ('Try SP12 Ubuntu 26.10 (private local live)' if private_support
              else 'Try SP12 Ubuntu 26.10 (experimental live)')
@@ -432,6 +432,9 @@ def build(args):
             run(xorriso, '-osirrox', 'on', '-indev', original, '-extract', '/', tree,
                 stdout=log, stderr=subprocess.STDOUT)
         run('md5sum', '--quiet', '-c', 'md5sum.txt', cwd=tree)
+        fdt_module = tree / 'boot/grub/arm64-efi/fdt.mod'
+        require(fdt_module.is_file() and not fdt_module.is_symlink(),
+                'Base ISO GRUB FDT module is missing')
         require(not (tree / 'casper' / LAYER).exists(),
                 'Base ISO already contains the SP12 live layer')
 
@@ -617,6 +620,7 @@ def build(args):
             'live_layer': LAYER,
             'live_layer_sha256': sha(overlay),
             'live_layer_manifest_sha256': sha(generated / 'sp12-live-overlay-manifest.json'),
+            'grub_fdt_module_sha256': sha(fdt_module),
             'live_grub_sha256': sha(generated / 'grub.cfg'),
             'private_machine_support': bool(args.private_machine_support),
             'private_support_source_commit': (support_pin['support_source_commit']
@@ -675,8 +679,13 @@ def build(args):
         run('md5sum', '--quiet', '-c', 'md5sum.txt', cwd=audit)
         audit_grub = (audit / 'boot/grub/grub.cfg').read_text()
         require(audit_grub == grub_text and 'autoinstall' not in audit_grub
+                and audit_grub.count('insmod fdt') == 1
                 and audit_grub.count('devicetree ' + LIVE_DTB) == 1,
                 'Audited live GRUB config enables autoinstall or differs from the generated config')
+        audit_fdt_module = audit / 'boot/grub/arm64-efi/fdt.mod'
+        require(audit_fdt_module.is_file() and not audit_fdt_module.is_symlink()
+                and sha(audit_fdt_module) == sha(fdt_module),
+                'GRUB FDT module is missing or changed in the final ISO')
         for image in audit.rglob('*'):
             if image.is_file() and image.suffix.lower() == '.efi':
                 run('grub-file', '--is-arm64-efi', image)

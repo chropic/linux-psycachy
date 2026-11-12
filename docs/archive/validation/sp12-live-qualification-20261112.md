@@ -20,8 +20,14 @@ support and must not be published.
   `746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529` in
   `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
 - The write replaced the partition layout and first 4.81 GB; it was not a
-  whole-drive secure erase. The one-time boot and live qualification are
-  pending.
+  whole-drive secure erase. The initial one-time boot reached the live session,
+  but emitted `file '/boot/grub/arm64-efi/devicetree.mod' not found`. Inspection
+  of the built ISO confirmed that the available module is `fdt.mod`, which
+  provides the `devicetree` command. The builder now uses `insmod fdt` and
+  verifies the module in the base and final ISO; a corrected image still needs
+  to be built, written, and booted. The current boot does not prove which DTB
+  the kernel received. The efivarfs warning is expected because the menu uses
+  `efi=noruntime`.
 
 ## One-time USB boot
 
@@ -38,6 +44,14 @@ support and must not be published.
    `/usr/lib/linux-image-7.3.1-psycachy-sp121/qcom/x1p42100-microsoft-sp12in.dtb`
    with SHA-256
    `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`.
+   A matching file hash proves the staged input only. Check
+   `/sys/firmware/fdt` when exposed; if absent, do not claim the pinned DTB was
+   loaded. Confirm the corrected GRUB menu uses the `fdt` module and accepts
+   the `devicetree` command. GNU GRUB documents `fdt` as the module providing
+   that command and says `devicetree` is unavailable under GRUB lockdown
+   ([module and command documentation](https://www.gnu.org/software/grub/manual/grub/grub.html#fdt),
+   [UEFI Secure Boot and shim](https://www.gnu.org/software/grub/manual/grub/html_node/UEFI-secure-boot-and-shim.html)).
+   Do not change Secure Boot settings to work around a refusal.
 4. Check display, touch/input, Wi-Fi, Bluetooth, audio input/output, USB, and
    power reporting. Record exact commands/output for failures; do not install
    packages or mount internal filesystems read-write.
@@ -59,11 +73,14 @@ lsusb
 cat /sys/power/state
 upower -d
 sudo dmesg -T --level=err,warn
+cat /sys/kernel/security/lockdown 2>/dev/null || true
+test -r /sys/firmware/fdt && sha256sum /sys/firmware/fdt || echo NO_SYS_FDT
 ```
 
 Expected kernel/DTB identities are the pinned release and hash above. `/` must
 be the live overlay. Compare the internal disk/partition identities with the
-baseline. Connect Wi-Fi to a known network and verify traffic; test Bluetooth
+baseline; leave the internal root/ESP and the USB's old trailing partition
+unmounted. Connect Wi-Fi to a known network and verify traffic; test Bluetooth
 discovery without changing firmware settings. Use the desktop audio controls
 to play a tone and record a short microphone test. Check USB enumeration and
 battery/power-supply reporting. Record any missing command or device as an

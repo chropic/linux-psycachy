@@ -191,7 +191,19 @@ Captured terminal output SHA-256 is
 `746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529`; it is
 retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
-The one-time firmware boot and live hardware qualification are pending.
+The first one-time USB boot reached the live session. User output confirms
+kernel `7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st Edition/cow`, an
+overlay root, and a staged DTB hash matching the pin. GRUB printed a missing
+`devicetree.mod` error; inspection confirms the ISO contains `fdt.mod`, so the
+builder now uses `insmod fdt` and verifies that module in the final image.
+Because `/sys/firmware/fdt` was absent, the exact DTB passed to the kernel is
+not established. The efivarfs mount warning is expected from `efi=noruntime`.
+Wi-Fi reached connected state; inventory found powered Bluetooth, speaker and
+microphone endpoints, USB bridge, and battery/charge-threshold reporting.
+Network traffic, actual device interaction, suspend/resume, and read-only
+recovery inspection remain open. Sanitized live-output summary SHA-256 is
+`9a5cd450173a221a589800647704376ba0ef31bde19d72d0984fa9abfda7d37b` at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-session-partial-summary.txt`.
 
 A read-only preflight captured the SP12 internal root as model
 `THGJFMT2E46BATVB`, serial `B526UEHD6I`, UUID

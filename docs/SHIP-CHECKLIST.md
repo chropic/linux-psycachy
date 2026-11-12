@@ -52,14 +52,19 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   unmounted Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`, on USB; it is
   separate from the Lexar MSI BIOS USB and both NVMe drives. The user wrote
   the image after exact model/serial and partition-signature checks; direct-I/O
-  readback returned `READBACK_OK` with the expected ISO SHA-256. No firmware
-  boot or internal SP12 changes have occurred. A read-only SP12 baseline
-  confirms root UUID
-  `db48a164-d6cb-4034-8d6f-841867f66757`, ESP UUID `FA3E-AEE4`, and a
-  read-only ESP mount; the existing recovery checksums for kernel, initrd, and
-  DTB all pass. Its device identity and active payload hashes are retained in
-  the takeover report. The [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
-  lists the one-time boot, hardware checks, read-only recovery inspection, and
+  readback returned `READBACK_OK` with the expected ISO SHA-256. A one-time USB
+  boot reached the live session with kernel `7.3.1-psycachy-sp121`, Surface
+  model `Surface Pro 12in 1st Edition/cow`, an overlay root, and the staged
+  DTB hash matching its pin. The menu also emitted a missing
+  `devicetree.mod` error: the ISO contains `fdt.mod`, which provides that
+  command. The builder fix is in progress; the current boot does not prove the
+  pinned DTB was loaded. The efivarfs warning is expected from `efi=noruntime`.
+  Internal root and ESP remained unmounted. Wi-Fi connected and hardware
+  inventory found Bluetooth, built-in speaker/microphone, USB bridge, and
+  battery reporting; network traffic and functional device tests remain open.
+  The read-only baseline and partial live output are in the takeover report.
+  The [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
+  lists the corrected boot, remaining tests, read-only recovery inspection, and
   stop/recovery steps. The image contains private, non-redistributable machine
   support and must stay local.
 - **Recovery and FAT:** recovery snapshot eligibility now requires the valid
