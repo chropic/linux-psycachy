@@ -85,10 +85,12 @@ results separate from Surface hardware qualification.
 **State:** Physical failure reproduced; adapted three-patch source repair is
 pinned and compiled into the refreshed ARM64 module configuration. The exact
 QEMU RPMB series and its two prerequisite series apply cleanly on a pinned
-base; an isolated build passed all 32 UFS QOS tests. Built-in Kbuild is running
-on isolated SP12 scratch. The diagnostic KASAN/lockdep compile and read-only
-Linux-driver guest run have not started; the guest variant is prepared.
-Physical exact-candidate qualification remains open.
+base; an isolated build passed all 32 UFS QOS tests. The last reachable sample
+showed built-in Kbuild active on isolated SP12 scratch with no errors; SP12 has
+since gone offline, so completion and output are unknown. The diagnostic
+KASAN/lockdep compile and read-only Linux-driver guest run have not started;
+the guest variant is prepared. Physical exact-candidate qualification remains
+open.
 
 SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
 ufs_rpmb bus. The authenticated source assigns that bus in

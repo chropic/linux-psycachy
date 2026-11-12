@@ -98,7 +98,8 @@ root_mount=/mnt/sp12-root-readonly
 esp_mount=/mnt/sp12-esp-readonly
 test "$(sudo blkid -s UUID -o value "$root_device")" = db48a164-d6cb-4034-8d6f-841867f66757
 test "$(sudo blkid -s UUID -o value "$esp_device")" = FA3E-AEE4
-if findmnt -rn -S "$root_device" >/dev/null || findmnt -rn -S "$esp_device" >/dev/null; then
+if lsblk -nr -o MOUNTPOINTS "$root_device" | grep -q '[^[:space:]]' ||
+   lsblk -nr -o MOUNTPOINTS "$esp_device" | grep -q '[^[:space:]]'; then
   printf 'Refusing: an internal SP12 filesystem is already mounted.\n' >&2
   exit 1
 fi

@@ -80,10 +80,11 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   exact two prerequisite series on the pinned base. An isolated QEMU build
   passed its source manifest check; all 32 UFS QOS tests passed, including the
   three RPMB descriptor, key-counter, and read/write cases. Key programming
-  and data writes occurred only in the disposable emulator. Built-in Kbuild is
-  running on isolated SP12 scratch; the diagnostic KASAN/lockdep build and
-  read-only Linux-driver guest run have not started. The guest variant is
-  prepared. Exact-candidate
+  and data writes occurred only in the disposable emulator. The last reachable
+  sample showed built-in Kbuild active on isolated SP12 scratch with no errors;
+  SP12 has since gone offline, so completion and output are unknown. The
+  diagnostic KASAN/lockdep build and read-only Linux-driver guest run have not
+  started; the guest variant is prepared. Exact-candidate
   physical registration/health checks remain open. Physical RPMB key or data
   operations remain prohibited.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
