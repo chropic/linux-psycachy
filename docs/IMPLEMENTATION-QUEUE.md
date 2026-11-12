@@ -10,16 +10,19 @@ conditions stated below.
 
 ### I-2: Diagnose the ARM64 graphical installer handoff
 
-**State:** No ISO-side defect demonstrated. Two serial runs reached GDM and a
-live user, but virtio, Bochs, GL-backed output, and VT switching remained
-black. Compositor, renderer, and framebuffer diagnostics were not recovered;
-no source change was made.
+**State:** No ISO-side defect demonstrated. SP12's system QEMU 11.0.3 reached
+GDM, but the login transition went black. A source-verified custom QEMU
+11.1.3 build with EGL/VirGL passes a short backend smoke; a fresh disposable
+installer retry is pending root SSH authorization to `cs-sp12`. No source
+change was made.
 
-Serial logs show the ARM64 ISO reaching GDM, while retained captures from the
-virtio, Bochs, and GL-backed QEMU display attempts do not show a usable
-graphical installer. The captured logs do not include the guest compositor or
-renderer state. Do not change the builder or installer unless a reproducible
-ISO-side cause is demonstrated.
+The serial and VNC evidence shows the ARM64 ISO reaching GDM on SP12. With
+system QEMU 11.0.3, pressing Return at the live-session login changed the
+display to black and the selector did not appear before the 30-minute bound.
+The QEMU 11.1.3 EGL/VirGL smoke passed, but it used a paused guest and did not
+test the installer UI. The next bounded attempt uses fresh UEFI variables and
+disposable disks after SSH authorization. Do not change the builder or
+installer unless a reproducible ISO-side cause is demonstrated.
 
 **Done when:** either a reproducible ISO-side cause is fixed and the selector
 is visible in the disposable test, or supported ARM hardware is used to
@@ -81,15 +84,19 @@ path is the supported recovery procedure.
   invalid marker across interrupted promotion, and pass focused tests. Exact
   FAT metadata-sector EIO positive controls pass. One guest allocation-metadata
   EIO during staged `vmlinuz.new` flush preserved active hashes and marker;
-  a write-throttled success update also passed. Generic ARM64 UEFI selected the
-  marker-present test loader and halted on marker absence. A simulated
-  interruption after the first payload promotion left a mixed kernel/initrd
+  a write-throttled success update also passed. One exact-sector delayed-write
+  positive control and one delayed real-helper success path were reported under
+  QEMU 11.1.3; raw runtime logs, traces, and sector-map output remain on SP12
+  pending authorized transfer and hash verification. Generic ARM64 UEFI
+  selected the marker-present test loader and halted on marker absence. A
+  simulated interruption after the first payload promotion left a mixed
+  kernel/initrd
   state without a marker; read-only fsck reported the dirty volume, and fresh
   UEFI selection halted at the marker guard before the candidate kernel branch.
-  Exact delayed-write injection, other stage/marker/promotion/rotation
-  interruption points, Surface DTB selection, and physical power-loss safety
-  remain unqualified.
-  See the [continuation evidence](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#fat-fault-qualification--partial-guest-coverage-matrix-open).
+  Other stage/marker/promotion/rotation interruption points, Surface DTB
+  selection, and physical power-loss safety remain unqualified.
+  See the earlier [FAT matrix](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#fat-fault-qualification--partial-guest-coverage-matrix-open)
+  and the [QEMU continuation](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#2026-11-12-qemu-update-and-arm64-installer-retry).
 - `tools/phase2-kernel-trial.py` consumes existing pins and records exact
   candidate/fallback identities. It refuses unresolved Secure Boot trust,
   package errors, ambiguous GRUB entries, changed fallback state, and a backup

@@ -1,6 +1,6 @@
 # Unattended Luna continuation: Phase 1, installers, and Phase 2
 
-**Date:** 2026-11-11
+**Date:** 2026-11-11; continuation updated 2026-11-12
 **Branch:** `feature/linux-chropic-psycachy-b550i-sp121`
 **Reviewed starting commit:** `e43b9efc3264a6290ef3be3d35d12e921714dce2`
 
@@ -12,13 +12,16 @@ sector positive controls, exercised one guest FAT metadata-EIO helper path,
 verified marker-present/absent GRUB selection in disposable ARM64 UEFI, and
 interrupted one real helper run after the first payload promotion. The mixed
 payload remained unselectable through the GRUB marker guard. A write-throttled
-helper success case also passed, but exact delayed-writeback injection and the
-broader interruption matrix remain open. The UEFI rescue helper restored a
-damaged disposable target, but the restored target did not reach userspace on
-the follow-up firmware boot. Phase 1 remains blocked: a faithful RPMB fixture
+helper success case also passed. A 2026-11-12 continuation then passed one
+exact-sector delayed-write positive control and one real-helper delayed-write
+guest case; the broader interruption matrix remains open. Updated QEMU on SP12
+reached GDM but still did not reach the ARM64 installer selector. The UEFI
+rescue helper restored a damaged disposable target, but the restored target
+did not reach userspace on the follow-up firmware boot. Phase 1 remains blocked: a faithful RPMB fixture
 and exact-candidate physical qualification are still missing. Neither refreshed
-ISO is a release image. No physical package, boot, firmware, partition, or RPMB
-state was changed; no Phase 2 performance pair was run.
+ISO is a release image. No kernel package, boot policy, firmware, partition, or
+RPMB state was changed; SP12 received two inspected QEMU build dependencies.
+No Phase 2 performance pair was run.
 
 ## Gate ledger
 
@@ -30,7 +33,7 @@ state was changed; no Phase 2 performance pair was run.
 | One guest FAT allocation-metadata EIO through the real helper | **Passed; one case** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
 | Marker-present/absent selection through disposable ARM64 UEFI | **Passed in generic QEMU; platform payload not qualified** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
 | Write-throttled successful helper update | **Passed; bounded write-rate stress** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
-| Exact delayed-writeback injection | **Not run; local QEMU lacks documented `delay-ns` support** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
+| Exact delayed-writeback injection | **Reported passed for one exact-sector control and one guest-helper case; raw runtime evidence remains on SP12 pending transfer and hash verification** | [QEMU/FAT continuation](#2026-11-12-qemu-update-and-arm64-installer-retry) |
 | Interrupted staging/marker/promotion/rotation matrix | **Partial; first payload promotion case passed, other points remain open** | [FAT results](#fat-fault-qualification--partial-guest-coverage-matrix-open) |
 | Recovery restore helper, payload hashes, marker, read-only FAT check | **Passed** | [UEFI rescue](#uefi-rescue--restoration-passed-final-firmware-boot-incomplete) |
 | Follow-up firmware boot of restored target | **Failed to reach userspace** | [UEFI rescue](#uefi-rescue--restoration-passed-final-firmware-boot-incomplete) |
@@ -38,15 +41,97 @@ state was changed; no Phase 2 performance pair was run.
 | RPMB built-in configuration compile and KASAN/locking request/lifetime tests | **Not run** | [RPMB](#rpmb--blocked) |
 | AMD64 guarded offline install, package health, generic fallback boot, protected disk | **Passed** | [Installer lifecycles](#installer-lifecycles) |
 | AMD64 PsyCachy boot under Secure Boot and production signing trust | **Blocked; MOK declined in VM** | [Installer lifecycles](#installer-lifecycles) |
-| ARM64 graphical installer disk selection and installation | **Not run; generic-QEMU display stayed black** | [Installer lifecycles](#installer-lifecycles) |
+| ARM64 graphical installer disk selection and installation | **Not reached; QEMU 11.0.3 reached GDM then blacked on login; QEMU 11.1.3 retry awaits SSH authorization** | [QEMU continuation](#2026-11-12-qemu-update-and-arm64-installer-retry) |
 | Trial-helper focused tests and cross-review | **Passed** | [Trial helper](#reusable-kernel-trial-helper--reviewed-vm-lifecycle-not-yet-qualified) |
-| Trial-helper end-to-end UEFI VM lifecycle | **Not run; host lacks x86 QEMU/OVMF** | [Trial helper](#reusable-kernel-trial-helper--reviewed-vm-lifecycle-not-yet-qualified) |
+| Trial-helper end-to-end UEFI VM lifecycle | **Not run; separate from the ARM64 installer retry and remains open** | [Trial helper](#reusable-kernel-trial-helper--reviewed-vm-lifecycle-not-yet-qualified) |
 | Physical candidate trial and rollback | **Blocked by missing independent pre-userspace recovery qualification** | [Physical state](#physical-state-and-phase-2) |
-| B550I fresh physical identity/package/fallback capture | **Blocked; SSH port refused** | [Physical state](#physical-state-and-phase-2) |
-| SP12 read-only state and recovery manifest verification | **Passed; no mutation** | [Physical state](#physical-state-and-phase-2) |
+| B550I fresh physical identity/package/fallback capture | **Blocked; requested Tailscale peer `cs-b550i-1` refused TCP port 22** | [Physical state](#physical-state-and-phase-2) |
+| SP12 read-only state and recovery manifest verification | **Passed; boot/kernel state unchanged; two QEMU build dependencies added** | [Physical state](#physical-state-and-phase-2) |
 | Phase 2 performance comparisons | **Not run; all scenarios 0/3 pairs** | [Phase 2](#physical-state-and-phase-2) |
 | Physical suspend scenarios | **Not run; explicitly excluded** | [Phase 2](#physical-state-and-phase-2) |
 | `bash tests/static-check.sh` | **Passed** | [Integration and cleanup](#integration-and-cleanup) |
+
+## 2026-11-12 QEMU update and ARM64 installer retry
+
+The user requested continuing the ARM64 installer qualification on the ARM
+host. The first fresh SP12 VM used system QEMU 11.0.3 and the pinned ARM64 ISO
+(`10e3b63ff5d1b1491af8935ac536c0768d2d13f4ee35b79efe22f3be4b4c0169`). It ran
+with fresh AAVMF variables, a new writable target disk, a separate read-only
+protected disk, no network, and EGL/VirGL output to loopback VNC. At about 27
+minutes it reached GDM's live-session account panel. Pressing Return changed
+the display to black; the installer disk selector did not appear during the
+30-minute bound. This narrows the black-screen point to the login transition;
+it does not identify an ISO defect.
+
+The protected disk's before/after SHA-256 stayed
+`b7f1ada63281ed7e5bc7127dffbfc4c91582fab3080133b01a966c7624d97bb6`; its
+`0x5a` sentinel and both `qemu-img check` results passed. The VM used
+`virtio-gpu-gl-pci`, `/dev/dri/renderD128`, `egl-headless`, VNC
+`127.0.0.1:5952`, four vCPUs, and 6 GiB RAM. SP12 has no `/dev/kvm`; its kernel
+reports that HYP mode is unavailable, so this is TCG software emulation.
+
+To improve the renderer path, QEMU 11.1.3 was downloaded from the official
+release source, verified against its release signature (source SHA-256
+`5a8289c7940dc77d3873c81a6c29ba3afe1446fc9d36e77fa1658cdbecb84b22`, signing
+key fingerprint `CEACC9E15534EBABB82D3FA03353C9CEF108B584`), and built on SP12
+with EGL/VirGL support. The resulting custom AArch64 binary SHA-256 is
+`077b0b41878117e1d163cd9c525ed8d3f37ebb0a9c1bda27f43e27808fe95961`; system
+QEMU remains 11.0.3. The inspected package transactions added only
+`libvirglrenderer-dev` and `libgbm-dev`, with no removals or unrelated
+upgrades. A short paused-guest EGL/VirGL/VNC smoke test started without EGL
+errors. Its inactive display is expected because the guest was deliberately
+paused; that smoke test does not establish installer visibility.
+
+A fresh 60-minute installer retry script is staged locally and checks the ISO
+and QEMU hashes, creates fresh target/protected disks and UEFI variables,
+confirms the protected disk is read-only, and refuses to start unless SP12 has
+at least 50 GiB free. The script has not yet been transferred or run: the
+Tailscale SSH authorization request for `cs-sp12` is pending. No installer
+selection or target-disk write has happened in this retry. The VM evidence and
+QEMU build manifests are retained under
+`output/.unattended-luna-20261111210910Z/qemu-hosting/`; the complete first-run
+bundle is under `sp12-egl-virgl-installer-20261112/remote-vm-complete/`.
+
+The same QEMU 11.1.3 build reportedly passed two narrow FAT-delay checks. A disposable
+positive control delayed a 512-byte write to directory metadata sector 4067
+(byte offset `2082304`) by one second; the traced request overlapped the exact
+sector, the operation completed with `errno=0` after about 1.173 seconds, and
+the source image hash was unchanged. A guest run then delayed the real
+`sp12-sync-boot` helper's write to allocation-metadata sector 2098 by two
+seconds. The helper returned zero in about 14.67 seconds, the block trace
+overlapped the selected sector, and read-only FAT checking after shutdown
+passed. These cases establish a delay positive control and one delayed helper
+success path. They do not close the staging, marker, promotion, or recovery
+rotation interruption matrix. Runner/source and guest seed artifacts are
+under `output/.unattended-luna-20261111210910Z/qemu-hosting/fat-delay-qualification-20261112/`;
+the tracked `tools/sp12-fat-delay-positive-control.py` supplies a reproducible
+regular-file-only exact-sector positive control.
+raw SP12 runtime evidence (control JSON, guest serial, QEMU trace, read-only
+FAT check, and exact sector-mapper output) remains in its run directory pending
+authorized SSH transfer and hash verification. Keep the reported results
+provisional until those artifacts are copied off-host and checked.
+
+The reviewed RPMB package table in the earlier closeout was checked against
+`config/arm64-iso-kernel.json` and both retained `arm64-build-rpmb` package
+files. Their image and headers hashes match the table, and the existing
+SP12-input manifest verifier passes. The table therefore does identify a
+fixed, pinned RPMB-repaired candidate; that fact does not qualify it for
+physical installation or use.
+
+Two read-only worker reviews found no documentation overclaim or RPMB pin
+correction. The recovery review confirmed the delay helper's copy-only bounds
+and noted that the remote FAT runtime artifacts are not yet available for
+independent verification. After the report and tool changes, `bash
+tests/static-check.sh`, `git diff --check`, the FAT tool's CLI help, shell syntax
+for the prepared installer runner, and the SP12 input verifier passed. The
+static-check log SHA-256 is
+`bc8a0b412f29a823793340806614439e31656a6fd49fd99d3551fd942ad79bd1`; it is
+retained at `output/.unattended-luna-20261111210910Z/static-check-20261112.log`.
+The QEMU build manifest SHA-256 is
+`54126a8b67a750b821beae4b83532281f9cdbda1fa8402a6a19fdcd90d515e37`; the
+first-run VM bundle manifest SHA-256 is
+`1f7563b3e5353ca56bec467b031c7d67ffb3d4ec5614d3a9b50dd87fde9c6e5f`. Both
+manifests verified successfully.
 
 ## Exact package and ISO candidates
 
@@ -174,11 +259,12 @@ interruption, and worklog evidence; its SHA-256 is
 `925da4bde3f72fe1340b15d5208983964b80e034a78650f53ee2771daed7a1ba`. The
 concise worklog is `fat-guest-worklog.txt`.
 
-Still not run: exact delayed-writeback injection; interruption before and
-during staging, during marker updates, later payload promotions, post-marker
-commit, and recovery rotation; and the remaining metadata fault matrix.
-Simulated interruption evidence does not establish physical power-loss
-guarantees.
+At the original 2026-11-11 report, exact delayed-writeback injection was not
+run. The 2026-11-12 continuation below passes one exact-sector positive control
+and one delayed helper success case. Interruption before and during staging,
+during marker updates, later payload promotions, post-marker commit, recovery
+rotation, and the remaining metadata fault matrix remain open. Simulated
+interruption evidence does not establish physical power-loss guarantees.
 
 ### UEFI rescue — restoration passed; final firmware boot incomplete
 
@@ -255,21 +341,23 @@ The helper has not yet been run end-to-end in a disposable VM. Its timer cannot
 recover a pre-userspace hang. An independent reset/recovery path remains
 mandatory before any physical trial; no physical trial was attempted.
 Interface prerequisites, archive schema, refusals, and cleanup are documented
-in [the trial-tool guide](phase2-kernel-trial-tool-20261111.md). The available
-host has QEMU AArch64 but lacks QEMU x86 system emulation and OVMF. An APT
-simulation showed seven new packages and zero removals; no host package
-transaction was applied.
+in [the trial-tool guide](phase2-kernel-trial-tool-20261111.md). The original
+preflight found no QEMU x86 system binary or OVMF. The 2026-11-12 continuation
+later retained a custom QEMU 11.1.3 x86 binary and downloaded an OVMF package
+locally, but did not run the helper lifecycle. An earlier APT simulation
+proposed seven new packages and zero removals; that transaction was not
+applied.
 
 ## Physical state and Phase 2
 
 **B550I:** the last observed running kernel was generic
-`7.3.0-10-generic`. This continuation's root Tailscale SSH returned HTTP 502
-with TCP port 22 refused. No fresh root identity, package, fallback hash,
+`7.3.0-10-generic`. The requested Tailscale peer `cs-b550i-1` returned HTTP
+502 with TCP port 22 refused. No fresh root identity, package, fallback hash,
 trust, or journal capture was possible, and no boot/package action was taken.
 The earlier user-level preflight observed Secure Boot enabled; current trust
 state was not refreshed.
-No SSH approval link was available to share; the refusal was a connection
-failure rather than a pending authentication request.
+That peer refusal was a connection failure, not a pending authentication
+request.
 
 **SP12:** root SSH identity was verified as the Surface Pro 12 target. It
 remains on `7.3.1-psycachy-sp121`, package `7.3.1-1psycachy1`; `dpkg --audit`
@@ -286,8 +374,9 @@ separate recovery set remains intact: kernel
 `0b37595fbe6d03647ce48df946c0e84bbc54f372d2f37052825e86a562481b58`, DTB as
 above, and manifest SHA-256
 `83a9238de0a0a7439af824e1bd8ff0ecc143c2cea2656deaa94686e6a73f9eca`. No trial
-selection or physical package change is pending. Existing UFS RPMB registration
-failure remains in boot logs.
+selection or kernel package change is pending. The QEMU build added only
+`libvirglrenderer-dev` and `libgbm-dev` after their package transactions were
+inspected. Existing UFS RPMB registration failure remains in boot logs.
 No approved read-only RPMB path or trusted key was accessed; key availability
 remains unassessed. No key material was read or copied.
 
@@ -331,15 +420,16 @@ clean, root is read/write, the ESP is read-only, current payload hashes match
 the recorded values, and the recovery payload files remain present. BootNext is
 absent; BootCurrent is `MsTemp`, which is not in persistent BootOrder. Secure
 Boot remains disabled and firmware is in Setup Mode. B550I's remote peer
-remained offline; no SSH approval request or link was available.
+remained unreachable. The later SP12 QEMU retry request produced a pending
+Tailscale SSH authorization link; the retry has not run while approval remains
+pending.
 
-**Remaining owner-dependent gates:** restore B550I SSH reachability and capture
-its exact root/fallback state; establish production signing ownership/trust;
-run the trial helper through its full disposable UEFI lifecycle; complete ARM64
-installer qualification on a supported graphical target; establish a faithful
-RPMB fixture and built-in compile; finish exact FAT delayed-writeback and
-remaining interruption coverage and firmware-to-restored-target boot; prove
+**Remaining owner-dependent gates:** restore `cs-b550i-1` SSH reachability and
+capture its exact root/fallback state; approve the pending SP12 SSH request so
+the fresh QEMU 11.1.3 installer retry can run; establish production signing
+ownership/trust; run the trial helper through its full disposable UEFI
+lifecycle; complete ARM64 installer qualification on a supported graphical
+target; establish a faithful RPMB fixture and built-in compile; finish remaining
+FAT interruption coverage and firmware-to-restored-target boot; prove
 independent pre-userspace physical recovery; then qualify approved physical
-candidates and run the required Phase 2 pairs. No approval prompt was issued
-because no SSH authentication link appeared and the remaining blockers did not
-require an owner action to continue this work.
+candidates and run the required Phase 2 pairs.

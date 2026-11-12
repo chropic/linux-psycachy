@@ -16,20 +16,26 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   Physical NVIDIA behavior and hardware installation remain unqualified.
 - **ARM64 ISO candidate:** refreshed candidate SHA-256 is
   `10e3b63ff5d1b1491af8935ac536c0768d2d13f4ee35b79efe22f3be4b4c0169`.
-  QEMU reaches GDM and a live user, but the display stays black across tested
-  paths. No ISO-side defect was demonstrated; disk selection and installation
-  remain untested.
+  SP12's system QEMU 11.0.3 reaches GDM, but the display turns black on the
+  login transition. A source-verified QEMU 11.1.3 build with EGL/VirGL support
+  and its short backend smoke check pass; the fresh installer retry is pending
+  root SSH authorization to `cs-sp12`. No ISO-side defect is demonstrated;
+  disk selection and installation remain untested.
 - **Phase 1: BLOCKED pending exact-candidate physical RPMB qualification.**
   The repair is pinned and its module configuration compiled. No faithful
   disposable RPMB fixture was available, built-in compilation was not run,
   and request/lifetime runtime coverage is incomplete. FAT metadata-sector
   positive controls pass. One guest metadata-EIO helper case and generic ARM64
   UEFI marker-present/absent loader selection passed; a write-throttled helper
-  success case also passed. An abrupt disposable QEMU interruption after the
-  first payload promotion left a mixed kernel/initrd set without its marker;
+  success case also passed. A QEMU 11.1.3 exact-sector delayed-write positive
+  control and one delayed real-helper guest case were reported on SP12; raw
+  runtime logs, trace, and sector-map output remain on that host pending
+  authorized transfer and hash verification. The remaining
+  staging/marker/promotion/rotation interruption matrix is open. An abrupt
+  disposable QEMU interruption after the first payload promotion left a mixed
+  kernel/initrd set without its marker;
   generic UEFI halted at the marker guard. Read-only fsck reported a dirty
-  volume, and no repair was made. Exact delayed-writeback injection and the
-  remaining stage/marker/promotion/rotation interruption cases remain open.
+  volume, and no repair was made.
   The UEFI rescue VM restored the damaged target and passed read-only FAT
   checks, but the restored target did not reach userspace on the follow-up
   firmware boot.
@@ -38,12 +44,13 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   performance scenarios have been run; every scenario remains at `0/3` pairs.
   SP12 whole-system energy remains unavailable.
 - **Physical targets:** SP12 remains on `7.3.1-psycachy-sp121`; its verified
-  recovery set is intact and no BootNext selection is pending. B550I remains
-  on the previously observed generic `7.3.0-10-generic`; fresh root SSH was
-  refused, so this run could not refresh its physical state or trial it.
+  recovery set is intact and no BootNext selection is pending. The requested
+  Tailscale target `cs-b550i-1` refused TCP port 22. B550I's last observed
+  kernel is generic `7.3.0-10-generic`; the current state and trial could not
+  be refreshed. The suffix-less peer was not used.
 - **Status baseline:** the reviewed starting commit for the original campaign
   was `e43b9efc3264a6290ef3be3d35d12e921714dce2`. The most recent pushed
-  handoff before this extension was `5965c6db6b0ccec17e40e15afd3a2ee9fa0274ae`,
+  handoff before this extension was `cf53fdb9842b2d437e8632997237d8ca68df970a`,
   and both local and remote HEAD matched it at the extension start. See the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
   for the new evidence and final delivery status.
@@ -84,14 +91,17 @@ the final pin manifests, and retained build/verifier output under the ignored
   guest metadata EIO during staged `vmlinuz.new` flush preserved active hashes,
   marker, and read-only ESP state; post-shutdown `fsck.vfat -n` was clean. A
   write-throttled successful update also passed and its guest-side read-only
-  FAT check was clean. In generic ARM64 AAVMF, the marker-present loader booted
+  FAT check was clean. A later QEMU 11.1.3 run passed one exact-sector delayed-
+  write positive control and one real-helper delayed-write guest case; see the
+  dated continuation report for sector, timing, hashes, and trace. In generic
+  ARM64 AAVMF, the marker-present loader booted
   its test kernel and the marker-absent loader halted before its kernel branch.
   A separate interruption after the first payload promotion left a mixed
   kernel/initrd state without a marker. Read-only fsck reported the dirty
   volume, and fresh AAVMF BootNext selection halted at `SP12_MARKER_MISSING`
-  before the candidate kernel branch. No filesystem repair was run. Exact
-  delayed-writeback injection and other staging/marker/promotion/rotation
-  interruption points remain open; simulated interruption does not guarantee
+  before the candidate kernel branch. No filesystem repair was run. Other
+  staging/marker/promotion/rotation interruption points remain open; simulated
+  interruption does not guarantee
   physical power-loss safety. See the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#fat-fault-qualification--partial-guest-coverage-matrix-open)
   for the limited runtime scope and evidence.
@@ -132,9 +142,11 @@ blocking gate; no provisioning or repair was attempted.
 ### 2.1 ARM64 installer lifecycle
 
 - Make the live graphical installer visible in a supported ARM environment,
-  or isolate and fix an ISO-side display problem. Two QEMU runs reached GDM and
-  a live user, but virtio, Bochs, GL-backed output, and VT switching remained
-  black; captured evidence lacks compositor and renderer diagnostics.
+  or isolate and fix an ISO-side display problem. QEMU 11.0.3 on SP12 reached
+  GDM, but the login transition became black. QEMU 11.1.3 with EGL/VirGL
+  support now passes its backend smoke; the fresh disposable installer retry
+  remains pending root SSH authorization. No compositor or renderer defect
+  inside the ISO has been demonstrated.
 - Reach the disk selector; verify it lists only eligible disks, requires an
   explicit choice and typed `ERASE`, and generates a partition plan for only
   the chosen disposable disk.
