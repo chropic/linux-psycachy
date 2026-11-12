@@ -21,7 +21,7 @@ preserves and verifies existing recovery generations; interrupted rotation
 validates current and previous generations before deleting either. Restore
 falls back from a corrupt current generation to a verified previous
 generation. Independent review found no blocking issue. Focused tests passed:
-24 tests in `tests.test_sp121_boot_sync`; both shell scripts passed `sh -n`.
+37 tests in `tests.test_sp121_boot_sync`; both shell scripts passed `sh -n`.
 
 The SP12 delayed-write evidence archive is present locally at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/fat-delay-qualification-20261112/sp12-runtime-evidence.tar.gz`.
@@ -34,11 +34,27 @@ entry sectors are 81 and 2098, its data sector is 10341, and the first free
 `9b73dc77273e42412195b8391dfa24fae590177468ed75b58e6faec1fd668a6f`.
 
 Previously recorded tests include exact-sector delay injection and one
-delayed successful real-helper guest update. Other staging, marker,
-promotion, recovery-rotation, and restore interruption boundaries remain open.
-The earlier rescue restore passed payload hashes and read-only FAT checks, but
-the follow-up firmware boot did not reach userspace. No filesystem repair was
-run on dirty interruption evidence.
+delayed successful real-helper guest update. The expanded fault matrix now
+covers staging copy, per-file and directory flushes, marker removal and
+recreation, all payload promotions, recovery rotation, and restore staging,
+flush, and promotion boundaries. These checks remain disposable-filesystem
+tests and do not establish physical power-loss safety.
+
+The corrected rescue run booted a separate `/dev/vde1` rescue root and kept
+the target clone on `/dev/vdd`. The helper restored the target clone's
+verified recovery kernel, initrd, and DTB; the exact hashes matched the
+manifest, `SP12BOOT` was present, and staging files were absent. Fresh AAVMF
+variables used one-time BootNext `000C` for target GPT partition 15. The
+follow-up boot logged `SP12_RESCUE_LOADER_RAN_20261112_9d45e7c2`, proving the
+intended EFI loader ran, then stopped at a GRUB prompt. Restored kernel and
+userspace boot remain unqualified. All seven QCOW overlays passed
+`qemu-img check`; no physical recovery state changed. Key evidence hashes:
+rescue identity `01e4065e9cb977f72204a3b901c79ce38f7c05f38aac445d769e62bf8dfdc882`,
+restore log `92e86179b2d65696512cfe87a99a99cab4bfce1b459d7bd9201a42077c6c8ab5`,
+target boot serial `4a033e0bb33a7c85488d9482e6c360a3e986d5dd61416e42b30a95412da79e61`,
+and COW checks `9a8c254953b1df96f276bd9dc5dd97aba489705707afedfd707f3ba19eccfe92`.
+The evidence directory is
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/`.
 
 ## ARM64 installer and candidate boot
 
@@ -80,7 +96,18 @@ Attempt-6 review SHA-256 is
 `01f651affddbd46002d3d4dd08def6e6b053ea4e256512d5bfcb8592d8ddee9a`; serial
 SHA-256 is
 `a52696051c39ec8d00df1c6b1a0cae93352168a7970f229fcce2a275664a5bc9`. A
-separate longer reinstall check is underway. The review file is
+separate 1,200-second attempt-7 reinstall again reached the candidate root
+shell with a clean dpkg audit and matching candidate/ESP and generic fallback
+hashes. The same-version reinstall remained in the kernel post-install dracut
+hook at timeout: dracut was actively stripping files, with 194 MiB and 3,901
+staged files. The installed initrd had not changed at the last sample. This
+establishes slow active work, not hook completion; package state after the
+timeout, boot-sync completion, and interruption recovery remain unverified.
+The disposable overlay passed `qemu-img check`; the backing target and UEFI
+variables were preserved. Attempt-7 review SHA-256 is
+`4bbdcd72628c368ef8def43dbd8a8bb8b219d397d887358d54b6d8244a4ac78e`; see
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-package-reinstall-20261112/attempt7-long-reinstall/reinstall-review.txt`.
+The attempt-6 review file is
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-package-reinstall-20261112/attempt6-debug-shell-masked/host-debug-shell-review.txt`.
 
 The prior two SP12-native QEMU installer attempts still did not reach the
@@ -155,10 +182,29 @@ mounted partitions. The stable device path is
 confirmed that its MacOS setup may be erased for this live media. The Lexar
 USB `AA8AGLJAH1RZABDT`, which contains the MSI BIOS image, remains mounted and
 must not be written. The Seagate system NVMe `7VP015DH` and BitLocker Samsung
-NVMe `S7KHNJ0WA06121F` also remain untouched. The raw image write and readback
-are pending because this session cannot run local sudo; the user must run the
-provided terminal command and verify the expected readback hash before a
-one-time firmware boot.
+NVMe `S7KHNJ0WA06121F` also remain untouched. The user wrote the image after
+repeating the identity, capacity, USB-path, unmounted-state, source-hash, and
+existing partition-signature checks. The direct-I/O readback covered the full
+4,810,289,152-byte ISO prefix and returned
+`READBACK_OK dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`.
+Captured terminal output SHA-256 is
+`746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529`; it is
+retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
+The one-time firmware boot and live hardware qualification are pending.
+
+A read-only preflight captured the SP12 internal root as model
+`THGJFMT2E46BATVB`, serial `B526UEHD6I`, UUID
+`db48a164-d6cb-4034-8d6f-841867f66757`, mounted at `/`; its ESP is UUID
+`FA3E-AEE4`, mounted vfat read-only at `/boot/efi`. The existing recovery
+manifest passes for `vmlinuz`, `initrd.img`, and `dtb`. Active ESP hashes are
+`ec4d4435f103038d5f3ed8f14be4afc0d33e13905a3060ce7ee57e383351598e`,
+`55c4796998b575d491ceaebc830934e5addbcbf49af46bb4a4d4a5e5f8fd05db`, and
+`5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc` for
+kernel, initrd, and DTB. `SP12BOOT` is an empty regular marker. Full preflight
+output SHA-256 is
+`9f6d1f0c3a1c8cecef075352d68d28f2d1a2159a9eef8e598fddc89a94ff65e8` at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/preflight-readonly.txt`.
 
 ## RPMB and remaining gates
 
@@ -196,8 +242,8 @@ paired benchmarks remain deferred until all working-system gates pass.
 
 ## Integrated verification
 
-- Focused tests: 80 passed across the AMD64 trial verifier (27), SP12 recovery
-  and FAT helpers (31), live builder (9), and installer integration suites
+- Focused tests: 86 passed across the AMD64 trial verifier (27), SP12 recovery
+  and FAT helpers (37), live builder (9), and installer integration suites
   (13).
 - `bash tests/static-check.sh`: passed, including the 71-recorded-change
   configuration policy check. The root-only live `mokutil` test was skipped

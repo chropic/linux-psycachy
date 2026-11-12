@@ -53,7 +53,13 @@ initramfs generation, then timed out before dpkg/hook completion. The generic
 and rollback checks remain open. The retained target and firmware-variable
 hashes remained unchanged; exact evidence is in
 `output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-package-reinstall-20261112/pinned-kernel-review.txt`.
-A new longer hook check is using a separate disposable overlay.
+A separate 1,200-second reinstall remained active in dracut at timeout
+(194 MiB / 3,901 staged files; the installed initrd was unchanged at the last
+sample). This shows slow active work but does not establish dpkg or boot-sync
+hook completion; package after-state and interruption recovery remain
+unverified. Its disposable overlay passed `qemu-img check`, and retained
+target/UEFI state remained unchanged. Review:
+`output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-package-reinstall-20261112/attempt7-long-reinstall/reinstall-review.txt`.
 Attempt-6 debug-shell review SHA-256 is
 `01f651affddbd46002d3d4dd08def6e6b053ea4e256512d5bfcb8592d8ddee9a`; its
 serial log SHA-256 is
@@ -79,9 +85,10 @@ results separate from Surface hardware qualification.
 **State:** Physical failure reproduced; adapted three-patch source repair is
 pinned and compiled into the refreshed ARM64 module configuration. The exact
 QEMU RPMB series and its two prerequisite series apply cleanly on a pinned
-base; an isolated build passed all 32 UFS QOS tests. Built-in kernel
-compilation, Linux-driver request/lifetime testing against the emulator, and
-physical exact-candidate qualification remain open.
+base; an isolated build passed all 32 UFS QOS tests. Built-in Kbuild is running
+on isolated SP12 scratch. The diagnostic KASAN/lockdep compile and read-only
+Linux-driver guest run have not started; the guest variant is prepared.
+Physical exact-candidate qualification remains open.
 
 SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
 ufs_rpmb bus. The authenticated source assigns that bus in
@@ -161,8 +168,11 @@ path is the supported recovery procedure.
   `module.sig_enforce=Y` under integrity lockdown. The AMD64 ISO and trial
   lifecycle remain open. See the dated [takeover report](archive/validation/luna-takeover-20261112.md)
   for the exact package configuration and evidence.
-- The UEFI rescue VM restored damaged target payloads and passed read-only FAT
-  checks, but the follow-up firmware boot did not reach the restored userspace.
+- A corrected UEFI rescue VM used a separate rescue root, restored a disposable
+  target clone, and verified exact payload hashes. Fresh AAVMF variables and
+  one-time BootNext reached the unique intended-loader marker; GRUB then stopped
+  at a prompt, so restored target kernel/userspace boot remains open. All seven
+  QCOW overlays passed `qemu-img check`; no physical recovery state changed.
 - The Phase 2 UPS sampler and fixed editor/video inputs already exist. Their
   measurement and workload validation remains in the ship checklist.
 

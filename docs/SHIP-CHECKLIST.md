@@ -35,9 +35,11 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   AppArmor/rfkill before the 180-second QEMU timeout. A fresh 600-second COW
   boot reached a root shell on `7.3.1-psycachy-sp121`; fsck passed and the ESP
   mounted from `/dev/vda1`. A same-version pinned package reinstall reached
-  initramfs generation, then timed out before dpkg/hook completion. A longer
-  isolated reinstall check is underway. Version-upgrade, interrupted-update,
-  and rollback checks remain open. Two SP12 TCG
+  initramfs generation, then timed out before dpkg/hook completion. A separate
+  1,200-second isolated reinstall remained actively in dracut at timeout
+  (194 MiB / 3,901 staged files; the installed initrd was unchanged at the last
+  sample). Hook completion and after-state remain unknown. Version-upgrade,
+  interrupted-update, and rollback checks remain open. Two SP12 TCG
   installer attempts did not reach the selector; both made zero target and
   protected-disk writes. The QEMU details and evidence are in the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
@@ -48,26 +50,40 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   (4,810,289,152 bytes); the local copy matches SP12's checksum and build
   manifest. The attached MacOS setup drive was positively identified as an
   unmounted Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`, on USB; it is
-  separate from the Lexar MSI BIOS USB and both NVMe drives. The write and
-  readback remain pending a local sudo terminal. No firmware boot or internal
-  SP12 changes have occurred. The image contains private, non-redistributable
-  machine support and must stay local.
+  separate from the Lexar MSI BIOS USB and both NVMe drives. The user wrote
+  the image after exact model/serial and partition-signature checks; direct-I/O
+  readback returned `READBACK_OK` with the expected ISO SHA-256. No firmware
+  boot or internal SP12 changes have occurred. A read-only SP12 baseline
+  confirms root UUID
+  `db48a164-d6cb-4034-8d6f-841867f66757`, ESP UUID `FA3E-AEE4`, and a
+  read-only ESP mount; the existing recovery checksums for kernel, initrd, and
+  DTB all pass. Its device identity and active payload hashes are retained in
+  the takeover report. The [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
+  lists the one-time boot, hardware checks, read-only recovery inspection, and
+  stop/recovery steps. The image contains private, non-redistributable machine
+  support and must stay local.
 - **Recovery and FAT:** recovery snapshot eligibility now requires the valid
   boot marker; interrupted rotation validates recovery generations before
   deleting them, and restore falls back to a verified previous generation.
-  Independent review and 24 focused tests passed. The delayed-write evidence
+  Independent review and 37 focused tests passed. The delayed-write evidence
   has been copied from SP12 and all 49 recorded files verify against the remote
   manifest. Mapping the pre-run FAT seed confirms first-free-cluster metadata
   sectors 81 and 2098, data sector 10341, and free directory-entry sector 4067.
-  Other interruption boundaries remain open. The earlier rescue restored the
-  payloads and passed read-only FAT checks, but firmware boot did not reach
-  userspace.
+  Additional interruptions now cover staging copy/flushes, marker transitions,
+  all payload promotions, recovery rotation, and restore stages. A corrected
+  rescue VM used separate rescue-root and target disks, restored the target
+  clone with exact payload hashes, and proved the intended EFI loader ran via
+  a unique serial marker under one-time BootNext. GRUB then stopped at a prompt;
+  restored target kernel/userspace boot remains open. All seven QCOW overlays
+  passed `qemu-img check`; no physical storage or firmware variables changed.
 - **RPMB:** the pinned seven-patch QEMU RPMB series applied cleanly after its
   exact two prerequisite series on the pinned base. An isolated QEMU build
   passed its source manifest check; all 32 UFS QOS tests passed, including the
   three RPMB descriptor, key-counter, and read/write cases. Key programming
-  and data writes occurred only in the disposable emulator. Built-in kernel
-  compile, Linux-driver guest request/lifetime coverage, and exact-candidate
+  and data writes occurred only in the disposable emulator. Built-in Kbuild is
+  running on isolated SP12 scratch; the diagnostic KASAN/lockdep build and
+  read-only Linux-driver guest run have not started. The guest variant is
+  prepared. Exact-candidate
   physical registration/health checks remain open. Physical RPMB key or data
   operations remain prohibited.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh

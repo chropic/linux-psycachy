@@ -342,7 +342,48 @@ if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
     def test_power_loss_during_dtb_promotion_can_be_manually_recovered(self):
         self._assert_sync_interruption_during_promotion("dtb")
 
-    def test_killed_staging_write_is_cleaned_then_retry_and_restore_work(self):
+    def test_killed_staging_copy_is_cleaned_then_retry_and_restore_work(self):
+        staged_vmlinuz = str(self.dest / "vmlinuz.new")
+        self.command(
+            "cp",
+            """
+/bin/cp "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_STAGE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_STAGE"] = staged_vmlinuz
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertEqual({"vmlinuz.new"}, {path.name for path in self.dest.glob("*.new")})
+
+        self.env.pop("SP12_TEST_KILL_ON_STAGE")
+        (self.bin / "cp").unlink()
+        cleaned = self.run_tool("sp12-esp-space", "--apply-stale-only")
+        self.assertEqual(cleaned.returncode, 0, cleaned.stderr)
+        self.assertFalse((self.dest / "vmlinuz.new").exists())
+
+        retry = self.run_tool()
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual(
+            {name: f"new-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_killed_staged_payload_flush_is_cleaned_then_retry_and_restore_work(self):
         staged_vmlinuz = str(self.dest / "vmlinuz.new")
         self.command(
             "sync",
@@ -385,6 +426,41 @@ exit 0
         self.assertEqual(restored.returncode, 0, restored.stderr)
         self.assertEqual(self.before, self.snapshot())
         self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_killed_staged_esp_metadata_flush_keeps_active_set_and_marker(self):
+        self.command(
+            "sync",
+            """
+if [ "${1:-}" = "-f" ] && [ "${2:-}" = "$SP12_TEST_SYNC_DEST" ]; then
+    /bin/sync "$@"
+    kill -9 "$PPID"
+fi
+exit 0
+""",
+        )
+        self.env["SP12_TEST_SYNC_DEST"] = str(self.dest)
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertEqual(
+            {"vmlinuz.new", "initrd.img.new", "dtb.new"},
+            {path.name for path in self.dest.glob("*.new")},
+        )
+
+        self.command("sync", "exit 0")
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertFalse(list(self.dest.glob("*.new")))
 
     def test_killed_marker_removal_restores_the_verified_old_set(self):
         marker = str(self.dest / "SP12BOOT")
@@ -600,6 +676,176 @@ if [ "$last" = "$SP12_TEST_KILL_ON_RESTORE_PROMOTE" ]; then kill -9 "$PPID"; fi
 
         self.env.pop("SP12_TEST_KILL_ON_RESTORE_PROMOTE")
         (self.bin / "mv").unlink()
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_restore_killed_during_staging_copy_can_be_retried(self):
+        self.run_tool()
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        staged_vmlinuz = str(self.dest / "vmlinuz.restore.new")
+        self.command(
+            "cp",
+            """
+/bin/cp "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_RESTORE_STAGE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_RESTORE_STAGE"] = staged_vmlinuz
+
+        interrupted = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(
+            {name: f"candidate-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertEqual(
+            {"vmlinuz.restore.new"},
+            {path.name for path in self.dest.glob("*.restore.new")},
+        )
+
+        self.env.pop("SP12_TEST_KILL_ON_RESTORE_STAGE")
+        (self.bin / "cp").unlink()
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_restore_killed_after_marker_removal_can_be_retried(self):
+        self.run_tool()
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        marker = str(self.dest / "SP12BOOT")
+        self.command(
+            "rm",
+            """
+last=
+for arg do last=$arg; done
+/bin/rm "$@"
+if [ "$last" = "$SP12_TEST_KILL_ON_RESTORE_MARKER_REMOVE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_RESTORE_MARKER_REMOVE"] = marker
+
+        interrupted = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(
+            {name: f"candidate-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        self.assertFalse((self.dest / "SP12BOOT").exists())
+        self.assertEqual(
+            {"vmlinuz.restore.new", "initrd.img.restore.new", "dtb.restore.new"},
+            {path.name for path in self.dest.glob("*.restore.new")},
+        )
+
+        self.env.pop("SP12_TEST_KILL_ON_RESTORE_MARKER_REMOVE")
+        (self.bin / "rm").unlink()
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_restore_killed_after_final_payload_flush_can_be_retried(self):
+        self.run_tool()
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        count_file = self.root / "restore-sync-count"
+        self.command(
+            "sync",
+            """
+/bin/sync "$@"
+count=0
+[ ! -f "$SP12_TEST_RESTORE_SYNC_COUNT" ] || count=$(cat "$SP12_TEST_RESTORE_SYNC_COUNT")
+count=$((count + 1))
+printf '%s\\n' "$count" > "$SP12_TEST_RESTORE_SYNC_COUNT"
+if [ "$count" -eq 2 ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_RESTORE_SYNC_COUNT"] = str(count_file)
+
+        interrupted = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual("2", count_file.read_text().strip())
+        self.assertEqual(self.before, self.snapshot())
+        self.assertFalse((self.dest / "SP12BOOT").exists())
+
+        self.command("sync", "exit 0")
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_restore_killed_after_marker_recreation_can_be_retried(self):
+        self.run_tool()
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        marker = str(self.dest / "SP12BOOT")
+        self.command(
+            "touch",
+            """
+/usr/bin/touch "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_RESTORE_MARKER_CREATE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_RESTORE_MARKER_CREATE"] = marker
+
+        interrupted = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+        self.env.pop("SP12_TEST_KILL_ON_RESTORE_MARKER_CREATE")
+        (self.bin / "touch").unlink()
         restored = subprocess.run(
             ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
             env=self.env,
