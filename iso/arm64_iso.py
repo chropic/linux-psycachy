@@ -7,6 +7,7 @@ import hashlib
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 
@@ -181,6 +182,32 @@ def verify_offline_repository(repo_path, pin_path=KERNEL_PIN):
     return {"package_count": len(debs), "kernel_release": pin["kernel_release"]}
 
 
+def stage_offline_repository(source_path, destination_path):
+    """Copy a flat offline repository while dereferencing file symlinks."""
+    source = pathlib.Path(source_path)
+    destination = pathlib.Path(destination_path)
+    if not source.is_dir() or source.is_symlink():
+        raise ValueError("offline repository source must be a real directory")
+    if destination.exists() or destination.is_symlink():
+        raise ValueError("offline repository staging destination already exists")
+    created = False
+    try:
+        destination.mkdir()
+        created = True
+        for entry in sorted(source.iterdir()):
+            target = entry.resolve(strict=True)
+            if not target.is_file():
+                raise ValueError(f"offline repository entry is not a regular file: {entry.name}")
+            shutil.copy2(target, destination / entry.name)
+        if any(entry.is_symlink() or not entry.is_file() for entry in destination.iterdir()):
+            raise ValueError("staged offline repository contains a non-regular file")
+    except (OSError, ValueError):
+        if created:
+            shutil.rmtree(destination, ignore_errors=True)
+        raise
+    return destination
+
+
 def installed_package_records(path):
     records = {}
     for line in pathlib.Path(path).read_text(encoding="utf-8").splitlines():
@@ -250,6 +277,9 @@ def main():
     repo = commands.add_parser("verify-repository")
     repo.add_argument("directory", type=pathlib.Path)
     repo.add_argument("--pin", type=pathlib.Path, default=KERNEL_PIN)
+    stage = commands.add_parser("stage-repository")
+    stage.add_argument("source", type=pathlib.Path)
+    stage.add_argument("destination", type=pathlib.Path)
     prefs = commands.add_parser("write-preferences")
     prefs.add_argument("snapshot", type=pathlib.Path)
     prefs.add_argument("output", type=pathlib.Path)
@@ -269,6 +299,9 @@ def main():
         elif args.command == "verify-repository":
             summary = verify_offline_repository(args.directory, args.pin)
             print(f"Verified ARM64 offline repository with {summary['package_count']} packages.")
+        elif args.command == "stage-repository":
+            stage_offline_repository(args.source, args.destination)
+            print(f"Staged ARM64 offline repository at {args.destination} with symlinks dereferenced.")
         elif args.command == "write-preferences":
             count = write_installed_package_preferences(args.snapshot, args.output, args.allow)
             print(f"Pinned {count} installed package versions against downgrade.")

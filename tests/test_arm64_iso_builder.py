@@ -121,6 +121,58 @@ class Arm64IsoBuilderTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "hash mismatch"):
                 ARM64_ISO.verify_offline_repository(repo, pin_path)
 
+    def test_staged_repository_dereferences_symlinked_packages(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = pathlib.Path(temporary)
+            archive = directory / "archive-cache"
+            archive.mkdir()
+            repo = directory / "repo"
+            repo.mkdir()
+            release = "7.3.1-test"
+            version = "1.0"
+            source_packages = [
+                self._package(archive, f"linux-image-{release}", version),
+                self._package(archive, f"linux-headers-{release}", version),
+            ]
+            for package in source_packages:
+                (repo / package.name).symlink_to(package)
+
+            with (repo / "Packages").open("w") as output:
+                subprocess.run(["dpkg-scanpackages", "--multiversion", ".", "/dev/null"],
+                               cwd=repo, check=True, text=True, stdout=output,
+                               stderr=subprocess.DEVNULL)
+            with (repo / "Packages").open("rb") as source, gzip.open(repo / "Packages.gz", "wb") as dest:
+                dest.write(source.read())
+            (repo / "SHA256SUMS").write_text(
+                "".join(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n"
+                        for path in sorted(repo.glob("*.deb"))))
+            pin = {
+                "schema_version": 1,
+                "architecture": "arm64",
+                "kernel_release": release,
+                "debian_version": version,
+                "dtb_path": "qcom/test.dtb",
+                "dtb_sha256": "a" * 64,
+                "packages": [
+                    {"name": package.name.split("_", 1)[0], "filename": package.name,
+                     "sha256": hashlib.sha256(package.read_bytes()).hexdigest()}
+                    for package in source_packages
+                ],
+            }
+            pin_path = directory / "kernel.json"
+            pin_path.write_text(json.dumps(pin))
+
+            ARM64_ISO.verify_offline_repository(repo, pin_path)
+            staged = directory / "staged-repository"
+            ARM64_ISO.stage_offline_repository(repo, staged)
+
+            for package in source_packages:
+                staged_package = staged / package.name
+                self.assertFalse(staged_package.is_symlink())
+                self.assertTrue(staged_package.is_file())
+                self.assertEqual(staged_package.read_bytes(), package.read_bytes())
+            self.assertEqual(ARM64_ISO.verify_offline_repository(staged, pin_path)["package_count"], 2)
+
     def test_installed_versions_are_pinned_except_requested_kernel_pair(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = pathlib.Path(temporary)
