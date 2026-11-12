@@ -7,7 +7,8 @@ die() { echo "PsyCachy ARM64 installation: $*" >&2; exit 1; }
 (( EUID == 0 )) || die 'run as root from the live installer'
 target=/target
 media=/cdrom/psycachy
-pin=$media/arm64-iso-kernel.json
+pin=$media/config/arm64-iso-kernel.json
+[[ -f $pin ]] || die "pinned ARM64 ISO configuration is missing: $pin"
 release=$(python3 - "$pin" <<'PY'
 import json, sys
 print(json.load(open(sys.argv[1], encoding="utf-8"))["kernel_release"])

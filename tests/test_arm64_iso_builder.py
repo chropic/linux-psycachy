@@ -17,6 +17,16 @@ SPEC.loader.exec_module(ARM64_ISO)
 
 
 class Arm64IsoBuilderTests(unittest.TestCase):
+    def test_late_installer_uses_the_pinned_config_directory(self):
+        installer = (ROOT / "iso/arm64-install-target.sh").read_text()
+        builder = (ROOT / "iso/build-arm64.sh").read_text()
+        self.assertIn("pin=$media/config/arm64-iso-kernel.json", installer)
+        self.assertIn('[[ -f $pin ]] || die', installer)
+        self.assertIn(
+            '"$root/config/arm64-iso-kernel.json" "$payload/config/"',
+            builder,
+        )
+
     def test_grub_autoinstall_is_inserted_before_separator_once(self):
         source = (
             'menuentry "Install" {\n'
