@@ -31,9 +31,12 @@ info SHA-256 is
 Checksums, build info, GRUB config, manifests, and build logs are retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/corrected-build-fdt-fix/`.
 The image remains local-only because it contains non-redistributable machine
-support. It has not yet been written to USB or booted. The Apple drive is
-currently disconnected; on reconnection, verify model, serial, USB path,
-capacity, unmounted state, and current partition signatures before writing.
+support. It has not yet been written to USB or booted. The Apple drive is now
+attached to the B550I. Read-only inventory again confirms the expected model,
+serial, USB path, 465.8 GB capacity, and unmounted state. Its trailing ext4
+`sdb3` starts at sector 9396224, after the ISO ends at sector 9395095. Before
+writing, show the current root-only partition/signature output and require the
+serial confirmation; keep `sdb3` unmounted.
 
 ## One-time USB boot
 
@@ -50,7 +53,9 @@ SHA-256. The live PipeWire speaker sink was shown at 40%. The user reported all 
 functions worked except speaker output, which was silent. The speaker is also
 silent in the installed system; its PipeWire level was 18%, while the prior
 owner-confirmed working 7.3.0 boot used 72% with the same 1/6 ALSA speaker
-level. Retest at a normal listening level before attributing silence to a
+level and the same Q6/ASoC warnings. Since the live test was silent at 40%, the
+installed 18% level alone does not explain both results. Repeat a short tone
+test at 72% with mixer controls unchanged before attributing silence to a
 kernel fault. The user reported returning to the default internal installation
 after the USB trial.
 The live recovery inspection output was not provided; do not mark that gate

@@ -82,15 +82,19 @@ results separate from Surface hardware qualification.
 
 ### I-3: Repair UFS RPMB registration and lifetime safely
 
-**State:** Physical failure reproduced; adapted three-patch source repair is
-pinned and compiled into the refreshed ARM64 module configuration. The exact
+**State:** Physical failure reproduced; the adapted three-patch source repair
+is pinned and compiled into the refreshed ARM64 module configuration. The exact
 QEMU RPMB series and its two prerequisite series apply cleanly on a pinned
-base; an isolated build passed all 32 UFS QOS tests. The last reachable sample
-showed built-in Kbuild active on isolated SP12 scratch with no errors; SP12 has
-since gone offline, so completion and output are unknown. The diagnostic
-KASAN/lockdep compile and read-only Linux-driver guest run have not started;
-the guest variant is prepared. Physical exact-candidate qualification remains
-open.
+base; an isolated build passed all 32 UFS QOS tests. The first built-in compile
+was terminated by SSH hangup during unrelated Kbuild objects; it had no compiler
+diagnostic and produced no final kernel artifact. The source tree and
+`CONFIG_RPMB=y` config still match their pins. Incremental compilation is
+resumed in `luna-rpmb-builtin-resume-20261112.service` with a three-core quota
+and low I/O priority; its log is
+`/var/tmp/luna-kernel-rpmb-validation-20261112/logs/build-builtin-resume.log`.
+The diagnostic KASAN/lockdep compile and read-only Linux-driver guest run have
+not started; the guest variant is prepared. Physical exact-candidate
+qualification remains open.
 
 SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
 ufs_rpmb bus. The authenticated source assigns that bus in

@@ -191,10 +191,14 @@ Captured terminal output SHA-256 is
 `746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529`; it is
 retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
-After the one-time boot and return to the installed system, a read-only host
-check confirmed the Apple USB is disconnected. The user authorized reuse of
-the same drive; its identity and mount state must be checked again before the
-corrected image is written.
+After the one-time boot and return to the installed system, the Apple USB
+was disconnected. It is now attached to the B550I. A read-only `lsblk` and
+udev check again identify Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`,
+USB path `pci-0000:02:00.0-usb-0:1:1.0-scsi-0:0:0:0`, capacity 465.8 GB, and
+no mounted partitions. Its trailing ext4 `sdb3` starts at sector 9396224; the
+corrected image is 9,395,096 sectors and ends at 9395095, leaving it beyond the
+write boundary. The root-only `fdisk -l`/`wipefs --no-act` review and guarded
+write/readback remain pending.
 The first one-time USB boot reached the live session. User output confirms
 kernel `7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st Edition/cow`, an
 overlay root, and a staged DTB hash matching the pin. GRUB printed a missing
@@ -207,13 +211,15 @@ contains one `insmod fdt`, the pinned `devicetree` path, and the unchanged
 Because `/sys/firmware/fdt` was absent in the first session, the exact DTB
 passed to Linux is not established. The efivarfs warning was expected from
 `efi=noruntime`. The user reports the first session's tested hardware functions
-worked except speaker output, which was silent. The installed system is also
-silent. A read-only inspection found the pinned private topology/UCM/firmware
-files installed, PipeWire's speaker sink at 18% volume, and the internal
-microphone source. The prior owner-confirmed working 7.3.0 boot had PipeWire at
-72% and the same 1/6 ALSA speaker level; it also recorded the same Q6 APM
-command timeout and ASoC widget-binding deferral. The current lower PipeWire
-level is a testable explanation; the available logs do not identify the cause.
+worked except speaker output, which was silent; the live sink was at 40%. The
+installed system is also silent. A read-only inspection found the pinned
+private topology/UCM/firmware files installed, PipeWire's speaker sink at 18%,
+and the internal microphone source. The prior owner-confirmed working 7.3.0
+boot had PipeWire at 72% and the same 1/6 ALSA speaker level; it also recorded
+the same Q6 APM command timeout and ASoC widget-binding deferral. Since the
+live trial was silent at 40%, the lower installed level alone does not explain
+both results. A short tone test at 72% with mixer controls unchanged is needed
+before attributing silence to a kernel regression.
 The read-only live recovery inspection output was not provided. Sanitized
 live-output summary SHA-256 is
 `9a5cd450173a221a589800647704376ba0ef31bde19d72d0984fa9abfda7d37b` at
@@ -271,11 +277,17 @@ built-in config SHA is
 KASAN/lockdep config SHA is
 `ea9e1ed94b956d215def3acb14008a981c6dec95594f194d33d48003427dc553`; the
 guest diagnostic variant with UFS HCD and PCI built in is
-`55993eff382d4da79e980f8d7890be18bcd25b46d5559827aa1f0edc2d30d78b`. At the
-last reachable sample, built-in Kbuild was active with about 10,072 log lines
-and no reported errors. SP12 then went offline on Tailscale; completion and
-output are unknown. The diagnostic build and guest boot did not start. The
-21-entry local input packet manifest SHA is
+`55993eff382d4da79e980f8d7890be18bcd25b46d5559827aa1f0edc2d30d78b`. The
+first built-in compile ended on SSH hangup at 10,393 log lines while compiling
+unrelated objects; it emitted no compiler diagnostic, and no final `vmlinux`,
+`Image`, or `vmlinuz.efi` exists. The interrupted log SHA is
+`ea67144f35360d5b0e3743a402a163f909d41940b433c2c240e1246f82ea1eda`. A
+read-only audit confirmed the source-tree hash and built-in config still match
+their pins and `CONFIG_RPMB=y`. The build has resumed incrementally in
+`luna-rpmb-builtin-resume-20261112.service` with `-j4`, a 3-core CPU quota, and
+low I/O priority; its separate log is
+`/var/tmp/luna-kernel-rpmb-validation-20261112/logs/build-builtin-resume.log`.
+The diagnostic build and guest boot have not started. The 21-entry local input packet manifest SHA is
 `77daab4618a50934215f08dd13d3e10743234869cd6436afa8f036986eac35c6`, and all
 entries verified. The packet is under
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/`;

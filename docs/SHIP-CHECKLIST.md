@@ -59,12 +59,16 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   also silent; its PipeWire speaker endpoint and pinned firmware/UCM files are
   present. The installed PipeWire level was 18%, versus 72% in the prior
   owner-confirmed working 7.3.0 boot; the ALSA speaker control was 1/6 in both.
-  Retest at a normal listening level before attributing this to a kernel fault.
+  The live trial was also silent at 40%, so the 18% level alone does not explain
+  both results. Repeat a short tone test at 72% with mixer controls unchanged.
   The live run did not prove
   the exact DTB passed to Linux (`/sys/firmware/fdt` was absent), and the
-  read-only live recovery inspection was not reported. The Apple HDD is
-  currently disconnected; re-identify it by serial and mount state before the
-  corrected image write. The internal root/ESP and recovery-panel route remain
+  read-only live recovery inspection was not reported. The Apple HDD is now
+  attached to the B550I and again matches the expected model, serial, USB path,
+  and unmounted state. Its old `sdb3` starts at sector 9396224, after the image
+  ends at sector 9395095. The corrected image is not yet written; the guarded
+  flash command will repeat the root-only signature check. The internal
+  root/ESP and recovery-panel route remain
   unchanged. See the [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
   and [takeover report](archive/validation/luna-takeover-20261112.md). The image
   includes private, non-redistributable machine support and must stay local.
@@ -86,13 +90,13 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   exact two prerequisite series on the pinned base. An isolated QEMU build
   passed its source manifest check; all 32 UFS QOS tests passed, including the
   three RPMB descriptor, key-counter, and read/write cases. Key programming
-  and data writes occurred only in the disposable emulator. The last reachable
-  sample showed built-in Kbuild active on isolated SP12 scratch with no errors;
-  SP12 has since gone offline, so completion and output are unknown. The
-  diagnostic KASAN/lockdep build and read-only Linux-driver guest run have not
-  started; the guest variant is prepared. Exact-candidate
-  physical registration/health checks remain open. Physical RPMB key or data
-  operations remain prohibited.
+  and data writes occurred only in the disposable emulator. The first built-in
+  kernel compile ended on SSH hangup while compiling unrelated objects, with no
+  compiler diagnostic and no final kernel artifacts. The source/config pins
+  still match. It has resumed incrementally in a disconnect-safe systemd job
+  with a 3-core quota; diagnostic KASAN/lockdep compilation and the read-only
+  driver guest run have not started. Exact-candidate physical registration and
+  health checks remain open. Physical RPMB key/data operations are prohibited.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
   fixtures on both desktops with matching saved-file hashes. No paired
   performance scenarios have been run; every scenario remains at `0/3` pairs.
