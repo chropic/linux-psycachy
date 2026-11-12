@@ -58,7 +58,35 @@ if [ -L "$recovery" ]; then
     printf 'sp12-restore-recovery: refusing symlinked recovery set\n' >&2
     exit 1
 fi
-if [ ! -e "$recovery" ] && [ -d "$recovery_previous" ] && [ ! -L "$recovery_previous" ]; then
+
+recovery_valid() {
+    dir=$1
+    [ -d "$dir" ] && [ ! -L "$dir" ] || return 1
+    [ -f "$dir/SHA256SUMS" ] && [ ! -L "$dir/SHA256SUMS" ] || return 1
+    [ "$(wc -l < "$dir/SHA256SUMS")" -eq 3 ] || return 1
+    for name in vmlinuz initrd.img dtb; do
+        [ -f "$dir/$name" ] && [ ! -L "$dir/$name" ] || return 1
+        count=$(awk -v name="$name" '$2 == name { count++ } END { print count + 0 }' "$dir/SHA256SUMS")
+        [ "$count" -eq 1 ] || return 1
+        checksum=$(awk -v name="$name" '$2 == name { print $1 }' "$dir/SHA256SUMS")
+        case "$checksum" in
+            *[!0123456789abcdef]*|'') return 1 ;;
+        esac
+        [ "${#checksum}" -eq 64 ] || return 1
+        actual=$(sha256sum "$dir/$name" | awk '{ print $1 }') || return 1
+        [ "$actual" = "$checksum" ] || return 1
+    done
+}
+
+# A failed save rotation can leave a corrupt current generation beside a
+# verified previous one. Select the first verified generation, preferring the
+# canonical path, rather than letting the corrupt current directory hide the
+# only usable recovery copy.
+if recovery_valid "$recovery"; then
+    :
+elif recovery_valid "$recovery_previous"; then
+    recovery=$recovery_previous
+elif [ ! -e "$recovery" ] && [ -d "$recovery_previous" ] && [ ! -L "$recovery_previous" ]; then
     recovery=$recovery_previous
 fi
 [ -d "$recovery" ] && [ ! -L "$recovery" ] || {

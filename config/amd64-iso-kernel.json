@@ -23,5 +23,19 @@
   "policy_fragment_sha256": "dfe52ac1538983f5ee815363222329a9b717ae8178d780e8c389b38f1fb556ef",
   "kernel_payload_sha256": "3c96cb771d4b0bd9077b8f8a761c7212157643a1bd9b80e2a15621bd96a2e814",
   "module_signing_certificate_sha256": "a653ce20ea1484619d3256e4ec4daadcb6801b04b75a3be02a382534ad019809",
-  "module_signing_fingerprint_sha256": "a653ce20ea1484619d3256e4ec4daadcb6801b04b75a3be02a382534ad019809"
+  "module_signing_fingerprint_sha256": "a653ce20ea1484619d3256e4ec4daadcb6801b04b75a3be02a382534ad019809",
+  "secure_boot": {
+    "kernel_certificate_sha256": "83b6a49f440a53cf6e08bae05a99ce6c6d11d2a47cd7130f1f95ef2b40f4e2da",
+    "module_certificate_sha256": "98509200e508a18acfc0739d8adda95181d696fabfe571eeacfe3938ff942717",
+    "required_module_signers": {
+      "nvidia": "PsyCachy DKMS Module Signing",
+      "nvidia-drm": "PsyCachy DKMS Module Signing",
+      "nvidia-modeset": "PsyCachy DKMS Module Signing",
+      "nvidia-peermem": "PsyCachy DKMS Module Signing",
+      "nvidia-uvm": "PsyCachy DKMS Module Signing"
+    },
+    "required_loaded_modules": [
+      "nvidia"
+    ]
+  }
 }

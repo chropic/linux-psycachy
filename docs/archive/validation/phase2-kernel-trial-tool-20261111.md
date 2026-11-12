@@ -17,8 +17,13 @@ after completion for review.
 - Supply the exact fallback release and the target `machine-id` obtained from
   the reviewed identity preflight. The fallback must be the saved GRUB default
   and have one unambiguous GRUB entry.
-- Secure Boot must be verifiably disabled while production signer ownership
-  and deployed trust remain unresolved. Unknown or enabled state is refused.
+- Secure Boot state must be verifiable. When it is enabled, the pin must carry
+  separate owner kernel and DKMS-module certificate fingerprints. Both public
+  certificates must match the local owner files and be MOK-enrolled; the
+  candidate image and required DKMS modules must verify against those exact
+  certificates. Candidate runtime checks require integrity lockdown,
+  `module.sig_enforce=Y`, and the pinned required modules to be loaded. Unknown
+  state or unresolved identity is refused.
 - Before candidate installation overwrites any files, create a displaced
   payload archive on a separately reviewed backup volume. Record that volume's
   filesystem UUID and independently retain the manifest SHA-256. A reviewer
@@ -83,6 +88,12 @@ units. `phase2-kernel-trial rollback` requests a reboot to the unchanged saved
 fallback. An expired timeout does the same. A rollback request is marked
 complete only after the fallback kernel is observed on a later userspace boot.
 The default GRUB entry remains the fallback in every transition.
+
+**2026-11-12 update:** enabled Secure Boot is supported after exact certificate,
+enrollment, signed-image, signed-module, and runtime-enforcement checks pass.
+The initial 2026-11-11 version refused enabled Secure Boot; this update
+supersedes that prerequisite. See the [Luna takeover report](luna-takeover-20261112.md)
+for focused test and current qualification status.
 
 Acknowledgement or completed rollback disables and removes only the systemd
 unit files and script created by this run. The JSON state remains for evidence;

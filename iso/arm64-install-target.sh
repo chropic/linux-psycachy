@@ -89,6 +89,19 @@ for required in \
   [[ -f $required ]] || die "installed kernel payload is missing: ${required#"$target"}"
 done
 
+# Ubuntu's kernel package stores the platform DTB under /usr/lib. The SP12
+# boot-sync helper and its runtime configuration consume a direct /boot file,
+# so stage that exact packaged DTB there before validating the helper plan.
+dtb_source=$target/usr/lib/linux-image-$release/qcom/x1p42100-microsoft-sp12in.dtb
+dtb_boot=$target/boot/dtb-$release
+if [[ -e $dtb_boot || -L $dtb_boot ]]; then
+  [[ -f $dtb_boot ]] || die "boot DTB destination is not a regular file: ${dtb_boot#"$target"}"
+  cmp -s -- "$dtb_source" "$dtb_boot" || \
+    die "existing boot DTB differs from the packaged DTB: ${dtb_boot#"$target"}"
+else
+  install -m 0644 -- "$dtb_source" "$dtb_boot"
+fi
+
 # Validate both helper plans before either one changes boot state.
 "$installer_dir/install-boot-sync.sh" --target "$target" --kernel-release "$release"
 "$installer_dir/install-fallback-target.sh" --target "$target" --kernel-release "$release"

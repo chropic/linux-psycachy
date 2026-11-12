@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 import importlib.util
+import gzip
 import json
 import pathlib
 import hashlib
 import io
+import lzma
+import shutil
 import subprocess
+import struct
 import tarfile
 import tempfile
 import threading
@@ -127,20 +131,344 @@ class TrialStateHelpersTests(unittest.TestCase):
         self.assertIn("ExecStart=/usr/local/sbin/phase2-kernel-trial", timeout)
         self.assertNotIn("grub-set-default", start + timeout)
 
-    def test_secure_boot_enabled_fails_closed_on_unresolved_trust(self):
+    def test_secure_boot_enabled_is_detected_before_owner_identity_checks(self):
         result = subprocess.CompletedProcess(
             ["mokutil", "--sb-state"], 0, "SecureBoot enabled\n", ""
         )
         with mock.patch.object(trial, "command", return_value=result):
-            with self.assertRaisesRegex(trial.TrialError, "trust is unresolved"):
-                trial.secure_boot_mode()
+            self.assertEqual(trial.secure_boot_state(), "enabled")
+
+    def test_secure_boot_enabled_requires_separate_owner_certificate_pins(self):
+        secure = subprocess.CompletedProcess(
+            ["mokutil", "--sb-state"], 0, "SecureBoot enabled\n", ""
+        )
+        with mock.patch.object(trial, "command", return_value=secure):
+            self.assertEqual(trial.secure_boot_state(), "enabled")
+            with self.assertRaisesRegex(trial.TrialError, "identities are not pinned"):
+                trial.verify_secure_boot_identity(
+                    {"module_signing_certificate_sha256": "a" * 64},
+                    "7.3.1-psycachy",
+                )
+
+    def test_secure_boot_unenrolled_owner_certificate_is_refused(self):
+        result = subprocess.CompletedProcess(
+            ["mokutil", "--test-key", "/tmp/module.der"], 1, "", "not enrolled\n"
+        )
+        with mock.patch.object(trial, "command", return_value=result):
+            with self.assertRaisesRegex(trial.TrialError, "not confirmed enrolled"):
+                trial._require_enrolled_certificate(pathlib.Path("/tmp/module.der"))
+
+    def test_secure_boot_enrollment_accepts_known_keyring_diagnostic_with_exact_success(self):
+        cert = pathlib.Path("/tmp/owner module.der")
+        result = subprocess.CompletedProcess(
+            ["mokutil", "--test-key", str(cert)], 1,
+            f"{cert} is already enrolled\n",
+            "Failed to access kernel trusted keyring: Required key not available\n",
+        )
+        with mock.patch.object(trial, "command", return_value=result):
+            trial._require_enrolled_certificate(cert)
+
+        alternate = subprocess.CompletedProcess(
+            ["mokutil", "--test-key", str(cert)], 1,
+            "Failed to access kernel trusted keyring: Required key not available\n",
+            f"{cert} is already in db\n",
+        )
+        with mock.patch.object(trial, "command", return_value=alternate):
+            trial._require_enrolled_certificate(cert)
+
+        ambiguous = subprocess.CompletedProcess(
+            ["mokutil", "--test-key", str(cert)], 0,
+            f"{cert} is already enrolled\nUnexpected extra output\n", "",
+        )
+        with mock.patch.object(trial, "command", return_value=ambiguous):
+            with self.assertRaisesRegex(trial.TrialError, "not confirmed enrolled"):
+                trial._require_enrolled_certificate(cert)
+
+    def test_module_signature_rejects_different_certificate_with_the_same_cn(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for label in ("expected", "same-cn-other-key"):
+                subprocess.run(
+                    ["openssl", "req", "-new", "-x509", "-newkey", "rsa:2048",
+                     "-nodes", "-keyout", str(root / f"{label}.key"),
+                     "-out", str(root / f"{label}.pem"),
+                     "-subj", "/CN=Same Module Signer", "-days", "1"],
+                    check=True, capture_output=True,
+                )
+                subprocess.run(
+                    ["openssl", "x509", "-in", str(root / f"{label}.pem"),
+                     "-outform", "DER", "-out", str(root / f"{label}.der")],
+                    check=True, capture_output=True,
+                )
+            payload_path = root / "module.payload"
+            payload_path.write_bytes(b"module bytes bound to the expected signing key")
+            signature_path = root / "module.p7s"
+            subprocess.run(
+                ["openssl", "cms", "-sign", "-binary", "-noattr", "-nosmimecap",
+                 "-nocerts", "-in", str(payload_path), "-signer", str(root / "expected.pem"),
+                 "-inkey", str(root / "expected.key"), "-outform", "DER",
+                 "-out", str(signature_path)],
+                check=True, capture_output=True,
+            )
+            signature = signature_path.read_bytes()
+            header = struct.pack(
+                ">BBBBB3sI", 0, 0, trial.MODULE_SIGNATURE_TYPE_PKCS7,
+                0, 0, b"\0\0\0", len(signature),
+            )
+            module_path = root / "nvidia.ko"
+            module_path.write_bytes(
+                payload_path.read_bytes() + signature + header + trial.MODULE_SIGNATURE_MARKER
+            )
+
+            trial._verify_module_signature(module_path, root / "expected.der")
+            metadata_header = struct.pack(
+                ">BBBBB3sI", 0, 0, trial.MODULE_SIGNATURE_TYPE_PKCS7,
+                3, 2, b"\0\0\0", len(signature),
+            )
+            metadata_module = root / "metadata-fields.ko"
+            metadata_module.write_bytes(
+                payload_path.read_bytes() + b"sigid" + signature
+                + metadata_header + trial.MODULE_SIGNATURE_MARKER
+            )
+            trial._verify_module_signature(metadata_module, root / "expected.der")
+            malformed = root / "malformed.ko"
+            malformed_header = struct.pack(
+                ">BBBBB3sI", 0, 0, trial.MODULE_SIGNATURE_TYPE_PKCS7,
+                0, 0, b"\0\0\0", len(module_path.read_bytes()) + 1,
+            )
+            malformed.write_bytes(
+                payload_path.read_bytes() + signature + malformed_header
+                + trial.MODULE_SIGNATURE_MARKER
+            )
+            with self.assertRaisesRegex(trial.TrialError, "invalid signature lengths"):
+                trial._verify_module_signature(malformed, root / "expected.der")
+            with self.assertRaisesRegex(trial.TrialError, "does not verify with the pinned certificate"):
+                trial._verify_module_signature(module_path, root / "same-cn-other-key.der")
+            for suffix, packed in (
+                (".ko.gz", gzip.compress(module_path.read_bytes())),
+                (".ko.xz", lzma.compress(module_path.read_bytes())),
+            ):
+                compressed = root / f"nvidia{suffix}"
+                compressed.write_bytes(packed)
+                trial._verify_module_signature(compressed, root / "expected.der")
+                with self.assertRaisesRegex(trial.TrialError, "does not verify with the pinned certificate"):
+                    trial._verify_module_signature(compressed, root / "same-cn-other-key.der")
+            if shutil.which("zstd"):
+                compressed = root / "nvidia.ko.zst"
+                packed = subprocess.run(
+                    ["zstd", "-q", "-c", str(module_path)],
+                    check=True, capture_output=True,
+                )
+                compressed.write_bytes(packed.stdout)
+                trial._verify_module_signature(compressed, root / "expected.der")
+                with self.assertRaisesRegex(trial.TrialError, "does not verify with the pinned certificate"):
+                    trial._verify_module_signature(compressed, root / "same-cn-other-key.der")
+
+    def test_secure_boot_module_path_must_be_regular_and_confined(self):
+        for case in ("outside", "symlink"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                boot = root / "boot"
+                boot.mkdir()
+                (boot / "config-7.3.1-psycachy").write_text(
+                    "CONFIG_MODULE_SIG=y\nCONFIG_MODULE_SIG_ALL=y\nCONFIG_MODULE_SIG_FORCE=y\n",
+                    encoding="ascii",
+                )
+                module_root = root / "modules" / "7.3.1-psycachy"
+                module_root.mkdir(parents=True)
+                outside = root / "outside.ko"
+                outside.write_bytes(b"signed module placeholder")
+                if case == "symlink":
+                    listed_path = module_root / "nvidia.ko"
+                    listed_path.symlink_to(outside)
+                    expected_error = "missing or unsafe"
+                else:
+                    listed_path = outside
+                    expected_error = "outside its pinned module tree"
+
+                def fake_command(argv, *, allow_failure=False):
+                    if argv[3] == "-n":
+                        value = str(listed_path)
+                    else:
+                        value = "Test DKMS Signer" if argv[4] == "signer" else "PKCS#7"
+                    return subprocess.CompletedProcess(argv, 0, value + "\n", "")
+
+                with mock.patch.object(trial, "BOOT_DIR", boot), \
+                        mock.patch.object(trial, "MODULES_DIR", root / "modules"), \
+                        mock.patch.object(trial, "command", side_effect=fake_command):
+                    with self.assertRaisesRegex(trial.TrialError, expected_error):
+                        trial._verify_required_module_signers(
+                            "7.3.1-psycachy", {"nvidia": "Test DKMS Signer"},
+                            module_certificate=root / "module.der",
+                            loaded_modules=["nvidia"], runtime=False,
+                        )
+
+    def test_secure_boot_identity_checks_certificates_signature_and_transformed_bytes(self):
+        kernel_digest = "a" * 64
+        module_digest = "b" * 64
+        payload = b"exact unsigned package kernel payload"
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            boot = root / "boot"
+            boot.mkdir()
+            kernel_cert = root / "kernel.pem"
+            kernel_cert.write_bytes(b"kernel certificate")
+            kernel_der = root / "kernel.der"
+            kernel_der.write_bytes(b"kernel certificate DER")
+            module_cert = root / "module.der"
+            module_cert.write_bytes(b"module certificate DER")
+            image = boot / "vmlinuz-7.3.1-psycachy"
+            image.write_bytes(payload + b"--SIGNATURE--")
+            (boot / "config-7.3.1-psycachy").write_text(
+                "CONFIG_MODULE_SIG=y\nCONFIG_MODULE_SIG_ALL=y\nCONFIG_MODULE_SIG_FORCE=y\n",
+                encoding="ascii",
+            )
+            pin = {
+                "kernel_payload_sha256": hashlib.sha256(payload).hexdigest(),
+                "secure_boot": {
+                    "kernel_certificate_sha256": kernel_digest,
+                    "module_certificate_sha256": module_digest,
+                    "required_module_signers": {"nvidia": "Test DKMS Signer"},
+                    "required_loaded_modules": ["nvidia"],
+                },
+            }
+            module_root = root / "modules" / "7.3.1-psycachy"
+            module_root.mkdir(parents=True)
+            module_path = module_root / "nvidia.ko"
+            module_path.write_bytes(b"test module")
+
+            def fake_command(argv, *, allow_failure=False):
+                if argv[0] == "openssl":
+                    path = pathlib.Path(argv[3])
+                    digest = module_digest if path == module_cert else kernel_digest
+                    fingerprint = ":".join(digest[index:index + 2].upper()
+                                            for index in range(0, len(digest), 2))
+                    return subprocess.CompletedProcess(argv, 0,
+                                                        f"sha256 Fingerprint={fingerprint}\n", "")
+                if argv[:2] == ["mokutil", "--test-key"]:
+                    return subprocess.CompletedProcess(argv, 1, f"{argv[2]} is already enrolled\n", "")
+                if argv[0] == "sbverify":
+                    return subprocess.CompletedProcess(argv, 0, "Signature verification OK\n", "")
+                if argv[0] == "sbattach":
+                    path = pathlib.Path(argv[-1])
+                    path.write_bytes(path.read_bytes().removesuffix(b"--SIGNATURE--"))
+                    return subprocess.CompletedProcess(argv, 0, "", "")
+                if argv[0] == "modinfo":
+                    if argv[3] == "-n":
+                        value = str(module_path)
+                    else:
+                        value = "Test DKMS Signer" if argv[4] == "signer" else "PKCS#7"
+                    return subprocess.CompletedProcess(argv, 0, value + "\n", "")
+                raise AssertionError(argv)
+
+            with mock.patch.object(trial, "BOOT_DIR", boot), \
+                    mock.patch.object(trial, "MODULES_DIR", root / "modules"), \
+                    mock.patch.object(trial, "_verify_module_signature"), \
+                    mock.patch.object(trial, "command", side_effect=fake_command):
+                identity = trial.verify_secure_boot_identity(
+                    pin, "7.3.1-psycachy", image_path=image,
+                    kernel_certificate=kernel_cert, module_certificate=module_cert,
+                )
+            self.assertEqual(identity["owner_kernel_certificate_sha256"], kernel_digest)
+            self.assertEqual(identity["enrolled_kernel_certificate_sha256"], kernel_digest)
+            self.assertEqual(identity["owner_module_certificate_sha256"], module_digest)
+            self.assertEqual(identity["enrolled_module_certificate_sha256"], module_digest)
+            self.assertEqual(identity["unsigned_kernel_payload_sha256"], pin["kernel_payload_sha256"])
+            self.assertEqual(identity["signed_kernel_payload_sha256"], hashlib.sha256(image.read_bytes()).hexdigest())
+            self.assertEqual(identity["required_module_signers"], {"nvidia": "Test DKMS Signer"})
+
+    def test_secure_boot_module_runtime_requires_lockdown_enforcement_and_loaded_signer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            boot = root / "boot"
+            boot.mkdir()
+            (boot / "config-7.3.1-psycachy").write_text(
+                "CONFIG_MODULE_SIG=y\nCONFIG_MODULE_SIG_ALL=y\nCONFIG_MODULE_SIG_FORCE=y\n",
+                encoding="ascii",
+            )
+            lockdown = root / "lockdown"
+            lockdown.write_text("none [integrity] confidentiality\n", encoding="ascii")
+            enforce = root / "sig_enforce"
+            enforce.write_text("Y\n", encoding="ascii")
+            modules = root / "sys-module"
+            (modules / "nvidia").mkdir(parents=True)
+            module_root = root / "modules" / "7.3.1-psycachy"
+            module_root.mkdir(parents=True)
+            module_path = module_root / "nvidia.ko"
+            module_path.write_bytes(b"test module")
+            commands = []
+
+            def fake_command(argv, *, allow_failure=False):
+                commands.append(argv)
+                if argv[3] == "-n":
+                    value = str(module_path)
+                else:
+                    field = argv[4]
+                    value = "Test DKMS Signer" if field == "signer" else "PKCS#7"
+                return subprocess.CompletedProcess(argv, 0, value + "\n", "")
+
+            with mock.patch.object(trial, "BOOT_DIR", boot), \
+                    mock.patch.object(trial, "MODULES_DIR", root / "modules"), \
+                    mock.patch.object(trial, "LOCKDOWN_STATUS", lockdown), \
+                    mock.patch.object(trial, "MODULE_ENFORCE_STATUS", enforce), \
+                    mock.patch.object(trial, "SYS_MODULE_DIR", modules), \
+                    mock.patch.object(trial, "_verify_module_signature"), \
+                    mock.patch.object(trial, "command", side_effect=fake_command):
+                trial._verify_required_module_signers(
+                    "7.3.1-psycachy", {"nvidia": "Test DKMS Signer"},
+                    module_certificate=root / "module.der",
+                    loaded_modules=["nvidia"], runtime=True,
+                )
+            self.assertEqual(len(commands), 3)
+
+            enforce.write_text("N\n", encoding="ascii")
+            with mock.patch.object(trial, "BOOT_DIR", boot), \
+                    mock.patch.object(trial, "LOCKDOWN_STATUS", lockdown), \
+                    mock.patch.object(trial, "MODULE_ENFORCE_STATUS", enforce), \
+                    mock.patch.object(trial, "SYS_MODULE_DIR", modules):
+                with self.assertRaisesRegex(trial.TrialError, "not enforcing module signatures"):
+                    trial._verify_required_module_signers(
+                        "7.3.1-psycachy", {"nvidia": "Test DKMS Signer"},
+                        module_certificate=root / "module.der",
+                        loaded_modules=["nvidia"], runtime=True,
+                    )
+
+    def test_secure_boot_candidate_verification_failure_requests_automatic_rollback(self):
+        with tempfile.TemporaryDirectory() as directory:
+            state_file = pathlib.Path(directory) / "state.json"
+            state = {
+                "schema_version": 1,
+                "state": "pending",
+                "kernel_release": "7.3.1-psycachy",
+                "fallback_release": "7.3.0-10-generic",
+                "fallback_entry": "fallback-entry",
+                "secure_boot_mode": "enabled",
+                "secure_boot_identity": {"owner_kernel_certificate_sha256": "a" * 64},
+                "required_units": [],
+                "runtime": {},
+            }
+            trial.write_state(state_file, state)
+            rollback = {"state": "timeout_reboot_requested"}
+            with mock.patch.object(trial, "verify_fallback_unchanged"), \
+                    mock.patch.object(trial, "verify_candidate_integrity",
+                                      side_effect=trial.TrialError("module trust check failed")), \
+                    mock.patch.object(trial, "rollback_locked", return_value=rollback) as request_rollback, \
+                    mock.patch.object(trial.os, "uname",
+                                      return_value=types.SimpleNamespace(release="7.3.1-psycachy")):
+                result = trial.arm_timeout_locked(state_file)
+            self.assertEqual(result, rollback)
+            request_rollback.assert_called_once_with(state_file, expired=True)
+            self.assertEqual(
+                trial.read_state(state_file)["security_verification_error"],
+                "module trust check failed",
+            )
 
     def test_secure_boot_disabled_is_recorded(self):
         result = subprocess.CompletedProcess(
             ["mokutil", "--sb-state"], 0, "SecureBoot disabled\n", ""
         )
         with mock.patch.object(trial, "command", return_value=result):
-            self.assertEqual(trial.secure_boot_mode(), "disabled")
+            self.assertEqual(trial.secure_boot_state(), "disabled")
 
     def test_secure_boot_unknown_or_unreadable_fails_closed(self):
         unknown = subprocess.CompletedProcess(["mokutil"], 0, "state unavailable\n", "")
@@ -148,7 +476,7 @@ class TrialStateHelpersTests(unittest.TestCase):
         for result in (unknown, unreadable):
             with mock.patch.object(trial, "command", return_value=result):
                 with self.assertRaisesRegex(trial.TrialError, "refusing"):
-                    trial.secure_boot_mode()
+                    trial.secure_boot_state()
 
     def test_fallback_identity_change_is_refused(self):
         state = {
@@ -437,6 +765,11 @@ class PinValidationTests(unittest.TestCase):
         self.assertEqual(pin["architecture"], "amd64")
         self.assertEqual(pin["kernel_release"], "7.3.1-psycachy")
         self.assertEqual(len(pin["packages"]), 2)
+        self.assertEqual(
+            pin["secure_boot"]["kernel_certificate_sha256"],
+            "83b6a49f440a53cf6e08bae05a99ce6c6d11d2a47cd7130f1f95ef2b40f4e2da",
+        )
+        self.assertEqual(pin["secure_boot"]["required_loaded_modules"], ["nvidia"])
 
     def test_current_arm64_pin_parses_as_candidate(self):
         pin = trial.read_pin(ROOT / "config/arm64-iso-kernel.json")

@@ -1,5 +1,6 @@
 import os
 import pathlib
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -123,6 +124,21 @@ printf '%s\\n' "$*" >> "$SP12_TEST_MOUNT_LOG"
             text=True,
         )
 
+    def run_save(self):
+        return subprocess.run(
+            [
+                "sh",
+                str(self.save_helper),
+                "--root",
+                str(self.recovery_root),
+                "--payload-dir",
+                str(self.dest),
+            ],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
     def test_sync_rejects_dtbs_outside_boot(self):
         self.config.write_text(
             "KVER=7.3.1-psycachy-sp121\nDTB=/boot/../../etc/shadow\n"
@@ -188,6 +204,78 @@ printf '%s\\n' "$*" >> "$SP12_TEST_MOUNT_LOG"
             ).returncode,
         )
 
+    def test_markerless_active_payload_without_verified_recovery_is_refused(self):
+        (self.dest / "SP12BOOT").unlink()
+
+        result = self.run_save()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("no verified recovery generation exists", result.stderr)
+        self.assertFalse(self.recovery_path.exists())
+
+    def test_retry_cleans_stale_stage_and_restores_valid_previous_generation(self):
+        first = self.run_tool()
+        self.assertEqual(first.returncode, 0, first.stderr)
+        previous = self.recovery_path.parent / ".recovery.previous"
+        self.recovery_path.rename(previous)
+        stale = self.recovery_path.parent / ".recovery.new"
+        stale.mkdir()
+        (stale / "partial").write_bytes(b"interrupted snapshot")
+        (self.dest / "SP12BOOT").unlink()
+        (self.dest / "vmlinuz").write_bytes(b"mixed after interruption")
+
+        retry = self.run_save()
+
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertIn("verified recovery generation(s) were preserved", retry.stdout)
+        self.assertTrue(previous.is_dir())
+        self.assertFalse(stale.exists())
+        for name in self.sources:
+            self.assertEqual(
+                f"old-{name}".encode(), (previous / name).read_bytes()
+            )
+
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_corrupt_current_and_valid_previous_survive_retry_and_restore(self):
+        first = self.run_tool()
+        self.assertEqual(first.returncode, 0, first.stderr)
+        previous = self.recovery_path.parent / ".recovery.previous"
+        shutil.copytree(self.recovery_path, previous)
+        (self.recovery_path / "vmlinuz").write_bytes(b"corrupt current")
+        current_before = (self.recovery_path / "vmlinuz").read_bytes()
+        previous_manifest = (previous / "SHA256SUMS").read_bytes()
+        (self.dest / "SP12BOOT").unlink()
+        (self.dest / "initrd.img").write_bytes(b"mixed after interruption")
+        stale = self.recovery_path.parent / ".recovery.new"
+        stale.mkdir()
+        (stale / "partial").write_bytes(b"stale")
+
+        retry = self.run_save()
+
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual((self.recovery_path / "vmlinuz").read_bytes(), current_before)
+        self.assertEqual((previous / "SHA256SUMS").read_bytes(), previous_manifest)
+        self.assertFalse(stale.exists())
+
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
     def test_staged_flush_error_keeps_the_active_set_and_marker(self):
         self.command(
             "sync",
@@ -205,7 +293,10 @@ printf '%s\\n' "$*" >> "$SP12_TEST_MOUNT_LOG"
         self.assertFalse(list(self.dest.glob("*.new")))
 
     def test_power_loss_during_promotion_can_be_manually_recovered(self):
-        promoted_vmlinuz = str(self.dest / "vmlinuz")
+        self._assert_sync_interruption_during_promotion("vmlinuz")
+
+    def _assert_sync_interruption_during_promotion(self, promoted_name):
+        promoted_path = str(self.dest / promoted_name)
         self.command(
             "mv",
             """
@@ -215,13 +306,19 @@ for arg do last=$arg; done
 if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
 """,
         )
-        self.env["SP12_TEST_KILL_ON_PROMOTE"] = promoted_vmlinuz
+        self.env["SP12_TEST_KILL_ON_PROMOTE"] = promoted_path
         interrupted = self.run_tool()
         self.assertNotEqual(interrupted.returncode, 0)
-        self.assertEqual(b"new-vmlinuz", (self.dest / "vmlinuz").read_bytes())
-        self.assertEqual(b"old-initrd.img", (self.dest / "initrd.img").read_bytes())
-        self.assertEqual(b"old-dtb", (self.dest / "dtb").read_bytes())
         self.assertFalse((self.dest / "SP12BOOT").exists())
+        promoted_order = ["vmlinuz", "initrd.img", "dtb"]
+        promoted_through = promoted_order.index(promoted_name)
+        for index, name in enumerate(promoted_order):
+            expected = (
+                f"new-{name}".encode()
+                if index <= promoted_through
+                else f"old-{name}".encode()
+            )
+            self.assertEqual(expected, (self.dest / name).read_bytes())
         self.assertEqual(b"old-vmlinuz", (self.recovery_path / "vmlinuz").read_bytes())
 
         self.env.pop("SP12_TEST_KILL_ON_PROMOTE")
@@ -238,6 +335,203 @@ if [ "$last" = "$SP12_TEST_KILL_ON_PROMOTE" ]; then kill -9 "$PPID"; fi
         self.assertFalse(list(self.dest.glob("*.new")))
         self.assertTrue((self.recovery_path / "vmlinuz").is_file())
         self.assertIn("remount,ro", self.log.read_text())
+
+    def test_power_loss_during_initrd_promotion_can_be_manually_recovered(self):
+        self._assert_sync_interruption_during_promotion("initrd.img")
+
+    def test_power_loss_during_dtb_promotion_can_be_manually_recovered(self):
+        self._assert_sync_interruption_during_promotion("dtb")
+
+    def test_killed_staging_write_is_cleaned_then_retry_and_restore_work(self):
+        staged_vmlinuz = str(self.dest / "vmlinuz.new")
+        self.command(
+            "sync",
+            """
+if [ "${1:-}" = "-d" ] && [ "${2:-}" = "$SP12_TEST_KILL_SYNC_TARGET" ]; then
+    kill -9 "$PPID"
+fi
+exit 0
+""",
+        )
+        self.env["SP12_TEST_KILL_SYNC_TARGET"] = staged_vmlinuz
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertEqual(b"new-vmlinuz", (self.dest / "vmlinuz.new").read_bytes())
+
+        self.env.pop("SP12_TEST_KILL_SYNC_TARGET")
+        self.command("sync", "exit 0")
+        refused = self.run_tool()
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertIn("existing staging file", refused.stderr)
+        cleaned = self.run_tool("sp12-esp-space", "--apply-stale-only")
+        self.assertEqual(cleaned.returncode, 0, cleaned.stderr)
+        self.assertFalse((self.dest / "vmlinuz.new").exists())
+
+        retry = self.run_tool()
+        self.assertEqual(retry.returncode, 0, retry.stderr)
+        self.assertEqual(
+            {name: f"new-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_killed_marker_removal_restores_the_verified_old_set(self):
+        marker = str(self.dest / "SP12BOOT")
+        self.command(
+            "rm",
+            """
+last=
+for arg do last=$arg; done
+/bin/rm "$@"
+if [ "$last" = "$SP12_TEST_KILL_ON_MARKER_REMOVE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_MARKER_REMOVE"] = marker
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertFalse((self.dest / "SP12BOOT").exists())
+        self.assertEqual(
+            {"vmlinuz.new", "initrd.img.new", "dtb.new"},
+            {path.name for path in self.dest.glob("*.new")},
+        )
+        self.env.pop("SP12_TEST_KILL_ON_MARKER_REMOVE")
+        (self.bin / "rm").unlink()
+
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertFalse(list(self.dest.glob("*.new")))
+
+    def test_final_payload_flush_interruption_keeps_marker_absent_until_restore(self):
+        count_file = self.root / "destination-sync-count"
+        self.command(
+            "sync",
+            """
+if [ "${1:-}" = "-f" ] && [ "${2:-}" = "$SP12_TEST_SYNC_DEST" ]; then
+    count=0
+    [ ! -f "$SP12_TEST_SYNC_COUNT" ] || count=$(cat "$SP12_TEST_SYNC_COUNT")
+    count=$((count + 1))
+    printf '%s\\n' "$count" > "$SP12_TEST_SYNC_COUNT"
+    if [ "$count" -eq 3 ]; then kill -9 "$PPID"; fi
+fi
+exit 0
+""",
+        )
+        self.env["SP12_TEST_SYNC_DEST"] = str(self.dest)
+        self.env["SP12_TEST_SYNC_COUNT"] = str(count_file)
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(
+            {name: f"new-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        self.assertFalse((self.dest / "SP12BOOT").exists())
+        self.assertEqual("3", count_file.read_text().strip())
+
+        self.command("sync", "exit 0")
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+
+    def test_marker_recreation_interruption_keeps_recovery_restorable(self):
+        marker = str(self.dest / "SP12BOOT")
+        self.command(
+            "touch",
+            """
+/usr/bin/touch "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_MARKER_CREATE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_MARKER_CREATE"] = marker
+
+        interrupted = self.run_tool()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertEqual(
+            {name: f"new-{name}".encode() for name in self.sources}, self.snapshot()
+        )
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertEqual(b"old-vmlinuz", (self.recovery_path / "vmlinuz").read_bytes())
+
+        self.env.pop("SP12_TEST_KILL_ON_MARKER_CREATE")
+        (self.bin / "touch").unlink()
+        noop = self.run_tool()
+        self.assertEqual(noop.returncode, 0, noop.stderr)
+        self.assertIn("already matches the ESP", noop.stdout)
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+
+    def test_recovery_rotation_interruption_preserves_previous_generation(self):
+        initial = self.run_tool()
+        self.assertEqual(initial.returncode, 0, initial.stderr)
+        for name in self.sources:
+            (self.dest / name).write_bytes(f"candidate-{name}".encode())
+        previous = self.recovery_path.parent / ".recovery.previous"
+        self.command(
+            "mv",
+            """
+/bin/mv "$@"
+last=
+for arg do last=$arg; done
+if [ "$last" = "$SP12_TEST_KILL_ON_RECOVERY_ROTATE" ]; then kill -9 "$PPID"; fi
+""",
+        )
+        self.env["SP12_TEST_KILL_ON_RECOVERY_ROTATE"] = str(previous)
+
+        interrupted = self.run_save()
+
+        self.assertNotEqual(interrupted.returncode, 0)
+        self.assertFalse(self.recovery_path.exists())
+        self.assertTrue(previous.is_dir())
+        self.assertTrue((self.recovery_path.parent / ".recovery.new").is_dir())
+        self.env.pop("SP12_TEST_KILL_ON_RECOVERY_ROTATE")
+        (self.bin / "mv").unlink()
+
+        restored = subprocess.run(
+            ["sh", str(self.restore_program), "--root", str(self.recovery_root), "--apply"],
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(restored.returncode, 0, restored.stderr)
+        self.assertEqual(self.before, self.snapshot())
+        self.assertTrue((self.dest / "SP12BOOT").is_file())
+        self.assertTrue(previous.is_dir())
 
     def test_failed_promotion_rolls_back_payloads_and_marker(self):
         fail_destination = str(self.dest / "initrd.img")

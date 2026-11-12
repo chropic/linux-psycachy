@@ -28,13 +28,34 @@ fi
 [ -d "$payload_dir" ] || { printf 'sp12-save-recovery: payload path is not a directory\n' >&2; exit 1; }
 
 complete=1
+has_payload=0
 for name in vmlinuz initrd.img dtb; do
+    if [ -e "$payload_dir/$name" ] || [ -L "$payload_dir/$name" ]; then
+        has_payload=1
+    fi
     if [ ! -f "$payload_dir/$name" ] || [ -L "$payload_dir/$name" ]; then
         complete=0
     fi
 done
-if [ "$complete" -ne 1 ]; then
-    printf 'sp12-save-recovery: no complete previous payload set; nothing to preserve\n'
+
+marker=$payload_dir/SP12BOOT
+if [ -L "$marker" ]; then
+    printf 'sp12-save-recovery: refusing symlinked boot marker\n' >&2
+    exit 1
+fi
+marker_valid=0
+if [ -f "$marker" ]; then
+    marker_valid=1
+elif [ -e "$marker" ]; then
+    printf 'sp12-save-recovery: refusing non-regular boot marker\n' >&2
+    exit 1
+fi
+
+# A directory without any active payload is a first install, not an
+# interrupted update. Preserve that behavior while refusing partial or
+# markerless payloads unless a verified recovery generation already exists.
+if [ "$has_payload" -eq 0 ] && [ "$marker_valid" -eq 0 ]; then
+    printf 'sp12-save-recovery: no previous active payload set; nothing to preserve\n'
     exit 0
 fi
 
@@ -68,14 +89,55 @@ for path in "$recovery" "$recovery_stage" "$recovery_previous"; do
     fi
 done
 
-# Resolve an interrupted rotation without discarding the only known-good copy.
-if [ -e "$recovery_previous" ]; then
-    if [ -e "$recovery" ]; then
-        rm -rf -- "$recovery_previous"
-    else
-        mv -- "$recovery_previous" "$recovery"
-    fi
+recovery_valid() {
+    dir=$1
+    [ -d "$dir" ] && [ ! -L "$dir" ] || return 1
+    [ -f "$dir/SHA256SUMS" ] && [ ! -L "$dir/SHA256SUMS" ] || return 1
+    [ "$(wc -l < "$dir/SHA256SUMS")" -eq 3 ] || return 1
+    for name in vmlinuz initrd.img dtb; do
+        [ -f "$dir/$name" ] && [ ! -L "$dir/$name" ] || return 1
+        count=$(awk -v name="$name" '$2 == name { count++ } END { print count + 0 }' "$dir/SHA256SUMS")
+        [ "$count" -eq 1 ] || return 1
+        checksum=$(awk -v name="$name" '$2 == name { print $1 }' "$dir/SHA256SUMS")
+        case "$checksum" in
+            *[!0123456789abcdef]*|'') return 1 ;;
+        esac
+        [ "${#checksum}" -eq 64 ] || return 1
+        actual=$(sha256sum "$dir/$name" | awk '{ print $1 }') || return 1
+        [ "$actual" = "$checksum" ] || return 1
+    done
+}
+
+active_valid=0
+if [ "$complete" -eq 1 ] && [ "$marker_valid" -eq 1 ]; then
+    active_valid=1
 fi
+
+current_valid=0
+previous_valid=0
+if [ -e "$recovery" ]; then
+    recovery_valid "$recovery" && current_valid=1 || :
+fi
+if [ -e "$recovery_previous" ]; then
+    recovery_valid "$recovery_previous" && previous_valid=1 || :
+fi
+
+if [ "$active_valid" -ne 1 ]; then
+    if [ "$current_valid" -ne 1 ] && [ "$previous_valid" -ne 1 ]; then
+        printf 'sp12-save-recovery: active payload set is incomplete or lacks SP12BOOT, and no verified recovery generation exists; refusing update\n' >&2
+        exit 1
+    fi
+    # The active trio may be mixed after a power loss. Keep both recovery
+    # generations untouched; only discard a stale staging directory after a
+    # verified generation has been found.
+    if [ -e "$recovery_stage" ]; then
+        rm -rf -- "$recovery_stage"
+        sync
+    fi
+    printf 'sp12-save-recovery: active payload set is invalid; verified recovery generation(s) were preserved.\n'
+    exit 0
+fi
+
 if [ -e "$recovery_stage" ]; then
     rm -rf -- "$recovery_stage"
 fi
@@ -85,15 +147,45 @@ for name in vmlinuz initrd.img dtb; do
     cmp -s "$payload_dir/$name" "$recovery_stage/$name"
 done
 (cd "$recovery_stage" && sha256sum vmlinuz initrd.img dtb > SHA256SUMS)
+recovery_valid "$recovery_stage" || {
+    printf 'sp12-save-recovery: staged recovery generation failed verification\n' >&2
+    exit 1
+}
 sync
-if [ -e "$recovery" ]; then
+
+# Reconcile interrupted rotations only after verifying both named generations.
+# A valid previous generation can repair a corrupt current one without creating
+# a window that loses the only known-good copy.
+if [ -e "$recovery" ] && [ "$current_valid" -ne 1 ]; then
+    rm -rf -- "$recovery"
+fi
+if [ ! -e "$recovery" ] && [ -e "$recovery_previous" ] && [ "$previous_valid" -eq 1 ]; then
+    mv -- "$recovery_previous" "$recovery"
+    previous_valid=0
+    current_valid=1
+    sync
+fi
+if [ -e "$recovery_previous" ]; then
+    # At this point a verified current generation or the newly verified stage
+    # is available, and both generations were validated before this cleanup.
     rm -rf -- "$recovery_previous"
+    previous_valid=0
+fi
+if [ -e "$recovery" ]; then
+    recovery_valid "$recovery" || {
+        printf 'sp12-save-recovery: existing recovery generation failed verification before rotation\n' >&2
+        exit 1
+    }
     mv -- "$recovery" "$recovery_previous"
     sync
 fi
 mv -- "$recovery_stage" "$recovery"
 sync
-if [ -e "$recovery_previous" ]; then
+recovery_valid "$recovery" || {
+    printf 'sp12-save-recovery: committed recovery generation failed verification\n' >&2
+    exit 1
+}
+if [ -e "$recovery_previous" ] && recovery_valid "$recovery" && recovery_valid "$recovery_previous"; then
     rm -rf -- "$recovery_previous"
     sync
 fi

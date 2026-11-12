@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Run the SP12 live-image builder in private mount and network namespaces.
+set -Eeuo pipefail
+root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+for argument in "$@"; do
+  if [[ $argument == --apply ]]; then
+    (( EUID == 0 )) || { printf 'Run --apply with sudo on native ARM64.\n' >&2; exit 1; }
+    exec unshare --mount --net --propagation private \
+      python3 "$root/iso/build-sp12-live.py" "$@"
+  fi
+done
+exec python3 "$root/iso/build-sp12-live.py" "$@"

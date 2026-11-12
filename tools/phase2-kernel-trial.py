@@ -11,14 +11,17 @@ from __future__ import annotations
 import argparse
 import contextlib
 import fcntl
+import gzip
 import hashlib
 import json
+import lzma
 import os
 import pathlib
 import posixpath
 import re
 import shutil
 import stat
+import struct
 import subprocess
 import sys
 import tarfile
@@ -31,6 +34,17 @@ START_UNIT = "phase2-kernel-trial-start.service"
 TIMEOUT_UNIT = "phase2-kernel-trial-timeout"
 SCRIPT_PATH = pathlib.Path("/usr/local/sbin/phase2-kernel-trial")
 UNIT_DIR = pathlib.Path("/etc/systemd/system")
+SECUREBOOT_KEY_DIR = pathlib.Path("/var/lib/psycachy/secureboot")
+KERNEL_SIGNING_CERT = SECUREBOOT_KEY_DIR / "kernel.pem"
+MODULE_SIGNING_CERT = SECUREBOOT_KEY_DIR / "module.der"
+BOOT_DIR = pathlib.Path("/boot")
+MODULES_DIR = pathlib.Path("/lib/modules")
+LOCKDOWN_STATUS = pathlib.Path("/sys/kernel/security/lockdown")
+MODULE_ENFORCE_STATUS = pathlib.Path("/sys/module/module/parameters/sig_enforce")
+SYS_MODULE_DIR = pathlib.Path("/sys/module")
+MODULE_SIGNATURE_MARKER = b"~Module signature appended~\n"
+MODULE_SIGNATURE_HEADER = struct.Struct(">BBBBB3sI")
+MODULE_SIGNATURE_TYPE_PKCS7 = 2
 
 
 class TrialError(RuntimeError):
@@ -621,18 +635,289 @@ def verify_fallback_unchanged(state: dict) -> None:
         raise TrialError("The known-good fallback GRUB entry contents changed during the trial")
 
 
-def secure_boot_mode() -> str:
+def secure_boot_state() -> str:
     result = command(["mokutil", "--sb-state"], allow_failure=True)
     output = (result.stdout + result.stderr).lower()
     if result.returncode != 0:
         raise TrialError("Cannot verify Secure Boot state; refusing to schedule a trial")
     if "secureboot enabled" in output or "secure boot enabled" in output:
-        raise TrialError(
-            "Secure Boot is enabled and production signing ownership/trust is unresolved; refusing"
-        )
+        return "enabled"
     if "secureboot disabled" in output or "secure boot disabled" in output:
         return "disabled"
     raise TrialError("Secure Boot state is ambiguous; refusing to schedule a trial")
+
+
+def _sha256_file(path: pathlib.Path) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise TrialError(f"Required file is missing or unsafe: {path}")
+    with path.open("rb") as source:
+        return hashlib.file_digest(source, "sha256").hexdigest()
+
+
+def _certificate_sha256(path: pathlib.Path, *, der: bool) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise TrialError(f"Owner signing certificate is missing or unsafe: {path}")
+    argv = ["openssl", "x509", "-in", str(path)]
+    if der:
+        argv.extend(["-inform", "DER"])
+    argv.extend(["-noout", "-fingerprint", "-sha256"])
+    result = command(argv, allow_failure=True)
+    match = re.fullmatch(r"(?i:SHA256 Fingerprint)=([0-9A-Fa-f:]+)\s*", result.stdout.strip())
+    if result.returncode != 0 or not match:
+        raise TrialError(f"Cannot fingerprint owner signing certificate: {path}")
+    digest = match.group(1).replace(":", "").lower()
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise TrialError(f"Owner signing certificate fingerprint is malformed: {path}")
+    return digest
+
+
+def _require_enrolled_certificate(path: pathlib.Path) -> None:
+    result = command(["mokutil", "--test-key", str(path)], allow_failure=True)
+    lines = {
+        line.strip()
+        for stream in (result.stdout, result.stderr)
+        for line in stream.splitlines()
+        if line.strip()
+    }
+    expected = {f"{path} is already enrolled", f"{path} is already in db"}
+    known_diagnostics = {
+        "Failed to access kernel trusted keyring: Required key not available",
+    }
+    if not lines.intersection(expected) or not lines.issubset(expected | known_diagnostics):
+        raise TrialError(f"Owner signing certificate is not confirmed enrolled: {path}")
+
+
+def _required_module_signers(pin: dict) -> dict[str, str]:
+    secure = pin.get("secure_boot")
+    if not isinstance(secure, dict):
+        raise TrialError("Secure Boot owner signing identities are not pinned; refusing")
+    signers = secure.get("required_module_signers")
+    if not isinstance(signers, dict) or not signers:
+        raise TrialError("Secure Boot required module signers are not pinned; refusing")
+    if any(not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", name)
+           or not isinstance(signer, str) or not signer.strip()
+           for name, signer in signers.items()):
+        raise TrialError("Secure Boot required module signer map is malformed; refusing")
+    return dict(sorted(signers.items()))
+
+
+def _required_loaded_modules(pin: dict, signers: dict[str, str]) -> list[str]:
+    secure = pin.get("secure_boot")
+    loaded = secure.get("required_loaded_modules") if isinstance(secure, dict) else None
+    if (not isinstance(loaded, list) or not loaded
+            or any(not isinstance(name, str) or name not in signers for name in loaded)
+            or len(set(loaded)) != len(loaded)):
+        raise TrialError("Secure Boot required loaded modules are not pinned; refusing")
+    return sorted(loaded)
+
+
+def _read_module_bytes(path: pathlib.Path) -> bytes:
+    if path.is_symlink() or not path.is_file():
+        raise TrialError(f"Required kernel module is missing or unsafe: {path}")
+    try:
+        if path.name.endswith(".ko.zst"):
+            result = subprocess.run(
+                ["zstd", "-q", "-d", "-c", "--", str(path)],
+                check=False, capture_output=True,
+            )
+            if result.returncode != 0:
+                raise TrialError(f"Cannot decompress kernel module: {path}")
+            return result.stdout
+        if path.name.endswith(".ko.xz"):
+            with lzma.open(path, "rb") as source:
+                return source.read()
+        if path.name.endswith(".ko.gz"):
+            with gzip.open(path, "rb") as source:
+                return source.read()
+        if path.name.endswith(".ko"):
+            return path.read_bytes()
+    except (OSError, lzma.LZMAError, gzip.BadGzipFile) as exc:
+        raise TrialError(f"Cannot read kernel module: {path}: {exc}") from exc
+    raise TrialError(f"Unsupported compressed kernel module format: {path}")
+
+
+def _verify_module_signature(module_path: pathlib.Path, certificate_der: pathlib.Path) -> None:
+    """Verify Linux's appended CMS module signature against this exact certificate."""
+    module = _read_module_bytes(module_path)
+    marker_len = len(MODULE_SIGNATURE_MARKER)
+    if len(module) < marker_len + MODULE_SIGNATURE_HEADER.size:
+        raise TrialError(f"Required module has no appended signature: {module_path}")
+    if not module.endswith(MODULE_SIGNATURE_MARKER):
+        raise TrialError(f"Required module has no Linux signature marker: {module_path}")
+    header_end = len(module) - marker_len
+    header_start = header_end - MODULE_SIGNATURE_HEADER.size
+    algo, hash_algo, id_type, signer_len, key_id_len, padding, sig_len = \
+        MODULE_SIGNATURE_HEADER.unpack(module[header_start:header_end])
+    if id_type != MODULE_SIGNATURE_TYPE_PKCS7 or padding != b"\0\0\0" or sig_len == 0:
+        raise TrialError(f"Required module has an invalid PKCS#7 signature header: {module_path}")
+    signature_start = header_start - sig_len
+    payload_end = signature_start - signer_len - key_id_len
+    if signature_start < 0 or payload_end < 0:
+        raise TrialError(f"Required module has invalid signature lengths: {module_path}")
+    payload = module[:payload_end]
+    signature = module[signature_start:header_start]
+    if not payload or len(signature) != sig_len:
+        raise TrialError(f"Required module has an empty payload or signature: {module_path}")
+
+    with tempfile.TemporaryDirectory(prefix="phase2-module-signature-") as directory:
+        temp = pathlib.Path(directory)
+        payload_path = temp / "module.payload"
+        signature_path = temp / "module.p7s"
+        certificate_pem = temp / "module-certificate.pem"
+        payload_path.write_bytes(payload)
+        signature_path.write_bytes(signature)
+        converted = command([
+            "openssl", "x509", "-inform", "DER", "-in", str(certificate_der),
+            "-out", str(certificate_pem),
+        ], allow_failure=True)
+        if converted.returncode != 0 or not certificate_pem.is_file():
+            raise TrialError("Cannot convert pinned module certificate for signature verification")
+        verified = command([
+            "openssl", "cms", "-verify", "-binary", "-inform", "DER",
+            "-in", str(signature_path), "-content", str(payload_path),
+            "-certfile", str(certificate_pem), "-nointern", "-noverify",
+            "-out", os.devnull,
+        ], allow_failure=True)
+        if verified.returncode != 0:
+            raise TrialError(f"Required module signature does not verify with the pinned certificate: {module_path}")
+
+
+def _verify_required_module_signers(release: str, signers: dict[str, str], *,
+                                    module_certificate: pathlib.Path,
+                                    loaded_modules: list[str], runtime: bool) -> None:
+    config_path = BOOT_DIR / f"config-{release}"
+    if config_path.is_symlink() or not config_path.is_file():
+        raise TrialError(f"Candidate kernel configuration is missing or unsafe: {config_path}")
+    config = config_path.read_text(encoding="ascii", errors="replace").splitlines()
+    for option in ("CONFIG_MODULE_SIG=y", "CONFIG_MODULE_SIG_ALL=y", "CONFIG_MODULE_SIG_FORCE=y"):
+        if option not in config:
+            raise TrialError(f"Candidate kernel does not enforce signed modules: {option}")
+    if runtime:
+        lockdown_path = LOCKDOWN_STATUS
+        enforce_path = MODULE_ENFORCE_STATUS
+        if lockdown_path.is_symlink() or not lockdown_path.is_file():
+            raise TrialError("Kernel lockdown status is missing or unsafe")
+        lockdown = lockdown_path.read_text(encoding="ascii", errors="replace").strip()
+        if "[integrity]" not in lockdown:
+            raise TrialError("Candidate kernel is not running with integrity lockdown")
+        if enforce_path.is_symlink() or not enforce_path.is_file():
+            raise TrialError("Runtime module-signature enforcement status is missing")
+        if enforce_path.read_text(encoding="ascii", errors="replace").strip().lower() not in {"y", "1"}:
+            raise TrialError("Candidate kernel is not enforcing module signatures")
+    for module, expected_signer in signers.items():
+        signer = command(["modinfo", "-k", release, "-F", "signer", module], allow_failure=True)
+        sig_id = command(["modinfo", "-k", release, "-F", "sig_id", module], allow_failure=True)
+        filename = command(["modinfo", "-k", release, "-n", module], allow_failure=True)
+        if signer.returncode != 0 or signer.stdout.strip() != expected_signer:
+            raise TrialError(f"Required module signer mismatch for {module}")
+        if sig_id.returncode != 0 or sig_id.stdout.strip() != "PKCS#7":
+            raise TrialError(f"Required module is missing a PKCS#7 signature: {module}")
+        module_path = pathlib.Path(filename.stdout.strip())
+        module_root = MODULES_DIR / release
+        if (filename.returncode != 0 or not module_path.is_absolute()
+                or module_path.is_symlink() or not module_path.is_file()):
+            raise TrialError(f"Required module path is missing or unsafe: {module}")
+        try:
+            module_path.resolve(strict=True).relative_to(module_root.resolve(strict=True))
+        except (OSError, ValueError) as exc:
+            raise TrialError(f"Required module is outside its pinned module tree: {module}") from exc
+        _verify_module_signature(module_path, module_certificate)
+    if runtime:
+        for module in loaded_modules:
+            loaded_name = module.replace("-", "_")
+            if not (SYS_MODULE_DIR / loaded_name).is_dir():
+                raise TrialError(f"Required signed module is not loaded: {module}")
+
+
+def verify_secure_boot_identity(pin: dict, release: str, *, image_path: pathlib.Path | None = None,
+                                 kernel_certificate: pathlib.Path | None = None,
+                                 module_certificate: pathlib.Path | None = None,
+                                 runtime: bool = False) -> dict:
+    """Verify pinned owner identities, MOK enrollment, signed image bytes and module policy."""
+    secure = pin.get("secure_boot")
+    if not isinstance(secure, dict):
+        raise TrialError("Secure Boot owner signing identities are not pinned; refusing")
+    expected_kernel = secure.get("kernel_certificate_sha256")
+    expected_module = secure.get("module_certificate_sha256")
+    for label, digest in (("kernel", expected_kernel), ("module", expected_module)):
+        if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+            raise TrialError(f"Secure Boot {label} certificate identity is not pinned; refusing")
+
+    kernel_certificate = kernel_certificate or KERNEL_SIGNING_CERT
+    module_certificate = module_certificate or MODULE_SIGNING_CERT
+    kernel_digest = _certificate_sha256(kernel_certificate, der=False)
+    module_digest = _certificate_sha256(module_certificate, der=True)
+    if kernel_digest != expected_kernel:
+        raise TrialError("Owner kernel-signing certificate does not match the reviewed pin")
+    if module_digest != expected_module:
+        raise TrialError("Owner module-signing certificate does not match the reviewed pin")
+    kernel_der = kernel_certificate.with_suffix(".der")
+    if _certificate_sha256(kernel_der, der=True) != kernel_digest:
+        raise TrialError("Owner kernel certificate PEM and DER identities differ")
+    _require_enrolled_certificate(kernel_der)
+    _require_enrolled_certificate(module_certificate)
+
+    image_path = image_path or pathlib.Path("/boot") / f"vmlinuz-{release}"
+    signed_digest = _sha256_file(image_path)
+    listed = command(["sbverify", "--list", str(image_path)], allow_failure=True)
+    verified = command(["sbverify", "--cert", str(kernel_certificate), str(image_path)],
+                       allow_failure=True)
+    if listed.returncode != 0 or verified.returncode != 0:
+        raise TrialError("Candidate kernel signature is missing or not signed by the pinned owner key")
+
+    # sbsign appends a PE signature table. Remove it only from a temporary copy
+    # so the unsigned package payload can be compared byte-for-byte to its pin.
+    with tempfile.TemporaryDirectory(prefix="phase2-signed-kernel-") as directory:
+        unsigned_path = pathlib.Path(directory) / "vmlinuz"
+        shutil.copyfile(image_path, unsigned_path)
+        stripped = command(["sbattach", "--remove", str(unsigned_path)], allow_failure=True)
+        if stripped.returncode != 0:
+            raise TrialError("Cannot remove the temporary kernel signature for payload verification")
+        unsigned_digest = _sha256_file(unsigned_path)
+    if unsigned_digest != pin.get("kernel_payload_sha256"):
+        raise TrialError("Signed kernel does not transform the exact pinned package payload")
+
+    signers = _required_module_signers(pin)
+    loaded_modules = _required_loaded_modules(pin, signers)
+    _verify_required_module_signers(
+        release, signers, module_certificate=module_certificate,
+        loaded_modules=loaded_modules, runtime=runtime,
+    )
+    return {
+        "owner_kernel_certificate_sha256": kernel_digest,
+        "enrolled_kernel_certificate_sha256": kernel_digest,
+        "owner_module_certificate_sha256": module_digest,
+        "enrolled_module_certificate_sha256": module_digest,
+        "unsigned_kernel_payload_sha256": unsigned_digest,
+        "signed_kernel_payload_sha256": signed_digest,
+        "required_module_signers": signers,
+        "required_loaded_modules": loaded_modules,
+    }
+
+
+def verify_candidate_integrity(state: dict, *, runtime: bool) -> None:
+    pin_path = pathlib.Path(state["pin_path"])
+    if pin_path.is_symlink() or not pin_path.is_file():
+        raise TrialError("Candidate pin is missing or unsafe during the trial")
+    if _sha256_file(pin_path) != state["pin_sha256"]:
+        raise TrialError("Candidate pin changed during the trial")
+    pin = read_pin(pin_path)
+    release = state["kernel_release"]
+    if pin["kernel_release"] != release or pin["architecture"] != state["architecture"]:
+        raise TrialError("Candidate pin identity changed during the trial")
+    for package in (f"linux-image-{release}", f"linux-headers-{release}"):
+        _, version = installed_package(package)
+        if version != pin["debian_version"]:
+            raise TrialError(f"Candidate package version changed during the trial: {package}")
+    if kernel_payload_identity(release, state["architecture"]) != state["candidate_payload_hashes"]:
+        raise TrialError("Candidate kernel payload changed during the trial")
+    if state.get("secure_boot_mode") == "enabled":
+        current = secure_boot_state()
+        if current != "enabled":
+            raise TrialError("Secure Boot is no longer enabled during the candidate trial")
+        identity = verify_secure_boot_identity(pin, release, runtime=runtime)
+        if identity != state.get("secure_boot_identity"):
+            raise TrialError("Candidate Secure Boot identity changed during the trial")
 
 
 def mounted_device(mountpoint: str, *, exact: bool = False) -> dict:
@@ -679,9 +964,11 @@ def prepare_locked(args, state_file: pathlib.Path) -> dict:
         approved_volume_id=args.approved_backup_volume_id,
     )
     require_clean_packages()
-    secure_boot = secure_boot_mode()
-
     release = pin["kernel_release"]
+    secure_boot = secure_boot_state()
+    secure_boot_identity = None
+    if secure_boot == "enabled":
+        secure_boot_identity = verify_secure_boot_identity(pin, release)
     candidate_image = f"linux-image-{release}"
     candidate_headers = f"linux-headers-{release}"
     for name in (candidate_image, candidate_headers):
@@ -726,8 +1013,9 @@ def prepare_locked(args, state_file: pathlib.Path) -> dict:
         "architecture": pin["architecture"],
         "kernel_config_sha256": pin.get("resolved_config_sha256"),
         "kernel_payload_sha256": pin.get("kernel_payload_sha256"),
-        "signing_certificate_sha256": pin.get("module_signing_certificate_sha256"),
+        "package_module_signing_certificate_sha256": pin.get("module_signing_certificate_sha256"),
         "secure_boot_mode": secure_boot,
+        "secure_boot_identity": secure_boot_identity,
         "machine_id": machine_id,
         "root_mount": root_mount,
         "boot_mount": boot_mount,
@@ -899,6 +1187,13 @@ def arm_timeout_locked(state_file: pathlib.Path) -> dict:
                               "The one-time selection returned to the known-good fallback.")
     if current != state["kernel_release"]:
         raise TrialError(f"Unexpected running kernel during trial: {current}")
+    if state.get("secure_boot_mode") == "enabled":
+        try:
+            verify_candidate_integrity(state, runtime=True)
+        except TrialError as exc:
+            state["security_verification_error"] = str(exc)
+            write_state(state_file, state)
+            return rollback_locked(state_file, expired=True)
     command(["systemctl", "start", f"{TIMEOUT_UNIT}.timer"])
     state["timer_started_unix"] = int(time.time())
     write_state(state_file, state)
@@ -918,6 +1213,8 @@ def acknowledge_locked(state_file: pathlib.Path) -> dict:
         raise TrialError(f"Cannot acknowledge trial in state {state['state']}")
     if os.uname().release != state["kernel_release"]:
         raise TrialError("The pinned candidate kernel is not running")
+    if state.get("secure_boot_mode") == "enabled":
+        verify_candidate_integrity(state, runtime=True)
     verify_fallback_unchanged(state)
     grubenv = pathlib.Path("/boot/grub/grubenv")
     if grubenv.is_symlink() or not grubenv.is_file():

@@ -8,52 +8,85 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 
 ## Current state
 
-- **AMD64 ISO candidate:** refreshed candidate SHA-256 is
-  `b9b7cb320651ab562312bab8f059ee7a53c253e7d52488bb604a66f6782bd474`.
-  The disposable UEFI lifecycle completed guarded offline installation,
-  package checks, fallback boot, and protected-disk verification. The PsyCachy
-  candidate was not booted because the VM Secure Boot/MOK prompt was refused.
-  Physical NVIDIA behavior and hardware installation remain unqualified.
-- **ARM64 ISO candidate:** refreshed candidate SHA-256 is
-  `10e3b63ff5d1b1491af8935ac536c0768d2d13f4ee35b79efe22f3be4b4c0169`.
-  SP12's system QEMU 11.0.3 reaches GDM, but the display turns black on the
-  login transition. A source-verified QEMU 11.1.3 build with EGL/VirGL support
-  and its short backend smoke check pass; the fresh installer retry is pending
-  root SSH authorization to `cs-sp12`. No ISO-side defect is demonstrated;
-  disk selection and installation remain untested.
-- **Phase 1: BLOCKED pending exact-candidate physical RPMB qualification.**
-  The repair is pinned and its module configuration compiled. No faithful
-  disposable RPMB fixture was available, built-in compilation was not run,
-  and request/lifetime runtime coverage is incomplete. FAT metadata-sector
-  positive controls pass. One guest metadata-EIO helper case and generic ARM64
-  UEFI marker-present/absent loader selection passed; a write-throttled helper
-  success case also passed. A QEMU 11.1.3 exact-sector delayed-write positive
-  control and one delayed real-helper guest case were reported on SP12; raw
-  runtime logs, trace, and sector-map output remain on that host pending
-  authorized transfer and hash verification. The remaining
-  staging/marker/promotion/rotation interruption matrix is open. An abrupt
-  disposable QEMU interruption after the first payload promotion left a mixed
-  kernel/initrd set without its marker;
-  generic UEFI halted at the marker guard. Read-only fsck reported a dirty
-  volume, and no repair was made.
-  The UEFI rescue VM restored the damaged target and passed read-only FAT
-  checks, but the restored target did not reach userspace on the follow-up
-  firmware boot.
+- **AMD64 ISO and Secure Boot:** the last verified ISO was v2,
+  `b9b7cb320651ab562312bab8f059ee7a53c253e7d52488bb604a66f6782bd474`; its
+  payload was removed at the user's request. The owner kernel and DKMS module
+  certificates on B550I match the reviewed fingerprints
+  `83b6a49f...f4e2da` and `98509200...942717`, and both are enrolled. The
+  pinned package module signer is a separate identity
+  `a653ce20...019809`. The exact pinned image config has
+  `CONFIG_MODULE_SIG_FORCE=y`; the candidate must also pass runtime
+  `module.sig_enforce=Y` under integrity lockdown. The Secure Boot
+  trial verifier checks the signed kernel bytes, exact DKMS module signatures,
+  enrollment, lockdown, and runtime module state. Focused tests pass, but the
+  AMD64 ISO has not been rebuilt: the local output filesystem has 6.2 GiB free,
+  below the builder's 14 GiB floor, and the offline closure checker requires
+  root. Retained output remains preserved. The disposable trial lifecycle has
+  not run, and NVIDIA hardware behavior remains unqualified.
+- **ARM64 installer:** refreshed v4
+  (`7669c1bcfeccffb9b86af2958ae5607cac9dc5b55b3fa77e467b304f7143af27`)
+  passed signed-source, package closure, EFI/live-payload, UEFI metadata, and
+  embedded-helper checks. A disposable x86_64 QEMU install reached the Ubuntu
+  completion screen; it stopped before restart, media removal, and installed
+  boot. On a retained-target COW clone, the generic 7.3.0 kernel reached
+  userspace. Verbose serial output from a one-time 7.3.1 candidate boot shows
+  both tmpfiles services exited successfully, root fsck passed, `/sysroot`
+  mounted, and initrd switch-root completed. Host services continued into
+  AppArmor/rfkill before the 180-second QEMU timeout. A fresh 600-second COW
+  boot reached a root shell on `7.3.1-psycachy-sp121`; fsck passed and the ESP
+  mounted from `/dev/vda1`. A same-version pinned package reinstall reached
+  initramfs generation, then timed out before dpkg/hook completion. A longer
+  isolated reinstall check is underway. Version-upgrade, interrupted-update,
+  and rollback checks remain open. Two SP12 TCG
+  installer attempts did not reach the selector; both made zero target and
+  protected-disk writes. The QEMU details and evidence are in the
+  [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
+  and [stop handoff](archive/validation/unattended-luna-stop-handoff-20261112.md).
+- **SP12 live media:** a private, local-testing-only ARM64 live ISO was built
+  and audited. Its SHA-256 is
+  `dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`
+  (4,810,289,152 bytes); the local copy matches SP12's checksum and build
+  manifest. The attached MacOS setup drive was positively identified as an
+  unmounted Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`, on USB; it is
+  separate from the Lexar MSI BIOS USB and both NVMe drives. The write and
+  readback remain pending a local sudo terminal. No firmware boot or internal
+  SP12 changes have occurred. The image contains private, non-redistributable
+  machine support and must stay local.
+- **Recovery and FAT:** recovery snapshot eligibility now requires the valid
+  boot marker; interrupted rotation validates recovery generations before
+  deleting them, and restore falls back to a verified previous generation.
+  Independent review and 24 focused tests passed. The delayed-write evidence
+  has been copied from SP12 and all 49 recorded files verify against the remote
+  manifest. Mapping the pre-run FAT seed confirms first-free-cluster metadata
+  sectors 81 and 2098, data sector 10341, and free directory-entry sector 4067.
+  Other interruption boundaries remain open. The earlier rescue restored the
+  payloads and passed read-only FAT checks, but firmware boot did not reach
+  userspace.
+- **RPMB:** the pinned seven-patch QEMU RPMB series applied cleanly after its
+  exact two prerequisite series on the pinned base. An isolated QEMU build
+  passed its source manifest check; all 32 UFS QOS tests passed, including the
+  three RPMB descriptor, key-counter, and read/write cases. Key programming
+  and data writes occurred only in the disposable emulator. Built-in kernel
+  compile, Linux-driver guest request/lifetime coverage, and exact-candidate
+  physical registration/health checks remain open. Physical RPMB key or data
+  operations remain prohibited.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
   fixtures on both desktops with matching saved-file hashes. No paired
   performance scenarios have been run; every scenario remains at `0/3` pairs.
-  SP12 whole-system energy remains unavailable.
-- **Physical targets:** SP12 remains on `7.3.1-psycachy-sp121`; its verified
-  recovery set is intact and no BootNext selection is pending. The requested
-  Tailscale target `cs-b550i-1` refused TCP port 22. B550I's last observed
-  kernel is generic `7.3.0-10-generic`; the current state and trial could not
-  be refreshed. The suffix-less peer was not used.
-- **Status baseline:** the reviewed starting commit for the original campaign
-  was `e43b9efc3264a6290ef3be3d35d12e921714dce2`. The most recent pushed
-  handoff before this extension was `cf53fdb9842b2d437e8632997237d8ca68df970a`,
-  and both local and remote HEAD matched it at the extension start. See the
-  [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
-  for the new evidence and final delivery status.
+  SP12 whole-system energy remains unavailable and benchmarks stay deferred.
+- **Physical targets and safeguards:** the B550I root NVMe is the Seagate
+  `7VP015DH`; the Samsung `S7KHNJ0WA06121F` contains BitLocker data; the
+  Lexar `AA8AGLJAH1RZABDT` contains the MSI BIOS image. All remain untouched.
+  No separate blank B550I installation disk is present. SP12 remains on
+  `7.3.1-psycachy-sp121`, root `/dev/sda2`, ESP `/dev/sda1`; its verified
+  fallback, firmware, and internal packages are unchanged. Internal SP12
+  installation/update is blocked pending independent backup storage.
+- **Repository:** the feature branch includes two pre-existing local commits
+  beyond the last observed remote tip `c7b3a9af9d27344a8be4da40a4e8d04080e2b821`.
+  This takeover adds reviewed code and status updates while preserving inherited
+  user files. Recheck the remote immediately before any push; never force-push.
+  See the dated [takeover report](archive/validation/luna-takeover-20261112.md)
+  for evidence identities and outstanding gates.
 
 ## 1. Phase 1 closeout
 
@@ -61,12 +94,18 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 
 - The AMD64 image/headers pair and refreshed ARM64 image/headers pair are
   pinned with source, config, package, payload, DTB, policy, and
-  signer-certificate hashes. Refreshed ISO candidates are retained under
-  ignored `output/`; hashes are in the continuation report. These are
-  candidates, not release images, and still need target-specific qualification.
+  signer-certificate hashes. ARM64 v4 is retained under ignored `output/`;
+  the last verified AMD64 v2 ISO payload was removed at the user's request,
+  with its hash and build manifest retained. These are VM-test candidates,
+  not release images, and still need target-specific qualification.
 - Keep the ARM64 kernel package and DTB pins together. The rebuilt ARM64 DTB
   hash matches the retained pin, but the package has not been installed on
-  SP12; existing physical files and removable fallback remain unchanged.
+  SP12; existing physical files and removable fallback remain unchanged. The
+  2026-11-10 SP12 installation is historical: its installed kernel and initrd
+  hashes are recorded in the
+  [physical lifecycle report](archive/validation/phase1-physical-lifecycle-20261110.md).
+  Those payload bytes differ from the refreshed candidate's packaged kernel;
+  the shared version/release string does not establish byte identity.
 - Keep unprivileged BPF disabled by default. `CONFIG_BPF_UNPRIV_DEFAULT_OFF=y`
   starts `kernel.unprivileged_bpf_disabled` at `2`; an administrator can set it
   to `0` to re-enable unprivileged `bpf()` calls, or to `1` to disable them
@@ -82,8 +121,17 @@ the final pin manifests, and retained build/verifier output under the ignored
 - Independent source/config review is complete. Generic QEMU passed trusted,
   unsigned, and untrusted module checks; integrity lockdown; unprivileged BPF
   denial; legacy kexec disablement; and rejection of unsigned file-kexec
-  images on both architectures. Production signer-key ownership and trust
-  deployment remain unresolved.
+  images on both architectures. Read-only checks on `cs-b550i-1` show Secure
+  Boot enabled, integrity lockdown, and `module.sig_enforce=Y`. The user
+  confirmed that the owner kernel and DKMS certificates match the exact pinned
+  fingerprints and are enrolled. The packaged kernel-module signer is a
+  separate fingerprint; whether the exact candidate's modules are trusted at
+  runtime still needs verification. SP12 is in Setup Mode with Secure Boot
+  disabled, no enrolled MOK, no active lockdown, and `module.sig_enforce=N`.
+  No trust or firmware state changed on either target. See the
+  [CS-B550i trust check](../output/.unattended-luna-20261111210910Z/qemu-hosting/physical-signing-readonly/cs-b550i-1.txt),
+  [SP12 trust check](../output/.unattended-luna-20261111210910Z/qemu-hosting/physical-signing-readonly/sp12.txt),
+  and certificate enrollment probes in the same ignored run directory.
 - Earlier disposable FAT tests passed interrupted rotations/promotions,
   restore retries, ENOSPC, read-only remount failure, and data-sector EIO. This
   continuation added positive controls proving exact-sector EIO injection at
@@ -141,12 +189,18 @@ blocking gate; no provisioning or repair was attempted.
 
 ### 2.1 ARM64 installer lifecycle
 
-- Make the live graphical installer visible in a supported ARM environment,
-  or isolate and fix an ISO-side display problem. QEMU 11.0.3 on SP12 reached
-  GDM, but the login transition became black. QEMU 11.1.3 with EGL/VirGL
-  support now passes its backend smoke; the fresh disposable installer retry
-  remains pending root SSH authorization. No compositor or renderer defect
-  inside the ISO has been demonstrated.
+- ARM64 v3 reached the custom selector and installed the pinned kernel pair in
+  a disposable QEMU 11.1.3 VM. Its late command then failed because the package
+  DTB was present under `/usr/lib/linux-image-$release/qcom/` but the boot-sync
+  helper required `/boot/dtb-$release`. The installer now copies the packaged
+  DTB to that expected path after refusing mismatches. Candidate v4 passed
+  artifact checks and a disposable x86_64 QEMU install reached its completion
+  screen, then stopped before restart and no-media boot. A separate COW clone
+  booted the generic kernel to userspace; the pinned 7.3.1 candidate reached
+  `systemd-tmpfiles-setup-dev.service` and stalled after `/dev/vda2` was
+  detected. Package hooks and rollback remain untested. Two SP12 TCG retries
+  did not reach the selector. See the
+  [QEMU continuation](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#2026-11-12-arm64-v3-installer-dtb-path-failure-and-v4-retry).
 - Reach the disk selector; verify it lists only eligible disks, requires an
   explicit choice and typed `ERASE`, and generates a partition plan for only
   the chosen disposable disk.
@@ -174,10 +228,11 @@ results; protected-disk checksum/sentinel.
   timeout rollback, and the saved generic fallback. The existing installer VM
   exercised the earlier one-shot hook and returned to generic after declining
   MOK; it did not exercise this helper's acknowledgement/timeout path.
-- Resolve production signing ownership and trust before an approved Secure
-  Boot candidate trial. The disposable VM refused the untrusted candidate's
-  MOK prompt; no enrollment occurred. Confirm both kernels only after an
-  approved trust path is available.
+- Verify that the pinned package module signer is trusted by the exact
+  candidate kernel, then use the enrolled owner keys for the kernel image and
+  DKMS modules. The disposable VM refused the prior untrusted candidate's MOK
+  prompt; no enrollment occurred there. Confirm both kernels only after the
+  complete identity and runtime trust checks pass.
 - Validate NVIDIA DKMS behavior on a GPU-equipped test target; the current VM
   had no NVIDIA GPU.
 - Validate the ISO on supported AMD64 hardware using a disposable target disk
@@ -194,10 +249,10 @@ candidates rather than release ISOs.
 
 ### 2.3 Produce release images
 
-- Refreshed AMD64 and ARM64 ISO candidates have been rebuilt from the frozen
-  pins and passed source-signature, offline-closure, boot-metadata, EFI/live
-  payload, and manifest checks. Older candidates remain stale; do not use them
-  to qualify these bytes.
+- ARM64 v4 is the current rebuilt VM-test candidate and has passed source,
+  offline-closure, boot-metadata, EFI/live-payload, and manifest checks. The
+  last verified AMD64 v2 ISO file was removed after its VM lifecycle passed;
+  rebuild AMD64 v3 from the frozen pins before qualifying or releasing it.
 - Rebuild both ISOs after the remaining Phase 1 and installer gates are
   resolved, then repeat install, boot-without-media, fallback, and
   protected-disk checks.
