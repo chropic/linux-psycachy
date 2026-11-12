@@ -6,30 +6,55 @@ support and must not be published.
 
 ## Media identity
 
-- ISO: `sp12-ubuntu-26.10-arm64-live-private.iso`
-- SHA-256: `dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`
-- Size: 4,810,289,152 bytes
-- Verified USB HDD: Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`,
-  stable path
-  `/dev/disk/by-id/ata-APPLE_HDD_HTS545050A7E362_TNS519GY1G6JGG`
-- The user verified model, serial, USB path, size, unmounted state, and source
-  hash; reviewed existing partition signatures; then wrote the ISO and compared
-  the full ISO-sized device prefix. Direct-I/O readback returned
-  `READBACK_OK dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`.
-  Captured command output SHA-256 is
-  `746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529` in
-  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
-- The write replaced the partition layout and first 4.81 GB; it was not a
-  whole-drive secure erase. The initial one-time boot reached the live session,
-  but emitted `file '/boot/grub/arm64-efi/devicetree.mod' not found`. Inspection
-  of the built ISO confirmed that the available module is `fdt.mod`, which
-  provides the `devicetree` command. The builder now uses `insmod fdt` and
-  verifies the module in the base and final ISO; a corrected image still needs
-  to be built, written, and booted. The current boot does not prove which DTB
-  the kernel received. The efivarfs warning is expected because the menu uses
-  `efi=noruntime`.
+The first USB trial used the private image with SHA-256
+`dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523` and size
+4,810,289,152 bytes. Its full ISO-sized prefix passed direct-I/O readback on
+Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`, stable path
+`/dev/disk/by-id/ata-APPLE_HDD_HTS545050A7E362_TNS519GY1G6JGG`. The write
+replaced the partition layout and first 4.81 GB; it did not securely erase the
+entire 465.8 GB drive. The original user output is retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
+
+The corrected private image was built on SP12 at
+`/var/tmp/sp12-live-output-20261112/sp12-ubuntu-26.10-arm64-live-private-fdt-fix.iso`.
+Its SHA-256 is
+`e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`; size is
+4,810,289,152 bytes. The builder verified the Canonical-signed base ISO,
+pinned kernel package pair, kernel/modules/initramfs/DTB, private support
+payloads, GPT and EFI image, unchanged base installer layers, and unchanged
+physical ESP/NVRAM/mount state. The final GRUB config contains exactly one
+`insmod fdt` followed by the pinned `devicetree` path, and the final ISO
+contains `fdt.mod` with SHA-256
+`93a9dda6e94e7086ea1463b41c834f30e041efbc7d2151720cc572a07672168c`. Build
+info SHA-256 is
+`a742a1b1e7e883155e94502325d51aa93993fc3a32773171bc3012ba0d2bc00a`.
+Checksums, build info, GRUB config, manifests, and build logs are retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/corrected-build-fdt-fix/`.
+The image remains local-only because it contains non-redistributable machine
+support. It has not yet been written to USB or booted. The Apple drive is
+currently disconnected; on reconnection, verify model, serial, USB path,
+capacity, unmounted state, and current partition signatures before writing.
 
 ## One-time USB boot
+
+### First trial results
+
+The first image booted through the one-time USB menu. It reached the live
+session with kernel `7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st
+Edition/cow`, and a live overlay root. GRUB printed that
+`/boot/grub/arm64-efi/devicetree.mod` was missing; `efi=noruntime` also caused
+the expected efivarfs warning. The corrected image fixes the module path, but
+this first session did not establish which DTB Linux received because
+`/sys/firmware/fdt` was absent. The staged DTB file itself matched its pinned
+SHA-256. The live PipeWire speaker sink was shown at 40%. The user reported all tested
+functions worked except speaker output, which was silent. The speaker is also
+silent in the installed system; its PipeWire level was 18%, while the prior
+owner-confirmed working 7.3.0 boot used 72% with the same 1/6 ALSA speaker
+level. Retest at a normal listening level before attributing silence to a
+kernel fault. The user reported returning to the default internal installation
+after the USB trial.
+The live recovery inspection output was not provided; do not mark that gate
+passed.
 
 1. Use the firmware's one-time boot menu and select the USB drive by its Apple
    model/serial. Do not change persistent boot order, enroll keys, or alter

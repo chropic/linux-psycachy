@@ -175,35 +175,51 @@ keep the image, build metadata, and private files out of Git and publication.
 Nine focused builder tests passed; Python compilation, wrapper shell syntax,
 and `git diff --check` passed at the time of review.
 
-The current removable drive is positively identified as an Apple HDD
+The first trial drive was positively identified as an Apple HDD
 HTS545050A7E362, serial `TNS519GY1G6JGG`, 465.8 GB, on a USB path, with no
-mounted partitions. The stable device path is
+mounted partitions. Its stable device path is
 `/dev/disk/by-id/ata-APPLE_HDD_HTS545050A7E362_TNS519GY1G6JGG`. The user
 confirmed that its MacOS setup may be erased for this live media. The Lexar
-USB `AA8AGLJAH1RZABDT`, which contains the MSI BIOS image, remains mounted and
-must not be written. The Seagate system NVMe `7VP015DH` and BitLocker Samsung
-NVMe `S7KHNJ0WA06121F` also remain untouched. The user wrote the image after
-repeating the identity, capacity, USB-path, unmounted-state, source-hash, and
-existing partition-signature checks. The direct-I/O readback covered the full
-4,810,289,152-byte ISO prefix and returned
+USB `AA8AGLJAH1RZABDT`, which contains the MSI BIOS image, remains untouched;
+the Seagate system NVMe `7VP015DH` and BitLocker Samsung NVMe
+`S7KHNJ0WA06121F` also remain untouched. The first image write passed the
+identity, capacity, USB-path, unmounted-state, source-hash, and existing
+partition-signature checks. Direct-I/O readback of the full 4,810,289,152-byte
+prefix returned
 `READBACK_OK dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`.
 Captured terminal output SHA-256 is
 `746b75c1d7d173c6935f156b828bfac400a982d982bcaad1fa93bc41a4e70529`; it is
 retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/usb-write-readback-user-output.txt`.
+After the one-time boot and return to the installed system, a read-only host
+check confirmed the Apple USB is disconnected. The user authorized reuse of
+the same drive; its identity and mount state must be checked again before the
+corrected image is written.
 The first one-time USB boot reached the live session. User output confirms
 kernel `7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st Edition/cow`, an
 overlay root, and a staged DTB hash matching the pin. GRUB printed a missing
-`devicetree.mod` error; inspection confirms the ISO contains `fdt.mod`, so the
-builder now uses `insmod fdt` and verifies that module in the final image.
-Because `/sys/firmware/fdt` was absent, the exact DTB passed to the kernel is
-not established. The efivarfs mount warning is expected from `efi=noruntime`.
-Wi-Fi reached connected state; inventory found powered Bluetooth, speaker and
-microphone endpoints, USB bridge, and battery/charge-threshold reporting.
-Network traffic, actual device interaction, suspend/resume, and read-only
-recovery inspection remain open. Sanitized live-output summary SHA-256 is
+`devicetree.mod` error; inspection confirms the base ISO contains `fdt.mod`.
+Commit `cf703ce` fixes the module directive, and the corrected private ISO has
+now been rebuilt and audited. Its SHA-256 is
+`e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`; it
+contains one `insmod fdt`, the pinned `devicetree` path, and the unchanged
+`fdt.mod`. The corrected image still needs a USB write and one-time boot.
+Because `/sys/firmware/fdt` was absent in the first session, the exact DTB
+passed to Linux is not established. The efivarfs warning was expected from
+`efi=noruntime`. The user reports the first session's tested hardware functions
+worked except speaker output, which was silent. The installed system is also
+silent. A read-only inspection found the pinned private topology/UCM/firmware
+files installed, PipeWire's speaker sink at 18% volume, and the internal
+microphone source. The prior owner-confirmed working 7.3.0 boot had PipeWire at
+72% and the same 1/6 ALSA speaker level; it also recorded the same Q6 APM
+command timeout and ASoC widget-binding deferral. The current lower PipeWire
+level is a testable explanation; the available logs do not identify the cause.
+The read-only live recovery inspection output was not provided. Sanitized
+live-output summary SHA-256 is
 `9a5cd450173a221a589800647704376ba0ef31bde19d72d0984fa9abfda7d37b` at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-session-partial-summary.txt`.
+Corrected-image build logs, manifests, and checksums are retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/corrected-build-fdt-fix/`.
 
 A read-only preflight captured the SP12 internal root as model
 `THGJFMT2E46BATVB`, serial `B526UEHD6I`, UUID

@@ -44,29 +44,30 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   protected-disk writes. The QEMU details and evidence are in the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
   and [stop handoff](archive/validation/unattended-luna-stop-handoff-20261112.md).
-- **SP12 live media:** a private, local-testing-only ARM64 live ISO was built
-  and audited. Its SHA-256 is
-  `dfd9c3e081a002a8a9ad572750d4998da06255dd7a51cb223b5271f07b210523`
-  (4,810,289,152 bytes); the local copy matches SP12's checksum and build
-  manifest. The attached MacOS setup drive was positively identified as an
-  unmounted Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`, on USB; it is
-  separate from the Lexar MSI BIOS USB and both NVMe drives. The user wrote
-  the image after exact model/serial and partition-signature checks; direct-I/O
-  readback returned `READBACK_OK` with the expected ISO SHA-256. A one-time USB
-  boot reached the live session with kernel `7.3.1-psycachy-sp121`, Surface
-  model `Surface Pro 12in 1st Edition/cow`, an overlay root, and the staged
-  DTB hash matching its pin. The menu also emitted a missing
-  `devicetree.mod` error: the ISO contains `fdt.mod`, which provides that
-  command. The builder fix is in progress; the current boot does not prove the
-  pinned DTB was loaded. The efivarfs warning is expected from `efi=noruntime`.
-  Internal root and ESP remained unmounted. Wi-Fi connected and hardware
-  inventory found Bluetooth, built-in speaker/microphone, USB bridge, and
-  battery reporting; network traffic and functional device tests remain open.
-  The read-only baseline and partial live output are in the takeover report.
-  The [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
-  lists the corrected boot, remaining tests, read-only recovery inspection, and
-  stop/recovery steps. The image contains private, non-redistributable machine
-  support and must stay local.
+- **SP12 live media:** The first private ARM64 ISO was written to the Apple USB
+  HDD and its full 4,810,289,152-byte prefix passed direct-I/O readback. The
+  one-time boot reached the SP12 live session on kernel `7.3.1-psycachy-sp121`
+  with the expected model and overlay root, but GRUB reported missing
+  `devicetree.mod`; the base ISO actually contains `fdt.mod`. The builder now
+  loads `fdt` and audits that module and command in the final ISO. The corrected
+  private image rebuilt successfully with the Canonical-signed base, pinned
+  kernel packages, and pinned local support files. SHA-256:
+  `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`
+  (4,810,289,152 bytes). The GRUB config and packaged FDT module are verified;
+  the ISO has not yet been written or booted. The user reports live hardware
+  tests passed except speaker output, which was silent. The installed system is
+  also silent; its PipeWire speaker endpoint and pinned firmware/UCM files are
+  present. The installed PipeWire level was 18%, versus 72% in the prior
+  owner-confirmed working 7.3.0 boot; the ALSA speaker control was 1/6 in both.
+  Retest at a normal listening level before attributing this to a kernel fault.
+  The live run did not prove
+  the exact DTB passed to Linux (`/sys/firmware/fdt` was absent), and the
+  read-only live recovery inspection was not reported. The Apple HDD is
+  currently disconnected; re-identify it by serial and mount state before the
+  corrected image write. The internal root/ESP and recovery-panel route remain
+  unchanged. See the [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
+  and [takeover report](archive/validation/luna-takeover-20261112.md). The image
+  includes private, non-redistributable machine support and must stay local.
 - **Recovery and FAT:** recovery snapshot eligibility now requires the valid
   boot marker; interrupted rotation validates recovery generations before
   deleting them, and restore falls back to a verified previous generation.

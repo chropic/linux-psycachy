@@ -170,6 +170,12 @@ path is the supported recovery procedure.
   `module.sig_enforce=Y` under integrity lockdown. The AMD64 ISO and trial
   lifecycle remain open. See the dated [takeover report](archive/validation/luna-takeover-20261112.md)
   for the exact package configuration and evidence.
+- `iso/build-sp12-live.py` now loads GRUB's available `fdt.mod` before its
+  pinned Surface DTB command and audits both in the final ISO. The corrected
+  local-only image built and passed its base, package, support-file, GRUB, GPT,
+  installer-layer, and physical ESP/NVRAM checks. Its USB rewrite and boot are
+  pending. The initial live trial was silent from the speakers, as is the
+  installed system; see the live-media status in the ship checklist.
 - A corrected UEFI rescue VM used a separate rescue root, restored a disposable
   target clone, and verified exact payload hashes. Fresh AAVMF variables and
   one-time BootNext reached the unique intended-loader marker; GRUB then stopped
