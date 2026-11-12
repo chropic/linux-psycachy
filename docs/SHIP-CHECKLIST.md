@@ -60,7 +60,13 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   present. The installed PipeWire level was 18%, versus 72% in the prior
   owner-confirmed working 7.3.0 boot; the ALSA speaker control was 1/6 in both.
   The live trial was also silent at 40%, so the 18% level alone does not explain
-  both results. Repeat a short tone test at 72% with mixer controls unchanged.
+  both results. A 2026-11-12 14:57 MST read-only capture found WSA RX0/RX1
+  unmuted and routed through AIF1_PB, speaker DAC/COMP/BOOST/PBR on, both CPS
+  switches off, and the MultiMedia1 mixer enabled only for its left channel.
+  These values do not establish the cause; no mixer settings were changed.
+  Raw captures and hashes are in
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
+  Repeat a short tone test at 72% with mixer controls unchanged.
   The live run did not prove
   the exact DTB passed to Linux (`/sys/firmware/fdt` was absent), and the
   read-only live recovery inspection was not reported. The Apple HDD is now

@@ -61,6 +61,18 @@ after the USB trial.
 The live recovery inspection output was not provided; do not mark that gate
 passed.
 
+A read-only capture from the installed `7.3.1-psycachy-sp121` session at
+2026-11-12 14:57 MST confirms that PipeWire exposes its speaker sink at 18%
+and GNOME Settings has an active stream from the speaker sink's monitor ports.
+ALSA `Speakers` and each speaker PA remain at 1/6. WSA RX0/RX1 digital mutes
+are off, both RX muxes select `AIF1_PB`, and the input muxes select RX0/RX1.
+Speaker DAC, COMP, BOOST, and PBR switches are on; CPS and VISENSE are off.
+The `MultiMedia1` mixer has its
+left channel on and right channel off. These are observations only and do not
+identify the cause or prove acoustic output; no controls were changed. Raw
+read-only captures and SHA-256 values are retained in
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
+
 1. Use the firmware's one-time boot menu and select the USB drive by its Apple
    model/serial. Do not change persistent boot order, enroll keys, or alter
    Secure Boot settings.
