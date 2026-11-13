@@ -53,27 +53,39 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   private image rebuilt successfully with the Canonical-signed base, pinned
   kernel packages, and pinned local support files. SHA-256:
   `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`
-  (4,810,289,152 bytes). The GRUB config and packaged FDT module are verified;
-  the ISO has not yet been written or booted. The user reports live hardware
-  tests passed except speaker output, which was silent. The installed system is
-  also silent; its PipeWire speaker endpoint and pinned firmware/UCM files are
-  present. The installed PipeWire level was 18%, versus 72% in the prior
-  owner-confirmed working 7.3.0 boot; the ALSA speaker control was 1/6 in both.
-  The live trial was also silent at 40%, so the 18% level alone does not explain
-  both results. A 2026-11-12 14:57 MST read-only capture found WSA RX0/RX1
-  unmuted and routed through AIF1_PB, speaker DAC/COMP/BOOST/PBR on, both CPS
-  switches off, and the MultiMedia1 mixer enabled only for its left channel.
-  These values do not establish the cause; no mixer settings were changed.
-  Raw captures and hashes are in
+  (4,810,289,152 bytes). The corrected image was written to the identified
+  Apple HDD and its full ISO-sized prefix passed direct-I/O readback; its
+  one-time boot remains pending. The live hardware check passed except speaker
+  output, which was silent. The installed system is also silent. The user
+  reports no sound from either speaker during the repeated 440 Hz test,
+  including the replay described at 72% software volume. A separate active
+  stream capture recorded PipeWire at 79% and ALSA `Speakers` at 6/6 (100%);
+  the WSA `MultiMedia1` right channel reverted to off during the test. Both
+  driver-bound WSA884x SoundWire endpoints reported `UNATTACHED`, while tone
+  attempts produced a SoundWire master-clash report, interrupt value `2048`,
+  write-FIFO overflow, and ASoC `-61` playback/resume errors. The pinned QCOM
+  driver defines bit 11 (`2048`) as auto-enumeration failure, but lacks an IRQ
+  case for it and logs it as unknown. This confirms SoundWire auto-enumeration
+  failed without identifying why. In the pinned source, `-61` is `-ENODATA`
+  for an ignored SoundWire command, and WSA runtime resume propagates
+  `regcache_sync()` errors. The FIFO overflow is concurrent evidence of
+  transport trouble, but its causal relation to `-ENODATA` is unproven. The
+  exact cause remains open pending corrected-DTB boot evidence.
+  Captures and hashes are in
   `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
-  Repeat a short tone test at 72% with mixer controls unchanged.
   The live run did not prove
   the exact DTB passed to Linux (`/sys/firmware/fdt` was absent), and the
-  read-only live recovery inspection was not reported. The Apple HDD is now
-  attached to the B550I and again matches the expected model, serial, USB path,
-  and unmounted state. Its old `sdb3` starts at sector 9396224, after the image
-  ends at sector 9395095. The corrected image is not yet written; the guarded
-  flash command will repeat the root-only signature check. The internal
+  read-only live recovery inspection was not reported. On the B550I, the
+  guarded write rechecked the corrected image and Apple HDD model, serial,
+  stable path, USB transport, capacity, and unmounted state. The full
+  4,810,289,152-byte image prefix passed direct-I/O readback with SHA-256
+  `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`.
+  Captured user output is at
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/flash-corrected-iso-readback.txt`
+  (SHA-256 `5b90489b644bcb54bd2b3f6b668fa10217ea10f067ea5213a57b8f00995e2682`).
+  This wrote the image prefix and partition metadata; it did not securely erase
+  the full 465.8 GB disk. The corrected image's one-time boot remains pending.
+  The internal
   root/ESP and recovery-panel route remain
   unchanged. See the [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
   and [takeover report](archive/validation/luna-takeover-20261112.md). The image
@@ -98,11 +110,22 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   three RPMB descriptor, key-counter, and read/write cases. Key programming
   and data writes occurred only in the disposable emulator. The first built-in
   kernel compile ended on SSH hangup while compiling unrelated objects, with no
-  compiler diagnostic and no final kernel artifacts. The source/config pins
-  still match. It has resumed incrementally in a disconnect-safe systemd job
-  with a 3-core quota; diagnostic KASAN/lockdep compilation and the read-only
-  driver guest run have not started. Exact-candidate physical registration and
-  health checks remain open. Physical RPMB key/data operations are prohibited.
+  compiler diagnostic; its incremental resume completed successfully with
+  `CONFIG_RPMB=y` and 8,484 modules. The manifest and artifact hashes are at
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/builtin-build-manifest.json`.
+  The diagnostic KASAN/lockdep build and signed read-only guest fixture are
+  complete. The no-UFS negative control returned `-ENODEV`; four-worker
+  concurrency passed with 256 successful counter requests and zero errors.
+  The final lifecycle run recovered from a failed `ABORT_TASK` and HCE reset,
+  then unbound the UFS PCI driver while an RPMB request was held. Unbind
+  completed and all four workers observed `-ENODEV`; no KASAN or circular-lock
+  warning appeared during that lifecycle. The guest did emit one early
+  scheduler RCU warning before the test ran. A separate PCIe hotplug attempt
+  hit a `pciehp` lock-order warning and did not complete; the passing test
+  covers the driver-removal callback, not PCIe surprise removal. Physical
+  exact-candidate registration/health checks remain open, and physical RPMB
+  key/data operations are prohibited. Evidence is in
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/guest-lifecycle-attempts/`.
 - **Phase 2:** the ordered 20-operation editor smoke passed twice from fresh
   fixtures on both desktops with matching saved-file hashes. No paired
   performance scenarios have been run; every scenario remains at `0/3` pairs.
@@ -110,7 +133,12 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 - **Physical targets and safeguards:** the B550I root NVMe is the Seagate
   `7VP015DH`; the Samsung `S7KHNJ0WA06121F` contains BitLocker data; the
   Lexar `AA8AGLJAH1RZABDT` contains the MSI BIOS image. All remain untouched.
-  No separate blank B550I installation disk is present. SP12 remains on
+  The Apple HDD now holds the corrected live ISO; post-write inventory shows
+  only its image and EFI partitions, both unmounted. No separate blank B550I
+  installation disk is present. Inventory evidence is at
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/b550i-storage-inventory-after-flash-20261112.txt`
+  (SHA-256 `4acf97e98967dd1f1e4e3991b50de9c0fbb47d74c90827a2a58a11e80c9682bb`).
+  SP12 remains on
   `7.3.1-psycachy-sp121`, root `/dev/sda2`, ESP `/dev/sda1`; its verified
   fallback, firmware, and internal packages are unchanged. Internal SP12
   installation/update is blocked pending independent backup storage.
@@ -206,9 +234,12 @@ the final pin manifests, and retained build/verifier output under the ignored
   teardown race when requests overlap host removal. The adapted core
   serialization, UFS lifetime, and unused-bus patches are now pinned and
   compiled into the refreshed ARM64 candidate; package verification and
-  generic QEMU boot/policy checks pass. The module configuration compiled;
-  built-in compilation and runtime request/lifetime tests remain unrun because
-  a faithful controllable UFS fixture was unavailable.
+  generic QEMU boot/policy checks pass. Both module and built-in configurations
+  compile. The separate KASAN/lockdep build and Linux-driver QEMU fixture
+  passed no-UFS negative, counter/concurrency, reset-recovery, and in-flight
+  driver-unbind coverage. A boot-time scheduler RCU warning and the
+  non-passing PCIe hotplug experiment are documented in the takeover packet.
+  Exact-candidate physical registration/health checks remain open.
   See the [RPMB follow-up packet](archive/validation/phase1-closeout-20261110.md#rpmb-follow-up-packet).
 - Early SQE/GMU lookup warnings have recovered. Continue comparing matched
   candidate and fallback intervals for new storage errors, watchdog events,

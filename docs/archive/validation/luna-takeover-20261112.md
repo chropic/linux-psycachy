@@ -195,10 +195,15 @@ After the one-time boot and return to the installed system, the Apple USB
 was disconnected. It is now attached to the B550I. A read-only `lsblk` and
 udev check again identify Apple HDD HTS545050A7E362, serial `TNS519GY1G6JGG`,
 USB path `pci-0000:02:00.0-usb-0:1:1.0-scsi-0:0:0:0`, capacity 465.8 GB, and
-no mounted partitions. Its trailing ext4 `sdb3` starts at sector 9396224; the
-corrected image is 9,395,096 sectors and ends at 9395095, leaving it beyond the
-write boundary. The root-only `fdisk -l`/`wipefs --no-act` review and guarded
-write/readback remain pending.
+no mounted partitions. Before the corrected rewrite, its old ext4 `sdb3`
+started at sector 9396224; the 9,395,096-sector image ends at sector 9395095.
+The guarded rewrite required the serial confirmation, and direct-I/O readback
+matched the corrected ISO hash. The current read-only inventory shows the
+corrected GPT exposes only `sdb1` and `sdb2`; the former ext4 data beyond the
+image prefix remains raw and was not securely erased. The post-write inventory
+is retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/b550i-storage-inventory-after-flash-20261112.txt`
+(SHA-256 `4acf97e98967dd1f1e4e3991b50de9c0fbb47d74c90827a2a58a11e80c9682bb`).
 The first one-time USB boot reached the live session. User output confirms
 kernel `7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st Edition/cow`, an
 overlay root, and a staged DTB hash matching the pin. GRUB printed a missing
@@ -207,7 +212,15 @@ Commit `cf703ce` fixes the module directive, and the corrected private ISO has
 now been rebuilt and audited. Its SHA-256 is
 `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`; it
 contains one `insmod fdt`, the pinned `devicetree` path, and the unchanged
-`fdt.mod`. The corrected image still needs a USB write and one-time boot.
+`fdt.mod`. The corrected image was then written to the Apple HDD on the B550I
+after rechecking its model, serial, USB path, capacity, and unmounted state.
+The 4,810,289,152-byte direct-I/O readback SHA-256 matches the corrected ISO:
+`e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`.
+Captured user output is retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/flash-corrected-iso-readback.txt`
+(SHA-256 `5b90489b644bcb54bd2b3f6b668fa10217ea10f067ea5213a57b8f00995e2682`).
+The USB write did not securely erase sectors beyond the image prefix. The
+corrected one-time boot remains pending.
 Because `/sys/firmware/fdt` was absent in the first session, the exact DTB
 passed to Linux is not established. The efivarfs warning was expected from
 `efi=noruntime`. The user reports the first session's tested hardware functions
@@ -218,12 +231,33 @@ and the internal microphone source. The prior owner-confirmed working 7.3.0
 boot had PipeWire at 72% and the same 1/6 ALSA speaker level; it also recorded
 the same Q6 APM command timeout and ASoC widget-binding deferral. Since the
 live trial was silent at 40%, the lower installed level alone does not explain
-both results. A short tone test at 72% with mixer controls unchanged is needed
-before attributing silence to a kernel regression.
+both results. The later installed-system tone test is recorded below.
 The read-only live recovery inspection output was not provided. Sanitized
 live-output summary SHA-256 is
 `9a5cd450173a221a589800647704376ba0ef31bde19d72d0984fa9abfda7d37b` at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-session-partial-summary.txt`.
+On the installed `7.3.1-psycachy-sp121` system, the user later confirmed that
+neither speaker was audible during the repeated 440 Hz test, including the
+replay described at 72% software volume. A separate active-stream capture
+recorded PipeWire at 79% and ALSA `Speakers` at 6/6. Both driver-bound WSA884x
+SoundWire endpoints reported `UNATTACHED`; playback attempts logged a bus
+clash, interrupt value 2048, write-FIFO overflow, and ASoC `-61` resume/open
+errors. The pinned QCOM driver defines bit 11 (`2048`) as
+`AUTO_ENUM_FAILED`, but has no IRQ case for it, so the generic unknown
+interrupt log appears. This confirms auto-enumeration failed without
+identifying why. Pinned 7.3.1 source maps `-61` to `-ENODATA` for an ignored
+SoundWire command, and the WSA runtime-resume callback propagates
+`regcache_sync()` errors. The FIFO overflow is concurrent evidence of
+transport trouble, but its causal relation to `-ENODATA` is not established.
+This supports a SoundWire/codec communication failure beyond desktop volume,
+but does not identify its underlying cause. Check the actual DTB and endpoint
+statuses from the corrected live boot before considering a code change. The
+read-only capture SHA-256 is
+`082228a31d244cd4674f9af0fd8f5f16f0e6c31dc753e74769d89db50d82fce4`; the
+active-stream test SHA-256 is
+`4c35847b578af1c33b285ece5b86c97510381150fb9525368d8f16448d1bb0c0`.
+Further interpretation is recorded at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/soundwire-diagnosis-20261112.md`.
 Corrected-image build logs, manifests, and checksums are retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/corrected-build-fdt-fix/`.
 
@@ -264,10 +298,31 @@ read/write tests. The local evidence packet summary SHA is
 `c0497e044a25212d39e71ad988cd97067b553d03c9458a311ba44b4e67c2fc85` under
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/rpmb-qemu-validation-20261112/`.
 
-These tests qualify the QEMU emulation only. Built-in kernel compilation,
-Linux-driver request/concurrency/teardown tests, KASAN/lockdep behavior, and
-physical exact-candidate registration/health checks remain open. Physical
-RPMB key programming and data writes are prohibited.
+These tests qualify the QEMU emulation only. The resumed built-in kernel build
+completed successfully with `CONFIG_RPMB=y`, `CONFIG_MODULE_SIG_FORCE=y`,
+`CONFIG_SCSI_UFSHCD_PCI=m`, and 8,484 modules. Its `Image`, `vmlinux`, and
+`vmlinuz.efi` hashes and service result are recorded in
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/builtin-build-manifest.json`
+(manifest SHA-256
+`4cd539d1e7876af25fa5f16d335cb85959545a77f2d718a5ce46f1fc2638134d`). The
+separate diagnostic KASAN/lockdep build completed successfully. A signed
+read-only guest fixture passed the controlled no-UFS negative case (`-ENODEV`),
+256 concurrent read-counter requests with zero errors, and reset recovery after
+a failed `ABORT_TASK` followed by HCE reset and a successful counter read. Its
+final lifecycle run held an RPMB request while the guest unbound PCI function
+`0000:01:00.0`; QEMU recorded a successful `ABORT_TASK` and HCE reset, unbind
+completed in 30.684 seconds, and four workers observed `-ENODEV` (`dead=4`,
+`ok=588`, `errors=2`). The final KASAN/lockdep scan passed for the lifecycle.
+One early scheduler RCU warning occurred before `/init`, at
+`kernel/sched/fair.c:9306` through `select_idle_sibling()` during
+`devtmpfs_init`. A separate PCIe hotplug attempt produced a `pciehp` lock-order
+warning and no `DEVICE_DELETED` event; that attempt is retained as a failed
+fixture path. The passing test covers the UFS driver removal callback, not
+physical surprise removal. These results qualify QEMU only. Physical
+exact-candidate registration/health checks remain open. Physical RPMB key
+programming and data writes are prohibited. The evidence summary and hashed
+logs are under
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/guest-lifecycle-attempts/`.
 
 The pinned kernel source archive and signature verified, and applying the ten
 SP12 patches plus three packaging patches reproduced source-tree SHA-256
@@ -279,15 +334,19 @@ KASAN/lockdep config SHA is
 guest diagnostic variant with UFS HCD and PCI built in is
 `55993eff382d4da79e980f8d7890be18bcd25b46d5559827aa1f0edc2d30d78b`. The
 first built-in compile ended on SSH hangup at 10,393 log lines while compiling
-unrelated objects; it emitted no compiler diagnostic, and no final `vmlinux`,
-`Image`, or `vmlinuz.efi` exists. The interrupted log SHA is
+unrelated objects; it emitted no compiler diagnostic. Its incremental resume
+completed successfully with `CONFIG_RPMB=y`, `CONFIG_MODULE_SIG_FORCE=y`, and
+`CONFIG_SCSI_UFSHCD_PCI=m`; see the manifest and hashes above. The interrupted log SHA is
 `ea67144f35360d5b0e3743a402a163f909d41940b433c2c240e1246f82ea1eda`. A
 read-only audit confirmed the source-tree hash and built-in config still match
 their pins and `CONFIG_RPMB=y`. The build has resumed incrementally in
 `luna-rpmb-builtin-resume-20261112.service` with `-j4`, a 3-core CPU quota, and
 low I/O priority; its separate log is
 `/var/tmp/luna-kernel-rpmb-validation-20261112/logs/build-builtin-resume.log`.
-The diagnostic build and guest boot have not started. The 21-entry local input packet manifest SHA is
+The diagnostic KASAN/lockdep build completed successfully in
+`luna-rpmb-diagnostic-resume-20261112.service`, and the controlled negative
+and positive Linux-driver guest runs completed. The 21-entry local input
+packet manifest SHA is
 `77daab4618a50934215f08dd13d3e10743234869cd6436afa8f036986eac35c6`, and all
 entries verified. The packet is under
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/`;
@@ -304,10 +363,34 @@ paired benchmarks remain deferred until all working-system gates pass.
 
 - Focused tests: 86 passed across the AMD64 trial verifier (27), SP12 recovery
   and FAT helpers (37), live builder (9), and installer integration suites
-  (13).
+  (13). The standalone live-builder regression log is at
+  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/sp12-live-builder-regression-20261112.log`
+  (SHA-256
+  `7c758af7411e05fc2e6c4fb89045f7a03d9a5957d5305092903a23a66373d034`).
 - `bash tests/static-check.sh`: passed, including the 71-recorded-change
   configuration policy check. The root-only live `mokutil` test was skipped
-  because this session has no noninteractive sudo.
+  because this session has no noninteractive sudo. Raw output is retained at
+  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/repository-static-check-20261112.log`
+  (SHA-256
+  `6416463100960cdb59908eec0d7e5fd540b77be38d178749b996a06f19bccc4a`).
+- After the latest audio-status documentation update, `bash
+  tests/static-check.sh` passed again with the same 71-change policy check and
+  root-only `mokutil` test skipped. Its output is retained at
+  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/repository-static-check-post-audio-20261112.log`
+  (SHA-256
+  `6feff11a873e0d76c570b353bfef44e0ecce6bd88ed6a47ebf65275e88b5ccf2`).
+- After the RPMB lifecycle status update, `bash tests/static-check.sh` passed
+  with the same 71-change policy check; the root-only `mokutil` test was
+  skipped. Output is retained at
+  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/repository-static-check-post-rpmb-lifecycle-20261112.log`
+  (SHA-256
+  `df5f6882d1dc42022150dd46a72f30415a430b72d4e3fc802357aa5f596bd676`).
+- After the corrected-live audio gate was made conditional on SoundWire endpoint
+  attachment, `bash tests/static-check.sh` passed again with the same
+  71-change policy check; root-only `mokutil` was skipped. Output is at
+  `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/repository-static-check-final-20261112.log`
+  (SHA-256
+  `a72277f3b4cc4f14a22252e647e1580da4d5333ecf238fe7b51cac0b818ab4e3`).
 - Python compilation, shell syntax checks, and `git diff --check` passed.
 
 ## Evidence locations

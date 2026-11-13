@@ -31,12 +31,22 @@ info SHA-256 is
 Checksums, build info, GRUB config, manifests, and build logs are retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/corrected-build-fdt-fix/`.
 The image remains local-only because it contains non-redistributable machine
-support. It has not yet been written to USB or booted. The Apple drive is now
-attached to the B550I. Read-only inventory again confirms the expected model,
-serial, USB path, 465.8 GB capacity, and unmounted state. Its trailing ext4
-`sdb3` starts at sector 9396224, after the ISO ends at sector 9395095. Before
-writing, show the current root-only partition/signature output and require the
-serial confirmation; keep `sdb3` unmounted.
+support. Before the rewrite, the old GPT exposed an ext4 `sdb3` beginning at
+sector 9396224, after the ISO ends at sector 9395095. The guarded write
+rechecked the image hash and target identity, displayed the partition/signature
+output, and required the serial confirmation. The full 4,810,289,152-byte
+image prefix passed direct-I/O readback with SHA-256
+`e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`.
+Captured user output is retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/flash-corrected-iso-readback.txt`
+(SHA-256 `5b90489b644bcb54bd2b3f6b668fa10217ea10f067ea5213a57b8f00995e2682`).
+Afterward, read-only B550I inventory showed the corrected GPT exposing only
+the image and EFI partitions (`sdb1` and `sdb2`); no `sdb3` is listed or
+mounted. The former ext4 bytes beyond the ISO prefix remain on disk and were
+not securely erased. The post-write inventory is at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/b550i-storage-inventory-after-flash-20261112.txt`
+(SHA-256 `4acf97e98967dd1f1e4e3991b50de9c0fbb47d74c90827a2a58a11e80c9682bb`).
+Boot the corrected image through the one-time menu only.
 
 ## One-time USB boot
 
@@ -49,15 +59,43 @@ Edition/cow`, and a live overlay root. GRUB printed that
 the expected efivarfs warning. The corrected image fixes the module path, but
 this first session did not establish which DTB Linux received because
 `/sys/firmware/fdt` was absent. The staged DTB file itself matched its pinned
-SHA-256. The live PipeWire speaker sink was shown at 40%. The user reported all tested
-functions worked except speaker output, which was silent. The speaker is also
-silent in the installed system; its PipeWire level was 18%, while the prior
-owner-confirmed working 7.3.0 boot used 72% with the same 1/6 ALSA speaker
-level and the same Q6/ASoC warnings. Since the live test was silent at 40%, the
-installed 18% level alone does not explain both results. Repeat a short tone
-test at 72% with mixer controls unchanged before attributing silence to a
-kernel fault. The user reported returning to the default internal installation
-after the USB trial.
+SHA-256. The live PipeWire speaker sink was shown at 40%. The user reported all
+tested functions worked except speaker output, which was silent. The user also
+reported that neither speaker produced sound during the repeated 440 Hz test
+on the installed system, including a replay described at 72% software volume.
+A separate active-stream capture recorded PipeWire at 79% and ALSA `Speakers`
+at 6/6 (100%, 0 dB). The WSA `MultiMedia1` route started left-on/right-off;
+an attempt to enable both channels during playback did not persist, and the
+subsequent read-only capture confirmed left-on/right-off. The explicit-channel
+tests restored that original route after each attempt.
+
+Both driver-bound WSA884x SoundWire endpoints reported `UNATTACHED`. Tone
+attempts logged a SoundWire master clash, interrupt value 2048, write-FIFO
+overflow, and ASoC `-61` errors during WSA runtime resume and playback startup.
+The pinned QCOM SoundWire driver defines bit 11 (`2048`) as
+`AUTO_ENUM_FAILED`; the IRQ switch lacks an explicit case and logs it through
+the generic unknown-interrupt path. This confirms auto-enumeration failed but
+does not identify why. In the pinned source, `-61` is `-ENODATA`: SoundWire
+maps an ignored command response to that error, and
+`wsa884x_runtime_resume()` passes through errors from `regcache_sync()`. The
+FIFO overflow is concurrent evidence of transport trouble, but its causal
+relation to `-ENODATA` is unproven. This points to a SoundWire/codec
+communication failure rather than desktop volume alone, without identifying
+its underlying cause. The prior owner-confirmed
+working 7.3.0 boot used 72% PipeWire and the same 1/6 ALSA speaker level, but
+this comparison does not isolate the cause.
+
+The first live session did not establish which DTB Linux received:
+`/sys/firmware/fdt` was absent, and GRUB reported a missing
+`devicetree.mod`. The corrected image now loads `fdt.mod`; verify the actual
+DTB and SoundWire endpoint statuses on its one-time boot before another tone
+test. The user reported returning to the default internal installation after
+the first USB trial. Read-only audio capture SHA-256 is
+`082228a31d244cd4674f9af0fd8f5f16f0e6c31dc753e74769d89db50d82fce4`; the
+active-stream test SHA-256 is
+`4c35847b578af1c33b285ece5b86c97510381150fb9525368d8f16448d1bb0c0`.
+Additional source interpretation and evidence paths are in
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/soundwire-diagnosis-20261112.md`.
 The live recovery inspection output was not provided; do not mark that gate
 passed.
 
@@ -68,8 +106,9 @@ ALSA `Speakers` and each speaker PA remain at 1/6. WSA RX0/RX1 digital mutes
 are off, both RX muxes select `AIF1_PB`, and the input muxes select RX0/RX1.
 Speaker DAC, COMP, BOOST, and PBR switches are on; CPS and VISENSE are off.
 The `MultiMedia1` mixer has its
-left channel on and right channel off. These are observations only and do not
-identify the cause or prove acoustic output; no controls were changed. Raw
+left channel on and right channel off. That 14:57 capture was read-only. Later
+temporary route tests are recorded separately; the original route was restored.
+These observations do not identify the cause or prove acoustic output. Raw
 read-only captures and SHA-256 values are retained in
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
 
@@ -121,12 +160,17 @@ test -r /sys/firmware/fdt && sha256sum /sys/firmware/fdt || echo NO_SYS_FDT
 
 Expected kernel/DTB identities are the pinned release and hash above. `/` must
 be the live overlay. Compare the internal disk/partition identities with the
-baseline; leave the internal root/ESP and the USB's old trailing partition
-unmounted. Connect Wi-Fi to a known network and verify traffic; test Bluetooth
-discovery without changing firmware settings. Use the desktop audio controls
-to play a tone and record a short microphone test. Check USB enumeration and
-battery/power-supply reporting. Record any missing command or device as an
-unsupported result; do not install packages in the live session.
+baseline; leave the internal root/ESP unmounted. The corrected USB GPT does
+not list the old `sdb3`; do not create or mount a partition for its residual
+filesystem bytes beyond the image prefix. Connect Wi-Fi to a known network
+and verify traffic; test Bluetooth discovery without changing firmware
+settings. Record the SoundWire endpoint statuses before audio playback. If both
+WSA884x endpoints are `UNATTACHED`, skip the tone test and record that result.
+If an endpoint is attached, set the desktop software volume to 72%, leave ALSA
+mixer controls unchanged, play one short tone, and record whether either
+speaker produces sound. Then record a short microphone test. Check USB
+enumeration and battery/power-supply reporting. Record any missing command or
+device as an unsupported result; do not install packages in the live session.
 
 For suspend, save no work to internal storage, open the desktop's Suspend
 action, wait about 30 seconds, and wake with the power button. Verify display,

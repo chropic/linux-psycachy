@@ -86,15 +86,21 @@ results separate from Surface hardware qualification.
 is pinned and compiled into the refreshed ARM64 module configuration. The exact
 QEMU RPMB series and its two prerequisite series apply cleanly on a pinned
 base; an isolated build passed all 32 UFS QOS tests. The first built-in compile
-was terminated by SSH hangup during unrelated Kbuild objects; it had no compiler
-diagnostic and produced no final kernel artifact. The source tree and
-`CONFIG_RPMB=y` config still match their pins. Incremental compilation is
-resumed in `luna-rpmb-builtin-resume-20261112.service` with a three-core quota
-and low I/O priority; its log is
-`/var/tmp/luna-kernel-rpmb-validation-20261112/logs/build-builtin-resume.log`.
-The diagnostic KASAN/lockdep compile and read-only Linux-driver guest run have
-not started; the guest variant is prepared. Physical exact-candidate
-qualification remains open.
+was terminated by SSH hangup during unrelated Kbuild objects; its incremental
+resume completed successfully in `luna-rpmb-builtin-resume-20261112.service`.
+It produced `Image`, `vmlinux`, `vmlinuz.efi`, and 8,484 modules with
+`CONFIG_RPMB=y`; the build manifest is
+`output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/builtin-build-manifest.json`.
+The separate diagnostic KASAN/lockdep compile completed successfully in
+`luna-rpmb-diagnostic-resume-20261112.service`. The controlled no-UFS negative
+case returned `-ENODEV`; the final Linux-driver guest run passed 256 concurrent
+read-counter requests, recovery after a failed abort/HCE reset, and UFS driver
+unbind with a held RPMB request. All four workers observed `-ENODEV`, with no
+KASAN or circular-lock warning during that lifecycle. A single scheduler RCU
+warning occurred before userspace init; the separate PCIe hotplug experiment
+reported a `pciehp` lock-order warning and did not complete. These are
+QEMU-only driver results. Physical exact-candidate qualification remains open.
+See the [guest lifecycle evidence](../output/.unattended-luna-20261111210910Z/qemu-hosting/kernel-rpmb-validation-20261112/guest-lifecycle-attempts/driver-lifecycle-summary.md).
 
 SP12 logs report that ufs_rpmb0 cannot be added to the unregistered
 ufs_rpmb bus. The authenticated source assigns that bus in
@@ -137,9 +143,11 @@ path is the supported recovery procedure.
 - Phase 1 policy fragments, audits, AMD64 and ARM64 candidate package pins,
   and generic-QEMU runtime policy probes are implemented. The rebuilt ISO and
   physical target gates remain in the ship checklist.
-- The RPMB source repair is pinned and compiled into the refreshed SP12 module
-  candidate; built-in compile, UFS fixture runtime tests, and physical
-  qualification remain open in I-3.
+- The RPMB source repair is pinned and compiled into the refreshed SP12
+  candidate; module and built-in configurations compile, and the disposable
+  Linux-driver UFS fixture passes read-only counter, concurrency, reset, and
+  driver-unbind lifecycle checks. Physical exact-candidate qualification
+  remains open in I-3.
 - The 20-operation editor smoke passes twice on both desktops from fresh
   fixtures with matching saved-document hashes. Timed Phase 2 trials remain
   open in the ship checklist.
@@ -177,9 +185,20 @@ path is the supported recovery procedure.
 - `iso/build-sp12-live.py` now loads GRUB's available `fdt.mod` before its
   pinned Surface DTB command and audits both in the final ISO. The corrected
   local-only image built and passed its base, package, support-file, GRUB, GPT,
-  installer-layer, and physical ESP/NVRAM checks. Its USB rewrite and boot are
-  pending. The initial live trial was silent from the speakers, as is the
-  installed system; see the live-media status in the ship checklist.
+  installer-layer, and physical ESP/NVRAM checks. The USB rewrite is complete
+  with exact direct-I/O readback on Apple HDD serial `TNS519GY1G6JGG` (image
+  SHA-256
+  `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`). The
+  corrected one-time boot and exact-DTB check remain pending. The user reports
+  the installed speakers remain silent at the repeated 440 Hz replay. Both
+  driver-bound WSA884x SoundWire endpoints were `UNATTACHED`; interrupt value
+  `2048` is the driver's `AUTO_ENUM_FAILED` bit. Concurrent reports include a
+  bus clash, FIFO overflow, and ASoC `-ENODATA` playback/resume errors. The
+  source maps `-ENODATA` to an ignored SoundWire command and shows WSA resume
+  propagates `regcache_sync()` failures. This points to codec communication
+  trouble but does not isolate the cause. Recheck the actual DTB and endpoint
+  statuses on corrected live media before changing code; see the live-media
+  status in the ship checklist and the audio evidence packet.
 - A corrected UEFI rescue VM used a separate rescue root, restored a disposable
   target clone, and verified exact payload hashes. Fresh AAVMF variables and
   one-time BootNext reached the unique intended-loader marker; GRUB then stopped
