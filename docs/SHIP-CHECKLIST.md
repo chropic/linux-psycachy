@@ -70,7 +70,15 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   for an ignored SoundWire command, and WSA runtime resume propagates
   `regcache_sync()` errors. The FIFO overflow is concurrent evidence of
   transport trouble, but its causal relation to `-ENODATA` is unproven. The
-  exact cause remains open pending corrected-DTB boot evidence.
+  exact cause remains open pending corrected-DTB boot evidence. A read-only
+  snapshot after the user's latest replay reconfirmed kernel
+  `7.3.1-psycachy-sp121`, both WSA endpoints still `UNATTACHED`, the installed
+  root mounted at `/dev/sda2`, and no USB attached to the Surface. Its captured
+  kernel log contains the earlier SoundWire failure interval; it does not
+  establish that the latest replay generated new kernel errors. The snapshot
+  SHA-256 is
+  `19ecaad5bece5efdd67cb24577895edcf88c5131a8315801c14f6e3cef8e8b6c` at
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/installed-status-after-replay-20261112.txt`.
   Captures and hashes are in
   `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
   The live run did not prove

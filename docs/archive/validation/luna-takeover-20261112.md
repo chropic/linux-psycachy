@@ -252,6 +252,13 @@ transport trouble, but its causal relation to `-ENODATA` is not established.
 This supports a SoundWire/codec communication failure beyond desktop volume,
 but does not identify its underlying cause. Check the actual DTB and endpoint
 statuses from the corrected live boot before considering a code change. The
+read-only snapshot after the latest replay reconfirmed the installed kernel,
+both `UNATTACHED` WSA endpoints, and internal root `/dev/sda2`; no USB was
+attached to the Surface. It includes the earlier error interval but does not
+show that the latest replay generated new kernel errors. Its SHA-256 is
+`19ecaad5bece5efdd67cb24577895edcf88c5131a8315801c14f6e3cef8e8b6c` at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/installed-status-after-replay-20261112.txt`.
+The
 read-only capture SHA-256 is
 `082228a31d244cd4674f9af0fd8f5f16f0e6c31dc753e74769d89db50d82fce4`; the
 active-stream test SHA-256 is
