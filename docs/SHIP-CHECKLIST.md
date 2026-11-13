@@ -108,10 +108,19 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   Additional interruptions now cover staging copy/flushes, marker transitions,
   all payload promotions, recovery rotation, and restore stages. A corrected
   rescue VM used separate rescue-root and target disks, restored the target
-  clone with exact payload hashes, and proved the intended EFI loader ran via
-  a unique serial marker under one-time BootNext. GRUB then stopped at a prompt;
-  restored target kernel/userspace boot remains open. All seven QCOW overlays
-  passed `qemu-img check`; no physical storage or firmware variables changed.
+  clone with exact payload hashes, and proved an EFI loader ran via a unique
+  serial marker under one-time BootNext. A later audit found that this boot
+  check selected the wrong ESP: restore wrote the recovered set to the target's
+  `/boot/efi` device `/dev/vdc` (UUID `C1D2-E253`), while BootNext selected
+  partition 15 on `/dev/vdd` (partition GUID `F03DDE67-...`, FAT UUID
+  `C6A1-9AB9`). The marker proves that the latter ESP's loader ran; the GRUB
+  prompt does not establish whether the restored set boots. Repeat with
+  one-time firmware selection of the ESP that received the recovery files.
+  The [BootNext/ESP audit](output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/rescue-boot-esp-mismatch-20261112.md)
+  records the device mapping and hashes (SHA-256
+  `0efbdeac3fb8684cbd52e943a7434d4a702c425a1157fc74d4b55ff7d3649830`). All
+  seven QCOW overlays passed
+  `qemu-img check`; no physical storage or firmware variables changed.
 - **RPMB:** the pinned seven-patch QEMU RPMB series applied cleanly after its
   exact two prerequisite series on the pinned base. An isolated QEMU build
   passed its source manifest check; all 32 UFS QOS tests passed, including the

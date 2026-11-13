@@ -364,16 +364,22 @@ kernel/initrd/DTB hashes matched the recovery set:
 - Initrd: `3535c3e644e1f10d5d5584d887b1dd21d216d177b1be74d36e6020d5752d110f`
 - DTB: `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`
 
-The restore marker was recreated, staging files were absent, the ESP was
-remounted read-only, and guest/host FAT checks were clean. After rescue media
-was removed, firmware loaded the target GRUB, but the follow-up attempt did not
-reach the restored kernel or SSH. Thus the restore operation passes while
-firmware-to-restored-target boot remains unqualified. Final target ESP clone
+The restore marker was recreated, staging files were absent, the restored ESP
+was remounted read-only, and guest/host FAT checks were clean. A later audit
+found the follow-up BootNext did not select that ESP: the restored payloads
+were on `/dev/vdc` (UUID `C1D2-E253`, mounted at the target root's
+`/boot/efi`), but BootNext selected partition 15 on `/dev/vdd` (FAT UUID
+`C6A1-9AB9`). That different ESP's EFI loader printed the unique marker and
+then reached a GRUB prompt. The test proves the selected loader ran, but does
+not establish whether the restored set boots. Repeat with one-time firmware
+selection of the ESP that received the recovery files. Final target ESP clone
 SHA-256 was `3b3de9f9e655fe3948117a44746d435681492e2224c6479c33d8cb1cde0e3c88`;
 the copied firmware variables SHA-256 was
-`ff28cf0bf9515b9173ca8aee6e046cda60cd0fb8c685ccf2d776c97f18baba90`. Full
-logs and screen captures are in the ignored run directory under
-`vm-firmware-rescue-attempt2/`.
+`ff28cf0bf9515b9173ca8aee6e046cda60cd0fb8c685ccf2d776c97f18baba90`. The
+earlier attempt's logs and screen captures are in the ignored run directory
+under `vm-firmware-rescue-attempt2/`. The later corrected-root run and its
+BootNext/ESP mismatch audit are in
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/`.
 
 ### RPMB — blocked
 

@@ -44,15 +44,22 @@ The corrected rescue run booted a separate `/dev/vde1` rescue root and kept
 the target clone on `/dev/vdd`. The helper restored the target clone's
 verified recovery kernel, initrd, and DTB; the exact hashes matched the
 manifest, `SP12BOOT` was present, and staging files were absent. Fresh AAVMF
-variables used one-time BootNext `000C` for target GPT partition 15. The
-follow-up boot logged `SP12_RESCUE_LOADER_RAN_20261112_9d45e7c2`, proving the
-intended EFI loader ran, then stopped at a GRUB prompt. Restored kernel and
-userspace boot remain unqualified. All seven QCOW overlays passed
+variables used one-time BootNext `000C` for target GPT partition 15 on
+`/dev/vdd`. A later audit found the helper restored the payloads to `/dev/vdc`,
+the separate ESP mounted as the target root's `/boot/efi` (UUID `C1D2-E253`),
+while `/dev/vdd15` has FAT UUID `C6A1-9AB9`. The target-only boot logged
+`SP12_RESCUE_LOADER_RAN_20261112_9d45e7c2` from `/dev/vdd15` and reached a GRUB
+prompt. That proves this other ESP's loader ran but does not test whether the
+restored `/dev/vdc` payload boots. Repeat with one-time firmware selection of
+the ESP that received the recovery files. All seven QCOW overlays passed
 `qemu-img check`; no physical recovery state changed. Key evidence hashes:
 rescue identity `01e4065e9cb977f72204a3b901c79ce38f7c05f38aac445d769e62bf8dfdc882`,
 restore log `92e86179b2d65696512cfe87a99a99cab4bfce1b459d7bd9201a42077c6c8ab5`,
 target boot serial `4a033e0bb33a7c85488d9482e6c360a3e986d5dd61416e42b30a95412da79e61`,
 and COW checks `9a8c254953b1df96f276bd9dc5dd97aba489705707afedfd707f3ba19eccfe92`.
+The BootNext/ESP mismatch audit is
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/rescue-boot-esp-mismatch-20261112.md`
+(SHA-256 `0efbdeac3fb8684cbd52e943a7434d4a702c425a1157fc74d4b55ff7d3649830`).
 The evidence directory is
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/`.
 
