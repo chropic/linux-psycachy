@@ -189,16 +189,19 @@ path is the supported recovery procedure.
   with exact direct-I/O readback on Apple HDD serial `TNS519GY1G6JGG` (image
   SHA-256
   `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`). The
-  corrected one-time boot and exact-DTB check remain pending. The user reports
-  the installed speakers remain silent at the repeated 440 Hz replay. Both
-  driver-bound WSA884x SoundWire endpoints were `UNATTACHED`; interrupt value
-  `2048` is the driver's `AUTO_ENUM_FAILED` bit. Concurrent reports include a
-  bus clash, FIFO overflow, and ASoC `-ENODATA` playback/resume errors. The
-  source maps `-ENODATA` to an ignored SoundWire command and shows WSA resume
-  propagates `regcache_sync()` failures. This points to codec communication
-  trouble but does not isolate the cause. Recheck the actual DTB and endpoint
-  statuses on corrected live media before changing code; see the live-media
-  status in the ship checklist and the audio evidence packet.
+  corrected one-time boot reaches the live session on the SP12, and the user
+  reports speaker sound works there. Both WSA884x SoundWire endpoints were
+  `Attached`. The staged DTB hash matches its pin, but `/sys/firmware/fdt` is
+  absent, so the exact DTB passed to Linux remains unverified. The user reports
+  that the read-only live recovery inspection closed the terminal without
+  visible output; that gate remains open. A logged, guarded retry is documented
+  in the [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md).
+  The installed system's speakers remain silent, and its previous capture
+  showed both endpoints `UNATTACHED`, interrupt value `2048` (`AUTO_ENUM_FAILED`),
+  a bus clash, FIFO overflow, and ASoC `-ENODATA` playback/resume errors. This
+  evidence indicates a difference between installed and corrected live audio
+  state but does not isolate the cause. See the live-media status in the ship
+  checklist and the audio evidence packet.
 - A corrected UEFI rescue VM used a separate rescue root, restored a disposable
   target clone, and verified exact payload hashes. Fresh AAVMF variables and
   one-time BootNext reached the unique intended-loader marker; GRUB then stopped

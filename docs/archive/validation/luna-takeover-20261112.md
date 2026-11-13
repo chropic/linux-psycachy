@@ -59,7 +59,23 @@ target boot serial `4a033e0bb33a7c85488d9482e6c360a3e986d5dd61416e42b30a95412da7
 and COW checks `9a8c254953b1df96f276bd9dc5dd97aba489705707afedfd707f3ba19eccfe92`.
 The BootNext/ESP mismatch audit is
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/rescue-boot-esp-mismatch-20261112.md`
-(SHA-256 `0efbdeac3fb8684cbd52e943a7434d4a702c425a1157fc74d4b55ff7d3649830`).
+(SHA-256 `031732b2472fdd2ec1b362dc1a0f205a80472b83551aa8c13bc381276006eed1`).
+The corrected rerun then wrapped the restored `C1D2-E253` FAT bytes in a
+disposable GPT ESP, verified all 512 MiB by direct partition readback against
+the raw source hash `34a5be544631e4e9da1ab9c0730542436fa27b9209ba35faac500a3a2bdbcad8`,
+and used a fresh AAVMF store with one-time BootNext to that GPT partition GUID.
+The target-only serial log confirms the intended partition's
+`EFI/BOOT/BOOTAA64.EFI` loaded and started GRUB 2.14. At the prompt, GRUB had
+selected the target `/boot` filesystem (`hd1,gpt13`), while its EFI-side stub
+requested `/grub.cfg` and the filesystem contained `/grub/grub.cfg`. Manually
+pointing at the latter left the prompt without a reported error, consistent
+with the main config loading, but the menu and kernel/userspace result were
+not captured. The original wrong-ESP finding is resolved; end-to-end restored
+target boot remains open. No source image or physical state changed. The new
+COW overlays passed `qemu-img check`. Details and hashes are in
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/corrected-esp-bootnext-20261112/summary.md`.
+Its SHA-256 is
+`8b3c9e4d98209ed8079488642b77443f6e4f19c66d607af596e2a60c1f0f7920`.
 The evidence directory is
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/`.
 
@@ -227,7 +243,7 @@ Captured user output is retained at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/flash-corrected-iso-readback.txt`
 (SHA-256 `5b90489b644bcb54bd2b3f6b668fa10217ea10f067ea5213a57b8f00995e2682`).
 The USB write did not securely erase sectors beyond the image prefix. The
-corrected one-time boot remains pending.
+corrected one-time boot and its new results are recorded below.
 Because `/sys/firmware/fdt` was absent in the first session, the exact DTB
 passed to Linux is not established. The efivarfs warning was expected from
 `efi=noruntime`. The user reports the first session's tested hardware functions
@@ -239,8 +255,8 @@ boot had PipeWire at 72% and the same 1/6 ALSA speaker level; it also recorded
 the same Q6 APM command timeout and ASoC widget-binding deferral. Since the
 live trial was silent at 40%, the lower installed level alone does not explain
 both results. The later installed-system tone test is recorded below.
-The read-only live recovery inspection output was not provided. Sanitized
-live-output summary SHA-256 is
+The read-only live recovery inspection had not been attempted during this
+first session. Sanitized live-output summary SHA-256 is
 `9a5cd450173a221a589800647704376ba0ef31bde19d72d0984fa9abfda7d37b` at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-session-partial-summary.txt`.
 On the installed `7.3.1-psycachy-sp121` system, the user later confirmed that
@@ -287,6 +303,33 @@ kernel, initrd, and DTB. `SP12BOOT` is an empty regular marker. Full preflight
 output SHA-256 is
 `9f6d1f0c3a1c8cecef075352d68d28f2d1a2159a9eef8e598fddc89a94ff65e8` at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/preflight-readonly.txt`.
+
+## Corrected one-time live boot and recovery inspection attempt
+
+The user booted the corrected Apple USB through the one-time firmware menu.
+User-provided output confirms kernel `7.3.1-psycachy-sp121`, model `Surface
+Pro 12in 1st Edition`, overlay root `/cow`, and the staged SP12 DTB hash
+`5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`. Both
+WSA884x SoundWire endpoints reported `Attached`; the user reports speaker
+sound works in this live session. The log also contains a deferred probe
+waiting for the `spkr-01-sd-n-active-state` pinctrl supplier. The kernel does
+not expose `/sys/firmware/fdt`, so the staged file hash and corrected GRUB path
+do not establish the exact DTB bytes Linux received. The live output shows
+internal `/dev/sda1` and `/dev/sda2` without mountpoints. The Apple USB is
+mounted at `/cdrom`; its residual `sdb3` ext4 partition is visible but
+unmounted.
+
+Captured user-provided output is
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-boot-corrected-user-output-20261112.txt`
+(SHA-256 `5ba013301ca2f8dbf7008c198996d8dd797fcbf4b381db242939f891fa58cd27`). The user reports that the subsequent
+read-only recovery-inspection command closed/crashed the terminal without a
+visible error. No command output, mount status, active-payload hash, or recovery
+manifest result was captured. Treat the live rescue-inspection gate as
+incomplete; the report does not establish whether the shell exited after a
+check failure or whether a terminal process failed. No kernel or filesystem
+crash is inferred. A previous installed-system preflight did verify the
+recovery manifest and active payload hashes, but it is not a substitute for
+the live rescue route.
 
 ## RPMB and remaining gates
 

@@ -44,58 +44,35 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   protected-disk writes. The QEMU details and evidence are in the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
   and [stop handoff](archive/validation/unattended-luna-stop-handoff-20261112.md).
-- **SP12 live media:** The first private ARM64 ISO was written to the Apple USB
-  HDD and its full 4,810,289,152-byte prefix passed direct-I/O readback. The
-  one-time boot reached the SP12 live session on kernel `7.3.1-psycachy-sp121`
-  with the expected model and overlay root, but GRUB reported missing
-  `devicetree.mod`; the base ISO actually contains `fdt.mod`. The builder now
-  loads `fdt` and audits that module and command in the final ISO. The corrected
-  private image rebuilt successfully with the Canonical-signed base, pinned
-  kernel packages, and pinned local support files. SHA-256:
+- **SP12 live media:** The corrected private ARM64 ISO was built from the
+  Canonical-signed base with pinned kernel packages and local-only machine
+  support. Its SHA-256 is
   `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`
-  (4,810,289,152 bytes). The corrected image was written to the identified
-  Apple HDD and its full ISO-sized prefix passed direct-I/O readback; its
-  one-time boot remains pending. The live hardware check passed except speaker
-  output, which was silent. The installed system is also silent. The user
-  reports no sound from either speaker during the repeated 440 Hz test,
-  including the replay described at 72% software volume. A separate active
-  stream capture recorded PipeWire at 79% and ALSA `Speakers` at 6/6 (100%);
-  the WSA `MultiMedia1` right channel reverted to off during the test. Both
-  driver-bound WSA884x SoundWire endpoints reported `UNATTACHED`, while tone
-  attempts produced a SoundWire master-clash report, interrupt value `2048`,
-  write-FIFO overflow, and ASoC `-61` playback/resume errors. The pinned QCOM
-  driver defines bit 11 (`2048`) as auto-enumeration failure, but lacks an IRQ
-  case for it and logs it as unknown. This confirms SoundWire auto-enumeration
-  failed without identifying why. In the pinned source, `-61` is `-ENODATA`
-  for an ignored SoundWire command, and WSA runtime resume propagates
-  `regcache_sync()` errors. The FIFO overflow is concurrent evidence of
-  transport trouble, but its causal relation to `-ENODATA` is unproven. The
-  exact cause remains open pending corrected-DTB boot evidence. A read-only
-  snapshot after the user's latest replay reconfirmed kernel
-  `7.3.1-psycachy-sp121`, both WSA endpoints still `UNATTACHED`, the installed
-  root mounted at `/dev/sda2`, and no USB attached to the Surface. Its captured
-  kernel log contains the earlier SoundWire failure interval; it does not
-  establish that the latest replay generated new kernel errors. The snapshot
-  SHA-256 is
-  `19ecaad5bece5efdd67cb24577895edcf88c5131a8315801c14f6e3cef8e8b6c` at
-  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/installed-status-after-replay-20261112.txt`.
-  Captures and hashes are in
-  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/`.
-  The live run did not prove
-  the exact DTB passed to Linux (`/sys/firmware/fdt` was absent), and the
-  read-only live recovery inspection was not reported. On the B550I, the
-  guarded write rechecked the corrected image and Apple HDD model, serial,
-  stable path, USB transport, capacity, and unmounted state. The full
-  4,810,289,152-byte image prefix passed direct-I/O readback with SHA-256
-  `e29dd59f76fcf73ce1e7ed8dfe60d88b83f7d2dd3c8a4cfcbab1b9b413817e36`.
-  Captured user output is at
-  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/flash-corrected-iso-readback.txt`
-  (SHA-256 `5b90489b644bcb54bd2b3f6b668fa10217ea10f067ea5213a57b8f00995e2682`).
-  This wrote the image prefix and partition metadata; it did not securely erase
-  the full 465.8 GB disk. The corrected image's one-time boot remains pending.
-  The internal
-  root/ESP and recovery-panel route remain
-  unchanged. See the [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
+  (4,810,289,152 bytes); the guarded write to the identified Apple HDD passed
+  full ISO-prefix direct-I/O readback. A corrected one-time USB boot now
+  reaches the live session on kernel `7.3.1-psycachy-sp121`, model `Surface Pro
+  12in 1st Edition`, with the live overlay root. The staged DTB hash matches
+  the pin `5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`.
+  Both WSA884x SoundWire endpoints reported `Attached`, and the user reports
+  speaker sound works in this live session. The kernel still reported a
+  deferred probe waiting for the `spkr-01-sd-n-active-state` pinctrl supplier.
+  `/sys/firmware/fdt` is absent, so the exact DTB received by Linux remains
+  unproven. User-provided output is retained at
+  `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-boot-corrected-user-output-20261112.txt`
+  (SHA-256 `5ba013301ca2f8dbf7008c198996d8dd797fcbf4b381db242939f891fa58cd27`).
+
+  In the live `lsblk` output, internal `/dev/sda1` and `/dev/sda2` had no mount
+  points. The USB was `/dev/sdb` mounted at `/cdrom`; its residual `sdb3` ext4
+  partition appeared but was unmounted and untouched. The user reports that the
+  subsequent read-only recovery inspection closed the terminal without visible
+  output. No live recovery checksum result was captured, so this gate remains
+  open. A prior installed-system preflight verified the internal recovery
+  manifest and recorded active payload hashes, but that does not qualify the
+  live rescue route. Earlier installed-system speaker tests were silent with
+  both WSA endpoints `UNATTACHED`; the corrected live result does not by itself
+  identify why installed and live audio differ. The internal root/ESP and
+  recovery-panel route remain unchanged. See the
+  [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
   and [takeover report](archive/validation/luna-takeover-20261112.md). The image
   includes private, non-redistributable machine support and must stay local.
 - **Recovery and FAT:** recovery snapshot eligibility now requires the valid
@@ -109,18 +86,24 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   all payload promotions, recovery rotation, and restore stages. A corrected
   rescue VM used separate rescue-root and target disks, restored the target
   clone with exact payload hashes, and proved an EFI loader ran via a unique
-  serial marker under one-time BootNext. A later audit found that this boot
-  check selected the wrong ESP: restore wrote the recovered set to the target's
-  `/boot/efi` device `/dev/vdc` (UUID `C1D2-E253`), while BootNext selected
-  partition 15 on `/dev/vdd` (partition GUID `F03DDE67-...`, FAT UUID
-  `C6A1-9AB9`). The marker proves that the latter ESP's loader ran; the GRUB
-  prompt does not establish whether the restored set boots. Repeat with
-  one-time firmware selection of the ESP that received the recovery files.
-  The [BootNext/ESP audit](output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/rescue-boot-esp-mismatch-20261112.md)
-  records the device mapping and hashes (SHA-256
-  `0efbdeac3fb8684cbd52e943a7434d4a702c425a1157fc74d4b55ff7d3649830`). All
-  seven QCOW overlays passed
-  `qemu-img check`; no physical storage or firmware variables changed.
+  serial marker under one-time BootNext. The first follow-up selected the
+  wrong ESP (`/dev/vdd15`) instead of the ESP that received restored files
+  (`/dev/vdc`, FAT UUID `C1D2-E253`). A corrected disposable run wrapped the
+  exact restored ESP bytes in a GPT disk, read-back-verified the full
+  512 MiB partition, and set fresh AAVMF BootNext to that partition's GUID.
+  AAVMF then loaded its `BOOTAA64.EFI` and reached GRUB. The fixture's EFI stub
+  requests `/grub.cfg` from the `/boot` filesystem, while GRUB enumeration
+  showed the main file at `/grub/grub.cfg`; this path mismatch is consistent
+  with the prompt. Manually pointing GRUB to that file left the prompt without
+  a reported error, but no menu or kernel/userspace boot was captured. The
+  restored target boot gate remains open; this mismatch is specific to the
+  disposable fixture unless seen on hardware. See the
+  [BootNext/ESP audit](output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/rescue-boot-esp-mismatch-20261112.md)
+  (SHA-256 `031732b2472fdd2ec1b362dc1a0f205a80472b83551aa8c13bc381276006eed1`)
+  and [corrected ESP rerun](output/.unattended-luna-20261111210910Z/qemu-hosting/recovery-rescue-correct-root-20261112/corrected-esp-bootnext-20261112/summary.md)
+  (SHA-256 `8b3c9e4d98209ed8079488642b77443f6e4f19c66d607af596e2a60c1f0f7920`).
+  All new COW overlays passed `qemu-img check`; no physical storage or firmware
+  variables changed.
 - **RPMB:** the pinned seven-patch QEMU RPMB series applied cleanly after its
   exact two prerequisite series on the pinned base. An isolated QEMU build
   passed its source manifest check; all 32 UFS QOS tests passed, including the
@@ -233,9 +216,12 @@ the final pin manifests, and retained build/verifier output under the ignored
   for the limited runtime scope and evidence.
 - A disposable UEFI rescue environment restored a deliberately damaged target
   ESP from its recovery set. Payload hashes, marker state, and read-only FAT
-  checks passed. The follow-up UEFI boot loaded GRUB but did not reach the
-  restored target userspace, so firmware-to-restored-target qualification
-  remains open. No physical SP12 fallback was used as a test target.
+  checks passed. A corrected one-time BootNext selected the ESP that received
+  the restored bytes and ran its EFI GRUB binary. Its fixture stub referenced
+  an absent `/boot/grub.cfg`; manually selecting the existing
+  `/boot/grub/grub.cfg` entered the main config, but no target kernel/userspace
+  boot was captured. Firmware-to-restored-target qualification remains open.
+  No physical SP12 fallback was used as a test target.
 - Recheck the current SP12 fallback trio and recovery manifest before any
   future boot-payload change. Keep the verified fallback intact.
 - The recovery-panel route is retired from supported recovery because its

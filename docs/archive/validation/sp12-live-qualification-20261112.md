@@ -46,7 +46,8 @@ mounted. The former ext4 bytes beyond the ISO prefix remain on disk and were
 not securely erased. The post-write inventory is at
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/b550i-storage-inventory-after-flash-20261112.txt`
 (SHA-256 `4acf97e98967dd1f1e4e3991b50de9c0fbb47d74c90827a2a58a11e80c9682bb`).
-Boot the corrected image through the one-time menu only.
+The corrected image was later booted through the one-time menu; see the
+corrected-image result below. Do not change persistent boot order.
 
 ## One-time USB boot
 
@@ -96,8 +97,31 @@ active-stream test SHA-256 is
 `4c35847b578af1c33b285ece5b86c97510381150fb9525368d8f16448d1bb0c0`.
 Additional source interpretation and evidence paths are in
 `../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/audio-current-20261112/soundwire-diagnosis-20261112.md`.
-The live recovery inspection output was not provided; do not mark that gate
-passed.
+No live recovery result was captured during this first trial. The corrected
+boot and later inspection attempt are recorded below.
+
+### Corrected-image boot results
+
+On 2026-11-12 the corrected image reached the live session on kernel
+`7.3.1-psycachy-sp121`, model `Surface Pro 12in 1st Edition`, and overlay root
+`/cow`. The staged DTB hash matched the pin
+`5690bc3a88b4ecd5d844cb8e32b4b7192f7e8665a22b6053c938b941468ccabc`. Both
+WSA884x SoundWire endpoints reported `Attached`; the user reports that sound
+works in this corrected live session. The user-provided kernel log also shows
+a deferred probe waiting for the `spkr-01-sd-n-active-state` pinctrl supplier.
+`/sys/firmware/fdt` remains absent, so the actual FDT bytes passed to Linux are
+not proven. The output is retained at
+`../../../output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-boot-corrected-user-output-20261112.txt`
+(SHA-256 `5ba013301ca2f8dbf7008c198996d8dd797fcbf4b381db242939f891fa58cd27`).
+
+The live `lsblk` output showed internal `/dev/sda1` and `/dev/sda2` without
+mountpoints. The Apple USB was `/dev/sdb` mounted at `/cdrom`; residual
+`/dev/sdb3` ext4 data was visible but unmounted. The user attempted the
+read-only recovery inspection, but reports the terminal closed/crashed without
+visible errors. No mount output or checksum result was captured, so the live
+rescue-inspection gate remains incomplete. This does not establish a kernel or
+filesystem crash. The earlier installed-system preflight did verify the
+recovery manifest, but that is not a substitute for the live rescue route.
 
 A read-only capture from the installed `7.3.1-psycachy-sp121` session at
 2026-11-12 14:57 MST confirms that PipeWire exposes its speaker sink at 18%
@@ -160,9 +184,10 @@ test -r /sys/firmware/fdt && sha256sum /sys/firmware/fdt || echo NO_SYS_FDT
 
 Expected kernel/DTB identities are the pinned release and hash above. `/` must
 be the live overlay. Compare the internal disk/partition identities with the
-baseline; leave the internal root/ESP unmounted. The corrected USB GPT does
-not list the old `sdb3`; do not create or mount a partition for its residual
-filesystem bytes beyond the image prefix. Connect Wi-Fi to a known network
+baseline; leave the internal root/ESP unmounted. The B550I's post-write
+inventory showed only the image and EFI partitions; the later Surface live
+enumeration also showed residual USB `sdb3`, unmounted. Do not mount or write
+that residual filesystem. Connect Wi-Fi to a known network
 and verify traffic; test Bluetooth discovery without changing firmware
 settings. Record the SoundWire endpoint statuses before audio playback. If both
 WSA884x endpoints are `UNATTACHED`, skip the tone test and record that result.
@@ -190,37 +215,79 @@ not run the mount block below. Record its mountpoint and options with
 read-only mount for inspection, or unmount it from the desktop and then run
 the block below.
 
-In a terminal, the following mounts are read-only. `noload` prevents ext4
-journal replay during inspection:
+The first pasted command used top-level `set -euo pipefail`; the user reports
+that the terminal closed without showing the failure point. The retry below
+runs the check in a child Bash process and records its output in the live
+session home directory. It refuses to run if either internal filesystem or
+either requested mountpoint is already mounted. `noload` prevents ext4 journal
+replay. No filesystem repair or write to the internal devices is performed.
 
 ```sh
-set -euo pipefail
+set +e
+set +u
+set +o pipefail
+log_file="$HOME/sp12-live-recovery-check-$(date -u +%Y%m%dT%H%M%SZ).log"
+bash <<'SP12_READONLY_CHECK' 2>&1 | tee "$log_file"
+set -Eeuo pipefail
 root_device=/dev/disk/by-uuid/db48a164-d6cb-4034-8d6f-841867f66757
 esp_device=/dev/disk/by-uuid/FA3E-AEE4
 root_mount=/mnt/sp12-root-readonly
 esp_mount=/mnt/sp12-esp-readonly
-test "$(sudo blkid -s UUID -o value "$root_device")" = db48a164-d6cb-4034-8d6f-841867f66757
-test "$(sudo blkid -s UUID -o value "$esp_device")" = FA3E-AEE4
+root_mounted=0
+esp_mounted=0
+refuse() { printf 'STOP: %s\n' "$*" >&2; exit 1; }
+cleanup() {
+  if [ "$esp_mounted" -eq 1 ]; then
+    sudo umount "$esp_mount" || printf 'CLEANUP_FAILED: %s\n' "$esp_mount" >&2
+  fi
+  if [ "$root_mounted" -eq 1 ]; then
+    sudo umount "$root_mount" || printf 'CLEANUP_FAILED: %s\n' "$root_mount" >&2
+  fi
+}
+trap cleanup EXIT
+root_uuid="$(sudo blkid -s UUID -o value "$root_device")" || refuse 'cannot read internal root UUID'
+esp_uuid="$(sudo blkid -s UUID -o value "$esp_device")" || refuse 'cannot read internal ESP UUID'
+printf 'ROOT_UUID=%s\nESP_UUID=%s\n' "$root_uuid" "$esp_uuid"
+[ "$root_uuid" = db48a164-d6cb-4034-8d6f-841867f66757 ] || refuse 'root UUID mismatch'
+[ "$esp_uuid" = FA3E-AEE4 ] || refuse 'ESP UUID mismatch'
 if lsblk -nr -o MOUNTPOINTS "$root_device" | grep -q '[^[:space:]]' ||
    lsblk -nr -o MOUNTPOINTS "$esp_device" | grep -q '[^[:space:]]'; then
-  printf 'Refusing: an internal SP12 filesystem is already mounted.\n' >&2
-  exit 1
+  refuse 'an internal SP12 filesystem is already mounted'
+fi
+if mountpoint -q "$root_mount" || mountpoint -q "$esp_mount"; then
+  refuse 'a requested read-only mountpoint is already mounted'
 fi
 sudo mkdir -p "$root_mount" "$esp_mount"
-sudo mount -o ro,noload,nosuid,nodev,noexec "$root_device" "$root_mount"
-sudo mount -o ro,nosuid,nodev,noexec "$esp_device" "$esp_mount"
+if sudo mount -o ro,noload,nosuid,nodev,noexec "$root_device" "$root_mount"; then
+  root_mounted=1
+else
+  refuse 'read-only root mount failed'
+fi
+if sudo mount -o ro,nosuid,nodev,noexec "$esp_device" "$esp_mount"; then
+  esp_mounted=1
+else
+  refuse 'read-only ESP mount failed'
+fi
 findmnt -n -o SOURCE,FSTYPE,OPTIONS --mountpoint "$root_mount"
 findmnt -n -o SOURCE,FSTYPE,OPTIONS --mountpoint "$esp_mount"
-test "$(findmnt -n -o FSTYPE --mountpoint "$root_mount")" = ext4
-test "$(findmnt -n -o FSTYPE --mountpoint "$esp_mount")" = vfat
-findmnt -n -o OPTIONS --mountpoint "$root_mount" | tr ',' '\n' | grep -qx ro
-findmnt -n -o OPTIONS --mountpoint "$esp_mount" | tr ',' '\n' | grep -qx ro
+[ "$(findmnt -n -o FSTYPE --mountpoint "$root_mount")" = ext4 ] || refuse 'root filesystem type mismatch'
+[ "$(findmnt -n -o FSTYPE --mountpoint "$esp_mount")" = vfat ] || refuse 'ESP filesystem type mismatch'
+root_options="$(findmnt -n -o OPTIONS --mountpoint "$root_mount")"
+esp_options="$(findmnt -n -o OPTIONS --mountpoint "$esp_mount")"
+case ",$root_options," in *,ro,*) ;; *) refuse 'root mount is not read-only' ;; esac
+case ",$esp_options," in *,ro,*) ;; *) refuse 'ESP mount is not read-only' ;; esac
 (cd "$root_mount/var/lib/sp12-linux/recovery" && sha256sum --check SHA256SUMS)
 sha256sum "$esp_mount"/sp12/vmlinuz "$esp_mount"/sp12/initrd.img \
   "$esp_mount"/sp12/dtb "$esp_mount"/sp12/SP12BOOT
-test -f "$esp_mount/sp12/SP12BOOT" && test ! -L "$esp_mount/sp12/SP12BOOT"
+[ -f "$esp_mount/sp12/SP12BOOT" ] && [ ! -L "$esp_mount/sp12/SP12BOOT" ] || refuse 'SP12BOOT marker is missing or not a regular file'
 sudo umount "$esp_mount"
+esp_mounted=0
 sudo umount "$root_mount"
+root_mounted=0
+printf 'SP12_LIVE_RECOVERY_READONLY_OK\n'
+SP12_READONLY_CHECK
+check_status=${PIPESTATUS[0]}
+printf 'READONLY_CHECK_EXIT=%s\nREADONLY_CHECK_LOG=%s\n' "$check_status" "$log_file"
 ```
 
 Expected recovery output is `vmlinuz: OK`, `initrd.img: OK`, and `dtb: OK`.
@@ -228,6 +295,10 @@ Compare active ESP hashes with the read-only baseline in
 [`luna-takeover-20261112.md`](luna-takeover-20261112.md). If a filesystem
 mount fails, a checksum differs, or a mount is writable, stop and do not run
 fsck repair, recovery apply, package installation, or firmware changes.
+If the terminal window closes again, open a new terminal and inspect the
+newest `~/sp12-live-recovery-check-*.log`; do not rerun the mount block until
+`findmnt` confirms that the previous attempt left neither internal partition
+mounted.
 
 ## Return to the installed system
 
