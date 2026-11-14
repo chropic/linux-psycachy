@@ -1,0 +1,293 @@
+Add CAMSS support for the Qualcomm X1P42100 (Purwa) SoC.
+
+The X1P42100 CAMSS is a cut-down variant of the X1E80100 (Hamoa)
+CAMSS. Compared to X1E80100 it has:
+- 2 x CSIPHY (CSIPHY0 and CSIPHY4) instead of 4
+- 1 x IFE instead of 2
+- only the ahb and hf_mnoc interconnect paths
+
+The CSID, CSID Lite, IFE Lite and TPG blocks are the same as on
+X1E80100, so reuse the existing CSID/VFE 680 ops and the X1E80100
+TPG and CSID wrapper resources.
+
+The CSIPHYs are handled through the PHY API, so no CSIPHY
+resources other than the lane format are needed.
+
+Signed-off-by: Wenmeng Liu <wenmeng.liu@oss.qualcomm.com>
+---
+ drivers/media/platform/qcom/camss/camss-vfe.c |   1 +
+ drivers/media/platform/qcom/camss/camss.c     | 215 ++++++++++++++++++++++++++
+ drivers/media/platform/qcom/camss/camss.h     |   1 +
+ 3 files changed, 217 insertions(+)
+
+diff --git a/drivers/media/platform/qcom/camss/camss-vfe.c b/drivers/media/platform/qcom/camss/camss-vfe.c
+index b1d9fe0010e119059c539c20c238c3e050ff7036..81cb4377586994727006d0ec83e53ac57233f765 100644
+--- a/drivers/media/platform/qcom/camss/camss-vfe.c
++++ b/drivers/media/platform/qcom/camss/camss-vfe.c
+@@ -1997,6 +1997,7 @@ static int vfe_bpl_align_rdi(struct vfe_device *vfe)
+ 	case CAMSS_8650:
+ 	case CAMSS_8775P:
+ 	case CAMSS_X1E80100:
++	case CAMSS_X1P42100:
+ 		ret = 16;
+ 		break;
+ 	default:
+diff --git a/drivers/media/platform/qcom/camss/camss.c b/drivers/media/platform/qcom/camss/camss.c
+index c54185c93a8a98fc6a20fdb8e0f9f8e61bc41058..5f0e5cadc06d51e16668d23ef9a3d8f13be81724 100644
+--- a/drivers/media/platform/qcom/camss/camss.c
++++ b/drivers/media/platform/qcom/camss/camss.c
+@@ -36,6 +36,13 @@
+ /* Top-level CAMSS version register */
+ #define CAMSS_HW_VERSION		0x0
+ 
++/* CSIPHY resources for PHY API devices, only id and formats are needed */
++#define CAMSS_CSIPHY_RES_PHY_API(_id, _formats)		\
++	.csiphy = {					\
++		.id = (_id),				\
++		.formats = (_formats),			\
++	}
++
+ static const struct parent_dev_ops vfe_parent_dev_ops;
+ 
+ static const struct camss_subdev_resources csiphy_res_8x16[] = {
+@@ -4452,6 +4459,197 @@ static const struct resources_wrapper csid_wrapper_res_x1e80100 = {
+ 	.reg = "csid_wrapper",
+ };
+ 
++static const struct camss_subdev_resources csiphy_res_x1p42100[] = {
++	/* CSIPHY0 */
++	{
++		CAMSS_CSIPHY_RES_PHY_API(0, &csiphy_formats_sdm845),
++	},
++	/* CSIPHY4 */
++	{
++		CAMSS_CSIPHY_RES_PHY_API(4, &csiphy_formats_sdm845),
++	},
++};
++
++static const struct camss_subdev_resources csid_res_x1p42100[] = {
++	/* CSID0 */
++	{
++		.regulators = {},
++		.clock = { "gcc_axi_hf", "cpas_ahb", "cpas_fast_ahb",
++			   "csid", "csid_csiphy_rx" },
++		.clock_rate = { { 0 },
++				{ 64000000, 80000000 },
++				{ 80000000,  100000000, 200000000,
++				  300000000, 400000000 },
++				{ 300000000, 400000000, 480000000 },
++				{ 300000000, 400000000, 480000000 }, },
++		.reg = { "csid0" },
++		.interrupt = { "csid0" },
++		.csid = {
++			.hw_ops = &csid_ops_680,
++			.parent_dev_ops = &vfe_parent_dev_ops,
++			.formats = &csid_formats_gen2
++		},
++	},
++	/* CSID1 */
++	{
++		.regulators = {},
++		.clock = { "gcc_axi_hf", "cpas_ahb", "cpas_fast_ahb",
++			   "csid", "csid_csiphy_rx" },
++		.clock_rate = { { 0 },
++				{ 64000000, 80000000 },
++				{ 80000000,  100000000, 200000000,
++				  300000000, 400000000 },
++				{ 300000000, 400000000, 480000000 },
++				{ 300000000, 400000000, 480000000 }, },
++		.reg = { "csid1" },
++		.interrupt = { "csid1" },
++		.csid = {
++			.hw_ops = &csid_ops_680,
++			.parent_dev_ops = &vfe_parent_dev_ops,
++			.formats = &csid_formats_gen2
++		},
++	},
++	/* CSID2 */
++	{
++		.regulators = {},
++		.clock = { "gcc_axi_hf", "cpas_ahb", "cpas_fast_ahb",
++			   "csid", "csid_csiphy_rx" },
++		.clock_rate = { { 0 },
++				{ 64000000, 80000000 },
++				{ 80000000,  100000000, 200000000,
++				  300000000, 400000000 },
++				{ 300000000, 400000000, 480000000 },
++				{ 300000000, 400000000, 480000000 }, },
++		.reg = { "csid2" },
++		.interrupt = { "csid2" },
++		.csid = {
++			.hw_ops = &csid_ops_680,
++			.parent_dev_ops = &vfe_parent_dev_ops,
++			.formats = &csid_formats_gen2
++		},
++	},
++	/* CSID_LITE0 */
++	{
++		.regulators = {},
++		.clock = { "gcc_axi_hf", "cpas_ahb", "cpas_fast_ahb",
++			   "csid", "csid_csiphy_rx" },
++		.clock_rate = { { 0 },
++				{ 64000000, 80000000 },
++				{ 80000000,  100000000, 200000000,
++				  300000000, 400000000 },
++				{ 300000000, 400000000, 480000000 },
++				{ 300000000, 400000000, 480000000 }, },
++		.reg = { "csid_lite0" },
++		.interrupt = { "csid_lite0" },
++		.csid = {
++			.is_lite = true,
++			.hw_ops = &csid_ops_680,
++			.parent_dev_ops = &vfe_parent_dev_ops,
++			.formats = &csid_formats_gen2
++		}
++	},
++	/* CSID_LITE1 */
++	{
++		.regulators = {},
++		.clock = { "gcc_axi_hf", "cpas_ahb", "cpas_fast_ahb",
++			   "csid", "csid_csiphy_rx" },
++		.clock_rate = { { 0 },
++				{ 64000000, 80000000 },
++				{ 80000000,  100000000, 200000000,
++				  300000000, 400000000 },
++				{ 300000000, 400000000, 480000000 },
++				{ 300000000, 400000000, 480000000 }, },
++		.reg = { "csid_lite1" },
++		.interrupt = { "csid_lite1" },
++		.csid = {
++			.is_lite = true,
++			.hw_ops = &csid_ops_680,
++			.parent_dev_ops = &vfe_parent_dev_ops,
++			.formats = &csid_formats_gen2
++		}
++	},
++};
++
++static const struct camss_subdev_resources vfe_res_x1p42100[] = {
++	/* IFE0 */
++	{
++		.regulators = {},
++		.clock = { "camnoc_rt_axi", "cpas_ahb", "cpas_fast_ahb",
++			   "cpas_vfe0", "vfe0_fast_ahb", "vfe0" },
++		.clock_rate = { { 400000000 },
++				{ 0 },
++				{ 0 },
++				{ 0 },
++				{ 0 },
++				{ 345600000, 432000000, 594000000, 675000000,
++				  727000000 }, },
++		.reg = { "vfe0" },
++		.interrupt = { "vfe0" },
++		.vfe = {
++			.line_num = 3,
++			.pd_name = "ife0",
++			.hw_ops = &vfe_ops_680,
++			.formats_rdi = &vfe_formats_rdi_845,
++			.formats_pix = &vfe_formats_pix_845
++		},
++	},
++	/* IFE_LITE_0 */
++	{
++		.regulators = {},
++		.clock = { "camnoc_rt_axi", "cpas_ahb", "vfe_lite_ahb",
++			   "cpas_vfe_lite", "vfe_lite", "vfe_lite_csid" },
++		.clock_rate = { { 400000000 },
++				{ 0 },
++				{ 0 },
++				{ 0 },
++				{ 266666667, 400000000, 480000000 },
++				{ 266666667, 400000000, 480000000 }, },
++		.reg = { "vfe_lite0" },
++		.interrupt = { "vfe_lite0" },
++		.vfe = {
++			.is_lite = true,
++			.line_num = 4,
++			.hw_ops = &vfe_ops_680,
++			.formats_rdi = &vfe_formats_rdi_845,
++			.formats_pix = &vfe_formats_pix_845
++		},
++	},
++	/* IFE_LITE_1 */
++	{
++		.regulators = {},
++		.clock = { "camnoc_rt_axi", "cpas_ahb", "vfe_lite_ahb",
++			   "cpas_vfe_lite", "vfe_lite", "vfe_lite_csid" },
++		.clock_rate = { { 400000000 },
++				{ 0 },
++				{ 0 },
++				{ 0 },
++				{ 266666667, 400000000, 480000000 },
++				{ 266666667, 400000000, 480000000 }, },
++		.reg = { "vfe_lite1" },
++		.interrupt = { "vfe_lite1" },
++		.vfe = {
++			.is_lite = true,
++			.line_num = 4,
++			.hw_ops = &vfe_ops_680,
++			.formats_rdi = &vfe_formats_rdi_845,
++			.formats_pix = &vfe_formats_pix_845
++		},
++	},
++};
++
++static const struct resources_icc icc_res_x1p42100[] = {
++	{
++		.name = "ahb",
++		.icc_bw_tbl.avg = 150000,
++		.icc_bw_tbl.peak = 300000,
++	},
++	{
++		.name = "hf_mnoc",
++		.icc_bw_tbl.avg = 2097152,
++		.icc_bw_tbl.peak = 2097152,
++	},
++};
++
+ /*
+  * camss_add_clock_margin - Add margin to clock frequency rate
+  * @rate: Clock frequency rate
+@@ -5809,6 +6007,22 @@ static const struct camss_resources x1e80100_resources = {
+ 	.vfe_num = ARRAY_SIZE(vfe_res_x1e80100),
+ };
+ 
++static const struct camss_resources x1p42100_resources = {
++	.version = CAMSS_X1P42100,
++	.pd_name = "top",
++	.csiphy_res = csiphy_res_x1p42100,
++	.tpg_res = tpg_res_x1e80100,
++	.csid_res = csid_res_x1p42100,
++	.vfe_res = vfe_res_x1p42100,
++	.csid_wrapper_res = &csid_wrapper_res_x1e80100,
++	.icc_res = icc_res_x1p42100,
++	.icc_path_num = ARRAY_SIZE(icc_res_x1p42100),
++	.csiphy_num = ARRAY_SIZE(csiphy_res_x1p42100),
++	.tpg_num = ARRAY_SIZE(tpg_res_x1e80100),
++	.csid_num = ARRAY_SIZE(csid_res_x1p42100),
++	.vfe_num = ARRAY_SIZE(vfe_res_x1p42100),
++};
++
+ static const struct of_device_id camss_dt_match[] = {
+ 	{ .compatible = "qcom,msm8916-camss", .data = &msm8916_resources },
+ 	{ .compatible = "qcom,msm8939-camss", .data = &msm8939_resources },
+@@ -5828,6 +6042,7 @@ static const struct of_device_id camss_dt_match[] = {
+ 	{ .compatible = "qcom,sm8550-camss", .data = &sm8550_resources },
+ 	{ .compatible = "qcom,sm8650-camss", .data = &sm8650_resources },
+ 	{ .compatible = "qcom,x1e80100-camss", .data = &x1e80100_resources },
++	{ .compatible = "qcom,x1p42100-camss", .data = &x1p42100_resources },
+ 	{ .compatible = "qcom,glymur-camss", .data = &x1e80100_resources },
+ 	{ }
+ }; 
+diff --git a/drivers/media/platform/qcom/camss/camss.h b/drivers/media/platform/qcom/camss/camss.h
+index 7dc2fd9f03e0dc2ded8e4a603d6cfec4d8e6a62b..523050295209d84e7f72f54bce9a96ed9df442aa 100644
+--- a/drivers/media/platform/qcom/camss/camss.h
++++ b/drivers/media/platform/qcom/camss/camss.h
+@@ -97,6 +97,7 @@ enum camss_version {
+ 	CAMSS_8650,
+ 	CAMSS_8775P,
+ 	CAMSS_X1E80100,
++	CAMSS_X1P42100,
+ };
+ 
+ enum icc_count {

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "passed-rootless-dry-run",
+  "host": "cs-sp12",
+  "architecture": "aarch64",
+  "base_iso_sha256": "9242a38c47eb53a5beb153c249d4843e4366f8955e9b972663e4ab7989311e9f",
+  "kernel_pin_sha256": "6fb4104b0bc4e8ed3c4211d4cf62331a32436a9b422326542a17533fcbee7c90",
+  "image_package_sha256": "a1398ad1445d0a712aece65fbb2aa129a8afece4011e54773b6940616cae40bd",
+  "headers_package_sha256": "80139be7bc17a3ab5034f2deafb220bd6373bd33b23ddd8e5032f98bf89dccf3",
+  "support_source_commit": "ea0f07e66beea95898d96fbeb6daa472f4735af3",
+  "machine_support_files": "all four verified against config/sp121-live-support.json",
+  "esp_mount": "/dev/sda1 /boot/efi vfat ro",
+  "xorriso": "Ubuntu arm64 packages downloaded and unpacked rootlessly; xorriso 1.5.6 executed",
+  "available_bytes_after_staging": 35856236544,
+  "builder_minimum_free_bytes": 25769803776,
+  "sudo_noninteractive": false,
+  "output_created": false,
+  "mounts_created": false,
+  "apply_command": "sudo /var/tmp/sp12-r2-final51-build/run-native-build.sh"
+}

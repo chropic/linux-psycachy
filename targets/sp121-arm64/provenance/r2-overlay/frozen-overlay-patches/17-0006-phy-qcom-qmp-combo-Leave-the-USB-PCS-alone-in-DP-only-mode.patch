@@ -1,0 +1,116 @@
+In DP-only mode (DisplayPort pin assignments C and E) all four lanes
+belong to the DisplayPort PHY and the USB PCS stays powered down.
+Three paths still touch the USB PCS in this state:
+
+- The USB controller can exit and re-init its PHY in DP-only mode, e.g.
+  across a system suspend that loses power. qmp_combo_usb_init() then
+  programs the USB serdes, lane and PCS tables over the DisplayPort
+  configuration and times out waiting for PHYSTATUS, and
+  qmp_combo_usb_exit() resets and powers down a PCS that is not in use.
+- qmp_combo_typec_switch_set() powers the USB PCS off and on when the
+  orientation changes in DP-only mode, e.g. when a DP-only sink is
+  plugged in the other way round while the mux is still in DP-only
+  mode.
+- qmp_combo_reconfigure_phy() powers the USB PCS off again when the
+  port leaves DP-only mode.
+
+Skip the USB PCS in these paths in DP-only mode. Keep the
+qmp_combo_com_init()/qmp_combo_com_exit() reference and usb_init_count,
+so that qmp_combo_reconfigure_phy() powers the USB PCS up when the port
+leaves DP-only mode.
+
+On a Lenovo Y700 Gen 5 (TB323FU, Kaanapali) with a USB-C monitor
+in pin assignment C, resume from s2idle fails with "phy initialization
+timed-out", the dwc3 resume returns -110 and the following xHCI resume
+hangs the system.
+
+Fixes: 896277138c13 ("phy: qcom: qmp-combo: register a typec mux to change the QMPPHY_MODE")
+Fixes: 89563a152973 ("phy: qualcomm: qmp-combo: Add preliminary USB4 support")
+Signed-off-by: Joonhoe Kim <26rote@gmail.com>
+---
+Changes in v2:
+- Also skip the USB PCS in qmp_combo_typec_switch_set() and in the
+  power-off of qmp_combo_reconfigure_phy() in DP-only mode, as the
+  Sashiko review of v1 pointed out [1]. Since 89563a152973 the mux keeps
+  usb_init_count when it enters DP-only mode, so these paths see a
+  non-zero count there.
+- v1: https://lore.kernel.org/all/20261022165219.1368-1-26rote@gmail.com/
+
+Tested on v7.3 with the qmp-combo mux changed to keep usb_init_count in
+DP-only mode as in phy-next, on a Lenovo Y700 Gen 5 (out-of-tree board
+support) with a USB-C monitor in pin assignment C: s2idle resume, a
+replug in the other orientation while the mux was still in DP-only
+mode (qmp_combo_typec_switch_set() then left the USB PCS alone), and a
+USB 3 stick afterwards, which enumerated at SuperSpeed. Kernels without
+89563a152973, where the mux drops usb_init_count in DP-only mode, need a
+variant that does not count the USB user there either.
+
+[1] https://lore.kernel.org/all/sashiko-outbox-181846@kernel.org/
+
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 28 +++++++++++++++--------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index 187f0cd11f6c..f1b565852caf 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -4459,10 +4459,12 @@ static int qmp_combo_usb_init(struct phy *phy)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = qmp_combo_usb_power_on(phy);
+-	if (ret) {
+-		qmp_combo_com_exit(qmp, false);
+-		return ret;
++	if (qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY) {
++		ret = qmp_combo_usb_power_on(phy);
++		if (ret) {
++			qmp_combo_com_exit(qmp, false);
++			return ret;
++		}
+ 	}
+ 
+ 	qmp->usb_init_count++;
+@@ -4484,9 +4486,11 @@ static int qmp_combo_usb_exit(struct phy *phy)
+ 		return 0;
+ 	}
+ 
+-	ret = qmp_combo_usb_power_off(phy);
+-	if (ret)
+-		return ret;
++	if (qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY) {
++		ret = qmp_combo_usb_power_off(phy);
++		if (ret)
++			return ret;
++	}
+ 
+ 	ret = qmp_combo_com_exit(qmp, false);
+ 	if (ret)
+@@ -4511,7 +4515,8 @@ static int qmp_combo_reconfigure_phy(struct qmp_combo *qmp, enum qmpphy_mode new
+ 	dev_dbg(qmp->dev, "qmp_combo_reconfigure_phy: switching from qmpphy mode %d to %d\n",
+ 		qmp->qmpphy_mode, new_mode);
+ 
+-	if (qmp->usb_init_count || qmp->usb4_init_count)
++	if ((qmp->usb_init_count || qmp->usb4_init_count) &&
++	    qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY)
+ 		qmp_combo_usb_power_off(qmp->usb_phy);
+ 
+ 	if (qmp->dp_init_count)
+@@ -5087,12 +5092,15 @@ static int qmp_combo_typec_switch_set(struct typec_switch_dev *sw,
+ 	if (qmp->init_count) {
+ 		guard(pm_runtime_active)(qmp->dev);
+ 
+-		if (qmp->usb_init_count || qmp->usb4_init_count)
++		bool usb = (qmp->usb_init_count || qmp->usb4_init_count) &&
++			   qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY;
++
++		if (usb)
+ 			qmp_combo_usb_power_off(qmp->usb_phy);
+ 		qmp_combo_com_exit(qmp, true);
+ 
+ 		qmp_combo_com_init(qmp, true);
+-		if (qmp->usb_init_count || qmp->usb4_init_count)
++		if (usb)
+ 			qmp_combo_usb_power_on(qmp->usb_phy);
+ 		if (qmp->dp_init_count)
+ 			cfg->dp_aux_init(qmp);

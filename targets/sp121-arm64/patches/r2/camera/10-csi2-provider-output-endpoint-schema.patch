@@ -1,0 +1,21 @@
+diff --git a/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
+index 79481ee887cd3b7d1253e5489a81bb9dd2267c0b..93c8236754f86d6a40136491831103a066e9a07f 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
+@@ -57,6 +57,7 @@
+             unevaluatedProperties: false
+             properties:
+               data-lanes:
++                description: Lane mapping is carried by the sensor input endpoint, not the PHY output.
+                 minItems: 1
+                 maxItems: 4
+               lane-polarities:
+@@ -64,8 +65,6 @@
+                 maxItems: 5
+               bus-type:
+                 const: 4
+-            required:
+-              - data-lanes
+ 
+ required:
+   - compatible

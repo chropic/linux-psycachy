@@ -1,0 +1,71 @@
+{
+  "created_utc": "2026-11-13T16:42:16.380371+00:00",
+  "filesystem": "/",
+  "available_bytes_before_cleanup": 100615913472,
+  "preflight": {
+    "qemu_target_disk_check": "qemu-img check passed: no errors found; no backing file is present",
+    "qemu_target_disk_open_handles": "none found by lsof",
+    "read_only_root_extract": "single-link ext4 image; not mounted; no open handle found",
+    "iso": "single-link ISO9660 file; no open handle found; retained v4 fallback remains separate",
+    "active_qemu": "none found"
+  },
+  "candidates": {
+    "qemu_target_disk": {
+      "path": "/var/tmp/sp12-r2-installer-vm-20261113-vgpu-input/linux.qcow2",
+      "kind": "generated output",
+      "size_bytes": 10863640576,
+      "allocated_bytes": 10864390144,
+      "link_count": 1,
+      "sha256": "d6ab646add2d4a2ba98bb286aaa6c8c2cecc468f2af23b65cee49df47646d91f",
+      "open_by_process": false,
+      "mounted": false
+    },
+    "readonly_root_partition_extract": {
+      "path": "/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-continuation-no-media-20261112/root-partition-readonly.img",
+      "kind": "generated output",
+      "size_bytes": 67590160384,
+      "allocated_bytes": 10662092800,
+      "link_count": 1,
+      "sha256": "014be2139c046c4a3e045f5b7b2e0b6dc77b8ce5b1df9c1015f163279f2286dd",
+      "open_by_process": false,
+      "mounted": false
+    },
+    "superseded_final49_arm64_iso": {
+      "path": "/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso",
+      "kind": "generated output",
+      "size_bytes": 5074714624,
+      "allocated_bytes": 5074718720,
+      "link_count": 1,
+      "sha256": "f990d6308f9342dd5208ebe18c4ce5e9cb876ca418048e887d4894982841c037",
+      "open_by_process": false,
+      "mounted": false
+    },
+    "superseded_final49_source_tree": {
+      "path": "/var/tmp/sp12-final37-iris-el1-bt-candidate-20261113",
+      "kind": "reproducible temporary source/build tree",
+      "allocated_bytes": 1898848256,
+      "tree_sha256": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e",
+      "open_by_process": false,
+      "mounted": false
+    },
+    "schema_validation_worktree": {
+      "path": "/var/tmp/sp12-r2-schema-51-20261113",
+      "kind": "reproducible temporary source/build tree",
+      "allocated_bytes": 1927958528,
+      "tree_sha256": "e26c6f340c4eed0beb4708adfd6251d5ecd6197cf3c4939248b99d74f8df7a99",
+      "open_by_process": false,
+      "mounted": false
+    }
+  },
+  "planned_action": "retire only the three listed stale files and two reproducible temporary trees; preserve parent task directories, all logs/checksums, the r2 v4 fallback, signed pristine source, and the final51 replay/schema artifacts",
+  "status": "retired-after-preflight",
+  "retired_utc": "2026-11-13T16:42:48.167339+00:00",
+  "available_bytes_after_cleanup": 131043758080,
+  "retired_paths": [
+    "/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/.unattended-luna-20261111210910Z/qemu-hosting/csb550i-1-arm64-v4-attempt8/vm-continuation-no-media-20261112/root-partition-readonly.img",
+    "/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso",
+    "/var/tmp/sp12-final37-iris-el1-bt-candidate-20261113",
+    "/var/tmp/sp12-r2-installer-vm-20261113-vgpu-input/linux.qcow2",
+    "/var/tmp/sp12-r2-schema-51-20261113"
+  ]
+}

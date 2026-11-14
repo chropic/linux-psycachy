@@ -1,0 +1,14 @@
+{
+  "attempt": 3,
+  "qemu": "AArch64 virt / TCG; RAMFB + virtio-gpu + virtio keyboard/tablet; networking off; readonly installer media",
+  "hmp": "127.0.0.1:4474",
+  "vnc_display": ":6",
+  "guest_progress": "GDM started; VNC remained on RAMFB boot console, so graphical chooser was not observable or operable.",
+  "installer_disk_selection": "not reached",
+  "erase_confirmation": "not reached",
+  "last_sampled_target_write_bytes": 0,
+  "last_sampled_sentinel_write_bytes": 0,
+  "post_stop": "both QCOW images passed qemu-img check; sentinel checksum/read check passed",
+  "stopped_via": "QEMU HMP quit; no physical machine or device involved",
+  "recorded_at_utc": "2026-11-13T12:42:39.897852+00:00"
+}

@@ -5,11 +5,25 @@ set -eu
 
 usage() {
     printf '%s\n' 'Usage: install-fallback-target.sh [--kernel-release RELEASE] [--dtb-source FILE] [--target DIR] [--apply]'
-    printf '%s\n' 'Defaults: 7.3.1-psycachy-sp121 and its versioned DTB under /target/boot.'
+    printf '%s\n' 'Defaults to the ARM64 kernel identity and its versioned DTB under /target/boot.'
     printf '%s\n' 'This command operates only on a separately mounted /target and /target/boot/efi.'
 }
 
-kver=7.3.1-psycachy-sp121
+installer_dir=$(CDPATH='' cd -- "$(dirname "$0")" && pwd)
+config_dir=$installer_dir/../config
+media_config=1
+if [ ! -f "$config_dir/arm64-iso-kernel.json" ]; then
+    config_dir=$installer_dir/../../../config
+    media_config=0
+fi
+identity_tool=$installer_dir/../iso/kernel_identity.py
+[ -f "$identity_tool" ] || identity_tool=$installer_dir/../../../tools/kernel_identity.py
+if [ "$media_config" -eq 1 ] && [ -f "$config_dir/arm64-kernel-identity.json" ]; then
+    kver=$(python3 "$identity_tool" --identity "$config_dir/arm64-kernel-identity.json" \
+        --artifact-pin "$config_dir/arm64-iso-kernel.json" --field kernel_release)
+else
+    kver=$(python3 "$identity_tool" --artifact-pin "$config_dir/arm64-iso-kernel.json" --field kernel_release)
+fi
 dtb_source=
 apply=0
 target=/target
@@ -43,7 +57,6 @@ esac
 [ -f "$dtb_source" ] || { printf 'DTB source not found: %s\n' "$dtb_source" >&2; exit 1; }
 dtb_source=$(readlink -f "$dtb_source")
 
-installer_dir=$(CDPATH='' cd -- "$(dirname "$0")" && pwd)
 system_dir=$installer_dir/../system
 for helper in sp12-save-recovery sp12-restore-recovery; do
     [ -f "$system_dir/usr-local-sbin/$helper" ] || {
@@ -62,14 +75,12 @@ target_dtb=$target/boot/dtb-$kver
 kernel=$target/boot/vmlinuz-$kver
 initrd=$target/boot/initrd.img-$kver
 
-# Enforce packaged-DTB equality for the exact PsyCachy SP12 release
+# Enforce packaged-DTB equality for the selected SP12 release.
 packaged_dtb=$target/usr/lib/linux-image-$kver/qcom/x1p42100-microsoft-sp12in.dtb
-if [ "$kver" = "7.3.1-psycachy-sp121" ]; then
-    if [ ! -f "$packaged_dtb" ] || ! cmp -s "$dtb_source" "$packaged_dtb"; then
-        printf 'SP12 target DTB must match its packaged DTB; run install-target-kernel first.\n' >&2
-        printf 'Expected matching DTB at %s\n' "$packaged_dtb" >&2
-        exit 1
-    fi
+if [ ! -f "$packaged_dtb" ] || ! cmp -s "$dtb_source" "$packaged_dtb"; then
+    printf 'SP12 target DTB must match its packaged DTB; run install-target-kernel first.\n' >&2
+    printf 'Expected matching DTB at %s\n' "$packaged_dtb" >&2
+    exit 1
 fi
 
 # Run target inspection

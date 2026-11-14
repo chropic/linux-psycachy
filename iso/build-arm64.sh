@@ -12,6 +12,9 @@ fi
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 source_iso=$(realpath -- "$1")
 kernels=$(realpath -- "$2")
+kernel_pin=${PSYCACHY_ARM64_KERNEL_PIN:-$root/config/arm64-iso-kernel.json}
+[[ -f $kernel_pin && ! -L $kernel_pin ]] || die 'ARM64 kernel pin must be a regular non-symlink file'
+kernel_pin=$(realpath -- "$kernel_pin")
 mkdir -p -- "$3"
 output=$(realpath -- "$3")
 iso="$output/psycachy-ubuntu-26.10-desktop-arm64.iso"
@@ -35,24 +38,39 @@ trap cleanup EXIT
 exec > >(tee "$output/build.log") 2>&1
 
 bundle="$work/kernel-bundle"
+mapfile -t artifact_identity < <(python3 - "$kernel_pin" <<'PY'
+import json, sys
+pin=json.load(open(sys.argv[1], encoding="utf-8"))
+print(pin["kernel_release"])
+print(pin["debian_version"])
+print(pin["dtb_path"])
+PY
+)
+(( ${#artifact_identity[@]} == 3 )) || die 'invalid pinned ARM64 ISO identity'
 python3 "$root/targets/sp121-arm64/installer/bundle-target.py" "$kernels" \
-  --output "$bundle"
+  --output "$bundle" --release "${artifact_identity[0]}" \
+  --version "${artifact_identity[1]}" --dtb "${artifact_identity[2]}" \
+  --pin "$kernel_pin"
 
 if (( $# == 4 )); then
   repo=$(realpath -- "$4")
 else
-  bash "$root/iso/arm64-download-packages.sh" "$kernels" "$output/offline-packages"
+  bash "$root/iso/arm64-download-packages.sh" "$kernels" "$output/offline-packages" "$kernel_pin"
   repo="$output/offline-packages"
 fi
-bash "$root/iso/arm64-check-offline-packages.sh" "$repo"
-python3 "$root/iso/arm64_iso.py" verify-repository "$repo"
+bash "$root/iso/arm64-check-offline-packages.sh" "$repo" "$kernel_pin"
+python3 "$root/iso/arm64_iso.py" verify-repository "$repo" --pin "$kernel_pin"
 
 payload="$work/payload"
 mkdir -p "$payload/iso" "$payload/config" "$payload/installer" "$payload/system"
 python3 "$root/iso/arm64_iso.py" stage-repository "$repo" "$payload/repository"
-python3 "$root/iso/arm64_iso.py" verify-repository "$payload/repository"
+python3 "$root/iso/arm64_iso.py" verify-repository "$payload/repository" --pin "$kernel_pin"
 cp -- "$root/iso/arm64_iso.py" "$payload/iso/arm64_iso.py"
-cp -- "$root/config/arm64-iso-base.json" "$root/config/arm64-iso-kernel.json" "$payload/config/"
+cp -- "$root/tools/kernel_identity.py" "$payload/iso/kernel_identity.py"
+cp -- "$root/config/arm64-iso-base.json" "$payload/config/"
+cp -- "$kernel_pin" "$payload/config/arm64-iso-kernel.json"
+python3 "$root/tools/kernel_identity.py" --artifact-pin "$kernel_pin" \
+  --stage-if-matching "$payload/config/arm64-kernel-identity.json"
 cp -a -- "$bundle" "$payload/kernel-bundle"
 install -m 755 "$root/iso/arm64-install-target.sh" "$payload/install-arm64-target.sh"
 install -m 755 "$root/iso/select-disk.py" "$payload/select-disk.py"
@@ -91,13 +109,18 @@ grep -Eq 'El Torito boot img :[[:space:]]+[0-9]+[[:space:]]+UEFI[[:space:]]+y' "
 (cd "$output" && sha256sum -- "${iso##*/}" > SHA256SUMS)
 {
   printf 'Ubuntu ISO: %s\n' "${source_iso##*/}"
-  sha256sum "$source_iso" "$root/config/arm64-iso-base.json" "$root/config/arm64-iso-kernel.json"
+  sha256sum "$source_iso" "$root/config/arm64-iso-base.json" "$kernel_pin"
+  if [[ -f $payload/config/arm64-kernel-identity.json ]]; then
+    sha256sum "$root/config/arm64-kernel-identity.json"
+  else
+    printf 'ARM64 kernel identity sidecar: omitted (legacy artifact pin)\n'
+  fi
   sha256sum "$kernels"/*.deb
   printf 'ISO customization: xorriso ARM64 boot-image replay\n'
   xorriso -version | head -n 1
   printf 'Ubuntu live kernel/initrd: byte-for-byte retained\n'
   printf 'Offline package repository:\n'
-  python3 "$root/iso/arm64_iso.py" verify-repository "$repo"
+  python3 "$root/iso/arm64_iso.py" verify-repository "$repo" --pin "$kernel_pin"
   printf 'PsyCachy source revision: %s\n' "$(git -C "$root" rev-parse HEAD 2>/dev/null || printf 'uncommitted')"
   cat "$repo/SHA256SUMS"
 } > "$output/manifest.txt"

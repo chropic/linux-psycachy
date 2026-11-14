@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "kernel_release": "7.3.1-psycachy-sp121-r2",
+  "debian_version": "7.3.1-1psycachy2",
+  "architecture": "arm64",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "source_archive_signer_fingerprint": "E8B9AA39F054E30E8290D492C3C4820857F654FE",
+  "overlay_commit": "952f769e1b45f07302d69992d19e5874ee77737",
+  "input_manifest_sha256": "6040fc283d5afe04ddfa69d1bc418ead62b5de2984b73f42c22e144a6ca74e14",
+  "config_seed_sha256": "cd5027943acfa23b4fc9798cc71f6f3d88996b54a3d25ec2b873762dc39e01a0",
+  "resolved_config_sha256": "cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957",
+  "dtb_path": "qcom/x1p42100-microsoft-sp12in.dtb",
+  "dtb_sha256": "274ceb42fb5f831adda4a5c4ef7b7196a4bb5a6ef4a927315149ff4bbf39eb40",
+  "dtb_build_id": "sha256:43e6fa05d5ee85e49bfc1d295f0ce77bcba55e1366b39f2cc6240d69783249d0",
+  "packages": [
+    {
+      "name": "linux-headers-7.3.1-psycachy-sp121-r2",
+      "filename": "linux-headers-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+      "sha256": "80139be7bc17a3ab5034f2deafb220bd6373bd33b23ddd8e5032f98bf89dccf3"
+    },
+    {
+      "name": "linux-image-7.3.1-psycachy-sp121-r2",
+      "filename": "linux-image-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+      "sha256": "a1398ad1445d0a712aece65fbb2aa129a8afece4011e54773b6940616cae40bd"
+    }
+  ],
+  "source_tree_sha256": "634c6a56274e4d8d2bc69fa9edfe67b00300b3d29065f6f07373290cf93a1a0c",
+  "patch_series_source_tree_sha256": "192c5187bca08d67cb167cf7be77996fdde7f4c3717e19bb200775bf48a161fb",
+  "policy_fragment_sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb",
+  "kernel_payload_sha256": "bf8cf5c425473df49b03dbaf536bcc1b1ef20360d7f511c2a68f59d41c672451",
+  "module_signing_certificate_sha256": "24f03bfcb4bee61148a912a2a167d405ffffa011eb2ac17520eefd425f5dbdff",
+  "module_signing_fingerprint_sha256": "24f03bfcb4bee61148a912a2a167d405ffffa011eb2ac17520eefd425f5dbdff"
+}

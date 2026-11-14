@@ -1,0 +1,266 @@
+{
+  "schema": 1,
+  "source_root": "/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "source_signer": "E8B9AA39F054E30E8290D492C3C4820857F654FE",
+  "base_tree_sha256": "dc272061b7eea961aac2112c46dc140d778a7de3bbff7dff8d1068c571631ffa",
+  "manifest_path": "targets/sp121-arm64/inputs.r2-candidate.json",
+  "manifest_sha256": "1838067e7fc607e67769885c4b8fda7953d40dae3cabba7197474f6122af6403",
+  "patch_count": 32,
+  "available_root_bytes_before": 132167589888,
+  "runs": [
+    {
+      "name": "replay-1",
+      "patches": [
+        {
+          "order": 1,
+          "id": "volume-gpio-correction",
+          "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+          "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4295092b38202c17b0625301d5382078844e34f47e419953ac468142e9d01d99"
+        },
+        {
+          "order": 2,
+          "id": "surface-rtc-driver",
+          "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+          "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "28e24b32eb2a968c2644dc642562a19fa460654815ae144a54fc169efd85d183"
+        },
+        {
+          "order": 3,
+          "id": "sp12-rtc-registration",
+          "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+          "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "d74956aaa8688819f1409982f3deb0731b588b9ef1964cee7ccf921f43ad1fd3"
+        },
+        {
+          "order": 4,
+          "id": "sp12-suspend-quirk",
+          "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+          "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ebaa2d5f1039d7bcb4c0a067702d71acff26a62ecb31965a2e773fc562630419"
+        },
+        {
+          "order": 5,
+          "id": "surface-usb-eusb2-binding",
+          "path": "patches/r2/usb-phy/01-dt-bindings-phy-eusb2.patch",
+          "sha256": "27614db572139fe5a0fbfdfcef6a246fa13eda57d64324f3f4ce21cbfdc2315c",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1ecaa09f9b6e08bd9a3b23313683f098057512b69e41fed96a324ad119a2f74b"
+        },
+        {
+          "order": 6,
+          "id": "surface-phy-attribute-type",
+          "path": "patches/r2/usb-phy/02-phy-attributes-type.patch",
+          "sha256": "4a8217907e9913a71194645e7c9082e2353127b93f10cc3ea7b198c5455ed2ff",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "46b514c11ad7f5878089b38f2458963a2c169b5a828f8a262a064dc931cd0c69"
+        },
+        {
+          "order": 7,
+          "id": "surface-snps-eusb2-type",
+          "path": "patches/r2/usb-phy/03-phy-snps-eusb2-type.patch",
+          "sha256": "df804fea8c2c4e21052b74a06cc54c4e367b11dff21d3357c3a9bcc2d2e117bb",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "e9046c81ef449314f8a5b1c179e11335dcf0cc4bd9a75b3401b7541418b11111"
+        },
+        {
+          "order": 8,
+          "id": "qmp-combo-dp-only-runtime-pm",
+          "path": "patches/r2/usb-phy/04-qmp-combo-dp-only-pm-guard.patch",
+          "sha256": "5a3f0ae80bb66214abf229b755cbc4d7dab083387a37125cbcd3442f63230551",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "5d0c5ba772d5759d2b4dea1cdcfa4dc2f24f4c76ef8dd18969323ec6af52c81d"
+        },
+        {
+          "order": 9,
+          "id": "sp12-platform-dts-prerequisites",
+          "path": "patches/r2/platform/05-sp12-platform-dts-prerequisites.patch",
+          "sha256": "0b103645a046931a72bde4c492f348df52a2327ab71862fcfb6578afa6a83912",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "07ec22966685cc56a291724412299243b21150d22ac86b6e84584776cd326e08"
+        },
+        {
+          "order": 10,
+          "id": "displayport-audio",
+          "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+          "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fbd496d7564bf979d305ebf7082e8e379579a495231c31c9d38f7b65c65af947"
+        },
+        {
+          "order": 11,
+          "id": "charge-limit-nvmem",
+          "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+          "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "862d5ad8d370ea136c68d17201c29cfe7aeb53412c23df101b29c641a4e30392"
+        },
+        {
+          "order": 12,
+          "id": "camera-csi2-dphy-provider",
+          "path": "patches/r2/camera/01-csi2-dphy-provider.patch",
+          "sha256": "b859073c5a94b71afc6af3011db9e90209a3359d65302e7aeffab37646c3ac4b",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "563f5d3320cdc34cde50d976e7fbb0d595cf5b5c1ff591dbd28b2823aaa4a5c3"
+        },
+        {
+          "order": 13,
+          "id": "camera-camss-phy-api",
+          "path": "patches/r2/camera/02-camss-phy-api-and-subdevice-population.patch",
+          "sha256": "75f41b52769b42c370b1f4423b6bffbccce94150b51b1e4ffcc6bbc7da4de5b7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "0487bd6ef893ca950d76299082d2095a9db5d1bffee84de79faafef74ee767d5"
+        },
+        {
+          "order": 14,
+          "id": "camera-x1p-camss-driver",
+          "path": "patches/r2/camera/03-x1p-camss-driver.patch",
+          "sha256": "ceebdd4af7facb71c3788e046fb071ec6ce603936b8e05f0ee1847aa69fe94dc",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "c321ffa19cc6b2d84d60634f746fb3de6bdc8d89189cb7a90c77967f3c83fa31"
+        },
+        {
+          "order": 15,
+          "id": "camera-cci-hamoa-purwa-phy-wiring",
+          "path": "patches/r2/camera/04-cci-hamoa-purwa-camss-phy-wiring.patch",
+          "sha256": "eb2cb81a0c73ad0cf893688db41ce98f7a393da8fea184cfaab08c8bc3e73f8d",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "eef7db86e6d1050e44233093888791ea95d6650f11383d33fdad8be6a454fa2a"
+        },
+        {
+          "order": 16,
+          "id": "camera-ov13858-ov02c10-drivers",
+          "path": "patches/r2/camera/05-ov13858-ov02c10-sensor-drivers.patch",
+          "sha256": "42fe77078300db5d854b3bee9172e7eeaf5f87ecbe50be192cb45c42477de7f3",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "f439589245e3add01567c6179199973307bc20bf68509be933082bd5355f299e"
+        }
+      ],
+      "status": "failed",
+      "error": "replay-1 apply --check failed at camera-sp12-sensor-csi-endpoints: error: patch failed: arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts:703\nerror: arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts: patch does not apply "
+    }
+  ],
+  "rollback": [
+    {
+      "run": "replay-1",
+      "id": "camera-ov13858-ov02c10-drivers",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "camera-cci-hamoa-purwa-phy-wiring",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "camera-x1p-camss-driver",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "camera-camss-phy-api",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "camera-csi2-dphy-provider",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "charge-limit-nvmem",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "displayport-audio",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "sp12-platform-dts-prerequisites",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "qmp-combo-dp-only-runtime-pm",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "surface-snps-eusb2-type",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "surface-phy-attribute-type",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "surface-usb-eusb2-binding",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "sp12-suspend-quirk",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "sp12-rtc-registration",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "surface-rtc-driver",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    },
+    {
+      "run": "replay-1",
+      "id": "volume-gpio-correction",
+      "reverse_check": "passed",
+      "reverse_apply": "passed"
+    }
+  ],
+  "restored_source_tree_sha256_after_failure": "dc272061b7eea961aac2112c46dc140d778a7de3bbff7dff8d1068c571631ffa",
+  "failure_cleanup_restored_baseline": true,
+  "status": "failed-first-attempt-recovered",
+  "resolution": "The first attempt used an initial board-camera patch whose context did not include regulator-always-on added by the platform prerequisite. The source was reversed to the authenticated baseline (dc272061...). The camera hunk was rebased to include that prerequisite line; subsequent 32-patch apply and full reverse both passed."
+}

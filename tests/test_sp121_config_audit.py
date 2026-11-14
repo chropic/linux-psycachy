@@ -33,6 +33,24 @@ class ConfigAuditTests(unittest.TestCase):
         self.assertEqual({item["symbol"] for item in result["newly_enabled_unreviewed"]},
                          {"CONFIG_EXAMPLE", "CONFIG_CACHY"})
 
+    def test_missing_camera_config_dependency_fails_closed(self):
+        candidate = dict(AUDIT.REQUIRED_SP12_CONFIG)
+        del candidate["CONFIG_V4L2_FWNODE"]
+        mismatches = AUDIT.compare({}, candidate)["required_sp12_config_mismatches"]
+        self.assertIn({"symbol": "CONFIG_V4L2_FWNODE", "expected": "m", "actual": None}, mismatches)
+        candidate["CONFIG_VIDEO_QCOM_CAMSS"] = "n"
+        mismatches = AUDIT.compare({}, candidate)["required_sp12_config_mismatches"]
+        self.assertIn({"symbol": "CONFIG_VIDEO_QCOM_CAMSS", "expected": "m", "actual": "n"}, mismatches)
+        candidate["CONFIG_PHY_QCOM_MIPI_CSI2"] = "n"
+        mismatches = AUDIT.compare({}, candidate)["required_sp12_config_mismatches"]
+        self.assertIn({"symbol": "CONFIG_PHY_QCOM_MIPI_CSI2", "expected": "m", "actual": "n"}, mismatches)
+        del candidate["CONFIG_CLK_X1P42100_CAMCC"]
+        mismatches = AUDIT.compare({}, candidate)["required_sp12_config_mismatches"]
+        self.assertIn({"symbol": "CONFIG_CLK_X1P42100_CAMCC", "expected": "m", "actual": None}, mismatches)
+        del candidate["CONFIG_CLK_X1E80100_GCC"]
+        mismatches = AUDIT.compare({}, candidate)["required_sp12_config_mismatches"]
+        self.assertIn({"symbol": "CONFIG_CLK_X1E80100_GCC", "expected": "m", "actual": None}, mismatches)
+
     def test_phase1_policy_changes_are_explicit_and_exact(self):
         seed = {
             "CONFIG_KEXEC": "y",

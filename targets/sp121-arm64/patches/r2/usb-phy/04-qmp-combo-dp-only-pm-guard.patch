@@ -1,0 +1,99 @@
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -15,6 +15,7 @@
+ #include <linux/of_address.h>
+ #include <linux/of_graph.h>
+ #include <linux/phy/phy.h>
++#include <linux/pm_runtime.h>
+ #include <linux/platform_device.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+@@ -4300,13 +4301,15 @@
+ 	if (ret)
+ 		goto out_unlock;
+ 
+-	ret = qmp_combo_usb_power_on(phy);
+-	if (ret) {
+-		qmp_combo_com_exit(qmp, false);
+-		goto out_unlock;
+-	}
++	if (qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY) {
++		ret = qmp_combo_usb_power_on(phy);
++		if (ret) {
++			qmp_combo_com_exit(qmp, false);
++			goto out_unlock;
++		}
+ 
+-	qmp->usb_init_count++;
++		qmp->usb_init_count++;
++	}
+ 
+ out_unlock:
+ 	mutex_unlock(&qmp->phy_mutex);
+@@ -4319,15 +4322,18 @@
+ 	int ret;
+ 
+ 	mutex_lock(&qmp->phy_mutex);
+-	ret = qmp_combo_usb_power_off(phy);
+-	if (ret)
+-		goto out_unlock;
++	if (qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY) {
++		ret = qmp_combo_usb_power_off(phy);
++		if (ret)
++			goto out_unlock;
++	}
+ 
+ 	ret = qmp_combo_com_exit(qmp, false);
+ 	if (ret)
+ 		goto out_unlock;
+ 
+-	qmp->usb_init_count--;
++	if (qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY)
++		qmp->usb_init_count--;
+ 
+ out_unlock:
+ 	mutex_unlock(&qmp->phy_mutex);
+@@ -4786,12 +4792,17 @@
+ 	qmp->orientation = orientation;
+ 
+ 	if (qmp->init_count) {
+-		if (qmp->usb_init_count)
++		guard(pm_runtime_active)(qmp->dev);
++
++		bool usb = qmp->usb_init_count &&
++			   qmp->qmpphy_mode != QMPPHY_MODE_DP_ONLY;
++
++		if (usb)
+ 			qmp_combo_usb_power_off(qmp->usb_phy);
+ 		qmp_combo_com_exit(qmp, true);
+ 
+ 		qmp_combo_com_init(qmp, true);
+-		if (qmp->usb_init_count)
++		if (usb)
+ 			qmp_combo_usb_power_on(qmp->usb_phy);
+ 		if (qmp->dp_init_count)
+ 			cfg->dp_aux_init(qmp);
+@@ -4805,7 +4816,7 @@
+ {
+ 	struct qmp_combo *qmp = typec_mux_get_drvdata(mux);
+ 	const struct qmp_phy_cfg *cfg = qmp->cfg;
+-	enum qmpphy_mode new_mode;
++	enum qmpphy_mode new_mode, old_mode;
+ 	unsigned int svid;
+ 
+ 	guard(mutex)(&qmp->phy_mutex);
+@@ -4850,10 +4861,13 @@
+ 	dev_dbg(qmp->dev, "typec_mux_set: switching from qmpphy mode %d to %d\n",
+ 		qmp->qmpphy_mode, new_mode);
+ 
++	old_mode = qmp->qmpphy_mode;
+ 	qmp->qmpphy_mode = new_mode;
+ 
+ 	if (qmp->init_count) {
+-		if (qmp->usb_init_count)
++		guard(pm_runtime_active)(qmp->dev);
++
++		if (qmp->usb_init_count && old_mode != QMPPHY_MODE_DP_ONLY)
+ 			qmp_combo_usb_power_off(qmp->usb_phy);
+ 
+ 		if (qmp->dp_init_count)

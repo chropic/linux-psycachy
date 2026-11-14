@@ -1,6 +1,8 @@
-# Phase 0: dual-target audit (in progress)
+# Phase 0: dual-target audit (historical 2026-11-08 snapshot)
 
-Recorded 2026-11-08. This is an inventory, not build or hardware validation.
+Recorded 2026-11-08. The material below is a historical inventory, not current
+project status or build/hardware validation. Current gates are maintained in
+[`../SHIP-CHECKLIST.md`](../SHIP-CHECKLIST.md).
 
 ## Source identity
 
@@ -49,32 +51,38 @@ SP12 firmware records exclude redistributable copies of uncertain third-party de
 
 ## SP12 patch disposition plan
 
-The following 37 entries reproduce the SP12 source manifest's historical disposition labels, not a decision for the CachyOS tree. For each, compare the exact source and dependencies, preserve attribution and hash, then record evidence for upstream equivalence, unchanged application, rebase, replacement or justified exclusion. Camera entries stay experimental and disabled until independently validated.
+The following 37 entries reproduce the SP12 source manifest's historical
+disposition labels, not a decision for the CachyOS tree. They are the status at
+the earlier checkpoint only. As of 2026-11-13, camera support is required and
+its source implementation is present in the sequentially applied r2 series;
+physical camera qualification remains open. See the final r2 replay and config/DT
+reports below for current source dispositions and validation. Preserve these
+older labels as historical evidence; do not use them as the active patch queue.
 
 | Vendor patch | SP12 snapshot disposition | Dual-target status (against CachyOS 7.3.1-1 baseline) |
 | --- | --- | --- |
 | `0002-7.2-clk-qcom-camcc-x1p42100-add-support-for-camera-clock-controller.patch` | use-upstream-reviewed | **Present in baseline**: `drivers/clk/qcom/camcc-x1p42100.c` present in CachyOS 7.3.1; keep upstream implementation |
-| `0003-phy-qcom-mipi-csi2-Add-a-CSI2-MIPI-DPHY-driver.patch` | ported-camera-profile-development | **Excluded from platform**: camera PHY driver; experimental camera profile only; runtime disabled |
-| `0004-media-qcom-camss-Add-support-to-populate-sub-devices.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS sub-device population; experimental camera profile only; runtime disabled |
-| `0005-media-qcom-camss-Add-legacy_phy-flag-to-Soc-definition-structures.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS legacy_phy flag; experimental camera profile only; runtime disabled |
-| `0007-media-qcom-camss-Add-support-for-PHY-API-devices.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS PHY API support; experimental camera profile only; runtime disabled |
-| `0008-media-qcom-camss-Add-support-for-x1p42100.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS X1P42100 support; experimental camera profile only; runtime disabled |
-| `0009-media-qcom-camss-Drop-legacy-PHY-descriptions-from-x.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS drop legacy PHY descriptions; experimental camera profile only; runtime disabled |
+| `0003-phy-qcom-mipi-csi2-Add-a-CSI2-MIPI-DPHY-driver.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: camera PHY driver; implementation and qualification incomplete |
+| `0004-media-qcom-camss-Add-support-to-populate-sub-devices.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS sub-device population; implementation and qualification incomplete |
+| `0005-media-qcom-camss-Add-legacy_phy-flag-to-Soc-definition-structures.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS legacy_phy flag; implementation and qualification incomplete |
+| `0007-media-qcom-camss-Add-support-for-PHY-API-devices.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS PHY API support; implementation and qualification incomplete |
+| `0008-media-qcom-camss-Add-support-for-x1p42100.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS X1P42100 support; implementation and qualification incomplete |
+| `0009-media-qcom-camss-Drop-legacy-PHY-descriptions-from-x.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS drop legacy PHY descriptions; implementation and qualification incomplete |
 | `0010-7.3-arm64-dts-qcom-hamoa-Add-CAMCC-block-definition.patch` | use-upstream-reviewed | **Present in baseline**: `arch/arm64/boot/dts/qcom/hamoa.dtsi:5513` CAMCC node already upstream; keep baseline |
 | `0011-7.3-arm64-dts-qcom-purwa-Add-CAMCC-block-definition.patch` | use-upstream-reviewed | **Present in baseline**: `arch/arm64/boot/dts/qcom/purwa.dtsi:42` CAMCC compatible already upstream; keep baseline |
-| `0012-arm64-dts-qcom-hamoa-Add-CCI-definitions.patch` | ported-camera-profile-development | **Excluded from platform**: CCI definitions; experimental camera profile only; runtime disabled |
-| `0014-arm64-dts-qcom-hamoa-Add-CAMSS-block-defintion.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS block in Hamoa; experimental camera profile only; runtime disabled |
-| `0015-arm64-dts-qcom-purwa-Add-CAMSS-block-defintion.patch` | ported-camera-profile-development | **Excluded from platform**: CAMSS block in Purwa; experimental camera profile only; runtime disabled |
+| `0012-arm64-dts-qcom-hamoa-Add-CCI-definitions.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CCI definitions; implementation and qualification incomplete |
+| `0014-arm64-dts-qcom-hamoa-Add-CAMSS-block-defintion.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS block in Hamoa; implementation and qualification incomplete |
+| `0015-arm64-dts-qcom-purwa-Add-CAMSS-block-defintion.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: CAMSS block in Purwa; implementation and qualification incomplete |
 | `0017-surfacego2-camera.patch` | exclude-unrelated | **Excluded**: Intel Surface Go 2 camera patch is outside ARM64 SP12 scope |
-| `0018-media-i2c-ov13858-reorder-methods.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 sensor method reordering; experimental camera profile only; runtime disabled |
-| `0019-media-i2c-ov13858-port-to-regmap_cci-api.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 regmap_cci API port; experimental camera profile only; runtime disabled |
-| `0020-media-i2c-ov13858-replace-open_set-stream-with-v4l2.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 V4L2 subdev stream API; experimental camera profile only; runtime disabled |
-| `0021-media-i2c-ov13858-add-rotate-control-support.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 rotate control; experimental camera profile only; runtime disabled |
-| `0022-media-i2c-ov13858-fix-setting-format.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 format setting fix; experimental camera profile only; runtime disabled |
-| `0023-media-i2c-ov13858-add-get_selection.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 selection target support; experimental camera profile only; runtime disabled |
-| `0024-media-i2c-ov13858-support-of.patch` | ported-camera-profile-development | **Excluded from platform**: OV13858 OpenFirmware probe support; experimental camera profile only; runtime disabled |
-| `0025-media-i2c-ov02c10-improve-default-exposure-setting.patch` | ported-camera-profile-development | **Excluded from platform**: OV02C10 exposure improvement; experimental camera profile only; runtime disabled |
-| `0026-media-i2c-ov02c10-add-get_selection.patch` | ported-camera-profile-development | **Excluded from platform**: OV02C10 selection target support; experimental camera profile only; runtime disabled |
+| `0018-media-i2c-ov13858-reorder-methods.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 sensor method reordering; implementation and qualification incomplete |
+| `0019-media-i2c-ov13858-port-to-regmap_cci-api.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 regmap_cci API port; implementation and qualification incomplete |
+| `0020-media-i2c-ov13858-replace-open_set-stream-with-v4l2.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 V4L2 subdev stream API; implementation and qualification incomplete |
+| `0021-media-i2c-ov13858-add-rotate-control-support.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 rotate control; implementation and qualification incomplete |
+| `0022-media-i2c-ov13858-fix-setting-format.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 format setting fix; implementation and qualification incomplete |
+| `0023-media-i2c-ov13858-add-get_selection.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 selection target support; implementation and qualification incomplete |
+| `0024-media-i2c-ov13858-support-of.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV13858 OpenFirmware probe support; implementation and qualification incomplete |
+| `0025-media-i2c-ov02c10-improve-default-exposure-setting.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV02C10 exposure improvement; implementation and qualification incomplete |
+| `0026-media-i2c-ov02c10-add-get_selection.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: OV02C10 selection target support; implementation and qualification incomplete |
 | `0001-7.3-firmware-qcom-scm-Allow-QSEECOM-on-Surface-Pro-12in.patch` | use-upstream | **Present in baseline**: `drivers/firmware/qcom/qcom_scm.c` QSEECOM allowlist includes SP12; keep baseline |
 | `0002-7.3-plaform-surface-SAM-add-support-for-Surface-Pro-12in.patch` | use-upstream | **Present in baseline**: `drivers/platform/surface/surface_aggregator_registry.c` SAM support upstream; keep baseline |
 | `0003-drm-panel_edp-Add-second-panel-for-Surface-Pro-12in.patch` | use-upstream | **Present in baseline**: `drivers/gpu/drm/panel/panel-edp.c:2197` SHARP LQ120P1JX51 panel entry present; keep baseline |
@@ -86,7 +94,7 @@ The following 37 entries reproduce the SP12 source manifest's historical disposi
 | `0009-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-regulators-display.patch` | exclude-snapshot-discrepancy | **Excluded**: Vendor regulator rewrite absent from tested reference aggregate; upstream display wiring preserved |
 | `0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch` | ported-platform-development | **Active platform series (#5)**: Ported cleanly as `05-0010-...-add-displayport-audio.patch`; adds DP audio DAI links to DT |
 | `0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch` | ported-platform-development | **Active platform series (#6)**: Ported cleanly as `06-0011-...-add-charge-limit-nvmem.patch`; adds PMIC GLINK NVMEM cells |
-| `0012-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-camera-support.patch` | ported-camera-profile-development | **Excluded from platform**: SP12 board camera nodes; experimental camera profile only; runtime disabled |
+| `0012-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-camera-support.patch` | ported-camera-profile-development | **Required r2 camera feature area; exact disposition pending rebase**: SP12 board camera nodes; implementation and qualification incomplete |
 | `0013-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-disable-rfkill.patch` | exclude-snapshot-discrepancy | **Excluded**: Unverified RF-kill flag absent from tested reference aggregate; upstream behavior preserved |
 | `0014-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-iris-node.patch` | exclude-snapshot-discrepancy | **Excluded**: Explicit Iris node override absent from tested reference aggregate; upstream behavior preserved |
 | `0015-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-remove-reserved-memory.patch` | exclude-snapshot-discrepancy | **Excluded**: Removes 512MB CMA memory; absent from tested aggregate; upstream 512MB CMA reservation preserved |
@@ -148,7 +156,7 @@ As a limited BTF compatibility check, `bpftool v7.8.0 --base-btf vmlinux btf dum
 1. **Source identity & authenticated baseline**: Complete. CachyOS 7.3.1-1 pin authenticated and verified (`VALIDSIG`). SP12 platform seed and 6 platform patches verified with `verify-sp121-inputs.py`.
 2. **Proto retirement**: Complete. Proto branch was retired at the user's explicit direction; no unique proto changes incorporated.
 3. **Boot/ESP/package writer mapping**: Complete. Dual-target writer conflict resolution matrix defined above with strict architecture fencing, mutual exclusion between GRUB state tools and `sp12-sync-boot`, and distinct packaging/recovery isolation.
-4. **Patch disposition against baseline**: Complete. All 37 SP12 vendor patches evaluated against CachyOS 7.3.1-1 baseline: 6 platform patches active and verified, 6 upstream components verified present in baseline, 5 excluded (discrepancy/unrelated), and 20 camera profile patches retained as experimental and runtime-disabled.
+4. **Historical patch disposition against baseline**: This earlier audit evaluated 37 SP12 vendor patches against CachyOS 7.3.1-1. Its camera-excluded/experimental disposition is superseded by the 2026-11-13 r2 requirement. Camera support is required and its source implementation is now included in r2; hardware qualification remains incomplete. Exact-source rebases and the complete r2 dependency sequence are tracked in the current execution record.
 5. **Experimental VM and module validation**: Direct QEMU ARM64 boot, generic UEFI/GRUB boot, signed external module loading, full module build (8,485 modules), and BTF dump validation completed on generic VM. The final integrated candidate package pair is structurally verified; its packaged kernel image also passed generic direct and UEFI/GRUB boots. The blank-ESP post-update hook and kernel/initrd/DTB/marker byte checks passed in a persistent FAT-backed guest (see `validation/sp121-blank-esp-hook.txt`). A forced-dependency install/remove smoke test ran in Ubuntu live media, with the live-only kdump and flash-kernel limitations recorded in `PHASE1-HANDOFF.md`. Clean dependency-resolved package lifecycle, hook checks across normal reboot, and installer application remain open.
 
 ### Phase 1 implementation gates
@@ -157,3 +165,67 @@ As a limited BTF compatibility check, `bpftool v7.8.0 --base-btf vmlinux btf dum
 2. **Native headers and toolchain prerequisites**: The Ubuntu bootstrap list includes `fakeroot`, dpkg tooling, headers and native build libraries; the SP12 cross setup installs the AArch64 compiler and target OpenSSL, libdw, libelf and zlib development libraries. The required ARM64 cross and target development packages are installed on the current host.
 3. **AMD64 physical hardware test evidence**: Awaiting user hardware installation report on test storage and GPU hardware (candidate v13 ISO). Do not alter AMD64 installer logic or release claims until physical report is received.
 4. **Physical ARM64 device tests**: Physical Surface Pro 12" testing remains out of scope until packaging and recovery gates are fully verified in VM.
+
+## 2026-11-13 status addendum: SP12 r2 source and config
+
+This addendum supersedes the earlier ten-patch-only, camera-excluded,
+53-GiB-free, and source-review-pending statements above. It does not close
+installer, VM, or physical-device gates.
+
+- Two clean package builds found and localized compile incompatibilities in the
+  UniPHY PCIe enum and OV02C10 V4L2 selection callback. A focused compile found
+  two unused CAMSS locals, which were removed. All patch-touched C objects
+  compile with the active config; the CAMSS cleanup compile is warning free.
+  The refreshed 37-patch series applies twice in order to authenticated CachyOS
+  7.3.1 source and produces final tree digest
+  `f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e`. The
+  active manifest is pinned at
+  `46528c8cfe61e1fb068fb4d1394de121bb9a1ce080db1287a1cb68492dc79cc2`.
+- Camera support is required and present in the r2 source/config series; camera
+  and other SP12 hardware operation remain unqualified. The resolved r2 config
+  passes 52 required-value checks with no mismatches or unexpected changes.
+  Selected camera schemas, SP12 DTB compilation, targeted schema checks, and
+  direct `dt-validate` passed. This does not establish runtime DT identity or
+  hardware function.
+- `bash tests/static-check.sh` passed with the root-only `mokutil` check
+  skipped. Root free space was measured at 132,178,128,896 bytes after cleanup
+  and 132,098,420,736 bytes immediately before starting the r2 build. The
+  clean final37 package build completed successfully. The image package SHA-256
+  is `424986a27154c49c1fccf8784ede2195ada23035e2624dbca1ce91e992a9344b` and
+  headers package SHA-256 is
+  `8509b45755f53fd9465409e398997b59075cf897bada74dae6aca36121fa8703`. The
+  final packaged DTB SHA-256 is
+  `ec0d4d44dfd495b5c771780fc990fa6ec8c1f617faedb174509b043f87a5da69`; its
+  build ID is
+  `sha256:5ec821abf77f1ff32e2b38787b9e709bddebd918530c5ca25422f109ded5cdc9`.
+  Package structure, release/version, dependencies, headers tools, build ID,
+  and 22 required module paths passed. Module signature trailers were present
+  on all 8,487 packaged modules; the required 22 target modules' CMS signatures
+  were independently checked against the package certificate. This is not a
+  cryptographic verification of all module signatures. A separate r2 pin and
+  target bundle passed identity/package verification; the v4 pin is unchanged.
+  The rootless r2 installer ISO built from the signed Ubuntu ARM64 base with a
+  120-package offline closure; its SHA-256 is
+  `f990d6308f9342dd5208ebe18c4ce5e9cb876ca418048e887d4894982841c037`
+  (5,074,714,624 bytes). Its embedded pin, identity, package bundle, offline
+  repository, preserved live kernel/initrd, and UEFI boot record were checked.
+  A first build exposed that the final manifest verification used the default
+  v4 pin; the selected r2 pin is now passed explicitly, with a regression test.
+  The full static suite passes after that fix and the VM input/display updates.
+  Four network-disabled generic ARM64 QEMU `virt` attempts have stopped before
+  disk selection. The first remained in early setup, the second reached a
+  visible login without input devices, and the third kept GDM on a second
+  display outside VNC. Their post-stop QCOW and sentinel checks passed. The
+  fourth uses one virtio display plus keyboard/tablet and is progressing through
+  Snap startup; its latest block sample shows zero writes. Installer selection,
+  package hooks, detached-media boot, runtime DT identity, and physical
+  qualification remain open. The private live-builder inputs passed pin checks
+  and its rootless dry-run passed without installing host packages or creating
+  mounts/output. The actual build still requires native ARM64, root, and
+  private mount/network namespaces.
+- The overlay provenance and redistribution review are separate: private
+  engineering use is authorized, while authorship/license/redistribution
+  questions remain open. Do not treat this source/config work as public release
+  approval.
+
+See the current [ship checklist](../SHIP-CHECKLIST.md), [r2 execution queue](../IMPLEMENTATION-QUEUE.md#i-4-refresh-sp12-r2-kernel-inputs-identity-config-and-dtb-evidence), [config/DT/package evidence](validation/sp12-r2-config-dt-final-20261113.md), [sequential replay record](validation/sp12-r2-source-replay-20261113-final-37-patch-series.json), [r2 installer pin](../../config/arm64-iso-kernel-r2.json), [overlay provenance index](../../targets/sp121-arm64/provenance/r2-overlay/README.md), and [storage cleanup record](validation/storage-reclamation-20261113.md).

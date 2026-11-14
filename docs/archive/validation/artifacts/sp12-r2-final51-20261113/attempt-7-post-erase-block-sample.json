@@ -1,0 +1,41 @@
+{
+  "observed_utc": "2026-11-13T22:28:23.454142+00:00",
+  "qemu_pid": 705407,
+  "status": {
+    "status": "running",
+    "running": true
+  },
+  "disks": [
+    {
+      "device": "pflash0",
+      "write_bytes": 0,
+      "write_operations": 0
+    },
+    {
+      "device": "pflash1",
+      "write_bytes": 0,
+      "write_operations": 0
+    },
+    {
+      "device": "linuxdisk",
+      "write_bytes": 0,
+      "write_operations": 0
+    },
+    {
+      "device": "otherdisk",
+      "write_bytes": 0,
+      "write_operations": 0
+    },
+    {
+      "device": "installer",
+      "write_bytes": 0,
+      "write_operations": 0
+    },
+    {
+      "device": "floppy0",
+      "write_bytes": 0,
+      "write_operations": 0
+    }
+  ],
+  "guard": "ERASE typed after visually verifying /dev/vdb serial psycachy-arm64-linux"
+}

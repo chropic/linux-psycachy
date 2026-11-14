@@ -16,6 +16,26 @@ def elf(machine):
     return b"\x7fELF\x02\x01" + b"\0" * 10 + (1).to_bytes(2, "little") + machine.to_bytes(2, "little")
 
 
+def make_build_tree(root, module_paths=None, module_exports=True):
+    root = pathlib.Path(root)
+    (root / "include/config").mkdir(parents=True)
+    (root / "arch/arm64/boot").mkdir(parents=True)
+    (root / "arch/arm64/boot/Image").write_bytes(b"\0" * 56 + b"ARMd" + b"\0" * 4)
+    (root / "vmlinux").write_bytes(b"test vmlinux")
+    (root / "include/config/kernel.release").write_text("7.3.1-test\n")
+    (root / ".config").write_text("CONFIG_MODULES=y\n")
+    selected = sorted(AUDIT.REQUIRED_MODULE_PATHS if module_paths is None else module_paths)
+    (root / "modules.order").write_text("".join(path[:-3] + ".o\n" for path in selected))
+    symvers = "0x01234567 symbol vmlinux EXPORT_SYMBOL\n"
+    if module_exports:
+        symvers += "0x12345678 driver_symbol driver EXPORT_SYMBOL\n"
+    (root / "Module.symvers").write_text(symvers)
+    for relative in selected:
+        module = root / relative
+        module.parent.mkdir(parents=True, exist_ok=True)
+        module.write_bytes(elf(183))
+
+
 class ModuleAuditTests(unittest.TestCase):
     def test_accepts_matching_module_and_rejects_wrong_architecture_or_release(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -58,25 +78,33 @@ class ModuleAuditTests(unittest.TestCase):
     def test_full_report_requires_non_builtin_exports_and_matching_release(self):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
-            (root / "include/config").mkdir(parents=True)
-            (root / "arch/arm64/boot").mkdir(parents=True)
-            (root / "arch/arm64/boot/Image").write_bytes(b"\0" * 56 + b"ARMd" + b"\0" * 4)
-            (root / "vmlinux").write_bytes(b"test vmlinux")
-            (root / "include/config/kernel.release").write_text("7.3.1-test\n")
-            (root / ".config").write_text("CONFIG_MODULES=y\n")
-            (root / "modules.order").write_text("driver.o\n")
-            (root / "Module.symvers").write_text(
-                "0x01234567 symbol vmlinux EXPORT_SYMBOL\n"
-                "0x12345678 driver_symbol driver EXPORT_SYMBOL\n")
-            (root / "driver.ko").write_bytes(elf(183))
+            make_build_tree(root)
             with mock.patch.object(AUDIT, "image_matches_vmlinux", return_value=True), \
                  mock.patch.object(AUDIT.subprocess, "run", return_value=types.SimpleNamespace(
                     returncode=0, stdout="7.3.1-test SMP aarch64\n")):
                 report = AUDIT.audit(root, "7.3.1-test", 1)
-            self.assertEqual(report["module_count"], 1)
+            self.assertEqual(report["module_count"], len(AUDIT.REQUIRED_MODULE_PATHS))
+            self.assertEqual(report["module_count"], 22)
+            self.assertEqual(set(report["required_module_paths"]), AUDIT.REQUIRED_MODULE_PATHS)
             self.assertEqual(report["module_export_count"], 1)
             with self.assertRaisesRegex(ValueError, "kernel release"):
                 AUDIT.audit(root, "7.3.2-test", 1)
+
+    def test_missing_required_camera_module_or_clock_provider_fails_closed(self):
+        for missing in (
+                "drivers/media/platform/qcom/camss/qcom-camss.ko",
+                "drivers/phy/qualcomm/phy-qcom-mipi-csi2.ko",
+                "drivers/clk/qcom/camcc-x1p42100.ko",
+                "drivers/clk/qcom/gcc-x1e80100.ko"):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                modules = set(AUDIT.REQUIRED_MODULE_PATHS)
+                self.assertIn(missing, modules)
+                modules.remove(missing)
+                make_build_tree(root, modules)
+                with mock.patch.object(AUDIT, "image_matches_vmlinux", return_value=True):
+                    with self.assertRaisesRegex(ValueError, "required SP12 camera/media/PHY modules"):
+                        AUDIT.audit(root, "7.3.1-test", 1)
 
     def test_stale_image_is_rejected(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -1,0 +1,41 @@
+Subject: [SP12 r2 local] phy: namespace Qualcomm UniPHY PCIe enum values
+Base: authenticated CachyOS 7.3.1-1 source.
+Reason: include/linux/phy/phy.h now includes the PHY binding header, which defines
+PHY_TYPE_PCIE as a macro and collides with this driver's local enum identifiers.
+This compatibility patch namespaces only the local enum and its local uses. No
+upstream authorship or sign-off is claimed.
+
+---
+--- a/drivers/phy/qualcomm/phy-qcom-uniphy-pcie-28lp.c
++++ b/drivers/phy/qualcomm/phy-qcom-uniphy-pcie-28lp.c
+@@ -44,9 +44,9 @@
+ #define PHY_CFG_GEN3_ALIGN_HOLDOFF_TIME		0x3e8
+ 
+ enum qcom_uniphy_pcie_type {
+-	PHY_TYPE_PCIE = 1,
+-	PHY_TYPE_PCIE_GEN2,
+-	PHY_TYPE_PCIE_GEN3,
++	QCOM_UNIPHY_TYPE_PCIE = 1,
++	QCOM_UNIPHY_TYPE_PCIE_GEN2,
++	QCOM_UNIPHY_TYPE_PCIE_GEN3,
+ };
+ 
+ struct qcom_uniphy_pcie_regs {
+@@ -124,7 +124,7 @@
+ 
+ static const struct qcom_uniphy_pcie_data ipq5018_data = {
+ 	.lane_offset	= 0x800,
+-	.phy_type	= PHY_TYPE_PCIE_GEN2,
++	.phy_type	= QCOM_UNIPHY_TYPE_PCIE_GEN2,
+ 	.init_seq	= ipq5018_regs,
+ 	.init_seq_num	= ARRAY_SIZE(ipq5018_regs),
+ 	.pipe_clk_rate	= 125 * MEGA,
+@@ -132,7 +132,7 @@
+ 
+ static const struct qcom_uniphy_pcie_data ipq5332_data = {
+ 	.lane_offset	= 0x800,
+-	.phy_type	= PHY_TYPE_PCIE_GEN3,
++	.phy_type	= QCOM_UNIPHY_TYPE_PCIE_GEN3,
+ 	.init_seq	= ipq5332_regs,
+ 	.init_seq_num	= ARRAY_SIZE(ipq5332_regs),
+ 	.pipe_clk_rate	= 250 * MEGA,

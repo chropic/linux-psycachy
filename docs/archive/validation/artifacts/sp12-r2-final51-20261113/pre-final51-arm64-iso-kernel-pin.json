@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "candidate",
+  "kernel_release": "7.3.1-psycachy-sp121-r2",
+  "debian_version": "7.3.1-1psycachy2",
+  "architecture": "arm64",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "source_archive_signer_fingerprint": "E8B9AA39F054E30E8290D492C3C4820857F654FE",
+  "overlay_commit": "952f769e1b45f07302d69992d19e5874ee77737f",
+  "input_manifest_sha256": "46528c8cfe61e1fb068fb4d1394de121bb9a1ce080db1287a1cb68492dc79cc2",
+  "config_seed_sha256": "cd5027943acfa23b4fc9798cc71f6f3d88996b54a3d25ec2b873762dc39e01a0",
+  "resolved_config_sha256": "cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957",
+  "dtb_path": "qcom/x1p42100-microsoft-sp12in.dtb",
+  "dtb_sha256": "ec0d4d44dfd495b5c771780fc990fa6ec8c1f617faedb174509b043f87a5da69",
+  "dtb_build_id": "sha256:5ec821abf77f1ff32e2b38787b9e709bddebd918530c5ca25422f109ded5cdc9",
+  "packages": [
+    {
+      "name": "linux-headers-7.3.1-psycachy-sp121-r2",
+      "filename": "linux-headers-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+      "sha256": "8509b45755f53fd9465409e398997b59075cf897bada74dae6aca36121fa8703"
+    },
+    {
+      "name": "linux-image-7.3.1-psycachy-sp121-r2",
+      "filename": "linux-image-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+      "sha256": "424986a27154c49c1fccf8784ede2195ada23035e2624dbca1ce91e992a9344b"
+    }
+  ],
+  "source_tree_sha256": "0e47c291111d7a19761f04e2ee38d49f07e55e46847d9858a5cbd272d0632659",
+  "patch_series_source_tree_sha256": "f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e",
+  "policy_fragment_sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb",
+  "kernel_payload_sha256": "edf51ac4bfc16fe41c5628ebfb42072271b176cdbc37177f850bec5998e1c1c8",
+  "module_signing_certificate_sha256": "e8ebd7f5168710709d312d630d7b66fd31397b64436422ca354e825bd165a341",
+  "module_signing_fingerprint_sha256": "e8ebd7f5168710709d312d630d7b66fd31397b64436422ca354e825bd165a341"
+}

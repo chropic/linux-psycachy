@@ -1,0 +1,29 @@
+{
+  "vm": "generic AArch64 QEMU virt, TCG, networking disabled",
+  "installer_iso_attached": false,
+  "target_disk": "linux.qcow2 (disposable, writable)",
+  "sentinel_disk": "other.qcow2 (read-only)",
+  "firmware_boot_entry": "Ubuntu",
+  "grub_default_kernel": "7.3.0-9-generic",
+  "boot_result": "Reached systemd login prompt on ttyAMA0 after UEFI boot; ACPI powerdown completed cleanly.",
+  "r2_candidate_booted": false,
+  "r2_runtime_dtb_build_id_verified": false,
+  "blockstats_sample_at_02m26s": {
+    "target_read_bytes": 329223680,
+    "target_write_bytes": 20370944,
+    "sentinel_read_bytes": 7540736,
+    "sentinel_write_bytes": 0
+  },
+  "post_shutdown": {
+    "target_qcow_check": "pass",
+    "sentinel_qcow_check": "pass",
+    "sentinel_hash_and_read_check": "pass",
+    "qemu_process_exited": true
+  },
+  "artifacts": [
+    "no-media-serial.log",
+    "no-media-boot-display-inactive.png",
+    "sentinel.sha256"
+  ],
+  "limitation": "This qualifies only the Ubuntu generic fallback boot without installer media; it does not qualify the SP12 r2 kernel or SP12 hardware."
+}

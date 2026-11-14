@@ -7,6 +7,11 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 # shellcheck source=config/source-pin.sh
 . "$root/config/source-pin.sh"
 target_dir="$root/targets/sp121-arm64"
+identity="$root/config/arm64-kernel-identity.json"
+identity_field() { python3 "$root/tools/kernel_identity.py" --identity "$identity" --field "$1"; }
+kernel_version=$(identity_field kernel_version)
+localversion=$(identity_field localversion)
+expected_release=$(identity_field kernel_release)
 output=${1:?output directory is required}
 jobs=${2:?job count is required}
 die() { echo "error: $*" >&2; exit 1; }
@@ -46,14 +51,13 @@ gpgv --keyring "$work/signer-keyring.gpg" --status-fd 1 \
 grep -q "^\\[GNUPG:\\] VALIDSIG $SIGNER " "$work/signature-status.txt" || die 'signature does not match pinned signer'
 tar -xzf "$archive" -C "$work"
 source_dir="$work/$RELEASE"
-[[ -f $source_dir/Makefile && $(make -s -C "$source_dir" kernelversion) == "$KERNEL_VERSION" ]] || die 'source version mismatch'
+[[ -f $source_dir/Makefile && $(make -s -C "$source_dir" kernelversion) == "$kernel_version" ]] || die 'source version mismatch'
 mapfile -t patches < <(python3 - "$target_dir/inputs.json" <<'PY'
 import json, sys
 for entry in json.load(open(sys.argv[1], encoding="utf-8"))["series"]:
     print(entry["path"])
 PY
 )
-[[ ${#patches[@]} == 10 ]] || die 'unexpected SP12 patch count'
 for patch in "${patches[@]}"; do
   git -C "$source_dir" apply --check --no-index "$target_dir/$patch"
   git -C "$source_dir" apply --no-index "$target_dir/$patch"
@@ -62,13 +66,13 @@ python3 "$root/tools/verify-sp121-inputs.py"
 python3 "$root/tools/hash-source-tree.py" "$source_dir" > "$work/source-tree.sha256"
 mkdir "$work/config"
 cp "$target_dir/config.seed" "$work/config/.config"
-"$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
+"$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION "$localversion" --disable LOCALVERSION_AUTO
 cp -- "$target_dir/policy.fragment" "$work/policy.fragment"
 (cd "$source_dir" && KCONFIG_CONFIG="$work/config/.config" \
   scripts/kconfig/merge_config.sh -m "$work/config/.config" "$work/policy.fragment")
 make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" olddefconfig
 release=$(make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
-[[ $release == "$KERNEL_VERSION-psycachy-sp121" ]] || die "unexpected ARM64 kernel release: $release"
+[[ $release == "$expected_release" ]] || die "unexpected ARM64 kernel release: $release"
 python3 "$source_dir/scripts/diffconfig" "$target_dir/config.seed" "$work/config/.config" > "$work/config-diff.txt"
 cp "$work/config/.config" "$work/arm64-candidate.config"
 python3 "$root/tools/audit-release-policy.py" --arch arm64 "$work/arm64-candidate.config"

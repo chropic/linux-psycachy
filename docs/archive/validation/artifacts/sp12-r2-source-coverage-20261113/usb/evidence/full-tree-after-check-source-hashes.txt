@@ -1,0 +1,6 @@
+bd8a8aabf199952717926b8ee79562e283ed9cd6a1ee485d22cd52167ad7ffcf  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/usb/dwc3/core.c
+525c1d5d8d0e501f4a92ddd6232961542b5c04521f29a50b8acf9ee86c41373c  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/usb/dwc3/core.h
+facf03c8edbe5ca5af5f02df4c780aab2288eb5575b896cf803c32a9d9db9c4d  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/usb/dwc3/dwc3-qcom.c
+daf576b4c5748e4cc6072db983e4c87331a2846764602de3aa96b7aac0cd90f8  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/usb/dwc3/glue.h
+ce8b598e9974097dfa3318afc51188d40c0ed6c5d7ace1ea1fa1711765edd01c  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/usb/dwc3/host.c
+e5d6dcfda87d51b99cb92b155364c5969a0391fd49f0e61ad4a65d8c3929747a  /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/arch/arm64/boot/dts/qcom/hamoa.dtsi

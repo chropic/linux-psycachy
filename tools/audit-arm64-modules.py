@@ -14,6 +14,36 @@ import sys
 import tempfile
 
 
+# Required output modules derived from the authenticated CachyOS 7.3.1
+# Kconfig/Makefiles for SP12 CAMSS, both configured camera sensors, CCI/V4L2,
+# videobuf2, the camera CSI-2 D-PHY provider, and the separate Qualcomm
+# QMP/eUSB2 PHY drivers.
+REQUIRED_MODULE_PATHS = frozenset({
+    "drivers/clk/qcom/camcc-x1p42100.ko",
+    "drivers/clk/qcom/gcc-x1e80100.ko",
+    "drivers/i2c/busses/i2c-qcom-cci.ko",
+    "drivers/gpu/drm/bridge/aux-bridge.ko",
+    "drivers/media/common/videobuf2/videobuf2-common.ko",
+    "drivers/media/common/videobuf2/videobuf2-dma-sg.ko",
+    "drivers/media/common/videobuf2/videobuf2-memops.ko",
+    "drivers/media/common/videobuf2/videobuf2-v4l2.ko",
+    "drivers/media/i2c/ov02c10.ko",
+    "drivers/media/i2c/ov13858.ko",
+    "drivers/media/mc/mc.ko",
+    "drivers/media/platform/qcom/camss/qcom-camss.ko",
+    "drivers/media/v4l2-core/v4l2-async.ko",
+    "drivers/media/v4l2-core/v4l2-cci.ko",
+    "drivers/media/v4l2-core/v4l2-dv-timings.ko",
+    "drivers/media/v4l2-core/v4l2-fwnode.ko",
+    "drivers/media/v4l2-core/videodev.ko",
+    "drivers/phy/phy-snps-eusb2.ko",
+    "drivers/phy/qualcomm/phy-qcom-mipi-csi2.ko",
+    "drivers/phy/qualcomm/phy-qcom-eusb2-repeater.ko",
+    "drivers/phy/qualcomm/phy-qcom-qmp-combo.ko",
+    "drivers/phy/qualcomm/phy-qcom-qmp-usbc.ko",
+})
+
+
 def sha256(path):
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -107,18 +137,27 @@ def audit(root, release, workers):
     entries = order.read_text().splitlines()
     if not entries or len(entries) != len(set(entries)) or len(entries) > 50000:
         raise ValueError("empty, duplicate or unexpectedly large modules.order")
+    listed_modules = {
+        entry[:-2] + ".ko" if entry.endswith(".o") else entry
+        for entry in entries
+    }
     symbol_lines = [line.split() for line in symbols.read_text().splitlines()]
     if any(len(line) < 4 for line in symbol_lines):
         raise ValueError("malformed Module.symvers")
     module_exports = sum(line[2] != "vmlinux" for line in symbol_lines)
     if not module_exports:
         raise ValueError("Module.symvers has no module exports; a vmlinux-only table is insufficient")
+    missing_modules = sorted(REQUIRED_MODULE_PATHS - listed_modules)
+    if missing_modules:
+        raise ValueError("required SP12 camera/media/PHY modules missing from modules.order: " +
+                         ", ".join(missing_modules))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         modules = list(pool.map(lambda item: inspect_module(root, item, release), entries))
     if len({item["path"] for item in modules}) != len(modules):
         raise ValueError("modules.order resolves to duplicate module paths")
     return {"schema": 1, "status": "passed-build-tree-inspection", "architecture": "arm64",
             "kernel_release": release, "module_count": len(modules),
+            "required_module_paths": sorted(REQUIRED_MODULE_PATHS),
             "module_export_count": module_exports,
             "modules_order_sha256": sha256(order), "module_symvers_sha256": sha256(symbols),
             "config_sha256": sha256(config), "image_sha256": sha256(image),

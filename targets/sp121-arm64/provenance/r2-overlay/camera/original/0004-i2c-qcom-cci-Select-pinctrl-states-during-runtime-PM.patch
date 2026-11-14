@@ -1,0 +1,59 @@
+The CCI runtime PM callbacks only gate the controller clocks, leaving the
+bus pins in their default state while the controller is suspended. On the
+Lenovo Yoga Slim 7x, this can back-power the camera sensor through SDA and
+SCL after its supplies have been disabled, contributing to brownouts on
+subsequent power cycles.
+
+Select the sleep pinctrl state before disabling the clocks so that the
+configured pull-downs can take effect. Restore the default state before
+enabling the clocks on resume, and return to the sleep state if enabling
+the clocks fails.
+
+Tested-on: Lenovo Yoga Slim 7x (Snapdragon X Elite)
+Signed-off-by: Saikiran <bjsaikiran@gmail.com>
+---
+ drivers/i2c/busses/i2c-qcom-cci.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/busses/i2c-qcom-cci.c b/drivers/i2c/busses/i2c-qcom-cci.c
+index 873e901a23d7..fba5f664eeaa 100644
+--- a/drivers/i2c/busses/i2c-qcom-cci.c
++++ b/drivers/i2c/busses/i2c-qcom-cci.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/pm_runtime.h>
+ 
+ #define CCI_HW_VERSION				0x0
+@@ -474,6 +475,11 @@ static void cci_disable_clocks(struct cci *cci)
+ static int __maybe_unused cci_suspend_runtime(struct device *dev)
+ {
+ 	struct cci *cci = dev_get_drvdata(dev);
++	int ret;
++
++	ret = pinctrl_pm_select_sleep_state(dev);
++	if (ret)
++		return ret;
+ 
+ 	cci_disable_clocks(cci);
+ 	return 0;
+@@ -484,10 +490,16 @@ static int __maybe_unused cci_resume_runtime(struct device *dev)
+ 	struct cci *cci = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	ret = cci_enable_clocks(cci);
++	ret = pinctrl_pm_select_default_state(dev);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = cci_enable_clocks(cci);
++	if (ret) {
++		pinctrl_pm_select_sleep_state(dev);
++		return ret;
++	}
++
+ 	return cci_init(cci);
+ }
+ 

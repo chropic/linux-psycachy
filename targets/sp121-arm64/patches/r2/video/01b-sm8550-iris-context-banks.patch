@@ -1,0 +1,91 @@
+The VPU issues DMA through several SMMU streams, and the hardware does
+not give every stream the same addressable range. The non-pixel stream
+cannot address the low 600MB of IOVA space, while the pixel stream can
+address the full range:
+    +-----------------------------------------------------------+
+    | non-pixel stream addressable range (600 MB - 3.5 GB)      |
+    | 0x25800000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+    | pixel stream addressable range (0 - 3.5 GB)               |
+    | 0x00000000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+A single "iommus" property on the video-codec node puts every stream in
+one IOMMU domain sharing one IOVA allocator, so nothing restricts a
+non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
+that boundary the hardware faults, which shows up as unhandled SMMU page
+faults and spontaneous reboots:
+https://gitlab.freedesktop.org/drm/msm/-/work_items/100
+
+Given that the address range restriction is for specific VPU stream, it
+should be ideally be moved to that stream. To achieve the same, a subset
+of streams is now represented as subnodes, so that each can be
+associated with its respective addressable range. The design was
+discussed and agreed by mainatiners here
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
+
+In the past, this limitation was addressed with an iommu-map approach,
+with the iris driver dynamically creating the devices. That approach was
+later concluded to be a hack to avoid having subnodes, and was NAKed by
+the iommu maintainers. It was discussed in detail here:
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+
+Update example to the subnode form. Doing so, it picks up the supporting
+properties needed on the video-codec node, address-cells, size-cells and
+dma-ranges to declare 1:1 DMA translation into the parent.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ .../devicetree/bindings/media/qcom,sm8550-iris.yaml     | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml b/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+index 0400ca1bff05dcef6b742c3fbf77e38adca9f280..6ee9d23554cffb30c92017ef99de15c2493455ac 100644
+--- a/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
++++ b/Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+@@ -98,10 +98,10 @@ required:
+   - interconnect-names
+   - resets
+   - reset-names
+-  - iommus
+   - dma-coherent
+ 
+ allOf:
++  - $ref: qcom,venus-common.yaml#
+   - if:
+       properties:
+         compatible:
+@@ -177,12 +177,23 @@ examples:
+         resets = <&gcc GCC_VIDEO_AXI0_CLK_ARES>;
+         reset-names = "bus";
+ 
+-        iommus = <&apps_smmu 0x1940 0x0000>,
+-                 <&apps_smmu 0x1947 0x0000>;
+         dma-coherent;
+ 
+         operating-points-v2 = <&iris_opp_table>;
+ 
++        #address-cells = <1>;
++        #size-cells = <1>;
++        dma-ranges = <0x0 0x0 0xe0000000>;
++
++        non-pixel {
++            iommus = <&apps_smmu 0x1940 0x0>;
++            iommu-ranges = <0x25800000 0xba800000>;
++        };
++
++        pixel {
++            iommus = <&apps_smmu 0x1947 0x0>;
++        };
++
+         iris_opp_table: opp-table {
+             compatible = "operating-points-v2";
+ 
+
+-- 
+2.34.1
+
+

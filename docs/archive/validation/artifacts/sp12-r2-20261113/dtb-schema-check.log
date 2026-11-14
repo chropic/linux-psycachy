@@ -1,0 +1,5 @@
+make: Entering directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'
+make[1]: Entering directory '/var/tmp/sp12-config-audit-20261113/config'
+  DTC [C] arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dtb
+make[1]: Leaving directory '/var/tmp/sp12-config-audit-20261113/config'
+make: Leaving directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'

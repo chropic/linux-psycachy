@@ -1,0 +1,33 @@
+Subject: [LOCAL SP12 r2] media: i2c: manage OV13858 AFVDD and correct OV02C10 MCLK
+
+Local source-backed adaptation after preserved overlay patches 01-06. Keep
+original overlay patch files and notices unchanged. Adds the DT-described
+OV13858 AFVDD rail to the existing bulk regulator set, and corrects the SP12
+OV02C10 MCLK request to 19.2 MHz per the preserved reference correction.
+No new author identity or DCO sign-off is asserted.
+
+diff --git a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
+index c20c945..524d8da 100644
+--- a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
++++ b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
+@@ -880,7 +880,7 @@
+ 
+ 		clocks = <&camcc CAM_CC_MCLK4_CLK>;
+ 		assigned-clocks = <&camcc CAM_CC_MCLK4_CLK>;
+-		assigned-clock-rates = <12000000>;
++		assigned-clock-rates = <19200000>;
+ 
+ 		orientation = <0>;
+ 
+diff --git a/drivers/media/i2c/ov13858.c b/drivers/media/i2c/ov13858.c
+index 49d5f3e..cf38e84 100644
+--- a/drivers/media/i2c/ov13858.c
++++ b/drivers/media/i2c/ov13858.c
+@@ -1032,6 +1032,7 @@ static const struct ov13858_mode supported_modes[] = {
+ };
+ 
+ static const char * const ov13858_supply_names[] = {
++	"afvdd",	/* Autofocus power */
+ 	"dovdd",	/* Digital I/O power */
+ 	"avdd",		/* Analog power */
+ 	"dvdd",		/* Digital core power */

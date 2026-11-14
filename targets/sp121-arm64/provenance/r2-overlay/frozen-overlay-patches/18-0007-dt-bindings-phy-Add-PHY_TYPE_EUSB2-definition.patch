@@ -1,0 +1,44 @@
+eUSB2 (Embedded USB2) is a MIPI Alliance standard for chip-to-chip USB2
+signaling. Unlike standard USB2, which uses 3.3V signaling, eUSB2 uses
+low-voltage differential signaling (~0.4V) and requires a repeater to
+interface with external USB2 ports. Because of these differences, eUSB2
+PHY initialization sequences, voltage tuning, and register configuration
+are distinct from USB2.
+
+Additionally, eUSB2 targets handle wakeup interrupts differently
+depending on device speed when operating in host mode. According to the
+eUSB2 specification, remote wakeup signaling in host mode is detected
+via different data-line assertions based on the connected device speed:
+
+- Low-speed devices: the host repeater drives eD+ to logic '1' upon
+  detecting a K-state on the USB lines during remote wakeup (eUSB2
+  spec, Section 5.5.14).
+- Full-speed/high-speed devices: the host repeater drives eD- to
+  logic '1' upon detecting a K-state during remote wakeup (eUSB2 spec,
+   Sections 5.5.15 and 5.5.18).
+
+Since the eUSB2 PHY's DP and DM lines need to be configured differently
+from USB2 PHYs, controllers should be able to query the PHY type and
+configure wakeup interrupts accordingly.
+
+Add PHY_TYPE_EUSB2 to distinguish eUSB2 PHYs from standard USB2 PHYs.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Signed-off-by: Krishna Kurapati <krishna.kurapati@oss.qualcomm.com>
+---
+ include/dt-bindings/phy/phy.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/phy/phy.h b/include/dt-bindings/phy/phy.h
+index 979b5dfd8353..555a022c8c0b 100644
+--- a/include/dt-bindings/phy/phy.h
++++ b/include/dt-bindings/phy/phy.h
+@@ -24,6 +24,7 @@
+ #define PHY_TYPE_CPHY		11
+ #define PHY_TYPE_USXGMII	12
+ #define PHY_TYPE_XAUI		13
++#define PHY_TYPE_EUSB2		14
+ 
+ #define PHY_POL_NORMAL		0
+ #define PHY_POL_INVERT		1

@@ -1,0 +1,12 @@
+diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov02e10.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov02e10.yaml
+--- a/Documentation/devicetree/bindings/media/i2c/ovti,ov02e10.yaml
++++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov02e10.yaml
+@@ -58,7 +58,8 @@
+   clocks:
+     maxItems: 1
+ 
+   assigned-clocks: true
++  assigned-clock-parents: true
+   assigned-clock-rates: true
+   pinctrl-names: true
+   pinctrl-0: true

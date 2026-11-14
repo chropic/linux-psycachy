@@ -8,7 +8,21 @@ usage() {
 }
 
 target=/target
-kver=7.3.1-psycachy-sp121
+installer_dir=$(CDPATH='' cd -- "$(dirname "$0")" && pwd)
+config_dir=$installer_dir/../config
+media_config=1
+if [ ! -f "$config_dir/arm64-iso-kernel.json" ]; then
+    config_dir=$installer_dir/../../../config
+    media_config=0
+fi
+identity_tool=$installer_dir/../iso/kernel_identity.py
+[ -f "$identity_tool" ] || identity_tool=$installer_dir/../../../tools/kernel_identity.py
+if [ "$media_config" -eq 1 ] && [ -f "$config_dir/arm64-kernel-identity.json" ]; then
+    kver=$(python3 "$identity_tool" --identity "$config_dir/arm64-kernel-identity.json" \
+        --artifact-pin "$config_dir/arm64-iso-kernel.json" --field kernel_release)
+else
+    kver=$(python3 "$identity_tool" --artifact-pin "$config_dir/arm64-iso-kernel.json" --field kernel_release)
+fi
 dtb=
 apply=0
 
@@ -62,7 +76,6 @@ case "$real_dtb_path" in
     *) printf -- '--dtb resolves outside the target /boot directory\n' >&2; exit 2 ;;
 esac
 
-installer_dir=$(CDPATH='' cd -- "$(dirname "$0")" && pwd)
 system_dir=$installer_dir/../system
 for template in \
     "$system_dir/usr-local-sbin/sp12-sync-boot" \

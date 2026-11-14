@@ -1,0 +1,19 @@
+{
+  "attempt": "5",
+  "iso": "output/sp12-r2-installer-20261113-final51/psycachy-ubuntu-26.10-desktop-arm64.iso",
+  "iso_sha256": "2d8b4588a7397aa9a297866fc24cafde45fd867eecc05fa377c1c71b5d42abb1",
+  "kernel_pin": "config/arm64-iso-kernel-r2.json",
+  "kernel_pin_sha256": "6fb4104b0bc4e8ed3c4211d4cf62331a32436a9b422326542a17533fcbee7c90",
+  "firmware_code": "/usr/share/AAVMF/AAVMF_CODE.no-secboot.fd",
+  "firmware_code_sha256": "e58a9508f0d1d0891526680d44625f44550dcb12be8b9e8331dd2c2aae7d61e5",
+  "firmware_vars_template": "/usr/share/AAVMF/AAVMF_VARS.fd",
+  "firmware_vars_template_sha256": "b3b855c5a80310168051164986855692d1bdb06e67619856177965cd87c6774f",
+  "vm_directory": "/var/tmp/sp12-r2-installer-vm-20261113-final51-attempt5",
+  "network": "disabled",
+  "acceleration": "tcg",
+  "memory_mib": 8192,
+  "cpus": 4,
+  "target_disk": "linux.qcow2, qcow2, 64 GiB virtual, writable, serial psycachy-arm64-linux",
+  "sentinel_disk": "other.qcow2, qcow2, 64 GiB virtual, read-only, serial psycachy-arm64-other",
+  "installer_media": "read-only ISO CD-ROM"
+}

@@ -105,7 +105,9 @@ case $action in
       -device virtio-blk-device,drive=linuxdisk,serial=psycachy-arm64-linux \
       -drive "if=none,id=otherdisk,format=qcow2,readonly=on,file=$dir/other.qcow2" \
       -device virtio-blk-device,drive=otherdisk,serial=psycachy-arm64-other \
-      "${media[@]}" -boot "$boot" -nic none -device ramfb -device virtio-gpu-pci -display none \
+      "${media[@]}" -boot "$boot" -nic none \
+      -device virtio-keyboard-pci -device virtio-tablet-pci \
+      -device virtio-gpu-pci -display none \
       -vnc "127.0.0.1:$display" \
       -serial "file:$dir/serial.log" -monitor "tcp:127.0.0.1:$monitor,server=on,wait=off"
     ;;

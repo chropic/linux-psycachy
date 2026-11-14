@@ -1,0 +1,1 @@
+ordered candidate patch generated from final37 touched-file baseline vs sequential replay output.

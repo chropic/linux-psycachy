@@ -1,0 +1,12 @@
+The Microsoft Surface Pro 12in 1ed also ships with a non-functional rfkill switch
+
+--- a/drivers/net/wireless/ath/ath12k/core.c	2026-10-07 21:41:48.079197847 +0200
++++ b/drivers/net/wireless/ath/ath12k/core.c	2026-10-07 21:42:38.795362793 +0200
+@@ -85,6 +85,7 @@
+ 	{ ATH12K_HW_WCN7850_HW20, "microsoft,denali" },
+ 	{ ATH12K_HW_WCN7850_HW20, "microsoft,romulus13" },
+ 	{ ATH12K_HW_WCN7850_HW20, "microsoft,romulus15" },
++	{ ATH12K_HW_WCN7850_HW20, "microsoft,surface-pro-12in" },
+ 	{ /* Sentinel */ }
+ };
+ 

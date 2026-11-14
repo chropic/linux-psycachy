@@ -123,6 +123,18 @@ rescue-inspection gate remains incomplete. This does not establish a kernel or
 filesystem crash. The earlier installed-system preflight did verify the
 recovery manifest, but that is not a substitute for the live rescue route.
 
+### Operator-reported read-only inspection follow-up
+
+The 2026-11-12 completion plan reports that the subsequent live read-only
+inspection succeeded and verified the expected root/ESP UUIDs, read-only
+mounts, recovery checksums, unchanged active-payload hashes, valid empty
+marker, and successful command completion. Record the inspection as
+**passed (operator-reported)**. The original terminal output is not included in
+the plan attachment and was not found in the available local attachments or
+`output/`; therefore no raw-log hash can be recorded yet. Retrieve and hash
+that output when it becomes accessible. This closes the inspection report
+only; restore-and-boot qualification remains open.
+
 A read-only capture from the installed `7.3.1-psycachy-sp121` session at
 2026-11-12 14:57 MST confirms that PipeWire exposes its speaker sink at 18%
 and GNOME Settings has an active stream from the speaker sink's monitor ports.

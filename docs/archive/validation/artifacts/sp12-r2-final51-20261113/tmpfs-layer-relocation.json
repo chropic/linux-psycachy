@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-13",
+  "tmpfs": "/tmp",
+  "source_paths": [
+    "/tmp/sp12-minimal.squashfs",
+    "/tmp/sp12-minimal.standard.squashfs",
+    "/tmp/sp12-live-minimal.standard.live.squashfs",
+    "/tmp/sp12-install-sources.yaml"
+  ],
+  "retained_copy_directory": "/var/tmp/sp12-live-builder-layer-retention-20261010",
+  "retained_copy_manifest": "/var/tmp/sp12-live-builder-layer-retention-20261010/SHA256SUMS",
+  "files": [
+    {
+      "name": "sp12-minimal.squashfs",
+      "size_bytes": 3546411008,
+      "allocated_blocks_512_bytes": 6926584,
+      "sha256": "dbd668a75a974192d29c9bc82671084533e0b266d8b67d30b572d4424f36b7dd"
+    },
+    {
+      "name": "sp12-minimal.standard.squashfs",
+      "size_bytes": 520634368,
+      "allocated_blocks_512_bytes": 1016864,
+      "sha256": "e571fa059d0f28e38602eaaa2f1b50dcfb2f2284188a8680868285fef4952501"
+    },
+    {
+      "name": "sp12-live-minimal.standard.live.squashfs",
+      "size_bytes": 141242368,
+      "allocated_blocks_512_bytes": 275864,
+      "sha256": "8565cec4f81a9fc4d116601266f160411b9aa339b0ebc93f7c0e201334b8e6fc"
+    },
+    {
+      "name": "sp12-install-sources.yaml",
+      "size_bytes": 742,
+      "allocated_blocks_512_bytes": 8,
+      "sha256": "d2b22e2df69d9c1a62c503d8d90ccf22796c1f8d4bb30a33bd3709b3ee93ba69"
+    }
+  ],
+  "preflight": {
+    "source_files_single_link": true,
+    "open_handles_at_retirement": "none",
+    "project_reference_search": "no references found in docs, iso, targets, tools, tests, or output",
+    "active_package_build_preserved": "/tmp/psycachy-sp121-build.kMZzg65B",
+    "copy_sha256_verified": true,
+    "copy_cmp_verified": true,
+    "destination_previously_absent": true
+  },
+  "measured_tmpfs_available_bytes_before_source_removal": 3511955456,
+  "measured_tmpfs_available_bytes_after_source_removal": 7686184960,
+  "measured_tmpfs_free_space_delta_bytes": 4174229504,
+  "root_available_bytes_after_copy": 126830759936,
+  "status": "relocated-verified-and-source-copies-retired"
+}

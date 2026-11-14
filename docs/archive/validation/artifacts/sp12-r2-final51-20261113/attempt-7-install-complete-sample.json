@@ -1,0 +1,41 @@
+{
+  "observed_utc": "2026-11-14T00:04:52.156086+00:00",
+  "qemu_pid": 705407,
+  "status": {
+    "status": "running",
+    "running": true
+  },
+  "screen": "Ubuntu 26.10 is installed and ready to use",
+  "target_qcow_bytes": 10734010368,
+  "sentinel_sha256": "b7f1ada63281ed7e5bc7127dffbfc4c91582fab3080133b01a966c7624d97bb6",
+  "blocks": [
+    {
+      "device": "linuxdisk",
+      "read_bytes": 1850446336,
+      "read_operations": 42856,
+      "write_bytes": 12149606912,
+      "write_operations": 49149,
+      "failed_write_operations": 0,
+      "flush_operations": 24437
+    },
+    {
+      "device": "otherdisk",
+      "read_bytes": 15042560,
+      "read_operations": 410,
+      "write_bytes": 0,
+      "write_operations": 0,
+      "failed_write_operations": 0,
+      "flush_operations": 0
+    },
+    {
+      "device": "installer",
+      "read_bytes": 6419933184,
+      "read_operations": 8752,
+      "write_bytes": 0,
+      "write_operations": 0,
+      "failed_write_operations": 0,
+      "flush_operations": 0
+    }
+  ],
+  "screenshot": "attempt-7-install-complete.png"
+}

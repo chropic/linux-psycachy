@@ -1,0 +1,319 @@
+{
+  "schema": 1,
+  "status": "r2-source-coverage-replay-passed-config-build-pending",
+  "source_repository": "https://github.com/chropic/sp121-ubuntu-install",
+  "source_commit": "f496b50a8c471bcb11e889f06c440b2734963348",
+  "config": {
+    "path": "config.seed",
+    "source_path": "kernel/config/config-7.3-sp12-platform (r2; camera/CSI-2 PHY closure enabled)",
+    "sha256": "cd5027943acfa23b4fc9798cc71f6f3d88996b54a3d25ec2b873762dc39e01a0"
+  },
+  "series": [
+    {
+      "id": "volume-gpio-correction",
+      "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+      "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+      "source_path": "kernel/patches/vendor/mias/surface/0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch"
+    },
+    {
+      "id": "surface-rtc-driver",
+      "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+      "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+      "source_path": "kernel/ports/v7.3/patches/0002-rtc-surface-port-reference-driver.patch"
+    },
+    {
+      "id": "sp12-rtc-registration",
+      "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+      "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+      "source_path": "kernel/ports/v7.3/patches/0003-surface-register-sp12-rtc.patch"
+    },
+    {
+      "id": "sp12-suspend-quirk",
+      "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+      "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+      "source_path": "kernel/ports/v7.3/patches/0004-surface-scope-sp12-suspend-workaround.patch"
+    },
+    {
+      "id": "surface-usb-eusb2-binding",
+      "path": "patches/r2/usb-phy/01-dt-bindings-phy-eusb2.patch",
+      "sha256": "27614db572139fe5a0fbfdfcef6a246fa13eda57d64324f3f4ce21cbfdc2315c",
+      "source_path": "sys-kernel/vanilla-kernel/files/phy/0007-dt-bindings-phy-Add-PHY_TYPE_EUSB2-definition.patch (overlay blob 0107f7d1f1478c8433d6a88d08621a36bc1e25b3)"
+    },
+    {
+      "id": "surface-phy-attribute-type",
+      "path": "patches/r2/usb-phy/02-phy-attributes-type.patch",
+      "sha256": "4a8217907e9913a71194645e7c9082e2353127b93f10cc3ea7b198c5455ed2ff",
+      "source_path": "sys-kernel/vanilla-kernel/files/phy/0008-phy-Add-phy-attribute-type-and-associated-helpers.patch (overlay blob 71d7bbeaec2038f0e868b3cc9d2217a22051cbca)"
+    },
+    {
+      "id": "qcom-uniphy-pcie-type-enum-namespace",
+      "path": "patches/r2/usb-phy/02a-phy-qcom-uniphy-enum-collision-fix.patch",
+      "sha256": "8cc4a29e2e2840f1bbed7060793f26e3ee4bc63b66423e1d2f292bdbefea3fcf",
+      "source_path": "Local CachyOS 7.3.1 compile-compatibility rebase; namespaces preexisting PHY_TYPE_PCIE enum identifiers exposed by include/dt-bindings/phy/phy.h; no upstream authorship claimed."
+    },
+    {
+      "id": "surface-snps-eusb2-type",
+      "path": "patches/r2/usb-phy/03-phy-snps-eusb2-type.patch",
+      "sha256": "df804fea8c2c4e21052b74a06cc54c4e367b11dff21d3357c3a9bcc2d2e117bb",
+      "source_path": "sys-kernel/vanilla-kernel/files/phy/0009-phy-snps-eusb2-Set-phy-type-to-EUSB2.patch (overlay blob 550e5f35f05524d59f294f9fa85f749963036138)"
+    },
+    {
+      "id": "qmp-combo-dp-only-runtime-pm",
+      "path": "patches/r2/usb-phy/04-qmp-combo-dp-only-pm-guard.patch",
+      "sha256": "5a3f0ae80bb66214abf229b755cbc4d7dab083387a37125cbcd3442f63230551",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/phy/0005-phy-qcom-qmp-combo-hold-a-runtime-PM-reference-in-the-typec-callbacks.patch (overlay blob b6e6842b75ae04e1d89806ba3a9d6e80c05a9090); sys-kernel/vanilla-kernel/files/phy/0006-phy-qcom-qmp-combo-Leave-the-USB-PCS-alone-in-DP-only-mode.patch (overlay blob 1f1b3a00104671f4d9fe76677eb707317b0256a9)"
+    },
+    {
+      "id": "sp12-platform-dts-prerequisites",
+      "path": "patches/r2/platform/05-sp12-platform-dts-prerequisites.patch",
+      "sha256": "0b103645a046931a72bde4c492f348df52a2327ab71862fcfb6578afa6a83912",
+      "source_path": "combined exact-source rebase: sys-kernel/vanilla-kernel/files/surface/0006-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-usb-regulator-always-on.patch (overlay blob 5fe5159fe65ed70d27705c119a4a1027e1a4350d); sys-kernel/vanilla-kernel/files/surface/0007-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-remove-pmc8380_6_die_temp.patch (overlay blob 63bc73c6e28c6cc4a5888c4db984104023afe748); sys-kernel/vanilla-kernel/files/surface/0009-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-regulators-display.patch (overlay blob 13c554c371c601f3862c540ee23367d2ce4cfb9d); sys-kernel/vanilla-kernel/files/surface/0013-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-remove-wakesource.patch (overlay blob 54cbd42da324686ad21b1c719a2bc99c8bcac7c3); sys-kernel/vanilla-kernel/files/surface/0014-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-iris-node.patch (overlay blob c816a395d5906af18c4f45945afe653b729d0f64); sys-kernel/vanilla-kernel/files/surface/0015-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-remove-reserved-memory.patch (overlay blob 64740ff579e3b01cf5477b2ac046475f4ac9961c); sys-kernel/vanilla-kernel/files/surface/0016-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-lower-dmic-clock-to-2.4mhz.patch (overlay blob 30e58df4022c95734a9ca75066521a70ad3f217f)"
+    },
+    {
+      "id": "displayport-audio",
+      "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+      "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+      "source_path": "kernel/patches/vendor/mias/surface/0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch"
+    },
+    {
+      "id": "charge-limit-nvmem",
+      "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+      "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+      "source_path": "kernel/patches/vendor/mias/surface/0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch"
+    },
+    {
+      "id": "camera-csi2-dphy-provider",
+      "path": "patches/r2/camera/01-csi2-dphy-provider.patch",
+      "sha256": "b859073c5a94b71afc6af3011db9e90209a3359d65302e7aeffab37646c3ac4b",
+      "source_path": "sys-kernel/vanilla-kernel/files/camera/0003-phy-qcom-mipi-csi2-Add-a-CSI2-MIPI-DPHY-driver.patch (overlay blob 86d6270193631acee9ba41e2c1035f35f5ac0767)"
+    },
+    {
+      "id": "camera-camss-phy-api",
+      "path": "patches/r2/camera/02-camss-phy-api-and-subdevice-population.patch",
+      "sha256": "75f41b52769b42c370b1f4423b6bffbccce94150b51b1e4ffcc6bbc7da4de5b7",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/camera/0005-media-qcom-camss-Add-legacy_phy-flag-to-Soc-definition-structures.patch (overlay blob 63b594a085b31f031ee308ff24bcf8ead114c046); sys-kernel/vanilla-kernel/files/camera/0007-media-qcom-camss-Add-support-for-PHY-API-devices.patch (overlay blob c9ff27e1a5343cd9615b823985d9c00043e109dd); sys-kernel/vanilla-kernel/files/camera/0004-media-qcom-camss-Add-support-to-populate-sub-devices.patch (overlay blob 77ba18a71884c1e1e6604c5d1fbe5948422b97e1)"
+    },
+    {
+      "id": "camera-x1p-camss-driver",
+      "path": "patches/r2/camera/03-x1p-camss-driver.patch",
+      "sha256": "ceebdd4af7facb71c3788e046fb071ec6ce603936b8e05f0ee1847aa69fe94dc",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/camera/0001-media-qcom-camss-vfe-Eliminate-ever-expanding-src_pad_code-switch-logic.patch (overlay blob 9722e926c4f775b39f03c8f121cbc7d15ce92e84); sys-kernel/vanilla-kernel/files/camera/0002-media-qcom-camss-Add-support-for-x1p42100-CAMSS.patch (overlay blob 94713bcd95f7c4406dc5b2f3975d9870fbee686a); sys-kernel/vanilla-kernel/files/camera/0003-media-qcom-camss-Drop-legacy-PHY-descriptions-from-x.patch (overlay blob e9a1d9ea3a1c643e0d01117eb4087b5f2e44a8ab)"
+    },
+    {
+      "id": "camera-cci-hamoa-purwa-phy-wiring",
+      "path": "patches/r2/camera/04-cci-hamoa-purwa-camss-phy-wiring.patch",
+      "sha256": "eb2cb81a0c73ad0cf893688db41ce98f7a393da8fea184cfaab08c8bc3e73f8d",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/camera/0004-i2c-qcom-cci-Select-pinctrl-states-during-runtime-PM.patch (overlay blob cb71b001b81a9e9ab93f0d1024b11a8b46824e0e); sys-kernel/vanilla-kernel/files/camera/0005-arm64-dts-qcom-hamoa-Add-CCI-definitions.patch (overlay blob 791e19041acabf14df04d4805d5854e6f1a9525e); sys-kernel/vanilla-kernel/files/camera/0006-arm64-dts-qcom-hamoa-Add-CAMSS-block-defintion.patch (overlay blob 81086924e8d6fa8a0b55484633d410935432b2e5); sys-kernel/vanilla-kernel/files/camera/0007-arm64-dts-qcom-purwa-Add-CAMSS-block-defintion.patch (overlay blob 3c7a7f2b47b74316d13c253526a1e0728efc49d5)"
+    },
+    {
+      "id": "camss-unused-local-variable-cleanup",
+      "path": "patches/r2/camera/04a-camss-unused-locals-cleanup.patch",
+      "sha256": "2a883fc612bb6eae5f2855923a3060531e06404a2c672619b055e51814d75e4e",
+      "source_path": "Local CachyOS 7.3.1 build-warning cleanup; removes unused int i and remote declarations in CAMSS; no upstream authorship claimed."
+    },
+    {
+      "id": "camera-ov13858-ov02c10-drivers",
+      "path": "patches/r2/camera/05-ov13858-ov02c10-sensor-drivers.patch",
+      "sha256": "42fe77078300db5d854b3bee9172e7eeaf5f87ecbe50be192cb45c42477de7f3",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/camera/0008-media-i2c-ov13858-Add-regulator-clock-and-reset-GPIO-handling.patch (overlay blob 48d0d066b9309303c2a11b7238376f4ed63f4670); sys-kernel/vanilla-kernel/files/camera/0009-media-i2c-ov13858-cap-analogue-gain-at-15.5x.patch (overlay blob cdd62b3424e46786f2bb44cb018baab6d2f30055); sys-kernel/vanilla-kernel/files/camera/0010-media-i2c-ov13858-Add-device-tree-support.patch (overlay blob a9f0a86383efe92aa131d84335cbd0215183d33d); sys-kernel/vanilla-kernel/files/camera/0011-media-i2c-ov02c10-improve-default-exposure-setting.patch (overlay blob 875d53bdec2cfd98c1fe0eb3e205e43accc7e049); sys-kernel/vanilla-kernel/files/camera/0012-media-i2c-ov02c10-add-get_selection.patch (overlay blob c41f62f43a5792737690996aa58f9f2b9aaabe7d); sys-kernel/vanilla-kernel/files/camera/0013-media-i2c-ov02c10-Fix-sensor-power-sequencing.patch (overlay blob d055390efa0a6769eb17962a21b3dea5fc905bad)"
+    },
+    {
+      "id": "ov02c10-selection-callback-api-rebase",
+      "path": "patches/r2/camera/05a-ov02c10-get-selection-api.patch",
+      "sha256": "46c822a422eddb40398cc4b0fe18b03ad82e2ee2fd851dae1aaadbc47b3d5556",
+      "source_path": "Local CachyOS 7.3.1 V4L2 callback API rebase; drops unused v4l2_subdev_client_info parameter from ov02c10_get_selection; no upstream authorship claimed."
+    },
+    {
+      "id": "camera-sp12-sensor-csi-endpoints",
+      "path": "patches/r2/camera/06-sp12-sensor-and-csi-endpoints.patch",
+      "sha256": "fc4a78a6f10ac217c4851b7b919f799b805c1bd0bbe1238386478a3a82d1793a",
+      "source_path": "sys-kernel/vanilla-kernel/files/surface/0012-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-camera-support.patch (overlay blob 4a24ab42f159e017c57827e626111b6f10efd1bd); rebased after platform DTS prerequisite which adds regulator-always-on to the final regulators-7 LDO context"
+    },
+    {
+      "id": "camera-sp12-afvdd-clock-fix",
+      "path": "patches/r2/camera/07-sp12-afvdd-clock-correction.patch",
+      "sha256": "501a79b96b2e19bd196a93f8da21945892a839edfdf2ddc7866d5048b3f1bda7",
+      "source_path": "local adaptation; source evidence: sp121-reference/kernel/ports/v7.3/patches/0010-ov13858-AFVDD and 0011-ov02c10-19.2MHz; no overlay authorship claim"
+    },
+    {
+      "id": "camera-bindings-kconfig",
+      "path": "patches/r2/camera/08-local-camera-bindings-kconfig.patch",
+      "sha256": "722d97fe09b98f1a65de9a33441aaad0fcdec19f24d4e55af13e7cc900587f18",
+      "source_path": "local adaptation; X1P CAMSS, CSI-2 PHY, OV13858 and OV02E10/OV02C10 schemas plus Kconfig closure"
+    },
+    {
+      "id": "camera-assigned-clock-parents-binding",
+      "path": "patches/r2/camera/09-ov02e10-assigned-clock-parents-schema.patch",
+      "sha256": "165137e70208a44249b411c034c9e1269d71e4e2c9877dfb25e12a108060ea58",
+      "source_path": "local binding correction: the shared OV02E10/OV02C10 schema must permit assigned-clock-parents used by its existing valid examples"
+    },
+    {
+      "id": "camera-csi2-provider-output-endpoint-schema",
+      "path": "patches/r2/camera/10-csi2-provider-output-endpoint-schema.patch",
+      "sha256": "f152788e306d8cf21df0cb2e352ab502ed3b0b3569b00f627790091f203c7855",
+      "source_path": "local schema correction: Hamoa CSI-2 D-PHY output endpoints link to CAMSS without a data-lanes property; lane mappings remain checked on sensor inputs"
+    },
+    {
+      "id": "soundwire-irq-clock-order",
+      "path": "patches/r2/audio/01-soundwire-irq-clock-order.patch",
+      "sha256": "b9096e5b7cb9883d1f76fd271dd24729117b42d1020c65977c880dee9e881347",
+      "source_path": "sys-kernel/vanilla-kernel/files/audio/0003-soundwire-qcom-wait-for-the-interrupt-thread-before-gating-the-clock.patch (overlay blob f9f4ba948f90e1e12366b2d7987173700f2fac71)"
+    },
+    {
+      "id": "soundwire-suspend-error-unwind",
+      "path": "patches/r2/audio/02-soundwire-suspend-error-unwind.patch",
+      "sha256": "066e43af8fca58482755ce255ca621a524ce13b12024098d17775b3be05d14c0",
+      "source_path": "local adaptation; restore controller IRQ state on both runtime-suspend error exits"
+    },
+    {
+      "id": "pci-force-enable-link-state",
+      "path": "patches/r2/pci/01-force-enable-link-state.patch",
+      "sha256": "5630cfce4228d61c1d51721a901ab3de92509750876cf6d5ff171d29ac87f996",
+      "source_path": "sys-kernel/vanilla-kernel/files/pci/0002-PCI-ASPM-Add-pci_force_enable_link_state-API.patch (overlay blob 87810d0cec31496e435447f2e455e589ca74a087)"
+    },
+    {
+      "id": "pci-aspm-enabled-state-mask",
+      "path": "patches/r2/pci/02-aspm-enabled-state-mask.patch",
+      "sha256": "dc14df10c68234c58c989bef6b0a6064d2ca56ce743da794bd219d5950e90f40",
+      "source_path": "sys-kernel/vanilla-kernel/files/pci/0004-PCI-ASPM-Return-enabled-ASPM-states-from-pcie_aspm_e.patch (overlay blob 9773ad38da65212fff9b41d96741e55347362b0f)"
+    },
+    {
+      "id": "wcn7850-disable-ltr",
+      "path": "patches/r2/pci/03-wcn7850-disable-ltr.patch",
+      "sha256": "85e9fee5ca4e2f2e34e5f78f9340fad45c77b4898cbd7f0dcd9f29d831eddc36",
+      "source_path": "sys-kernel/vanilla-kernel/files/pci/0005-PCI-Disable-LTR-on-Qualcomm-WCN7850-to-allow-ASPM-L12.patch (overlay blob 59630d5d2f2d9831e4cbcce3e8d388c6ad0e07d1)"
+    },
+    {
+      "id": "sp12-pcie4-t-power-on",
+      "path": "patches/r2/pci/04-sp12-pcie4-t-power-on.patch",
+      "sha256": "c909ee1fbc26e33e668fa6d18f6cec51982a5754bada5904251637144798e604",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/pci/0006-arm64-dts-qcom-hamoa-Add-t-power-on-us-property-for-PCIe-root-ports.patch (overlay blob 8fcd9d0e337ba0670b3d940f448c17382be1dd69)"
+    },
+    {
+      "id": "hamoa-pcie-opp-tables",
+      "path": "patches/r2/pci/05-hamoa-pcie-opp-tables.patch",
+      "sha256": "fa4109ca8cce5690767dded3d6ff16b4c1de14768026eacbd57292adeac7d6ae",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/pci/0007-arm64-dts-qcom-hamoa-add-operating-points-for-pci4_5_6a.patch (overlay blob e42a80560f7018ec7fc326c67bbb6d0ad0a7c65e)"
+    },
+    {
+      "id": "ath12k-aspm-api-adaptation",
+      "path": "patches/r2/pci/06-ath12k-aspm-api.patch",
+      "sha256": "619d3da2c931f3bc18530db685be8653a8ba4a423045c215cdb914c6f7ddbb43",
+      "source_path": "adapted from sys-kernel/vanilla-kernel/files/wifi/0001-wifi-ath12k-Use-pci_-enable-disable-_link_state-APIs.patch (overlay blob 9e433660c31b333c3f8fd886286067105d924d8a)"
+    },
+    {
+      "id": "ath12k-sp12-rfkill",
+      "path": "patches/r2/pci/07-ath12k-skip-sp12-rfkill.patch",
+      "sha256": "9c7518b30be80933ac635a17c2dadbb6409f42542bc964a08648b7a2ac967755",
+      "source_path": "rebased from sys-kernel/vanilla-kernel/files/wifi/0004-wifi-ath12k-skip-hardware-rfkill-setup-on-Microsoft-Surface-Pro-12in.patch (overlay blob 174423ef2c63cbdd49fd1fe4f8eaa8f55ab463c5)"
+    },
+    {
+      "id": "arm64-kexec-signature-force",
+      "path": "patches/07-kexec-signature-force-arm64.patch",
+      "sha256": "b5d362252fc7c8d7ed4962f709dbc1f3709d5133bd0635ae84256e1cd35a69f1",
+      "source_path": "local/phase1-release-policy"
+    },
+    {
+      "id": "rpmb-core-serialize-teardown",
+      "path": "patches/08-rpmb-core-serialize-teardown.patch",
+      "sha256": "f557cb4ab5b83eabd2a67f4c190be66a8d62b70b68c5ffcbc08b5c278bcc77ae",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16378.html (v5 1/3; adapted to CachyOS 7.3.1-1)"
+    },
+    {
+      "id": "ufs-rpmb-lifetime",
+      "path": "patches/09-ufs-rpmb-lifetime.patch",
+      "sha256": "c93d0f2ecfb870eb1f1a6f71da03357dd380afb6d2e32f2a73274e7f0071b28a",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16377.html (v5 2/3; adapted to CachyOS 7.3.1-1)"
+    },
+    {
+      "id": "ufs-rpmb-drop-unregistered-bus",
+      "path": "patches/10-ufs-rpmb-drop-unregistered-bus.patch",
+      "sha256": "3684292933c426ab616eb25846571ae95786a668dda746fe7b1c52036986f938",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16449.html (v5 3/3; adapted to CachyOS 7.3.1-1)"
+    },
+    {
+      "id": "usb-dwc3-skip-phy-management",
+      "path": "patches/r2/usb/0001-usb-dwc3-qcom-skip-phy-management.patch",
+      "sha256": "3bb43b70da13e8d0de91bffafd21f3ace35d162ad679ef83eba8f9706ba479f8",
+      "source_path": "sys-kernel/vanilla-kernel/files/usb/0001-usb-dwc3-qcom-Add-support-to-skip-phy-management-by-USB-core.patch (overlay blob 372f97139d068c3cee2da61cc836a1bc08cad6f3)"
+    },
+    {
+      "id": "usb-dwc3-eusb2-wake-irq-map",
+      "path": "patches/r2/usb/0002-usb-dwc3-qcom-eusb2-wake-irq-map.patch",
+      "sha256": "617bdca1b9429809b61104f10419b274407ea7866b90b57d8711a4000c5d858f",
+      "source_path": "sys-kernel/vanilla-kernel/files/usb/0002-usb-dwc3-qcom-Modify-interrupt-handling-for-eUSB2-Phy-targets.patch (overlay blob c01fda6dc233be0f0e6ee9cfaff7808581bbbfeb)"
+    },
+    {
+      "id": "usb-dwc3-wake-irq-failed-resume",
+      "path": "patches/r2/usb/0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume.patch",
+      "sha256": "020c77eb566572ef2b70b18aea11a94e063f180da6511f7fda93c0b799d60bdf",
+      "source_path": "sys-kernel/vanilla-kernel/files/usb/0004-usb-dwc3-qcom-Keep-wakeup-IRQ-enable-disable-balanced-on-failed-resume.patch (overlay blob 4c277a3224305d4d587593ec93cd97792fc65d09)"
+    },
+    {
+      "id": "usb-dwc3-wake-irq-runtime-pm",
+      "path": "patches/r2/usb/0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq.patch",
+      "sha256": "21fd94a37f22c9f46c57462db18d8a4f320e16c3a1177b8cbcc3c46e336c1045",
+      "source_path": "sys-kernel/vanilla-kernel/files/usb/0005-usb-dwc3-qcom-balance-runtime-PM-in-the-wakeup-interrupt.patch (overlay blob 7379afc67db2f5d4ff2a54e719156d97f6d81fc2)"
+    },
+    {
+      "id": "usb-hamoa-usb1-ss0-noc-clocks",
+      "path": "patches/r2/usb/0006-arm64-dts-hamoa-usb1-ss0-noc-clocks.patch",
+      "sha256": "81e98508745ac57f1ddc476844b7f312f479681bcd9757a6227629ddb333e112",
+      "source_path": "sys-kernel/vanilla-kernel/files/usb/0006-arm64-dts-qcom-hamoa-fix-the-aggre-NoC-clocks-of-usb_1_ss0.patch (overlay blob 011bc5ecfc7b28f343d659dad67cf642ed17ec1f)"
+    },
+    {
+      "id": "video-iommu-ranges",
+      "path": "patches/r2/video/01-iommu-of_iommu-ranges.patch",
+      "sha256": "09167da47080bac348e1b896a7ca4acb34e16697183da8a38f437b4fb6b1393a",
+      "source_path": "sys-kernel/vanilla-kernel/files/video/0002-iommu-of_iommu-Add-support-for-iommu-ranges-on-a-device-node.patch (overlay blob 2cfa557abbfc64e86f796f384741d5cdf9313e71)"
+    },
+    {
+      "id": "iris-context-bank-devices",
+      "path": "patches/r2/video/02-iris-context-bank-devices.patch",
+      "sha256": "0e45ebcfc581b543dba325afebf39402b4bccfcfaa67c838580147070da3da64",
+      "source_path": "sys-kernel/vanilla-kernel/files/video/0003-media-iris-Add-non-pixel-and-pixel-context-bank-devices.patch (overlay blob 5fa0e44beb9352af48afa132ecfe8d59fde17ea9)"
+    },
+    {
+      "id": "iris-buffer-context-bank-routing",
+      "path": "patches/r2/video/03-iris-route-buffers-context-bank.patch",
+      "sha256": "6767b9761ba036b26476cdef2542549571534067e1a527bc7758fe74eadb5659",
+      "source_path": "sys-kernel/vanilla-kernel/files/video/0004-media-iris-Route-buffers-to-the-matching-context-bank-device.patch (overlay blob 9752e8013d1aea2f1abef95a2fe28a8d2bf1cc87)"
+    },
+    {
+      "id": "iris-parent-dma-mask-no-iommu",
+      "path": "patches/r2/video/04-iris-skip-parent-dma-mask-without-iommu.patch",
+      "sha256": "7b1eae848eb485769613a2319b23fe1d8390f49a87727c10d319836280ac18be",
+      "source_path": "sys-kernel/vanilla-kernel/files/video/0005-media-iris-Skip-DMA-mask-setup-when-the-core-device-has-no-IOMMU.patch (overlay blob b163ba8924b90add71f4aac3dbccf4f445e61af9)"
+    },
+    {
+      "id": "hamoa-iris-context-bank-dts",
+      "path": "patches/r2/video/05-hamoa-iris-context-bank-dts.patch",
+      "sha256": "2831956d97d92bf5781f04edb03318accf2bfb525ce800df0001645011e885b7",
+      "source_path": "sys-kernel/vanilla-kernel/files/video/0008-arm64-dts-qcom-hamoa-Add-Iris-context-bank-subnodes.patch (overlay blob 674573b4104192ca826001cf498374276782a0cb)"
+    },
+    {
+      "id": "wcn7850-hci-qca-drop-unused-event",
+      "path": "patches/r2/bluetooth/01-wcn7850-drop-unused-event.patch",
+      "sha256": "e4ca052e5046370ce92e3a4532b4e750cc04268c39c39a3dd1130fbf1d1d34fb",
+      "source_path": "sys-kernel/vanilla-kernel/files/other/0008-Bluetooth-hci_qca-Drop-unused-event-during-BT-on.patch (overlay blob c5a2d0150c9b2ae5f6033573f5b2633838e83104)"
+    },
+    {
+      "id": "arm-arch-timer-park-stopped",
+      "path": "patches/r2/suspend/01-arm-arch-timer-park-stopped.patch",
+      "sha256": "601f591f755cd0bc4fc6a5ae4e5b4b0d58ccbb522b94a9123516668f8237b663",
+      "source_path": "sys-kernel/vanilla-kernel/files/other/0004-clocksource-arm_arch_timer-park-stopped-timers.patch (overlay blob a6e8a5428ca0e3c3542cc4439f642f1e02d0a503)"
+    }
+  ],
+  "note": "The 49-entry SP12 r2 candidate passed two ordered replays from the authenticated CachyOS 7.3.1 base; both final source trees have SHA-256 1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e. The additions are five DWC3/Hamoa USB fixes, the five-patch Hamoa Iris context-bank closure, WCN7850 HCI event handling, and the arm_arch_timer stopped-timer fix. CAMSS/CCI/CSI D-PHY/provider/sensor/board camera closure remains in the reviewed original 37 entries. Config/DT validation, focused compile, package/media/VM, and hardware qualification are pending. The pmdomain SS1 pair remains excluded pending a coherent property/schema rebase and SP12 residency evidence; EL2 Iris patches are conditional and do not apply as-is to the 7.3.1 source. Attribution/license/redistribution review remains open.",
+  "policy_fragment": {
+    "path": "policy.fragment",
+    "sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb"
+  },
+  "overlay_review": {
+    "repository": "miasvanklei/Gentoo-overlay",
+    "commit": "952f769e1b45f07302d69992d19e5874ee77737",
+    "range": "ed20a9946e0136485bbac067e72100b84a0865fd^..952f769e1b45f07302d69992d19e5874ee77737",
+    "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+    "signer_fingerprint": "E8B9AA39F054E30E8290D492C3C4820857F654FE"
+  }
+}

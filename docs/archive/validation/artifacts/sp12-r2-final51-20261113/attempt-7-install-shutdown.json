@@ -1,0 +1,27 @@
+{
+  "install_completed_at_utc": "2026-11-14T00:04:52.156086Z",
+  "qemu_pid": 705407,
+  "screen": "Ubuntu 26.10 is installed and ready to use",
+  "target_qcow_bytes": 10734010368,
+  "installer_blockstats_at_completion": {
+    "target_write_bytes": 12149606912,
+    "target_write_operations": 49149,
+    "target_failed_write_operations": 0,
+    "sentinel_write_bytes": 0,
+    "installer_iso_write_bytes": 0
+  },
+  "shutdown": {
+    "guest_action": "Ejected the read-only installer ISO after Ubuntu requested removal, then sent Enter",
+    "guest_result": "Reached systemd poweroff; QEMU process exited",
+    "target_qcow_check": "pass",
+    "sentinel_qcow_check": "pass",
+    "sentinel_sha256": "b7f1ada63281ed7e5bc7127dffbfc4c91582fab3080133b01a966c7624d97bb6",
+    "sentinel_hash_matches_pre_run": true,
+    "installer_iso_writes": 0
+  },
+  "evidence": [
+    "attempt-7-install-complete.png",
+    "attempt-7-install-complete-sample.json"
+  ],
+  "limitation": "Generic ARM64 QEMU virt installer evidence; this does not qualify the SP12 hardware or prove the installed r2 kernel boots."
+}

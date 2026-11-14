@@ -1,0 +1,33 @@
+make: Entering directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'
+make[1]: Entering directory '/var/tmp/sp12-config-audit-20261113/config'
+  SYNC    include/config/auto.conf
+/bin/sh: 1: cd: can't cd to /home/charlie/Documents/ChatGPT/linux-psycachy
+/bin/sh: 1: cd: can't cd to /home/charlie/Documents/ChatGPT/linux-psycachy
+  DESCEND bpf/resolve_btfids
+  CC [M]  drivers/i2c/busses/i2c-qcom-cci.o
+  CC      drivers/pci/pcie/aspm.o
+  CC [M]  drivers/media/i2c/ov02c10.o
+  CC [M]  drivers/net/wireless/ath/ath12k/pci.o
+  CC [M]  drivers/media/i2c/ov13858.o
+  CC      drivers/pci/quirks.o
+  CC [M]  drivers/phy/phy-snps-eusb2.o
+  CC [M]  drivers/platform/surface/aggregator/controller.o
+  CC [M]  drivers/phy/qualcomm/phy-qcom-mipi-csi2-3ph-dphy.o
+  CC [M]  drivers/media/platform/qcom/camss/camss-csiphy.o
+  CC [M]  drivers/phy/qualcomm/phy-qcom-mipi-csi2-core.o
+  CC [M]  drivers/platform/surface/surface_aggregator_registry.o
+  CC [M]  drivers/media/platform/qcom/camss/camss-vfe.o
+/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/media/platform/qcom/camss/camss-csiphy.c:335:6: warning: unused variable 'i' [-Wunused-variable]
+  335 |         int i;
+      |             ^
+1 warning generated.
+  CC [M]  drivers/rtc/rtc-surface.o
+  CC      drivers/phy/qualcomm/phy-qcom-uniphy-pcie-28lp.o
+  CC [M]  drivers/media/platform/qcom/camss/camss.o
+  CC [M]  drivers/soundwire/qcom.o
+/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/drivers/media/platform/qcom/camss/camss.c:4965:25: warning: unused variable 'remote' [-Wunused-variable]
+ 4965 |                 struct fwnode_handle *remote;
+      |                                       ^~~~~~
+1 warning generated.
+make[1]: Leaving directory '/var/tmp/sp12-config-audit-20261113/config'
+make: Leaving directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'

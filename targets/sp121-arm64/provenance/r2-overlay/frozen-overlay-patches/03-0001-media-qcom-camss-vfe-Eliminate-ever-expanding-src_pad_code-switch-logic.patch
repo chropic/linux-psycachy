@@ -1,0 +1,45 @@
+Use the default case for the common source pad format handling.
+
+Signed-off-by: Bryan O'Donoghue <bod@kernel.org>
+Signed-off-by: Wenmeng Liu <wenmeng.liu@oss.qualcomm.com>
+---
+ drivers/media/platform/qcom/camss/camss-vfe.c | 19 +------------------
+ 1 file changed, 1 insertion(+), 18 deletions(-)
+
+diff --git a/drivers/media/platform/qcom/camss/camss-vfe.c b/drivers/media/platform/qcom/camss/camss-vfe.c
+index 2680a9914765fa2c8f3c2b38a5f4f0e0bcf4d873..b1d9fe0010e119059c539c20c238c3e050ff7036 100644
+--- a/drivers/media/platform/qcom/camss/camss-vfe.c
++++ b/drivers/media/platform/qcom/camss/camss-vfe.c
+@@ -340,20 +340,7 @@ static u32 vfe_src_pad_code(struct vfe_line *line, u32 sink_code,
+ 			return sink_code;
+ 		}
+ 		break;
+-	case CAMSS_660:
+-	case CAMSS_2290:
+-	case CAMSS_6150:
+-	case CAMSS_6350:
+-	case CAMSS_7280:
+-	case CAMSS_8x96:
+-	case CAMSS_8250:
+-	case CAMSS_8280XP:
+-	case CAMSS_8300:
+-	case CAMSS_845:
+-	case CAMSS_8550:
+-	case CAMSS_8650:
+-	case CAMSS_8775P:
+-	case CAMSS_X1E80100:
++	default:
+ 		switch (sink_code) {
+ 		case MEDIA_BUS_FMT_YUYV8_1X16:
+ 		{
+@@ -414,10 +401,6 @@ static u32 vfe_src_pad_code(struct vfe_line *line, u32 sink_code,
+ 			return sink_code;
+ 		}
+ 		break;
+-	default:
+-		WARN(1, "Unsupported HW version: %x\n",
+-		     vfe->camss->res->version);
+-		break;
+ 	}
+ 	return 0;
+ }

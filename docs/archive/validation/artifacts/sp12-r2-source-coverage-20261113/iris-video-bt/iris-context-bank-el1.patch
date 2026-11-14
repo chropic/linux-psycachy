@@ -1,0 +1,687 @@
+
+Reserving an IOVA address using "iommu-addresses" requires it to be
+placed in the reserved-memory node. But when "iommu-addresses" is the
+only property being described and there is no backing "reg" (i.e. no
+actual reserved system memory), it does not really belong under
+/reserved-memory. A device IOVA range is specific to its own address
+space, and does not describe the system physical memory to make it
+qualify under reserved-memory. Given this, place "iommu-addresses"
+inside reserved-memory only when it is paired with a "reg", otherwise,
+define it within the device own node. It was discussed here:
+https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
+
+Existing "iommu-addresses" property expects a phandle, which does
+not make sense when the property is defined within the device node.
+Introduce a new property, "iommu-ranges", to specify the device
+specific IOVA ranges when there is no backing "reg".
+
+Suggested-by: Rob Herring <robh@kernel.org>
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ drivers/iommu/of_iommu.c | 128 ++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 121 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index a18bb60f6f3dfdba853b6e16dd2a8616f6a731c7..9766a6944d0e11a6cd8b74b1b89428acffe3dfdf 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -190,6 +190,111 @@ iommu_resv_region_get_type(struct device *dev,
+ 	return IOMMU_RESV_RESERVED;
+ }
+ 
++/**
++ * of_iommu_derive_resv_regions - derive reserved regions which
++ *                                are outside of iommu-ranges
++ * @dev: device for which to get reserved regions
++ * @list: reserved region list
++ *
++ * A device can describe its own usable IOVA ranges directly on its node
++ * via "iommu-ranges". Everything not under those ranges is derived
++ * as a reserved region so the IOMMU allocator won't use it. Entries may
++ * appear in any order in the property.
++ */
++static void of_iommu_derive_resv_regions(struct device *dev, struct list_head *list)
++{
++	struct of_iommu_range {
++		struct list_head node;
++		phys_addr_t start;
++		phys_addr_t end;
++	} *pos, *new, *next_range;
++	int size, prot = IOMMU_READ | IOMMU_WRITE;
++	struct iommu_resv_region *region;
++	const __be32 *maps, *end;
++	struct list_head *prev;
++	phys_addr_t next = 0;
++	LIST_HEAD(ranges);
++
++	maps = of_get_property(dev->of_node, "iommu-ranges", &size);
++	if (!maps)
++		return;
++
++	end = maps + size / sizeof(__be32);
++
++	while (maps < end) {
++		phys_addr_t iova, iova_end;
++		size_t length;
++
++		maps = of_translate_dma_region(dev->of_node, maps, &iova, &length);
++		if (!maps) {
++			dev_err(dev, "%pOF: failed to parse iommu-ranges\n",
++				dev->of_node);
++			break;
++		}
++
++		if (!length)
++			continue;
++
++		iova_end = iova + length - 1;
++
++		if (iova_end < iova) {
++			dev_err(dev, "%pOF: iommu-ranges overflows address space\n",
++				dev->of_node);
++			continue;
++		}
++
++		prev = &ranges;
++		list_for_each_entry(pos, &ranges, node) {
++			if (pos->start > iova)
++				break;
++			prev = &pos->node;
++		}
++
++		new = kmalloc_obj(*new);
++		if (!new)
++			continue;
++
++		new->start = iova;
++		new->end = iova_end;
++		list_add(&new->node, prev);
++	}
++
++	if (list_empty(&ranges))
++		return;
++
++	if (of_dma_is_coherent(dev->of_node))
++		prot |= IOMMU_CACHE;
++
++	list_for_each_entry_safe(pos, next_range, &ranges, node) {
++		if (pos->start > next) {
++			region = iommu_alloc_resv_region(next, pos->start - next, prot,
++							 IOMMU_RESV_RESERVED, GFP_KERNEL);
++			if (region)
++				list_add_tail(&region->list, list);
++		}
++
++		if (pos->end == PHYS_ADDR_MAX)
++			goto exit;
++
++		if (pos->end >= next)
++			next = pos->end + 1;
++
++		list_del(&pos->node);
++		kfree(pos);
++	}
++
++	region = iommu_alloc_resv_region(next, PHYS_ADDR_MAX - next + 1,
++					 prot, IOMMU_RESV_RESERVED, GFP_KERNEL);
++	if (region)
++		list_add_tail(&region->list, list);
++
++exit:
++	list_for_each_entry_safe(pos, next_range, &ranges, node) {
++		list_del(&pos->node);
++		kfree(pos);
++	}
++}
++
+ /**
+  * of_iommu_get_resv_regions - reserved region driver helper for device tree
+  * @dev: device for which to get reserved regions
+@@ -214,10 +319,14 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 
+ 		memset(&phys, 0, sizeof(phys));
+ 
++		maps = of_get_property(it.node, "iommu-addresses", &size);
++		if (!maps)
++			continue;
++
+ 		/*
+-		 * The "reg" property is optional and can be omitted by reserved-memory regions
+-		 * that represent reservations in the IOVA space, which are regions that should
+-		 * not be mapped.
++		 * "iommu-addresses" must be used in combination with a "reg" that provides
++		 * the physical address and size of this memory region, for an identity 1:1
++		 * IOVA mapping to that physical memory.
+ 		 */
+ 		if (of_property_present(it.node, "reg")) {
+ 			err = of_address_to_resource(it.node, 0, &phys);
+@@ -226,11 +335,11 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 					it.node, err);
+ 				continue;
+ 			}
+-		}
+-
+-		maps = of_get_property(it.node, "iommu-addresses", &size);
+-		if (!maps)
++		} else {
++			dev_err(dev, "%pOF: iommu-addresses requires a reg property\n",
++				it.node);
+ 			continue;
++		}
+ 
+ 		end = maps + size / sizeof(__be32);
+ 
+@@ -258,6 +367,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 				}
+ 				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+ 
++				if (type != IOMMU_RESV_DIRECT)
++					continue;
++
+ 				region = iommu_alloc_resv_region(iova, length, prot, type,
+ 								 GFP_KERNEL);
+ 				if (region)
+@@ -265,6 +377,8 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 			}
+ 		}
+ 	}
++
++	of_iommu_derive_resv_regions(dev, list);
+ #endif
+ }
+ EXPORT_SYMBOL(of_iommu_get_resv_regions);
+The VPU issues DMA through several SMMU streams, and the hardware does
+not give every stream the same addressable range. The non-pixel stream
+cannot address the low 600MB of IOVA space, while the pixel stream can
+address the full range:
+    +-----------------------------------------------------------+
+    | non-pixel stream addressable range (600 MB - 3.5 GB)      |
+    | 0x25800000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+    | pixel stream addressable range (0 - 3.5 GB)               |
+    | 0x00000000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+A single "iommus" property on the video-codec node puts every stream in
+one IOMMU domain sharing one IOVA allocator, so nothing restricts a
+non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
+that boundary the hardware faults, which shows up as unhandled SMMU page
+faults and spontaneous reboots:
+https://gitlab.freedesktop.org/drm/msm/-/work_items/100
+
+Now the device tree describes "non-pixel" and "pixel" as separate
+context bank subnodes, each carrying its own "iommus" stream IDs.
+
+Add helper functions to create and clean up devices from these DT
+subnodes, and call them from iris_probe() and iris_remove(). This
+applies to the common probe path as it is required for all platforms.
+
+Set the context banks before v4l2_device_register() so the DMA plumbing
+is in place before any video device is visible to userspace, and tear
+them down on the probe error path and in iris_remove().
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ drivers/media/platform/qcom/iris/iris_core.h  |  4 ++
+ drivers/media/platform/qcom/iris/iris_probe.c | 71 ++++++++++++++++++++++++++-
+ 2 files changed, 74 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/qcom/iris/iris_core.h b/drivers/media/platform/qcom/iris/iris_core.h
+index 24da60448cf24820af7947b85eb7208555ab7786..3c96f46cf567b2802148b2a7cedb8488b6b9468b 100644
+--- a/drivers/media/platform/qcom/iris/iris_core.h
++++ b/drivers/media/platform/qcom/iris/iris_core.h
+@@ -36,6 +36,8 @@ struct qcom_ubwc_cfg_data;
+  * struct iris_core - holds core parameters valid for all instances
+  *
+  * @dev: reference to device structure
++ * @np_dev: reference to non-pixel device structure
++ * @p_dev: reference to pixel device structure
+  * @reg_base: IO memory base address
+  * @irq: iris irq
+  * @v4l2_dev: a holder for v4l2 device structure
+@@ -81,6 +83,8 @@ struct qcom_ubwc_cfg_data;
+ 
+ struct iris_core {
+ 	struct device				*dev;
++	struct device				*np_dev;
++	struct device				*p_dev;
+ 	void __iomem				*reg_base;
+ 	int					irq;
+ 	struct v4l2_device			v4l2_dev;
+diff --git a/drivers/media/platform/qcom/iris/iris_probe.c b/drivers/media/platform/qcom/iris/iris_probe.c
+index e4acf4a74f944bcae83089ef5489f204d4b0078e..debd1f0e57038d7abf463e82fd80f887b67750e8 100644
+--- a/drivers/media/platform/qcom/iris/iris_probe.c
++++ b/drivers/media/platform/qcom/iris/iris_probe.c
+@@ -150,6 +150,67 @@ static int iris_init_resources(struct iris_core *core)
+ 	return iris_init_resets(core);
+ }
+ 
++static struct device *iris_create_cb_dev(struct iris_core *core, const char *name)
++{
++	struct platform_device_info plat_dev_info = {};
++	struct device_node *child_of_node;
++	struct platform_device *pdev;
++
++	child_of_node = of_get_child_by_name(core->dev->of_node, name);
++	if (!child_of_node)
++		return NULL;
++
++	plat_dev_info.dma_mask = core->iris_platform_data->dma_mask;
++	plat_dev_info.fwnode = &child_of_node->fwnode;
++	plat_dev_info.name = child_of_node->name;
++	plat_dev_info.id = PLATFORM_DEVID_AUTO;
++	plat_dev_info.parent = core->dev;
++
++	pdev = platform_device_register_full(&plat_dev_info);
++	of_node_put(child_of_node);
++	if (IS_ERR(pdev))
++		return ERR_CAST(pdev);
++
++	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
++	dma_set_seg_boundary(&pdev->dev, DMA_BIT_MASK(32));
++
++	return &pdev->dev;
++}
++
++static int iris_init_cb_devs(struct iris_core *core)
++{
++	struct device *dev;
++
++	dev = iris_create_cb_dev(core, "non-pixel");
++	if (IS_ERR(dev))
++		return PTR_ERR(dev);
++
++	core->np_dev = dev;
++
++	dev = iris_create_cb_dev(core, "pixel");
++	if (IS_ERR(dev))
++		goto unreg_np_dev;
++
++	core->p_dev = dev;
++
++	return 0;
++
++unreg_np_dev:
++	if (core->np_dev)
++		platform_device_unregister(to_platform_device(core->np_dev));
++	core->np_dev = NULL;
++
++	return PTR_ERR(dev);
++}
++
++static void iris_deinit_cb_devs(struct iris_core *core)
++{
++	if (core->p_dev)
++		platform_device_unregister(to_platform_device(core->p_dev));
++	if (core->np_dev)
++		platform_device_unregister(to_platform_device(core->np_dev));
++}
++
+ static int iris_register_video_device(struct iris_core *core, enum domain_type type)
+ {
+ 	struct video_device *vdev;
+@@ -207,6 +268,8 @@ static void iris_remove(struct platform_device *pdev)
+ 
+ 	v4l2_device_unregister(&core->v4l2_dev);
+ 
++	iris_deinit_cb_devs(core);
++
+ 	mutex_destroy(&core->lock);
+ }
+ 
+@@ -269,10 +332,14 @@ static int iris_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = v4l2_device_register(dev, &core->v4l2_dev);
++	ret = iris_init_cb_devs(core);
+ 	if (ret)
+ 		return ret;
+ 
++	ret = v4l2_device_register(dev, &core->v4l2_dev);
++	if (ret)
++		goto err_cb_deinit;
++
+ 	ret = iris_register_video_device(core, DECODER);
+ 	if (ret)
+ 		goto err_v4l2_unreg;
+@@ -306,6 +373,8 @@ static int iris_probe(struct platform_device *pdev)
+ 	video_unregister_device(core->vdev_dec);
+ err_v4l2_unreg:
+ 	v4l2_device_unregister(&core->v4l2_dev);
++err_cb_deinit:
++	iris_deinit_cb_devs(core);
+ 
+ 	return ret;
+ }
+The VPU issues DMA through several SMMU streams, and the hardware does
+not give every stream the same addressable range. The non-pixel stream
+cannot address the low 600MB of IOVA space, while the pixel stream can
+address the full range.
+Add iris_get_cb_dev(), which maps a buffer type to the owning context
+bank device. Bitstream and internal buffers (BIN, ARP, COMV, LINE,
+NON_COMV, PERSIST) belong to the non-pixel device, and uncompressed
+buffers (DPB, PARTIAL, SCRATCH_1, SCRATCH_2, VPSS) to the pixel device.
+BUF_INPUT and BUF_OUTPUT depend on direction and are resolved from
+inst->domain: for a decoder the input is non-pixel and the output pixel,
+and the other way round for an encoder.
+Fall back to core->dev whenever the relevant context bank device is
+absent, so platforms still describing "iommus" on the parent iris node
+behave exactly as before to maintain backward compatibility.
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ drivers/media/platform/qcom/iris/iris_buffer.c    |  8 ++---
+ drivers/media/platform/qcom/iris/iris_hfi_queue.c | 16 +++++----
+ drivers/media/platform/qcom/iris/iris_resources.c | 41 +++++++++++++++++++++++
+ drivers/media/platform/qcom/iris/iris_resources.h |  1 +
+ drivers/media/platform/qcom/iris/iris_vidc.c      |  4 +--
+ 5 files changed, 57 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/media/platform/qcom/iris/iris_buffer.c b/drivers/media/platform/qcom/iris/iris_buffer.c
+index eb8de60c1177f5e1ab83b90a3c8c80e0b4d1f02e..6e03d13ac1a792c539bf8fe6d26354aa29d7b3a2 100644
+--- a/drivers/media/platform/qcom/iris/iris_buffer.c
++++ b/drivers/media/platform/qcom/iris/iris_buffer.c
+@@ -531,7 +531,7 @@ static int iris_create_internal_buffer(struct iris_inst *inst,
+ 				       enum iris_buffer_type buffer_type, u32 index)
+ {
+ 	struct iris_buffers *buffers = &inst->buffers[buffer_type];
+-	struct iris_core *core = inst->core;
++	struct device *dev = iris_get_cb_dev(inst, buffer_type);
+ 	struct iris_buffer *buffer;
+ 
+ 	if (!buffers->size)
+@@ -547,7 +547,7 @@ static int iris_create_internal_buffer(struct iris_inst *inst,
+ 	buffer->buffer_size = buffers->size;
+ 	buffer->dma_attrs = DMA_ATTR_WRITE_COMBINE | DMA_ATTR_NO_KERNEL_MAPPING;
+ 
+-	buffer->kvaddr = dma_alloc_attrs(core->dev, buffer->buffer_size,
++	buffer->kvaddr = dma_alloc_attrs(dev, buffer->buffer_size,
+ 					 &buffer->device_addr, GFP_KERNEL, buffer->dma_attrs);
+ 	if (!buffer->kvaddr) {
+ 		kfree(buffer);
+@@ -650,10 +650,10 @@ int iris_queue_internal_buffers(struct iris_inst *inst, u32 plane)
+ 
+ void iris_destroy_internal_buffer(struct iris_inst *inst, struct iris_buffer *buffer)
+ {
+-	struct iris_core *core = inst->core;
++	struct device *dev = iris_get_cb_dev(inst, buffer->type);
+ 
+ 	list_del(&buffer->list);
+-	dma_free_attrs(core->dev, buffer->buffer_size, buffer->kvaddr,
++	dma_free_attrs(dev, buffer->buffer_size, buffer->kvaddr,
+ 		       buffer->device_addr, buffer->dma_attrs);
+ 	kfree(buffer);
+ }
+diff --git a/drivers/media/platform/qcom/iris/iris_hfi_queue.c b/drivers/media/platform/qcom/iris/iris_hfi_queue.c
+index bf6db23b53e2106c08f2139b643f8626af8bc40a..ce6a682b0f9ada79f9fae26289db298855d777c2 100644
+--- a/drivers/media/platform/qcom/iris/iris_hfi_queue.c
++++ b/drivers/media/platform/qcom/iris/iris_hfi_queue.c
+@@ -245,25 +245,26 @@ static void iris_hfi_queue_deinit(struct iris_iface_q_info *iface_q)
+ 
+ int iris_hfi_queues_init(struct iris_core *core)
+ {
++	struct device *dev = core->np_dev ? core->np_dev : core->dev;
+ 	struct iris_hfi_queue_table_header *q_tbl_hdr;
+ 	u32 queue_size;
+ 
+ 	/* Iris hardware requires 4K queue alignment */
+ 	queue_size = ALIGN((sizeof(*q_tbl_hdr) + (IFACEQ_QUEUE_SIZE * IFACEQ_NUMQ)), SZ_4K);
+-	core->iface_q_table_vaddr = dma_alloc_attrs(core->dev, queue_size,
++	core->iface_q_table_vaddr = dma_alloc_attrs(dev, queue_size,
+ 						    &core->iface_q_table_daddr,
+ 						    GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
+ 	if (!core->iface_q_table_vaddr) {
+-		dev_err(core->dev, "queues alloc and map failed\n");
++		dev_err(dev, "queues alloc and map failed\n");
+ 		return -ENOMEM;
+ 	}
+ 
+-	core->sfr_vaddr = dma_alloc_attrs(core->dev, SFR_SIZE,
++	core->sfr_vaddr = dma_alloc_attrs(dev, SFR_SIZE,
+ 					  &core->sfr_daddr,
+ 					  GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
+ 	if (!core->sfr_vaddr) {
+-		dev_err(core->dev, "sfr alloc and map failed\n");
+-		dma_free_attrs(core->dev, queue_size, core->iface_q_table_vaddr,
++		dev_err(dev, "sfr alloc and map failed\n");
++		dma_free_attrs(dev, queue_size, core->iface_q_table_vaddr,
+ 			       core->iface_q_table_daddr, DMA_ATTR_WRITE_COMBINE);
+ 		return -ENOMEM;
+ 	}
+@@ -291,6 +292,7 @@ int iris_hfi_queues_init(struct iris_core *core)
+ 
+ void iris_hfi_queues_deinit(struct iris_core *core)
+ {
++	struct device *dev = core->np_dev ? core->np_dev : core->dev;
+ 	u32 queue_size;
+ 
+ 	if (!core->iface_q_table_vaddr)
+@@ -300,7 +302,7 @@ void iris_hfi_queues_deinit(struct iris_core *core)
+ 	iris_hfi_queue_deinit(&core->message_queue);
+ 	iris_hfi_queue_deinit(&core->command_queue);
+ 
+-	dma_free_attrs(core->dev, SFR_SIZE, core->sfr_vaddr,
++	dma_free_attrs(dev, SFR_SIZE, core->sfr_vaddr,
+ 		       core->sfr_daddr, DMA_ATTR_WRITE_COMBINE);
+ 
+ 	core->sfr_vaddr = NULL;
+@@ -309,7 +311,7 @@ void iris_hfi_queues_deinit(struct iris_core *core)
+ 	queue_size = ALIGN(sizeof(struct iris_hfi_queue_table_header) +
+ 		(IFACEQ_QUEUE_SIZE * IFACEQ_NUMQ), SZ_4K);
+ 
+-	dma_free_attrs(core->dev, queue_size, core->iface_q_table_vaddr,
++	dma_free_attrs(dev, queue_size, core->iface_q_table_vaddr,
+ 		       core->iface_q_table_daddr, DMA_ATTR_WRITE_COMBINE);
+ 
+ 	core->iface_q_table_vaddr = NULL;
+diff --git a/drivers/media/platform/qcom/iris/iris_resources.c b/drivers/media/platform/qcom/iris/iris_resources.c
+index 2c4d34c7bd77d1f78d3572f659da656eb3b12113..a6c3df892ca9888d82414ca6b48c80efbf7b06d0 100644
+--- a/drivers/media/platform/qcom/iris/iris_resources.c
++++ b/drivers/media/platform/qcom/iris/iris_resources.c
+@@ -12,6 +12,7 @@
+ #include <linux/reset.h>
+ 
+ #include "iris_core.h"
++#include "iris_instance.h"
+ #include "iris_resources.h"
+ 
+ #define BW_THRESHOLD 50000
+@@ -138,3 +139,43 @@ int iris_disable_unprepare_clock(struct iris_core *core, enum platform_clk_type
+ 
+ 	return 0;
+ }
++
++struct device *iris_get_cb_dev(struct iris_inst *inst, enum iris_buffer_type buffer_type)
++{
++	struct iris_core *core = inst->core;
++	struct device *dev = NULL;
++
++	switch (buffer_type) {
++	case BUF_INPUT:
++		if (inst->domain == DECODER)
++			dev = core->np_dev;
++		else
++			dev = core->p_dev;
++		break;
++	case BUF_OUTPUT:
++		if (inst->domain == DECODER)
++			dev = core->p_dev;
++		else
++			dev = core->np_dev;
++		break;
++	case BUF_DPB:
++	case BUF_PARTIAL:
++	case BUF_SCRATCH_1:
++	case BUF_SCRATCH_2:
++	case BUF_VPSS:
++		dev = core->p_dev;
++		break;
++	case BUF_BIN:
++	case BUF_ARP:
++	case BUF_COMV:
++	case BUF_LINE:
++	case BUF_NON_COMV:
++	case BUF_PERSIST:
++		dev = core->np_dev;
++		break;
++	default:
++		dev_err(core->dev, "invalid buffer type: %d\n", buffer_type);
++	}
++
++	return dev ? dev : core->dev;
++}
+diff --git a/drivers/media/platform/qcom/iris/iris_resources.h b/drivers/media/platform/qcom/iris/iris_resources.h
+index 6bfbd2dc6db095ec05e53c894e048285f82446c6..a9a5bddb19c24917de4c5dba52567934b77e5c59 100644
+--- a/drivers/media/platform/qcom/iris/iris_resources.h
++++ b/drivers/media/platform/qcom/iris/iris_resources.h
+@@ -15,5 +15,6 @@ int iris_unset_icc_bw(struct iris_core *core);
+ int iris_set_icc_bw(struct iris_core *core, unsigned long icc_bw);
+ int iris_disable_unprepare_clock(struct iris_core *core, enum platform_clk_type clk_type);
+ int iris_prepare_enable_clock(struct iris_core *core, enum platform_clk_type clk_type);
++struct device *iris_get_cb_dev(struct iris_inst *inst, enum iris_buffer_type buffer_type);
+ 
+ #endif
+diff --git a/drivers/media/platform/qcom/iris/iris_vidc.c b/drivers/media/platform/qcom/iris/iris_vidc.c
+index fcbc60016beec693f2ce27927a09a2d51494bc38..064cf0a80748dab1be0515c4c2b6688aeb2b7022 100644
+--- a/drivers/media/platform/qcom/iris/iris_vidc.c
++++ b/drivers/media/platform/qcom/iris/iris_vidc.c
+@@ -108,7 +108,7 @@ iris_m2m_queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_
+ 	src_vq->drv_priv = inst;
+ 	src_vq->buf_struct_size = sizeof(struct iris_buffer);
+ 	src_vq->min_reqbufs_allocation = MIN_BUFFERS;
+-	src_vq->dev = inst->core->dev;
++	src_vq->dev = iris_get_cb_dev(inst, BUF_INPUT);
+ 	src_vq->lock = &inst->ctx_q_lock;
+ 	ret = vb2_queue_init(src_vq);
+ 	if (ret)
+@@ -122,7 +122,7 @@ iris_m2m_queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_
+ 	dst_vq->drv_priv = inst;
+ 	dst_vq->buf_struct_size = sizeof(struct iris_buffer);
+ 	dst_vq->min_reqbufs_allocation = MIN_BUFFERS;
+-	dst_vq->dev = inst->core->dev;
++	dst_vq->dev = iris_get_cb_dev(inst, BUF_OUTPUT);
+ 	dst_vq->lock = &inst->ctx_q_lock;
+ 
+ 	return vb2_queue_init(dst_vq);
+Once the streams are described as context bank subnodes, the "iommus"
+property no longer sits on the parent iris node. That device then has no
+IOMMU domain of its own and never performs DMA directly, so calling
+dma_set_mask_and_coherent() on it is meaningless, and on a device with no
+IOMMU it can fail and abort probe.
+
+Set the DMA mask only when device_iommu_mapped() reports an IOMMU on the
+core device. Platforms that have not been converted still carry "iommus"
+on the parent node and keep the existing setup. For converted platforms
+the mask is applied to each context bank device instead, in
+iris_create_cb_dev().
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ drivers/media/platform/qcom/iris/iris_probe.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/media/platform/qcom/iris/iris_probe.c b/drivers/media/platform/qcom/iris/iris_probe.c
+index debd1f0e57038d7abf463e82fd80f887b67750e8..4bdb078d83b5c331869dab2409bc4d10ab302737 100644
+--- a/drivers/media/platform/qcom/iris/iris_probe.c
++++ b/drivers/media/platform/qcom/iris/iris_probe.c
+@@ -352,9 +352,11 @@ static int iris_probe(struct platform_device *pdev)
+ 
+ 	dma_mask = core->iris_platform_data->dma_mask;
+ 
+-	ret = dma_set_mask_and_coherent(dev, dma_mask);
+-	if (ret)
+-		goto err_vdev_unreg_enc;
++	if (device_iommu_mapped(dev)) {
++		ret = dma_set_mask_and_coherent(dev, dma_mask);
++		if (ret)
++			goto err_vdev_unreg_enc;
++	}
+ 
+ 	dma_set_max_seg_size(&pdev->dev, DMA_BIT_MASK(32));
+ 	dma_set_seg_boundary(&pdev->dev, DMA_BIT_MASK(32));
+The VPU issues DMA through several SMMU streams, and the hardware does
+not give every stream the same addressable range. The non-pixel stream
+cannot address the low 600MB of IOVA space, while the pixel stream can
+address the full range:
+    +-----------------------------------------------------------+
+    | non-pixel stream addressable range (600 MB - 3.5 GB)      |
+    | 0x25800000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+    | pixel stream addressable range (0 - 3.5 GB)               |
+    | 0x00000000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+A single "iommus" property on the video-codec node puts every stream in
+one IOMMU domain sharing one IOVA allocator, so nothing restricts a
+non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
+that boundary the hardware faults, which shows up as unhandled SMMU page
+faults and spontaneous reboots:
+https://gitlab.freedesktop.org/drm/msm/-/work_items/100
+
+Given that the address range restriction is for specific VPU stream, it
+should be ideally be moved to that stream. To achieve the same, a subset
+of streams is now represented as subnodes, so that each can be
+associated with its respective addressable range. The design was discussed
+and agreed by mainatiners here
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
+
+In the past, this limitation was addressed with an iommu-map approach,
+with the iris driver dynamically creating the devices. That approach
+was later concluded to be a hack to avoid having subnodes, and was NAKed
+by the iommu maintainers. It was discussed in detail here:
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+
+The video-codec node includes address-cells, size-cells and dma-ranges
+to declare 1:1 mapping for DMA translation to the parent.
+
+Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ arch/arm64/boot/dts/qcom/hamoa.dtsi | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/hamoa.dtsi b/arch/arm64/boot/dts/qcom/hamoa.dtsi
+index 4e35254cdd11a87eb5e4817abd09a603522309e2..9819a1f5686ce92c2249cc1dd65a491665fcfb94 100644
+--- a/arch/arm64/boot/dts/qcom/hamoa.dtsi
++++ b/arch/arm64/boot/dts/qcom/hamoa.dtsi
+@@ -5468,10 +5468,12 @@ &config_noc SLAVE_VENUS_CFG QCOM_ICC_TAG_ACTIVE_ONLY>,
+ 			resets = <&gcc GCC_VIDEO_AXI0_CLK_ARES>;
+ 			reset-names = "bus";
+ 
+-			iommus = <&apps_smmu 0x1940 0>,
+-				 <&apps_smmu 0x1947 0>;
+ 			dma-coherent;
+ 
++			#address-cells = <1>;
++			#size-cells = <1>;
++			dma-ranges = <0x0 0x0 0x0 0xe0000000>;
++
+ 			/*
+ 			 * IRIS firmware is signed by vendors, only
+ 			 * enable on boards where the proper signed firmware
+@@ -5479,6 +5481,15 @@ &config_noc SLAVE_VENUS_CFG QCOM_ICC_TAG_ACTIVE_ONLY>,
+ 			 */
+ 			status = "disabled";
+ 
++			non-pixel {
++				iommus = <&apps_smmu 0x1940 0x0>;
++				iommu-ranges = <0x25800000 0xba800000>;
++			};
++
++			pixel {
++				iommus = <&apps_smmu 0x1947 0x0>;
++			};
++
+ 			iris_opp_table: opp-table {
+ 				compatible = "operating-points-v2";

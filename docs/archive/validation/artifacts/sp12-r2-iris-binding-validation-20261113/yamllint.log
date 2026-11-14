@@ -1,0 +1,3 @@
+Command: yamllint -f parsable -c Documentation/devicetree/bindings/.yamllint Documentation/devicetree/bindings/media/qcom,venus-common.yaml Documentation/devicetree/bindings/media/qcom,sm8550-iris.yaml
+Version: yamllint 1.38.0
+Result: passed with exit status 0; no diagnostics

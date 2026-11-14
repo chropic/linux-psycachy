@@ -1,0 +1,8 @@
+combined final37-tree apply check: passed
+ drivers/usb/dwc3/core.c             |    3 +
+ drivers/usb/dwc3/core.h             |    1 
+ drivers/usb/dwc3/dwc3-qcom.c        |   94 ++++++++++++++++++++++++++++-------
+ drivers/usb/dwc3/glue.h             |    2 +
+ drivers/usb/dwc3/host.c             |    5 +-
+ arch/arm64/boot/dts/qcom/hamoa.dtsi |    4 +
+ 6 files changed, 87 insertions(+), 22 deletions(-)

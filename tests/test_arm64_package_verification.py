@@ -13,18 +13,20 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("verify_arm64_packages", ROOT / "tools/verify-arm64-packages.py")
 VERIFY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFY)
-FDT_MAGIC = VERIFY.FDT_MAGIC
 verify_arm64_packages = VERIFY.verify_arm64_packages
+DTB_SPEC = importlib.util.spec_from_file_location(
+    "test_dtb_build_id", ROOT / "tests/test_dtb_build_id.py")
+DTB_TEST = importlib.util.module_from_spec(DTB_SPEC)
+DTB_SPEC.loader.exec_module(DTB_TEST)
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-def make_dummy_dtb(path: pathlib.Path):
+def make_dummy_dtb(path: pathlib.Path, build_id=None):
     path.parent.mkdir(parents=True, exist_ok=True)
-    # Write 0xd00dfeed followed by dummy content
-    data = struct.pack(">I", FDT_MAGIC) + b"\x00" * 64
-    path.write_bytes(data)
+    props = [] if build_id is None else [("psycachy,dtb-build-id", build_id)]
+    path.write_bytes(DTB_TEST.synthetic_fdt(props))
 
 
 def make_dummy_elf(machine: int) -> bytes:
@@ -40,8 +42,9 @@ class Arm64PackageVerificationTests(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
         self.packages_dir = pathlib.Path(self.temp_dir.name)
-        self.release = "7.3.1-psycachy-sp121"
-        self.version = "7.3.1-1psycachy1"
+        self.release = VERIFY.IDENTITY["kernel_release"]
+        self.version = VERIFY.IDENTITY["debian_version"]
+        self.dtb_build_id = None
 
     def tearDown(self):
         self.temp_dir.cleanup()
@@ -67,7 +70,7 @@ class Arm64PackageVerificationTests(unittest.TestCase):
         (boot_dir / f"vmlinuz-{self.release}").write_bytes(b"MZ\x00\x00kernel-payload")
         # Add DTB
         dtb_path = img_stage / f"usr/lib/linux-image-{self.release}/qcom/x1p42100-microsoft-sp12in.dtb"
-        make_dummy_dtb(dtb_path)
+        make_dummy_dtb(dtb_path, self.dtb_build_id)
 
         img_deb = target_dir / f"linux-image-{self.release}_{self.version}_arm64.deb"
         build_deb(img_stage, img_deb)
@@ -146,6 +149,22 @@ class Arm64PackageVerificationTests(unittest.TestCase):
             ],
         )
         self.assertTrue(report["dtb"]["fdt_magic_valid"])
+
+    def test_packaged_dtb_build_id_is_verified_and_reported(self):
+        self.dtb_build_id = "sha256:" + "a" * 64
+        self.create_valid_packages()
+        report = verify_arm64_packages(self.packages_dir, expected_release=self.release,
+                                       expected_dtb_build_id=self.dtb_build_id)
+        self.assertEqual(report["dtb"]["build_id"], self.dtb_build_id)
+        with self.assertRaisesRegex(ValueError, "stale DTB build ID"):
+            verify_arm64_packages(self.packages_dir, expected_release=self.release,
+                                  expected_dtb_build_id="sha256:" + "b" * 64)
+
+    def test_expected_dtb_build_id_rejects_missing_property(self):
+        self.create_valid_packages()
+        with self.assertRaisesRegex(ValueError, "missing the build-ID property"):
+            verify_arm64_packages(self.packages_dir, expected_release=self.release,
+                                  expected_dtb_build_id="sha256:" + "a" * 64)
 
     def test_rejects_wrong_architecture(self):
         self.create_valid_packages()

@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "status": "candidate-build-inputs-provenance-review-open",
+  "source_repository": "https://github.com/chropic/sp121-ubuntu-install",
+  "source_commit": "f496b50a8c471bcb11e889f06c440b2734963348",
+  "config": {
+    "path": "config.seed",
+    "source_path": "kernel/config/config-7.3-sp12-platform",
+    "sha256": "45e3ccb2dbfc4f9e34ab9089f3e1880651ee0b2effbf64efa8f8a250158df530"
+  },
+  "series": [
+    {
+      "id": "volume-gpio-correction",
+      "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+      "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+      "source_path": "kernel/patches/vendor/mias/surface/0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch"
+    },
+    {
+      "id": "surface-rtc-driver",
+      "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+      "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+      "source_path": "kernel/ports/v7.3/patches/0002-rtc-surface-port-reference-driver.patch"
+    },
+    {
+      "id": "sp12-rtc-registration",
+      "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+      "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+      "source_path": "kernel/ports/v7.3/patches/0003-surface-register-sp12-rtc.patch"
+    },
+    {
+      "id": "sp12-suspend-quirk",
+      "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+      "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+      "source_path": "kernel/ports/v7.3/patches/0004-surface-scope-sp12-suspend-workaround.patch"
+    },
+    {
+      "id": "displayport-audio",
+      "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+      "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+      "source_path": "kernel/patches/vendor/mias/surface/0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch"
+    },
+    {
+      "id": "charge-limit-nvmem",
+      "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+      "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+      "source_path": "kernel/patches/vendor/mias/surface/0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch"
+    },
+    {
+      "id": "arm64-kexec-signature-force",
+      "path": "patches/07-kexec-signature-force-arm64.patch",
+      "sha256": "b5d362252fc7c8d7ed4962f709dbc1f3709d5133bd0635ae84256e1cd35a69f1",
+      "source_path": "local/phase1-release-policy"
+    },
+    {
+      "id": "rpmb-core-serialize-teardown",
+      "path": "patches/08-rpmb-core-serialize-teardown.patch",
+      "sha256": "f557cb4ab5b83eabd2a67f4c190be66a8d62b70b68c5ffcbc08b5c278bcc77ae",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16378.html (v5 1/3; adapted to CachyOS 7.3.1-1)"
+    },
+    {
+      "id": "ufs-rpmb-lifetime",
+      "path": "patches/09-ufs-rpmb-lifetime.patch",
+      "sha256": "c93d0f2ecfb870eb1f1a6f71da03357dd380afb6d2e32f2a73274e7f0071b28a",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16377.html (v5 2/3; adapted to CachyOS 7.3.1-1)"
+    },
+    {
+      "id": "ufs-rpmb-drop-unregistered-bus",
+      "path": "patches/10-ufs-rpmb-drop-unregistered-bus.patch",
+      "sha256": "3684292933c426ab616eb25846571ae95786a668dda746fe7b1c52036986f938",
+      "source_path": "https://lkml.iu.edu/hypermail/linux/kernel/2609.1/16449.html (v5 3/3; adapted to CachyOS 7.3.1-1)"
+    }
+  ],
+  "note": "Verbatim platform inputs and local Phase 1 policy/RPMB patches; attribution, redistribution, and source reconciliation remain open. Camera profile excluded pending separate validation. The RPMB repair follows the reviewed upstream core-serialization, UFS-lifetime, then unused-bus-removal order, adapted to the authenticated CachyOS 7.3.1-1 source. Candidate builds still require target-specific physical validation.",
+  "policy_fragment": {
+    "path": "policy.fragment",
+    "sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb"
+  }
+}

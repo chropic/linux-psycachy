@@ -1,0 +1,6 @@
+Run locally on cs-sp12 from a terminal. The script runs only the private ARM64 live-media builder in fresh mount and network namespaces; it writes the private ISO and builder scratch under /var/tmp on SP12. It does not write the ESP, NVRAM, Apple HDD, or Lexar media.
+
+    set -o pipefail
+    sudo /var/tmp/sp12-r2-final51-build/run-native-build.sh 2>&1 | tee /var/tmp/sp12-r2-final51-build/native-arm64-build.log
+
+The command prompts for the user's sudo password locally. Do not send the password or an MFA code in chat. The builder refuses to overwrite an existing output or sidecar.

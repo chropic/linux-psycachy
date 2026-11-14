@@ -44,6 +44,63 @@ POLICY_ADDITIONS = {
     "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY": ("y", "integrity lockdown default"),
     "CONFIG_MODULE_SIG_FORCE": ("y", "reject unsigned and untrusted modules"),
 }
+# Required SP12 camera/media and Type-C PHY configuration from the authenticated
+# CachyOS 7.3.1 Kconfig/Makefiles. Keep tristate values exact: the module audit
+# below requires the corresponding .ko files in modules.order and the build.
+REQUIRED_SP12_CONFIG = {
+    "CONFIG_OF": "y",
+    "CONFIG_ARM64": "y",
+    "CONFIG_ARCH_QCOM": "y",
+    "CONFIG_COMMON_CLK": "y",
+    "CONFIG_HAVE_CLK": "y",
+    "CONFIG_IOMMU_DMA": "y",
+    "CONFIG_GPIOLIB": "y",
+    "CONFIG_REGULATOR": "y",
+    "CONFIG_PM": "y",
+    "CONFIG_I2C": "y",
+    "CONFIG_I2C_QCOM_CCI": "m",
+    "CONFIG_REGMAP_I2C": "y",
+    "CONFIG_MEDIA_SUPPORT": "m",
+    "CONFIG_MEDIA_CAMERA_SUPPORT": "y",
+    "CONFIG_MEDIA_PLATFORM_SUPPORT": "y",
+    "CONFIG_VIDEO_CAMERA_SENSOR": "y",
+    "CONFIG_VIDEO_DEV": "m",
+    "CONFIG_MEDIA_CONTROLLER": "y",
+    "CONFIG_VIDEO_V4L2_I2C": "y",
+    "CONFIG_VIDEO_V4L2_SUBDEV_API": "y",
+    "CONFIG_V4L2_FWNODE": "m",
+    "CONFIG_V4L2_ASYNC": "m",
+    "CONFIG_V4L2_CCI": "m",
+    "CONFIG_V4L2_CCI_I2C": "m",
+    "CONFIG_DMA_SHARED_BUFFER": "y",
+    "CONFIG_V4L_PLATFORM_DRIVERS": "y",
+    "CONFIG_VIDEO_QCOM_CAMSS": "m",
+    "CONFIG_PHY_QCOM_MIPI_CSI2": "m",
+    "CONFIG_VIDEO_OV02C10": "m",
+    "CONFIG_VIDEO_OV13858": "m",
+    "CONFIG_VIDEOBUF2_CORE": "m",
+    "CONFIG_VIDEOBUF2_MEMOPS": "m",
+    "CONFIG_VIDEOBUF2_V4L2": "m",
+    "CONFIG_VIDEOBUF2_DMA_SG": "m",
+    "CONFIG_PHY_QCOM_QMP": "m",
+    "CONFIG_PHY_QCOM_QMP_COMBO": "m",
+    "CONFIG_GENERIC_PHY": "y",
+    "CONFIG_PHY_SNPS_EUSB2": "m",
+    "CONFIG_PHY_QCOM_EUSB2_REPEATER": "m",
+    "CONFIG_MFD_SYSCON": "y",
+    "CONFIG_REGMAP_MMIO": "y",
+    "CONFIG_DRM_BRIDGE": "y",
+    "CONFIG_DRM_AUX_BRIDGE": "m",
+    "CONFIG_COMMON_CLK_QCOM": "y",
+    "CONFIG_CLK_X1P42100_CAMCC": "m",
+    "CONFIG_CLK_X1E80100_GCC": "m",
+    "CONFIG_QCOM_GDSC": "y",
+    "CONFIG_PM_GENERIC_DOMAINS": "y",
+    "CONFIG_RATIONAL": "y",
+    "CONFIG_RESET_CONTROLLER": "y",
+    "CONFIG_INTERCONNECT": "y",
+    "CONFIG_INTERCONNECT_CLK": "y",
+}
 ASSIGN = re.compile(r"^(CONFIG_[A-Za-z0-9_]+)=(.*)$")
 DISABLED = re.compile(r"^# (CONFIG_[A-Za-z0-9_]+) is not set$")
 
@@ -81,9 +138,15 @@ def compare(seed, candidate):
             exceptions.append(item)
         else:
             unexpected.append(item)
-    policy_additions, newly_enabled = [], []
+    policy_additions, required_config_additions, newly_enabled = [], [], []
     for key, value in candidate.items():
         if value not in ("y", "m") or seed.get(key) in ("y", "m"):
+            continue
+        required = REQUIRED_SP12_CONFIG.get(key)
+        if required == value:
+            required_config_additions.append({"symbol": key, "before": seed.get(key),
+                                              "after": value,
+                                              "reason": "required SP12 camera/media/PHY closure"})
             continue
         approved = POLICY_ADDITIONS.get(key)
         if approved and value == approved[0]:
@@ -91,9 +154,17 @@ def compare(seed, candidate):
                                      "after": value, "reason": approved[1]})
         else:
             newly_enabled.append({"symbol": key, "before": seed.get(key), "after": value})
+    required_config_mismatches = [
+        {"symbol": key, "expected": value, "actual": candidate.get(key)}
+        for key, value in REQUIRED_SP12_CONFIG.items()
+        if candidate.get(key) != value
+    ]
     return {"schema": 1, "enabled_seed_symbols": sum(v in ("y", "m") for v in seed.values()),
             "known_unreviewed_exceptions": exceptions, "approved_policy_changes": policy_changes,
             "approved_policy_additions": policy_additions, "unexpected_changes": unexpected,
+            "required_sp12_config": REQUIRED_SP12_CONFIG,
+            "required_sp12_config_additions": required_config_additions,
+            "required_sp12_config_mismatches": required_config_mismatches,
             "newly_enabled_unreviewed": newly_enabled,
             "limitations": ["added or previously disabled symbols still require review",
                             "passing does not establish runtime or hardware support"]}
@@ -109,9 +180,9 @@ def main():
     report["seed_sha256"] = hashlib.sha256(args.seed.read_bytes()).hexdigest()
     report["candidate_sha256"] = hashlib.sha256(args.candidate.read_bytes()).hexdigest()
     rendered = json.dumps(report, indent=2) + "\n"
-    if report["unexpected_changes"]:
+    if report["unexpected_changes"] or report["required_sp12_config_mismatches"]:
         print(rendered, file=sys.stderr, end="")
-        raise SystemExit("unexpected enabled SP12 seed symbol changes")
+        raise SystemExit("SP12 configuration audit failed")
     if args.output:
         args.output.write_text(rendered, encoding="utf-8")
     else:

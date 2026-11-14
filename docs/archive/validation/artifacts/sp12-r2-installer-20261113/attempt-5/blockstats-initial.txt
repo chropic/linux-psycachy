@@ -1,0 +1,3 @@
+linuxdisk: rd_bytes=2908160 wr_bytes=0 rd_operations=41 wr_operations=0 flush_operations=0 wr_total_time_ns=0 rd_total_time_ns=360606 flush_total_time_ns=0 rd_merged=0 wr_merged=0 idle_time_ns=13138790869
+otherdisk: rd_bytes=2908160 wr_bytes=0 rd_operations=41 wr_operations=0 flush_operations=0 wr_total_time_ns=0 rd_total_time_ns=662038 flush_total_time_ns=0 rd_merged=0 wr_merged=0 idle_time_ns=13259308264
+installer: rd_bytes=245938176 wr_bytes=0 rd_operations=708 wr_operations=0 flush_operations=0 wr_total_time_ns=0 rd_total_time_ns=30359413 flush_total_time_ns=0 rd_merged=0 wr_merged=0 idle_time_ns=7595522

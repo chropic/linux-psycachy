@@ -1,0 +1,41 @@
+{
+  "attempt": 5,
+  "stopped_utc": "2026-11-13T20:25:39.246366+00:00",
+  "reason": "No block-counter or installer-screen progress for approximately 20 minutes under single-thread TCG; stopped before any disk/media writes.",
+  "final_blockstats": {
+    "installer": {
+      "rd_bytes": 714944512,
+      "rd_operations": 1711,
+      "wr_bytes": 0,
+      "wr_operations": 0
+    },
+    "linuxdisk": {
+      "rd_bytes": 9887744,
+      "rd_operations": 285,
+      "wr_bytes": 0,
+      "wr_operations": 0
+    },
+    "otherdisk": {
+      "rd_bytes": 9887744,
+      "rd_operations": 285,
+      "wr_bytes": 0,
+      "wr_operations": 0
+    }
+  },
+  "qcow": {
+    "linux.qcow2": {
+      "virtual_size": 68719476736,
+      "actual_size": 200704,
+      "format": "qcow2",
+      "corrupt": false
+    },
+    "other.qcow2": {
+      "virtual_size": 68719476736,
+      "actual_size": 1314816,
+      "format": "qcow2",
+      "corrupt": false
+    }
+  },
+  "sentinel_verified": true,
+  "iso_writes": 0
+}

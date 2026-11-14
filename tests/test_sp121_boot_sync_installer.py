@@ -56,7 +56,8 @@ class BootSyncInstallerTests(unittest.TestCase):
             env = dict(os.environ, PATH=f"{mock_bin}:{os.environ['PATH']}",
                        SP12_TEST_MOCK_MOUNTS="1", SP12_TEST_LOCK=str(root / "boot.lock"))
             result = subprocess.run(
-                ["sh", str(INSTALLER), "--target", str(target), "--apply"],
+                ["sh", str(INSTALLER), "--target", str(target), "--kernel-release",
+                 "7.3.1-psycachy-sp121", "--apply"],
                 env=env, capture_output=True, text=True,
             )
 
@@ -96,7 +97,8 @@ class BootSyncInstallerTests(unittest.TestCase):
             env = dict(os.environ, PATH=f"{mock_bin}:{os.environ['PATH']}",
                        SP12_TEST_MOCK_MOUNTS="1", SP12_TEST_LOCK=str(root / "boot.lock"))
             result = subprocess.run(
-                ["sh", str(INSTALLER), "--target", str(target), "--apply"],
+                ["sh", str(INSTALLER), "--target", str(target), "--kernel-release",
+                 "7.3.1-psycachy-sp121", "--apply"],
                 env=env, capture_output=True, text=True,
             )
 

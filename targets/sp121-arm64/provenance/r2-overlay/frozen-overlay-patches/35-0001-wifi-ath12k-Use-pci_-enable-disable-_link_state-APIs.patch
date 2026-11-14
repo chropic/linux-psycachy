@@ -1,0 +1,83 @@
+It is not recommended to enable/disable the ASPM states on the back of the
+PCI core directly using the LNKCTL register. It will break the PCI core's
+knowledge about the device ASPM states. So use the APIs exposed by the PCI
+core to enable/disable ASPM states.
+
+Tested-on: WCN7850 hw2.0 PCI WLAN.HMT.1.0.c5-00481-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
+
+Reported-by: Qiang Yu <qiang.yu@oss.qualcomm.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20250825-ath-aspm-fix-v2-6-61b2f2db7d89@oss.qualcomm.com
+Signed-off-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+---
+ drivers/net/wireless/ath/ath12k/Kconfig |  2 +-
+ drivers/net/wireless/ath/ath12k/pci.c   | 19 +++----------------
+ drivers/net/wireless/ath/ath12k/pci.h   |  4 +++-
+ 3 files changed, 7 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath12k/Kconfig b/drivers/net/wireless/ath/ath12k/Kconfig
+index 1ea1af1b8..789276e1e 100644
+--- a/drivers/net/wireless/ath/ath12k/Kconfig
++++ b/drivers/net/wireless/ath/ath12k/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: BSD-3-Clause-Clear
+ config ATH12K
+ 	tristate "Qualcomm Wi-Fi 7 support (ath12k)"
+-	depends on MAC80211 && HAS_DMA && PCI
++	depends on MAC80211 && HAS_DMA && PCI && PCIEASPM
+ 	select QCOM_QMI_HELPERS
+ 	select MHI_BUS
+ 	select QRTR
+diff --git a/drivers/net/wireless/ath/ath12k/pci.c b/drivers/net/wireless/ath/ath12k/pci.c
+index 60b8f7361..49caa8cda 100644
+--- a/drivers/net/wireless/ath/ath12k/pci.c
++++ b/drivers/net/wireless/ath/ath12k/pci.c
+@@ -935,19 +935,9 @@ static void ath12k_pci_free_region(struct ath12k_pci *ab_pci)
+ 
+ static void ath12k_pci_aspm_disable(struct ath12k_pci *ab_pci)
+ {
+-	struct ath12k_base *ab = ab_pci->ab;
+-
+-	pcie_capability_read_word(ab_pci->pdev, PCI_EXP_LNKCTL,
+-				  &ab_pci->link_ctl);
+-
+-	ath12k_dbg(ab, ATH12K_DBG_PCI, "pci link_ctl 0x%04x L0s %d L1 %d\n",
+-		   ab_pci->link_ctl,
+-		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L0S),
+-		   u16_get_bits(ab_pci->link_ctl, PCI_EXP_LNKCTL_ASPM_L1));
++	ab_pci->aspm_states = pcie_aspm_enabled(ab_pci->pdev);
+ 
+-	/* disable L0s and L1 */
+-	pcie_capability_clear_word(ab_pci->pdev, PCI_EXP_LNKCTL,
+-				   PCI_EXP_LNKCTL_ASPMC);
++	pci_disable_link_state(ab_pci->pdev, PCIE_LINK_STATE_ALL);
+ 
+ 	set_bit(ATH12K_PCI_ASPM_RESTORE, &ab_pci->flags);
+ }
+@@ -976,10 +966,7 @@ static void ath12k_pci_aspm_restore(struct ath12k_pci *ab_pci)
+ {
+ 	if (ab_pci->ab->hw_params->supports_aspm &&
+ 	    test_and_clear_bit(ATH12K_PCI_ASPM_RESTORE, &ab_pci->flags))
+-		pcie_capability_clear_and_set_word(ab_pci->pdev, PCI_EXP_LNKCTL,
+-						   PCI_EXP_LNKCTL_ASPMC,
+-						   ab_pci->link_ctl &
+-						   PCI_EXP_LNKCTL_ASPMC);
++		pci_enable_link_state(ab_pci->pdev, ab_pci->aspm_states);
+ }
+ 
+ static void ath12k_pci_cancel_workqueue(struct ath12k_base *ab)
+diff --git a/drivers/net/wireless/ath/ath12k/pci.h b/drivers/net/wireless/ath/ath12k/pci.h
+index d1ec8aad7..f3e4e5932 100644
+--- a/drivers/net/wireless/ath/ath12k/pci.h
++++ b/drivers/net/wireless/ath/ath12k/pci.h
+@@ -114,7 +114,9 @@ struct ath12k_pci {
+ 
+ 	/* enum ath12k_pci_flags */
+ 	unsigned long flags;
+-	u16 link_ctl;
++
++	/* Cached PCIe ASPM states */
++	u32 aspm_states;
+ 	unsigned long irq_flags;
+ 	const struct ath12k_pci_ops *pci_ops;
+ 	u32 qmi_instance;

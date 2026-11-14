@@ -1,0 +1,107 @@
+DWC3 driver does manage phys itself sufficiently for Qualcomm platforms.
+If xhci-skip-phy-init is not set, the HCD core does a phy_init and phy_
+exit is done only when roothub is being destroyed. Due to this, during
+system suspend in host mode, although phy_exit is done by DWC3 core, the
+init_count on phy is never down to zero since HCD core also did an init.
+consequently causing phy's exit routine to not be called. Hence, add
+support to skip phy management by USB core.
+
+Some Exynos platforms still do rely on USB core for phy_calibrate calls,
+hence disable USB core management for Qualcomm platforms only.
+
+Signed-off-by: Krishna Kurapati <krishna.kurapati@oss.qualcomm.com>
+---
+Initially, a patch was sent adding software_node properties [1]. But it
+was causing a bootup issue as mentioned in [2]. Hence a revert was sent
+to fix it [3]. This patch uses a different approach as opposed to adding
+sofware node properties and was tested on sm8750 mtp.
+
+[1]: https://lore.kernel.org/all/20260723-dwc3-skip-init-quirk-v1-1-97682bb44ebd@oss.qualcomm.com/
+[2]: https://lore.kernel.org/all/cbb4ae94-7862-4d91-b01d-0d7f18d49a45@packett.cool/
+[3]: https://lore.kernel.org/all/20260909-xhci-fixes-revert-v1-1-7cc97fa0f307@oss.qualcomm.com/
+---
+ drivers/usb/dwc3/core.c      | 3 +++
+ drivers/usb/dwc3/core.h      | 1 +
+ drivers/usb/dwc3/dwc3-qcom.c | 1 +
+ drivers/usb/dwc3/glue.h      | 2 ++
+ drivers/usb/dwc3/host.c      | 5 ++++-
+ 5 files changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index fd5c2cd36c59..d9f4e4109abb 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1694,6 +1694,9 @@ static void dwc3_get_software_properties(struct dwc3 *dwc,
+ 	if (properties->needs_full_reinit)
+ 		dwc->needs_full_reinit = true;
+ 
++	if (properties->skip_phy_init)
++		dwc->skip_phy_init = true;
++
+ 	dwc->gsbuscfg0_reqinfo = DWC3_GSBUSCFG0_REQINFO_UNSPECIFIED;
+ 
+ 	if (properties->gsbuscfg0_reqinfo !=
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 608daeb7ef10..b72869380933 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -1420,6 +1420,7 @@ struct dwc3 {
+ 	unsigned		wakeup_configured:1;
+ 	unsigned		suspended:1;
+ 	unsigned		susphy_state:1;
++	unsigned		skip_phy_init:1;
+ 
+ 	u16			imod_interval;
+ 
+diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
+index e6b6beb38fcb..5387658dd38d 100644
+--- a/drivers/usb/dwc3/dwc3-qcom.c
++++ b/drivers/usb/dwc3/dwc3-qcom.c
+@@ -738,6 +738,7 @@ static int dwc3_qcom_probe(struct platform_device *pdev)
+ 	probe_data.res = &res;
+ 	probe_data.ignore_clocks_and_resets = true;
+ 	probe_data.properties = DWC3_DEFAULT_PROPERTIES;
++	probe_data.properties.skip_phy_init = true;
+ 	ret = dwc3_core_probe(&probe_data);
+ 	if (ret)  {
+ 		ret = dev_err_probe(dev, ret, "failed to register DWC3 Core\n");
+diff --git a/drivers/usb/dwc3/glue.h b/drivers/usb/dwc3/glue.h
+index d738e1739ae0..72c5593e657a 100644
+--- a/drivers/usb/dwc3/glue.h
++++ b/drivers/usb/dwc3/glue.h
+@@ -14,10 +14,12 @@
+  * @gsbuscfg0_reqinfo: Value to be programmed in the GSBUSCFG0.REQINFO field
+  * @needs_full_reinit: indicate the controller may not remain power during system
+  *			pm and need full initialization
++ * @skip_phy_init: skip xHCI PHY initialization on host init
+  */
+ struct dwc3_properties {
+ 	u32 gsbuscfg0_reqinfo;
+ 	unsigned needs_full_reinit:1;
++	unsigned skip_phy_init:1;
+ };
+ 
+ #define DWC3_DEFAULT_PROPERTIES ((struct dwc3_properties){		\
+diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
+index c5674161b2b0..3fb8be8be590 100644
+--- a/drivers/usb/dwc3/host.c
++++ b/drivers/usb/dwc3/host.c
+@@ -130,7 +130,7 @@ static int dwc3_host_get_irq(struct dwc3 *dwc)
+ 
+ int dwc3_host_init(struct dwc3 *dwc)
+ {
+-	struct property_entry	props[6];
++	struct property_entry	props[7];
+ 	struct platform_device	*xhci;
+ 	int			ret, irq;
+ 	int			prop_idx = 0;
+@@ -174,6 +174,9 @@ int dwc3_host_init(struct dwc3 *dwc)
+ 	if (dwc->usb2_lpm_disable)
+ 		props[prop_idx++] = PROPERTY_ENTRY_BOOL("usb2-lpm-disable");
+ 
++	if (dwc->skip_phy_init)
++		props[prop_idx++] = PROPERTY_ENTRY_BOOL("xhci-skip-phy-init-quirk");
++
+ 	/**
+ 	 * WORKAROUND: dwc3 revisions <=3.00a have a limitation
+ 	 * where Port Disable command doesn't work.

@@ -1,0 +1,75 @@
+qmp_combo_typec_switch_set() and qmp_combo_typec_mux_set() tear the common
+block down and bring it straight back up, calling qmp_combo_com_exit() and
+qmp_combo_com_init() with force=true.  Both release and re-acquire the PHY
+clocks.
+
+Unlike the PHY operations, which the PHY core always invokes with a
+runtime PM reference held - phy_pm_runtime_get_sync() in phy_init(),
+phy_exit() and phy_power_on() - these two are typec_switch and typec_mux
+callbacks and hold no such reference.  Releasing the clocks is then enough
+to drop the device's last reference, so clk_core_unprepare() runs
+pm_runtime_idle() and re-enters the driver through
+qmp_combo_runtime_suspend(), which disables the very clocks that are being
+torn down:
+
+  gcc_usb3_prim_phy_pipe_clk already disabled
+  WARNING: drivers/clk/clk.c:1259 at clk_core_disable+0x298/0x300
+  Workqueue: events_freezable pmic_glink_altmode_worker
+   clk_disable
+   qmp_combo_runtime_suspend
+   pm_generic_runtime_suspend
+   genpd_runtime_suspend
+   rpm_suspend
+   rpm_idle
+   __pm_runtime_idle
+   clk_core_unprepare
+   clk_core_unprepare
+   clk_core_unprepare
+
+qmp_combo_runtime_suspend() only checks init_count, which is still
+non-zero at that point, so it proceeds and the clock enable and prepare
+counts underflow.
+
+Runtime PM is forbidden at probe, so this only becomes reachable once
+userspace opts in through power/control - which is exactly what the
+comment above pm_runtime_forbid() invites it to do.
+
+Hold a runtime PM reference across the teardown and bringup so releasing
+the clocks cannot re-enter the driver's own suspend callback.
+
+Fixes: 2851117f8f42 ("phy: qcom-qmp-combo: Introduce orientation switching")
+Signed-off-by: Oleg Keri <okerixx@gmail.com>
+---
+ drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index fa1a91e67549..f6d3320a59d9 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -16,6 +16,7 @@
+ #include <linux/of_graph.h>
+ #include <linux/phy/phy.h>
+ #include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/reset.h>
+ #include <linux/slab.h>
+@@ -5179,6 +5180,8 @@ static int qmp_combo_typec_switch_set(struct typec_switch_dev *sw,
+ 	qmp->orientation = orientation;
+ 
+ 	if (qmp->init_count) {
++		guard(pm_runtime_active)(qmp->dev);
++
+ 		if (qmp->usb_init_count || qmp->usb4_init_count)
+ 			qmp_combo_usb_power_off(qmp->usb_phy);
+ 		qmp_combo_com_exit(qmp, true);
+@@ -5265,6 +5268,8 @@ static int qmp_combo_typec_mux_set(struct typec_mux_dev *mux, struct typec_mux_s
+ 	if (!qmp->init_count)
+ 		return 0;
+ 
++	guard(pm_runtime_active)(qmp->dev);
++
+ 	return qmp_combo_reconfigure_phy(qmp, new_mode);
+ }
+ 

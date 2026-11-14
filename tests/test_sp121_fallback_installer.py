@@ -85,7 +85,8 @@ class FallbackInstallerTests(unittest.TestCase):
                 SP12_TEST_LOCK=str(root / "boot.lock"),
             )
             result = subprocess.run(
-                ["sh", str(INSTALLER), "--target", str(target), "--apply"],
+                ["sh", str(INSTALLER), "--target", str(target), "--kernel-release",
+                 "7.3.1-psycachy-sp121", "--apply"],
                 env=env,
                 capture_output=True,
                 text=True,
@@ -221,7 +222,8 @@ class FallbackInstallerTests(unittest.TestCase):
                 SP12_TEST_MARKER_LOG=str(marker_log),
             )
             result = subprocess.run(
-                ["sh", str(INSTALLER), "--target", str(target), "--apply"],
+                ["sh", str(INSTALLER), "--target", str(target), "--kernel-release",
+                 "7.3.1-psycachy-sp121", "--apply"],
                 env=env,
                 capture_output=True,
                 text=True,

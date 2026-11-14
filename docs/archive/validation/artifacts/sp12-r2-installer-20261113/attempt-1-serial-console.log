@@ -1,0 +1,11 @@
+Script started on 2026-11-13 04:56:54-07:00 [COMMAND="socat STDIO TCP:127.0.0.1:4455" TERM="dumb" TTY="/dev/pts/4" COLUMNS="80" LINES="24"]
+Ign:1 file:/cdrom stonking InRelease
+Get:2 file:/cdrom stonking Release [418 B]
+Get:2 file:/cdrom stonking Release [418 B]
+Get:3 file:/cdrom stonking Release.gpg [228 B]
+Get:3 file:/cdrom stonking Release.gpg [228 B]
+Get:4 file:/cdrom stonking/main arm64 Packages [20.4 kB]
+Reading package lists...
+chown: warning: '.' should be ':': 'ubuntu.ubuntu'
+chown: warning: '.' should be ':': 'ubuntu.ubuntu'
+[18t^[[8;24;80t7[32766;32766H[6n8^[[1;1R

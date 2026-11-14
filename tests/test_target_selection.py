@@ -10,9 +10,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
 class TargetSelectionTests(unittest.TestCase):
-    def test_sp12_builder_uses_config_localversion_once(self):
+    def test_sp12_builder_uses_the_canonical_kernel_identity(self):
         builder = (ROOT / "targets/sp121-arm64/build.sh").read_text()
-        self.assertIn("--set-str LOCALVERSION '-psycachy-sp121'", builder)
+        self.assertIn('identity="$root/config/arm64-kernel-identity.json"', builder)
+        self.assertIn('localversion=$(identity_field localversion)', builder)
+        self.assertIn('--set-str LOCALVERSION "$localversion"', builder)
         self.assertNotIn("LOCALVERSION=-psycachy-sp121", builder)
 
     def test_sp12_builder_applies_runtime_package_dependencies(self):
@@ -55,6 +57,17 @@ class TargetSelectionTests(unittest.TestCase):
         self.assertNotIn("7.3.0-9-generic", installer)
         for name in ("iso/download-packages.sh", "iso/check-offline-packages.sh"):
             self.assertNotIn("linux-headers-7.3.0-9-generic=", (ROOT / name).read_text())
+
+    def test_arm64_installer_regenerates_and_checks_candidate_grub_entry(self):
+        installer = (ROOT / "iso/arm64-install-target.sh").read_text()
+        regenerate = installer.index('curtin in-target --target="$target" -- update-grub')
+        candidate_check = installer.index('grep -Fq "vmlinuz-$release" "$grub_cfg"')
+        fallback_check = installer.index('Ubuntu generic fallback GRUB entry is missing after update-grub')
+        package_audit = installer.index('dpkg --root="$target" --audit')
+        self.assertLess(regenerate, candidate_check)
+        self.assertLess(candidate_check, fallback_check)
+        self.assertLess(fallback_check, package_audit)
+        self.assertIn('for image in "$target"/boot/vmlinuz-*-generic; do', installer)
 
     def run_builder(self, *args):
         return subprocess.run(

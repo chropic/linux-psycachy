@@ -1,0 +1,349 @@
+{
+  "schema": 1,
+  "enabled_seed_symbols": 12360,
+  "known_unreviewed_exceptions": [
+    {
+      "symbol": "CONFIG_CC_IS_GCC",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_AS_IS_GNU",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_LD_IS_BFD",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_NO_ARRAY_BOUNDS",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_NO_STRINGOP_OVERFLOW",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_GCC_SUPPORTS_DYNAMIC_FTRACE_WITH_ARGS",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_GPIO_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_POWER_RESET_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_SENSORS_MACSMC_HWMON",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_MFD_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_REGULATOR_DA903X",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_DRM_AMD_DC_FP",
+      "before": "y",
+      "after": null,
+      "reason": "non-SP12 GPU option or sample; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_DRM_AMD_SECURE_DISPLAY",
+      "before": "y",
+      "after": null,
+      "reason": "non-SP12 GPU option or sample; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_RTC_DRV_MACSMC",
+      "before": "m",
+      "after": null,
+      "reason": "non-SP12 device symbol; replacement not established"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_UBSAN_BOUNDS_STRICT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    },
+    {
+      "symbol": "CONFIG_UBSAN_BOUNDS_STRICT",
+      "before": "y",
+      "after": null,
+      "reason": "toolchain or compiler capability"
+    }
+  ],
+  "approved_policy_changes": [
+    {
+      "symbol": "CONFIG_KEXEC",
+      "before": "y",
+      "after": "n",
+      "reason": "legacy unsigned kexec disabled by Phase 1 policy"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER",
+      "before": "y",
+      "after": "n",
+      "reason": "kexec handover disabled by Phase 1 policy"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+      "before": "y",
+      "after": null,
+      "reason": "handover debugfs controls removed with handover"
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT",
+      "before": "y",
+      "after": null,
+      "reason": "handover default removed with handover"
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE",
+      "before": "y",
+      "after": null,
+      "reason": "live update removed with handover"
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE_MEMFD",
+      "before": "y",
+      "after": null,
+      "reason": "live update removed with handover"
+    },
+    {
+      "symbol": "CONFIG_MEMBLOCK_KHO_SCRATCH",
+      "before": "y",
+      "after": null,
+      "reason": "handover-only scratch support removed with handover"
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+      "before": "y",
+      "after": "n",
+      "reason": "integrity lockdown selected by Phase 1 policy"
+    }
+  ],
+  "approved_policy_additions": [
+    {
+      "symbol": "CONFIG_KEXEC_SIG_FORCE",
+      "before": null,
+      "after": "y",
+      "reason": "mandatory file-based kexec signatures"
+    },
+    {
+      "symbol": "CONFIG_ARCH_SUPPORTS_KEXEC_SIG_FORCE",
+      "before": null,
+      "after": "y",
+      "reason": "ARM64 force-signature capability patch"
+    },
+    {
+      "symbol": "CONFIG_MODULE_SIG_FORCE",
+      "before": "n",
+      "after": "y",
+      "reason": "reject unsigned and untrusted modules"
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY",
+      "before": "n",
+      "after": "y",
+      "reason": "integrity lockdown default"
+    }
+  ],
+  "unexpected_changes": [],
+  "required_sp12_config": {
+    "CONFIG_OF": "y",
+    "CONFIG_ARM64": "y",
+    "CONFIG_ARCH_QCOM": "y",
+    "CONFIG_COMMON_CLK": "y",
+    "CONFIG_HAVE_CLK": "y",
+    "CONFIG_IOMMU_DMA": "y",
+    "CONFIG_GPIOLIB": "y",
+    "CONFIG_REGULATOR": "y",
+    "CONFIG_PM": "y",
+    "CONFIG_I2C": "y",
+    "CONFIG_I2C_QCOM_CCI": "m",
+    "CONFIG_REGMAP_I2C": "y",
+    "CONFIG_MEDIA_SUPPORT": "m",
+    "CONFIG_MEDIA_CAMERA_SUPPORT": "y",
+    "CONFIG_MEDIA_PLATFORM_SUPPORT": "y",
+    "CONFIG_VIDEO_CAMERA_SENSOR": "y",
+    "CONFIG_VIDEO_DEV": "m",
+    "CONFIG_MEDIA_CONTROLLER": "y",
+    "CONFIG_VIDEO_V4L2_I2C": "y",
+    "CONFIG_VIDEO_V4L2_SUBDEV_API": "y",
+    "CONFIG_V4L2_FWNODE": "m",
+    "CONFIG_V4L2_ASYNC": "m",
+    "CONFIG_V4L2_CCI": "m",
+    "CONFIG_V4L2_CCI_I2C": "m",
+    "CONFIG_DMA_SHARED_BUFFER": "y",
+    "CONFIG_V4L_PLATFORM_DRIVERS": "y",
+    "CONFIG_VIDEO_QCOM_CAMSS": "m",
+    "CONFIG_PHY_QCOM_MIPI_CSI2": "m",
+    "CONFIG_VIDEO_OV02C10": "m",
+    "CONFIG_VIDEO_OV13858": "m",
+    "CONFIG_VIDEOBUF2_CORE": "m",
+    "CONFIG_VIDEOBUF2_MEMOPS": "m",
+    "CONFIG_VIDEOBUF2_V4L2": "m",
+    "CONFIG_VIDEOBUF2_DMA_SG": "m",
+    "CONFIG_PHY_QCOM_QMP": "m",
+    "CONFIG_PHY_QCOM_QMP_COMBO": "m",
+    "CONFIG_GENERIC_PHY": "y",
+    "CONFIG_PHY_SNPS_EUSB2": "m",
+    "CONFIG_PHY_QCOM_EUSB2_REPEATER": "m",
+    "CONFIG_MFD_SYSCON": "y",
+    "CONFIG_REGMAP_MMIO": "y",
+    "CONFIG_DRM_BRIDGE": "y",
+    "CONFIG_DRM_AUX_BRIDGE": "m",
+    "CONFIG_COMMON_CLK_QCOM": "y",
+    "CONFIG_CLK_X1P42100_CAMCC": "m",
+    "CONFIG_CLK_X1E80100_GCC": "m",
+    "CONFIG_QCOM_GDSC": "y",
+    "CONFIG_PM_GENERIC_DOMAINS": "y",
+    "CONFIG_RATIONAL": "y",
+    "CONFIG_RESET_CONTROLLER": "y",
+    "CONFIG_INTERCONNECT": "y",
+    "CONFIG_INTERCONNECT_CLK": "y"
+  },
+  "required_sp12_config_additions": [],
+  "required_sp12_config_mismatches": [],
+  "newly_enabled_unreviewed": [
+    {
+      "symbol": "CONFIG_CC_IS_CLANG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_AS_IS_LLVM",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_LD_IS_LLD",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_RUSTC_CLANG_LLVM_COMPATIBLE",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_COUNTED_BY_PTR",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_ALLOC_TOKEN",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CACHY",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_SCHED_POC_SELECTOR",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CLANG_SUPPORTS_DYNAMIC_FTRACE_WITH_ARGS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_COMPAT_VDSO",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_THUMB2_COMPAT_VDSO",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAS_LTO_CLANG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAVE_CFI_ICALL_NORMALIZE_INTEGERS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_HAVE_CFI_ICALL_NORMALIZE_INTEGERS_RUSTC",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_MQ_IOSCHED_ADIOS",
+      "before": null,
+      "after": "m"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_SANCOV_STACK_DEPTH_CALLBACK",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_RANDSTRUCT",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_PAHOLE_HAS_BTF_TAG",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_CC_HAS_UBSAN_ARRAY_BOUNDS",
+      "before": null,
+      "after": "y"
+    },
+    {
+      "symbol": "CONFIG_UBSAN_ARRAY_BOUNDS",
+      "before": null,
+      "after": "y"
+    }
+  ],
+  "limitations": [
+    "added or previously disabled symbols still require review",
+    "passing does not establish runtime or hardware support"
+  ],
+  "seed_sha256": "cd5027943acfa23b4fc9798cc71f6f3d88996b54a3d25ec2b873762dc39e01a0",
+  "candidate_sha256": "cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957"
+}

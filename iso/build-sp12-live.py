@@ -298,7 +298,13 @@ def validate_kernel_inputs(package_dir, package_verification, build_metadata,
             'Module signing certificate must be a regular file')
     require(sha(certificate) == pin['module_signing_certificate_sha256'],
             'Module signing certificate differs from the kernel pin')
-    report = verify_arm64_packages(package_dir)
+    report = verify_arm64_packages(
+        package_dir,
+        expected_release=pin['kernel_release'],
+        expected_dtb=pin['dtb_path'],
+        expected_version=pin['debian_version'],
+        expected_dtb_build_id=pin.get('dtb_build_id'),
+    )
     recorded_report = load_json(package_verification)
     require(recorded_report == report,
             'Package verification manifest does not match the supplied package pair')
@@ -386,7 +392,7 @@ def build(args):
     module_signing_certificate = args.module_signing_certificate.resolve(strict=True)
     kernel_pin, package_report, metadata = validate_kernel_inputs(
         package_dir, package_verification, build_metadata_path,
-        module_signing_certificate)
+        module_signing_certificate, args.kernel_pin)
     support_pin, checked_support = resolve_support_inputs(
         args.private_machine_support, args.support_source, args.machine_root)
 
@@ -601,7 +607,7 @@ def build(args):
                              if args.private_machine_support else 'experimental-test-only'),
             'base_iso_sha256': base_pin['sha256'],
             'base_pin_sha256': sha(BASE_PIN),
-            'kernel_pin_sha256': sha(KERNEL_PIN),
+            'kernel_pin_sha256': sha(args.kernel_pin),
             'kernel_release': release,
             'kernel_payload_sha256': kernel_pin['kernel_payload_sha256'],
             'image_package_sha256': package_report['image_package']['sha256'],
@@ -735,6 +741,8 @@ def main():
                         help='build-metadata.txt emitted by the pinned build')
     parser.add_argument('--module-signing-certificate', type=Path, required=True,
                         help='Public module-signing X.509 certificate emitted by the pinned build')
+    parser.add_argument('--kernel-pin', type=Path, default=KERNEL_PIN,
+                        help='ARM64 kernel artifact pin; defaults to the active pin')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--xorriso', default='xorriso')
     parser.add_argument('--private-machine-support', action='store_true')

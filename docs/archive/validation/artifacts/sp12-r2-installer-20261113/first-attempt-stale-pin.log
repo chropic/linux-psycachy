@@ -1,0 +1,735 @@
+Successfully created target bundle in /var/tmp/psycachy-arm64-iso.O33i9jAP/kernel-bundle for 7.3.1-psycachy-sp121-r2
+Successfully created target bundle in /var/tmp/psycachy-arm64-apt.WCRYAsgw/kernel-bundle for 7.3.1-psycachy-sp121-r2
+Get:1 http://ports.ubuntu.com/ubuntu-ports stonking InRelease [170 kB]
+Get:2 http://ports.ubuntu.com/ubuntu-ports stonking-updates InRelease [72.6 kB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports stonking-security InRelease [72.6 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 Packages [992 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports stonking/main Translation-en [519 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 Components [405 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports stonking/main Icons (48x48) [86.5 kB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports stonking/main Icons (64x64) [122 kB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports stonking/main Icons (64x64@2) [43.4 kB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 c-n-f Metadata [32.1 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports stonking/restricted arm64 Packages [73.7 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports stonking/restricted Translation-en [17.1 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports stonking/restricted Icons (48x48) [29 B]
+Get:14 http://ports.ubuntu.com/ubuntu-ports stonking/restricted Icons (64x64) [29 B]
+Get:15 http://ports.ubuntu.com/ubuntu-ports stonking/restricted Icons (64x64@2) [29 B]
+Get:16 http://ports.ubuntu.com/ubuntu-ports stonking/restricted arm64 c-n-f Metadata [380 B]
+Get:17 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 Packages [11.1 MB]
+Get:18 http://ports.ubuntu.com/ubuntu-ports stonking/universe Translation-en [6524 kB]
+Get:19 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 Components [4065 kB]
+Get:20 http://ports.ubuntu.com/ubuntu-ports stonking/universe Icons (48x48) [3689 kB]
+Get:21 http://ports.ubuntu.com/ubuntu-ports stonking/universe Icons (64x64) [7541 kB]
+Get:22 http://ports.ubuntu.com/ubuntu-ports stonking/universe Icons (64x64@2) [134 kB]
+Get:23 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 c-n-f Metadata [313 kB]
+Get:24 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse arm64 Packages [174 kB]
+Get:25 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse Translation-en [124 kB]
+Get:26 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse arm64 Components [46.2 kB]
+Get:27 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse Icons (48x48) [86.7 kB]
+Get:28 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse Icons (64x64) [201 kB]
+Get:29 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse Icons (64x64@2) [904 B]
+Get:30 http://ports.ubuntu.com/ubuntu-ports stonking/multiverse arm64 c-n-f Metadata [8044 B]
+Get:31 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 Packages [99.7 kB]
+Get:32 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main Translation-en [36.2 kB]
+Get:33 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 Components [412 B]
+Get:34 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main Icons (48x48) [29 B]
+Get:35 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main Icons (64x64) [29 B]
+Get:36 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main Icons (64x64@2) [29 B]
+Get:37 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 c-n-f Metadata [112 B]
+Get:38 http://ports.ubuntu.com/ubuntu-ports stonking-updates/restricted arm64 Packages [49.4 kB]
+Get:39 http://ports.ubuntu.com/ubuntu-ports stonking-updates/restricted Translation-en [13.1 kB]
+Get:40 http://ports.ubuntu.com/ubuntu-ports stonking-updates/restricted arm64 c-n-f Metadata [116 B]
+Get:41 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe arm64 Packages [34.4 kB]
+Get:42 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe Translation-en [15.2 kB]
+Get:43 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe arm64 Components [752 B]
+Get:44 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe Icons (48x48) [1674 B]
+Get:45 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe Icons (64x64) [2135 B]
+Get:46 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe Icons (64x64@2) [29 B]
+Get:47 http://ports.ubuntu.com/ubuntu-ports stonking-updates/universe arm64 c-n-f Metadata [116 B]
+Get:48 http://ports.ubuntu.com/ubuntu-ports stonking-updates/multiverse arm64 c-n-f Metadata [116 B]
+Get:49 http://ports.ubuntu.com/ubuntu-ports stonking-security/main arm64 Packages [97.9 kB]
+Get:50 http://ports.ubuntu.com/ubuntu-ports stonking-security/main Translation-en [35.5 kB]
+Get:51 http://ports.ubuntu.com/ubuntu-ports stonking-security/main arm64 Components [416 B]
+Get:52 http://ports.ubuntu.com/ubuntu-ports stonking-security/main Icons (48x48) [29 B]
+Get:53 http://ports.ubuntu.com/ubuntu-ports stonking-security/main Icons (64x64) [29 B]
+Get:54 http://ports.ubuntu.com/ubuntu-ports stonking-security/main Icons (64x64@2) [29 B]
+Get:55 http://ports.ubuntu.com/ubuntu-ports stonking-security/main arm64 c-n-f Metadata [112 B]
+Get:56 http://ports.ubuntu.com/ubuntu-ports stonking-security/restricted arm64 Packages [49.4 kB]
+Get:57 http://ports.ubuntu.com/ubuntu-ports stonking-security/restricted Translation-en [13.1 kB]
+Get:58 http://ports.ubuntu.com/ubuntu-ports stonking-security/restricted arm64 c-n-f Metadata [120 B]
+Get:59 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe arm64 Packages [32.1 kB]
+Get:60 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe Translation-en [14.3 kB]
+Get:61 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe arm64 Components [748 B]
+Get:62 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe Icons (48x48) [1674 B]
+Get:63 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe Icons (64x64) [2135 B]
+Get:64 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe Icons (64x64@2) [29 B]
+Get:65 http://ports.ubuntu.com/ubuntu-ports stonking-security/universe arm64 c-n-f Metadata [116 B]
+Get:66 http://ports.ubuntu.com/ubuntu-ports stonking-security/multiverse arm64 c-n-f Metadata [120 B]
+Fetched 37.1 MB in 3s (12.3 MB/s)
+Reading package lists...
+W: Problem unlinking the file /var/cache/apt/pkgcache.bin - RemoveCaches (13: Permission denied)
+W: Problem unlinking the file /var/cache/apt/srcpkgcache.bin - RemoveCaches (13: Permission denied)
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following additional packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+Suggested packages:
+  binutils-doc gprofng-gui binutils-gold bzip2-doc clang-22-doc wasi-libc
+  cpp-doc gcc-15-locales cpp-15-doc debconf-doc debconf-kde-helper
+  debconf-utils libgtk3-perl libnet-ldap-perl libterm-readline-gnu-perl
+  whiptail | dialog apt debsig-verify debian-keyring debian-tag2upload-keyring
+  gcc-15-doc gcc-multilib manpages-dev autoconf automake libtool flex bison
+  gdb gcc-doc gdb-aarch64-linux-gnu libc-devtools glibc-doc locales libnss-nis
+  sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq | gnupg sqv | sqopv
+  | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq | gpgv sensible-utils git
+  bzr gdbm-l10n krb5-doc krb5-user libstdc++-15-doc llvm-22-doc make-doc ed
+  diffutils-doc perl-doc libterm-readline-gnu-perl
+  | libterm-readline-perl-perl libtap-harness-archive-perl ncompress
+  tar-scripts tar-doc
+Recommended packages:
+  llvm-22-dev python3 clang-tools-22 apt | apt-utils debconf-i18n fakeroot
+  gnupg | sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq gpgv | sqv
+  | sqopv | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq
+  libalgorithm-merge-perl manpages manpages-dev libclang-rt-22-dev
+  ca-certificates libfile-fcntllock-perl liblocale-gettext-perl krb5-locales
+  publicsuffix libsasl2-modules selinux-utils upki initramfs-tools
+  | dracut-core binfmt-support | systemd netbase
+The following NEW packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-headers-7.3.1-psycachy-sp121-r2 linux-image-7.3.1-psycachy-sp121-r2
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+0 upgraded, 120 newly installed, 0 to remove and 0 not upgraded.
+Need to get 178 MB/326 MB of archives.
+After this operation, 1667 MB of additional disk space will be used.
+Get:1 /home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-packages-20261113/linux-headers-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb linux-headers-7.3.1-psycachy-sp121-r2 arm64 7.3.1-1psycachy2 [11.5 MB]
+Get:2 /home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-packages-20261113/linux-image-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb linux-image-7.3.1-psycachy-sp121-r2 arm64 7.3.1-1psycachy2 [136 MB]
+Get:3 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc-16-base arm64 16.2.0-3ubuntu1 [41.6 kB]
+Get:4 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libc-gconv-modules-extra arm64 2.44-1ubuntu2.1 [1384 kB]
+Get:5 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libc6 arm64 2.44-1ubuntu2.1 [1670 kB]
+Get:6 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgcc-s1 arm64 16.2.0-3ubuntu1 [61.0 kB]
+Get:7 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libbz2-1.0 arm64 1.0.8-6build2 [34.9 kB]
+Get:8 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 liblzma5 arm64 5.8.3-1ubuntu1 [144 kB]
+Get:9 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libmd0 arm64 1.2.0-2 [28.6 kB]
+Get:10 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libpcre2-8-0 arm64 10.46-1ubuntu1 [237 kB]
+Get:11 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libselinux1 arm64 3.11-2.1 [93.1 kB]
+Get:12 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libzstd1 arm64 1.5.7+dfsg-4 [276 kB]
+Get:13 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 zlib1g arm64 1:1.3.dfsg+really1.3.2-3ubuntu1.1 [64.5 kB]
+Get:14 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libacl1 arm64 2.4.0-1 [20.2 kB]
+Get:15 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 tar arm64 1.35+dfsg-5ubuntu1 [253 kB]
+Get:16 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 dpkg arm64 1.23.7ubuntu2 [1265 kB]
+Get:17 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libcrypt1 arm64 1:4.5.2+20251210-1 [86.4 kB]
+Get:18 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 perl-base arm64 5.42.3-1ubuntu0.1 [1983 kB]
+Get:19 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 debconf all 1.5.92 [127 kB]
+Get:20 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libbsd0 arm64 0.12.2-3 [42.2 kB]
+Get:21 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libcom-err2 arm64 1.47.4-1 [19.8 kB]
+Get:22 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libdb5.3t64 arm64 5.3.28+dfsg2-11 [734 kB]
+Get:23 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgmp10 arm64 2:6.3.0+dfsg-5ubuntu2 [258 kB]
+Get:24 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 openssl-provider-legacy arm64 4.0.3-1ubuntu1 [41.4 kB]
+Get:25 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libssl4 arm64 4.0.3-1ubuntu1 [2785 kB]
+Get:26 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libtinfo6 arm64 6.6+20260608-2 [105 kB]
+Get:27 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libkmod2 arm64 34.2-2ubuntu3 [48.9 kB]
+Get:28 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 kmod arm64 34.2-2ubuntu3 [99.6 kB]
+Get:29 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libatomic1 arm64 16.2.0-3ubuntu1 [11.1 kB]
+Get:30 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libelf1t64 arm64 0.196-1 [57.7 kB]
+Get:31 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libbpf1 arm64 1:1.6.3-1ubuntu1 [183 kB]
+Get:32 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libedit2 arm64 3.1-20260512-1 [96.3 kB]
+Get:33 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libffi8 arm64 3.8.0-2 [26.5 kB]
+Get:34 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libkrb5support0 arm64 1.22.1-3ubuntu2 [33.8 kB]
+Get:35 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libk5crypto3 arm64 1.22.1-3ubuntu2 [82.1 kB]
+Get:36 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libkeyutils1 arm64 1.6.3-6ubuntu3 [10.8 kB]
+Get:37 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libkrb5-3 arm64 1.22.1-3ubuntu2 [357 kB]
+Get:38 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgssapi-krb5-2 arm64 1.22.1-3ubuntu2 [143 kB]
+Get:39 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libunistring5 arm64 1.4.2-1 [604 kB]
+Get:40 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libidn2-0 arm64 2.3.8-5 [67.1 kB]
+Get:41 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libstdc++6 arm64 16.2.0-3ubuntu1 [827 kB]
+Get:42 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libxml2-16 arm64 2.15.4+dfsg-1 [608 kB]
+Get:43 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgdbm6t64 arm64 1.26-1build1 [36.1 kB]
+Get:44 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libjansson4 arm64 2.15.1-1 [50.1 kB]
+Get:45 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libnghttp2-14 arm64 1.70.0-1 [70.6 kB]
+Get:46 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libpsl5t64 arm64 0.23.3-1 [61.1 kB]
+Get:47 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 xz-utils arm64 5.8.3-1ubuntu1 [405 kB]
+Get:48 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libsframe3 arm64 2.47-6ubuntu1 [21.5 kB]
+Get:49 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 binutils-common arm64 2.47-6ubuntu1 [225 kB]
+Get:50 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libbinutils arm64 2.47-6ubuntu1 [807 kB]
+Get:51 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgprofng0 arm64 2.47-6ubuntu1 [793 kB]
+Get:52 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libctf-nobfd0 arm64 2.47-6ubuntu1 [104 kB]
+Get:53 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libctf0 arm64 2.47-6ubuntu1 [101 kB]
+Get:54 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 binutils-aarch64-linux-gnu arm64 2.47-6ubuntu1 [1022 kB]
+Get:55 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 binutils arm64 2.47-6ubuntu1 [228 kB]
+Get:56 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libc-dev-bin arm64 2.44-1ubuntu2.1 [22.6 kB]
+Get:57 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 linux-libc-dev arm64 7.3.0-10.10 [1563 kB]
+Get:58 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libc6-dev arm64 2.44-1ubuntu2.1 [1876 kB]
+Get:59 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc-15-base arm64 15.3.0-4ubuntu1 [40.5 kB]
+Get:60 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libisl23 arm64 0.28-1 [680 kB]
+Get:61 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libmpfr6 arm64 4.2.2-3 [345 kB]
+Get:62 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libmpc3 arm64 1.3.1-3 [55.7 kB]
+Get:63 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 cpp-15-aarch64-linux-gnu arm64 15.3.0-4ubuntu1 [12.0 MB]
+Get:64 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 cpp-15 arm64 15.3.0-4ubuntu1 [1026 B]
+Get:65 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 cpp-aarch64-linux-gnu arm64 4:15.2.0-5ubuntu1 [5840 B]
+Get:66 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 cpp arm64 4:15.2.0-5ubuntu1 [22.4 kB]
+Get:67 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libcc1-0 arm64 16.2.0-3ubuntu1 [52.0 kB]
+Get:68 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgomp1 arm64 16.2.0-3ubuntu1 [154 kB]
+Get:69 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libitm1 arm64 16.2.0-3ubuntu1 [28.2 kB]
+Get:70 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libasan8 arm64 16.2.0-3ubuntu1 [2998 kB]
+Get:71 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 liblsan0 arm64 16.2.0-3ubuntu1 [1336 kB]
+Get:72 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libtsan2 arm64 16.2.0-3ubuntu1 [2744 kB]
+Get:73 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libubsan1 arm64 16.2.0-3ubuntu1 [1193 kB]
+Get:74 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libhwasan0 arm64 16.2.0-3ubuntu1 [1667 kB]
+Get:75 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgcc-15-dev arm64 15.3.0-4ubuntu1 [2600 kB]
+Get:76 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc-15-aarch64-linux-gnu arm64 15.3.0-4ubuntu1 [23.6 MB]
+Get:77 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc-15 arm64 15.3.0-4ubuntu1 [547 kB]
+Get:78 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc-aarch64-linux-gnu arm64 4:15.2.0-5ubuntu1 [1206 B]
+Get:79 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 gcc arm64 4:15.2.0-5ubuntu1 [5004 B]
+Get:80 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libstdc++-15-dev arm64 15.3.0-4ubuntu1 [2878 kB]
+Get:81 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 g++-15-aarch64-linux-gnu arm64 15.3.0-4ubuntu1 [13.5 MB]
+Get:82 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 g++-15 arm64 15.3.0-4ubuntu1 [28.9 kB]
+Get:83 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 g++-aarch64-linux-gnu arm64 4:15.2.0-5ubuntu1 [956 B]
+Get:84 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 g++ arm64 4:15.2.0-5ubuntu1 [1086 B]
+Get:85 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 make arm64 4.4.1-3 [194 kB]
+Get:86 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 perl-modules-5.42 all 5.42.3-1ubuntu0.1 [3431 kB]
+Get:87 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgdbm-compat4t64 arm64 1.26-1build1 [6650 B]
+Get:88 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libperl5.42 arm64 5.42.3-1ubuntu0.1 [4695 kB]
+Get:89 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 perl arm64 5.42.3-1ubuntu0.1 [264 kB]
+Get:90 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libdpkg-perl all 1.23.7ubuntu2 [291 kB]
+Get:91 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 bzip2 arm64 1.0.8-6build2 [34.0 kB]
+Get:92 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 patch arm64 2.8-2build1 [93.4 kB]
+Get:93 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 lto-disabled-list all 84 [14.5 kB]
+Get:94 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 dpkg-dev all 1.23.7ubuntu2 [1073 kB]
+Get:95 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 build-essential arm64 12.12ubuntu5 [5094 B]
+Get:96 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libllvm22 arm64 1:22.1.8-1ubuntu1 [30.8 MB]
+Get:97 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libclang-cpp22 arm64 1:22.1.8-1ubuntu1 [13.9 MB]
+Get:98 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libgc1 arm64 1:8.2.12-1 [89.6 kB]
+Get:99 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 libobjc4 arm64 16.2.0-3ubuntu1 [45.5 kB]
+Get:100 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 libobjc-15-dev arm64 15.3.0-4ubuntu1 [189 kB]
+Get:101 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 libclang-common-22-dev arm64 1:22.1.8-1ubuntu1 [773 kB]
+Get:102 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 llvm-22-linker-tools arm64 1:22.1.8-1ubuntu1 [1217 kB]
+Get:103 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libclang1-22 arm64 1:22.1.8-1ubuntu1 [8304 kB]
+Get:104 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 clang-22 arm64 1:22.1.8-1ubuntu1 [145 kB]
+Get:105 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libbrotli1 arm64 1.2.0-4ubuntu0.1 [345 kB]
+Get:106 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libsasl2-modules-db arm64 2.1.28+dfsg1-11ubuntu2 [19.4 kB]
+Get:107 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libsasl2-2 arm64 2.1.28+dfsg1-11ubuntu2 [53.5 kB]
+Get:108 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libldap-common all 2.6.13+dfsg-1ubuntu3 [26.1 kB]
+Get:109 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libldap2 arm64 2.6.13+dfsg-1ubuntu3 [191 kB]
+Get:110 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libssh2-1t64 arm64 1.11.1-6 [133 kB]
+Get:111 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libupki-openssl1 arm64 1.0.0~beta.3+repack-0ubuntu2 [260 kB]
+Get:112 http://ports.ubuntu.com/ubuntu-ports stonking-updates/main arm64 libcurl4t64 arm64 8.20.0-2ubuntu11.1 [417 kB]
+Get:113 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 libdw1t64 arm64 0.196-1 [285 kB]
+Get:114 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 libdwarves1 arm64 1.31-2ubuntu1 [90.7 kB]
+Get:115 http://ports.ubuntu.com/ubuntu-ports stonking/main arm64 linux-base all 4.17ubuntu1 [31.4 kB]
+Get:116 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 llvm-22-runtime arm64 1:22.1.8-1ubuntu1 [595 kB]
+Get:117 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 libpfm4 arm64 4.13.0+git106-g3e4031b-1ubuntu1 [81.3 kB]
+Get:118 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 llvm-22 arm64 1:22.1.8-1ubuntu1 [19.9 MB]
+Get:119 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 lld-22 arm64 1:22.1.8-1ubuntu1 [1488 kB]
+Get:120 http://ports.ubuntu.com/ubuntu-ports stonking/universe arm64 pahole arm64 1.31-2ubuntu1 [111 kB]
+Fetched 178 MB in 6s (31.3 MB/s)
+Download complete and in download only mode
+dpkg-scanpackages: warning: Packages in archive but missing from override file:
+dpkg-scanpackages: warning:   binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2 clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1 libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6 libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22 libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64 libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1 libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1 libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1 libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0 libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6 libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4 libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3 libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2 libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base linux-headers-7.3.1-psycachy-sp121-r2 linux-image-7.3.1-psycachy-sp121-r2 linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base perl-modules-5.42 tar xz-utils zlib1g
+dpkg-scanpackages: info: Wrote 120 entries to output Packages file.
+Verified ARM64 offline repository with 120 packages.
+Downloaded pinned ARM64 dependency closure to /home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/offline-packages
+Verified ARM64 offline repository with 120 packages.
+Ign:1 file:/var/tmp/psycachy-arm64-offline.GUFXiieU/repo ./ InRelease
+Ign:2 file:/var/tmp/psycachy-arm64-offline.GUFXiieU/repo ./ Release
+Get:3 file:/var/tmp/psycachy-arm64-offline.GUFXiieU/repo ./ Packages
+Reading package lists...
+NOTE: This is only a simulation!
+      apt-get needs root privileges for real execution.
+      Keep also in mind that locking is deactivated,
+      so don't depend on the relevance to the real current situation!
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following additional packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+Suggested packages:
+  binutils-doc gprofng-gui binutils-gold bzip2-doc clang-22-doc wasi-libc
+  cpp-doc gcc-15-locales cpp-15-doc debconf-doc debconf-kde-helper
+  debconf-utils libgtk3-perl libnet-ldap-perl libterm-readline-gnu-perl
+  whiptail | dialog apt debsig-verify debian-keyring debian-tag2upload-keyring
+  gcc-15-doc gcc-multilib manpages-dev autoconf automake libtool flex bison
+  gdb gcc-doc gdb-aarch64-linux-gnu libc-devtools glibc-doc locales libnss-nis
+  sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq | gnupg sqv | sqopv
+  | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq | gpgv sensible-utils git
+  bzr gdbm-l10n krb5-doc krb5-user libstdc++-15-doc llvm-22-doc make-doc ed
+  diffutils-doc perl-doc libterm-readline-gnu-perl
+  | libterm-readline-perl-perl libtap-harness-archive-perl ncompress
+  tar-scripts tar-doc
+Recommended packages:
+  llvm-22-dev python3 clang-tools-22 apt | apt-utils debconf-i18n fakeroot
+  gnupg | sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq gpgv | sqv
+  | sqopv | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq
+  libalgorithm-merge-perl manpages manpages-dev libclang-rt-22-dev
+  ca-certificates libfile-fcntllock-perl liblocale-gettext-perl krb5-locales
+  publicsuffix libsasl2-modules selinux-utils upki initramfs-tools
+  | dracut-core binfmt-support | systemd netbase
+The following NEW packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-headers-7.3.1-psycachy-sp121-r2 linux-image-7.3.1-psycachy-sp121-r2
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+0 upgraded, 120 newly installed, 0 to remove and 0 not upgraded.
+Inst gcc-16-base (16.2.0-3ubuntu1 localhost [arm64])
+Conf gcc-16-base (16.2.0-3ubuntu1 localhost [arm64])
+Inst libc-gconv-modules-extra (2.44-1ubuntu2.1 localhost [arm64])
+Conf libc-gconv-modules-extra (2.44-1ubuntu2.1 localhost [arm64])
+Inst libc6 (2.44-1ubuntu2.1 localhost [arm64]) []
+Inst libgcc-s1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgcc-s1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libc6 (2.44-1ubuntu2.1 localhost [arm64])
+Inst libbz2-1.0 (1.0.8-6build2 localhost [arm64])
+Conf libbz2-1.0 (1.0.8-6build2 localhost [arm64])
+Inst liblzma5 (5.8.3-1ubuntu1 localhost [arm64])
+Conf liblzma5 (5.8.3-1ubuntu1 localhost [arm64])
+Inst libmd0 (1.2.0-2 localhost [arm64])
+Conf libmd0 (1.2.0-2 localhost [arm64])
+Inst libpcre2-8-0 (10.46-1ubuntu1 localhost [arm64])
+Conf libpcre2-8-0 (10.46-1ubuntu1 localhost [arm64])
+Inst libselinux1 (3.11-2.1 localhost [arm64])
+Conf libselinux1 (3.11-2.1 localhost [arm64])
+Inst libzstd1 (1.5.7+dfsg-4 localhost [arm64])
+Conf libzstd1 (1.5.7+dfsg-4 localhost [arm64])
+Inst zlib1g (1:1.3.dfsg+really1.3.2-3ubuntu1.1 localhost [arm64])
+Conf zlib1g (1:1.3.dfsg+really1.3.2-3ubuntu1.1 localhost [arm64])
+Inst libacl1 (2.4.0-1 localhost [arm64])
+Conf libacl1 (2.4.0-1 localhost [arm64])
+Inst tar (1.35+dfsg-5ubuntu1 localhost [arm64])
+Conf tar (1.35+dfsg-5ubuntu1 localhost [arm64])
+Inst dpkg (1.23.7ubuntu2 localhost [arm64])
+Conf dpkg (1.23.7ubuntu2 localhost [arm64])
+Inst libcrypt1 (1:4.5.2+20251210-1 localhost [arm64])
+Conf libcrypt1 (1:4.5.2+20251210-1 localhost [arm64])
+Inst perl-base (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf perl-base (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst debconf (1.5.92 localhost [all])
+Inst openssl-provider-legacy (4.0.3-1ubuntu1 localhost [arm64]) []
+Inst libssl4 (4.0.3-1ubuntu1 localhost [arm64])
+Inst libkmod2 (34.2-2ubuntu3 localhost [arm64])
+Inst kmod (34.2-2ubuntu3 localhost [arm64])
+Inst bzip2 (1.0.8-6build2 localhost [arm64])
+Inst perl-modules-5.42 (5.42.3-1ubuntu0.1 localhost [all])
+Inst libdb5.3t64 (5.3.28+dfsg2-11 localhost [arm64])
+Inst libgdbm6t64 (1.26-1build1 localhost [arm64])
+Inst libgdbm-compat4t64 (1.26-1build1 localhost [arm64])
+Inst libperl5.42 (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst perl (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst xz-utils (5.8.3-1ubuntu1 localhost [arm64])
+Inst libsframe3 (2.47-6ubuntu1 localhost [arm64])
+Inst binutils-common (2.47-6ubuntu1 localhost [arm64])
+Inst libbinutils (2.47-6ubuntu1 localhost [arm64])
+Inst libstdc++6 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgprofng0 (2.47-6ubuntu1 localhost [arm64])
+Inst libctf-nobfd0 (2.47-6ubuntu1 localhost [arm64])
+Inst libctf0 (2.47-6ubuntu1 localhost [arm64])
+Inst libjansson4 (2.15.1-1 localhost [arm64])
+Inst binutils-aarch64-linux-gnu (2.47-6ubuntu1 localhost [arm64])
+Inst binutils (2.47-6ubuntu1 localhost [arm64])
+Inst libc-dev-bin (2.44-1ubuntu2.1 localhost [arm64])
+Inst linux-libc-dev (7.3.0-10.10 localhost [arm64])
+Inst libc6-dev (2.44-1ubuntu2.1 localhost [arm64])
+Inst gcc-15-base (15.3.0-4ubuntu1 localhost [arm64])
+Inst libgmp10 (2:6.3.0+dfsg-5ubuntu2 localhost [arm64])
+Inst libisl23 (0.28-1 localhost [arm64])
+Inst libmpfr6 (4.2.2-3 localhost [arm64])
+Inst libmpc3 (1.3.1-3 localhost [arm64])
+Inst cpp-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst cpp-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst cpp-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst cpp (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst libcc1-0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgomp1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libitm1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libatomic1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libasan8 (16.2.0-3ubuntu1 localhost [arm64])
+Inst liblsan0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libtsan2 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libubsan1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libhwasan0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgcc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst gcc (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst libstdc++-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst g++ (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst make (4.4.1-3 localhost [arm64])
+Inst libdpkg-perl (1.23.7ubuntu2 localhost [all])
+Inst patch (2.8-2build1 localhost [arm64])
+Inst lto-disabled-list (84 localhost [all])
+Inst dpkg-dev (1.23.7ubuntu2 localhost [all])
+Inst build-essential (12.12ubuntu5 localhost [arm64])
+Inst libbsd0 (0.12.2-3 localhost [arm64])
+Inst libtinfo6 (6.6+20260608-2 localhost [arm64])
+Inst libedit2 (3.1-20260512-1 localhost [arm64])
+Inst libffi8 (3.8.0-2 localhost [arm64])
+Inst libxml2-16 (2.15.4+dfsg-1 localhost [arm64])
+Inst libllvm22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libclang-cpp22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libgc1 (1:8.2.12-1 localhost [arm64])
+Inst libobjc4 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libobjc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst libclang-common-22-dev (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst llvm-22-linker-tools (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libclang1-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst clang-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libelf1t64 (0.196-1 localhost [arm64])
+Inst libbpf1 (1:1.6.3-1ubuntu1 localhost [arm64])
+Inst libbrotli1 (1.2.0-4ubuntu0.1 localhost [arm64])
+Inst libcom-err2 (1.47.4-1 localhost [arm64])
+Inst libkrb5support0 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libk5crypto3 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libkeyutils1 (1.6.3-6ubuntu3 localhost [arm64])
+Inst libkrb5-3 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libgssapi-krb5-2 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libunistring5 (1.4.2-1 localhost [arm64])
+Inst libidn2-0 (2.3.8-5 localhost [arm64])
+Inst libsasl2-modules-db (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Inst libsasl2-2 (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Inst libldap-common (2.6.13+dfsg-1ubuntu3 localhost [all])
+Inst libldap2 (2.6.13+dfsg-1ubuntu3 localhost [arm64])
+Inst libnghttp2-14 (1.70.0-1 localhost [arm64])
+Inst libpsl5t64 (0.23.3-1 localhost [arm64])
+Inst libssh2-1t64 (1.11.1-6 localhost [arm64])
+Inst libupki-openssl1 (1.0.0~beta.3+repack-0ubuntu2 localhost [arm64])
+Inst libcurl4t64 (8.20.0-2ubuntu11.1 localhost [arm64])
+Inst libdw1t64 (0.196-1 localhost [arm64])
+Inst libdwarves1 (1.31-2ubuntu1 localhost [arm64])
+Inst libpfm4 (4.13.0+git106-g3e4031b-1ubuntu1 localhost [arm64])
+Inst linux-base (4.17ubuntu1 localhost [all])
+Inst llvm-22-runtime (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst llvm-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst lld-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst pahole (1.31-2ubuntu1 localhost [arm64])
+Inst linux-headers-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Inst linux-image-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Conf debconf (1.5.92 localhost [all])
+Conf openssl-provider-legacy (4.0.3-1ubuntu1 localhost [arm64])
+Conf libssl4 (4.0.3-1ubuntu1 localhost [arm64])
+Conf libkmod2 (34.2-2ubuntu3 localhost [arm64])
+Conf kmod (34.2-2ubuntu3 localhost [arm64])
+Conf bzip2 (1.0.8-6build2 localhost [arm64])
+Conf perl-modules-5.42 (5.42.3-1ubuntu0.1 localhost [all])
+Conf libdb5.3t64 (5.3.28+dfsg2-11 localhost [arm64])
+Conf libgdbm6t64 (1.26-1build1 localhost [arm64])
+Conf libgdbm-compat4t64 (1.26-1build1 localhost [arm64])
+Conf libperl5.42 (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf perl (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf xz-utils (5.8.3-1ubuntu1 localhost [arm64])
+Conf libsframe3 (2.47-6ubuntu1 localhost [arm64])
+Conf binutils-common (2.47-6ubuntu1 localhost [arm64])
+Conf libbinutils (2.47-6ubuntu1 localhost [arm64])
+Conf libstdc++6 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgprofng0 (2.47-6ubuntu1 localhost [arm64])
+Conf libctf-nobfd0 (2.47-6ubuntu1 localhost [arm64])
+Conf libctf0 (2.47-6ubuntu1 localhost [arm64])
+Conf libjansson4 (2.15.1-1 localhost [arm64])
+Conf binutils-aarch64-linux-gnu (2.47-6ubuntu1 localhost [arm64])
+Conf binutils (2.47-6ubuntu1 localhost [arm64])
+Conf libc-dev-bin (2.44-1ubuntu2.1 localhost [arm64])
+Conf linux-libc-dev (7.3.0-10.10 localhost [arm64])
+Conf libc6-dev (2.44-1ubuntu2.1 localhost [arm64])
+Conf gcc-15-base (15.3.0-4ubuntu1 localhost [arm64])
+Conf libgmp10 (2:6.3.0+dfsg-5ubuntu2 localhost [arm64])
+Conf libisl23 (0.28-1 localhost [arm64])
+Conf libmpfr6 (4.2.2-3 localhost [arm64])
+Conf libmpc3 (1.3.1-3 localhost [arm64])
+Conf cpp-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf cpp-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf cpp-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf cpp (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf libcc1-0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgomp1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libitm1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libatomic1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libasan8 (16.2.0-3ubuntu1 localhost [arm64])
+Conf liblsan0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libtsan2 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libubsan1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libhwasan0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgcc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf gcc (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf libstdc++-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf g++ (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf make (4.4.1-3 localhost [arm64])
+Conf libdpkg-perl (1.23.7ubuntu2 localhost [all])
+Conf patch (2.8-2build1 localhost [arm64])
+Conf lto-disabled-list (84 localhost [all])
+Conf dpkg-dev (1.23.7ubuntu2 localhost [all])
+Conf build-essential (12.12ubuntu5 localhost [arm64])
+Conf libbsd0 (0.12.2-3 localhost [arm64])
+Conf libtinfo6 (6.6+20260608-2 localhost [arm64])
+Conf libedit2 (3.1-20260512-1 localhost [arm64])
+Conf libffi8 (3.8.0-2 localhost [arm64])
+Conf libxml2-16 (2.15.4+dfsg-1 localhost [arm64])
+Conf libllvm22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libclang-cpp22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libgc1 (1:8.2.12-1 localhost [arm64])
+Conf libobjc4 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libobjc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf libclang-common-22-dev (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf llvm-22-linker-tools (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libclang1-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf clang-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libelf1t64 (0.196-1 localhost [arm64])
+Conf libbpf1 (1:1.6.3-1ubuntu1 localhost [arm64])
+Conf libbrotli1 (1.2.0-4ubuntu0.1 localhost [arm64])
+Conf libcom-err2 (1.47.4-1 localhost [arm64])
+Conf libkrb5support0 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libk5crypto3 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libkeyutils1 (1.6.3-6ubuntu3 localhost [arm64])
+Conf libkrb5-3 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libgssapi-krb5-2 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libunistring5 (1.4.2-1 localhost [arm64])
+Conf libidn2-0 (2.3.8-5 localhost [arm64])
+Conf libsasl2-modules-db (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Conf libsasl2-2 (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Conf libldap-common (2.6.13+dfsg-1ubuntu3 localhost [all])
+Conf libldap2 (2.6.13+dfsg-1ubuntu3 localhost [arm64])
+Conf libnghttp2-14 (1.70.0-1 localhost [arm64])
+Conf libpsl5t64 (0.23.3-1 localhost [arm64])
+Conf libssh2-1t64 (1.11.1-6 localhost [arm64])
+Conf libupki-openssl1 (1.0.0~beta.3+repack-0ubuntu2 localhost [arm64])
+Conf libcurl4t64 (8.20.0-2ubuntu11.1 localhost [arm64])
+Conf libdw1t64 (0.196-1 localhost [arm64])
+Conf libdwarves1 (1.31-2ubuntu1 localhost [arm64])
+Conf libpfm4 (4.13.0+git106-g3e4031b-1ubuntu1 localhost [arm64])
+Conf linux-base (4.17ubuntu1 localhost [all])
+Conf llvm-22-runtime (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf llvm-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf lld-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf pahole (1.31-2ubuntu1 localhost [arm64])
+Conf linux-headers-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Conf linux-image-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+ARM64 offline repository contains a resolvable package dependency closure.
+Verified ARM64 offline repository with 120 packages.
+Staged ARM64 offline repository at /var/tmp/psycachy-arm64-iso.O33i9jAP/payload/repository with symlinks dereferenced.
+Verified ARM64 offline repository with 120 packages.
+embedded
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  122g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       1 files restored (   763b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.O33i9jAP/grub-source.cfg'
+Enabled autoinstall on 1 ARM64 GRUB kernel entries.
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  122g free
+Volume id    : 'Ubuntu 26.10 arm64'
+Drive current: -outdev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is blank
+Media summary: 0 sessions, 0 data blocks, 0 data,  122g free
+xorriso : WARNING : -volid text problematic as automatic mount point name
+xorriso : WARNING : -volid text does not comply to ISO 9660 / ECMA 119 rules
+xorriso : NOTE : Replayed 14 boot related commands
+xorriso : UPDATE :       1 files added in 1 seconds
+Added to ISO image: file '/autoinstall.yaml'='/home/charlie/Documents/ChatGPT/linux-psycachy 2/iso/arm64-autoinstall.yaml'
+xorriso : UPDATE :       1 files added in 1 seconds
+Added to ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.O33i9jAP/grub.cfg'
+xorriso : UPDATE :     164 files added in 1 seconds
+Added to ISO image: directory '/psycachy'='/var/tmp/psycachy-arm64-iso.O33i9jAP/payload'
+xorriso : NOTE : Copying to System Area: 32768 bytes from file '--interval:imported_iso:0s-15s:zero_mbrpt,zero_gpt:/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+xorriso : UPDATE : Writing:      57344s    2.3%   fifo 100%  buf  50%
+xorriso : UPDATE : Writing:     385024s   15.5%   fifo 100%  buf  50%  484.2xD 
+xorriso : UPDATE : Writing:     565248s   22.8%   fifo 100%  buf  50%  266.3xD 
+xorriso : UPDATE : Writing:     757728s   30.6%   fifo  99%  buf  50%  284.4xD 
+xorriso : UPDATE : Writing:    1040384s   42.0%   fifo 100%  buf  50%  417.7xD 
+xorriso : UPDATE : Writing:    1204224s   48.6%   fifo 100%  buf  50%  242.1xD 
+xorriso : UPDATE : Writing:    1351680s   54.6%   fifo 100%  buf  50%  242.1xD 
+xorriso : UPDATE : Writing:    1520672s   61.4%   fifo 100%  buf  50%  249.7xD 
+xorriso : UPDATE : Writing:    1679360s   67.8%   fifo 100%  buf  50%  234.5xD 
+xorriso : UPDATE : Writing:    1826816s   73.7%   fifo 100%  buf  50%  217.9xD 
+xorriso : UPDATE : Writing:    1990656s   80.3%   fifo 100%  buf  50%  242.1xD 
+xorriso : UPDATE : Writing:    2187264s   88.3%   fifo 100%  buf  50%  290.5xD 
+xorriso : UPDATE : Writing:    2388784s   96.4%   fifo  39%  buf  50%  297.8xD 
+ISO image produced: 2477687 sectors
+Written to medium : 2477856 sectors at LBA 32
+Writing to '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso' completed successfully.
+
+xorriso : NOTE : Re-assessing -outdev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso'
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be replaced by new boot image
+Drive current: -dev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       3 files restored (4301.8k) in 1 seconds = 3.2xD
+Extracted from ISO image: file '/EFI/boot'='/var/tmp/psycachy-arm64-iso.O33i9jAP/efi-source'
+xorriso : UPDATE :       1 files restored ( 25734k) in 1 seconds = 19.0xD
+Extracted from ISO image: file '/casper/vmlinuz'='/var/tmp/psycachy-arm64-iso.O33i9jAP/vmlinuz-source'
+xorriso : UPDATE :       1 files restored ( 140.0m) in 1 seconds = 106.0xD
+Extracted from ISO image: file '/casper/initrd'='/var/tmp/psycachy-arm64-iso.O33i9jAP/initrd-source'
+xorriso : UPDATE :       1 files restored (   763b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.O33i9jAP/grub-source.cfg'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       3 files restored (4301.8k) in 1 seconds = 3.2xD
+Extracted from ISO image: file '/EFI/boot'='/var/tmp/psycachy-arm64-iso.O33i9jAP/efi-result'
+xorriso : UPDATE :       1 files restored ( 25734k) in 1 seconds = 19.0xD
+Extracted from ISO image: file '/casper/vmlinuz'='/var/tmp/psycachy-arm64-iso.O33i9jAP/vmlinuz-result'
+xorriso : UPDATE :       1 files restored ( 140.0m) in 1 seconds = 106.0xD
+Extracted from ISO image: file '/casper/initrd'='/var/tmp/psycachy-arm64-iso.O33i9jAP/initrd-result'
+xorriso : UPDATE :       1 files restored (   774b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.O33i9jAP/grub-result.cfg'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       1 files restored (   282b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/autoinstall.yaml'='/var/tmp/psycachy-arm64-iso.O33i9jAP/autoinstall-result.yaml'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+ARM64 ISO verification failed: offline repository is missing the pinned package: linux-headers-7.3.1-psycachy-sp121_7.3.1-1psycachy1_arm64.deb

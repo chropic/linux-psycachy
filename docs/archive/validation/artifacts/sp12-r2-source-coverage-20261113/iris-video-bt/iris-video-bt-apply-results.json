@@ -1,0 +1,100 @@
+{
+  "baseline_source_tree_sha256": "f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e",
+  "results": [
+    {
+      "name": "video-0002-iommu-ranges",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0002-iommu-of_iommu-Add-support-for-iommu-ranges-on-a-device-node.patch",
+      "patch_sha256": "09167da47080bac348e1b896a7ca4acb34e16697183da8a38f437b4fb6b1393a",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "b59a3c95a484ceb8ba40993feb455fbe3e07f1ff4e883d0dbbfaf640a9cec693"
+    },
+    {
+      "name": "video-0003-iris-context-bank-devices",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0003-media-iris-Add-non-pixel-and-pixel-context-bank-devices.patch",
+      "patch_sha256": "0e45ebcfc581b543dba325afebf39402b4bccfcfaa67c838580147070da3da64",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "07f3a691e91180c7ae3a0824ddd318b0038d9d9de4e4c50b917286533362c623"
+    },
+    {
+      "name": "video-0004-iris-buffer-routing",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0004-media-iris-Route-buffers-to-the-matching-context-bank-device.patch",
+      "patch_sha256": "6767b9761ba036b26476cdef2542549571534067e1a527bc7758fe74eadb5659",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "45ac11a465a3f0ad003c4c4c3c4aa8e967648d4d8c4b5f25f86c0f8854b2839d"
+    },
+    {
+      "name": "video-0005-iris-dma-mask-guard",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0005-media-iris-Skip-DMA-mask-setup-when-the-core-device-has-no-IOMMU.patch",
+      "patch_sha256": "7b1eae848eb485769613a2319b23fe1d8390f49a87727c10d319836280ac18be",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "bab8d2f4e7c5d66e3226fe7c10a50bcb6a4ffb0cf27bcda52836c07d9c4d1cf6"
+    },
+    {
+      "name": "video-0008-hamoa-context-bank-dts",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0008-arm64-dts-qcom-hamoa-Add-Iris-context-bank-subnodes.patch",
+      "patch_sha256": "2831956d97d92bf5781f04edb03318accf2bfb525ce800df0001645011e885b7",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "b61c264babf9add2fc329fd8739a18bc7e56e2a8f4c76e030442053fc630d49d"
+    },
+    {
+      "name": "video-0006-iris-linux-managed-pas",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0006-media-iris-Enable-Secure-PAS-support-with-IOMMU-managed-by-linux.patch",
+      "patch_sha256": "10e570f228c50aff9e60be9673d0854e7df812519adea5ae4c4c0c3114aea0f9",
+      "check_exit": 1,
+      "check_output": "error: patch failed: drivers/media/platform/qcom/iris/iris_firmware.c:14\nerror: drivers/media/platform/qcom/iris/iris_firmware.c: patch does not apply",
+      "apply_exit": null,
+      "status": "check-failed"
+    },
+    {
+      "name": "video-0007-iris-no-tz-pas-reset",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0007-media-iris-Support-reset-without-TZ-PAS.patch",
+      "patch_sha256": "36bf2a307593d0ecc3424d618c95401e4045d3c10341b5c77d511f720e2085bc",
+      "check_exit": 1,
+      "check_output": "error: patch failed: drivers/media/platform/qcom/iris/iris_firmware.c:8\nerror: drivers/media/platform/qcom/iris/iris_firmware.c: patch does not apply",
+      "apply_exit": null,
+      "status": "check-failed"
+    },
+    {
+      "name": "video-0009-el2-iris-firmware-sid",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0009-arm64-dts-qcom-el2-add-iris-video-firmware.patch",
+      "patch_sha256": "2a410ef0b5802db340a3ecc4476519c21b91d7f939b07e07d64c9317de62a594",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "f25bc7a6a113a8260db286825317b834e5b054b5470316bf84317b787eaebdb1"
+    },
+    {
+      "name": "bluetooth-other-0008-wcn7850-drop-event",
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/other/0008-Bluetooth-hci_qca-Drop-unused-event-during-BT-on.patch",
+      "patch_sha256": "e4ca052e5046370ce92e3a4532b4e750cc04268c39c39a3dd1130fbf1d1d34fb",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": "",
+      "status": "applied",
+      "tree_sha256_after": "a690a4b8aea3de112755ec1cdb56dd8d976e44e5bcc332b2ca9e491954d57c86"
+    }
+  ]
+}

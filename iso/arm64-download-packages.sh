@@ -3,13 +3,16 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 die() { echo "ARM64 package download: $*" >&2; exit 1; }
-if (( $# != 2 )); then
-  echo "Usage: bash $0 KERNEL_PACKAGE_DIRECTORY NEW_OUTPUT_DIRECTORY" >&2
+if (( $# < 2 || $# > 3 )); then
+  echo "Usage: bash $0 KERNEL_PACKAGE_DIRECTORY NEW_OUTPUT_DIRECTORY [KERNEL_PIN]" >&2
   exit 2
 fi
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 packages=$(realpath -- "$1")
 destination=$2
+kernel_pin=${3:-$root/config/arm64-iso-kernel.json}
+[[ -f $kernel_pin && ! -L $kernel_pin ]] || die 'ARM64 kernel pin must be a regular non-symlink file'
+kernel_pin=$(realpath -- "$kernel_pin")
 [[ ! -e $destination && ! -L $destination ]] || die 'output directory already exists'
 for command in apt-get dpkg-deb dpkg-scanpackages gzip sha256sum realpath python3; do
   command -v "$command" >/dev/null || die "missing $command"
@@ -28,9 +31,20 @@ mkdir -- "$destination"
 destination=$(realpath -- "$destination")
 
 # The bundle target verifier enforces the exact ARM64 pair, DTB and checksums.
+mapfile -t artifact_identity < <(python3 - "$kernel_pin" <<'PY'
+import json, sys
+pin=json.load(open(sys.argv[1], encoding="utf-8"))
+print(pin["kernel_release"])
+print(pin["debian_version"])
+print(pin["dtb_path"])
+PY
+)
+(( ${#artifact_identity[@]} == 3 )) || die 'ARM64 artifact pin has an invalid package identity'
 python3 "$root/targets/sp121-arm64/installer/bundle-target.py" "$packages" \
-  --output "$work/kernel-bundle"
-mapfile -t kernel_files < <(python3 - "$root/config/arm64-iso-kernel.json" <<'PY'
+  --output "$work/kernel-bundle" --release "${artifact_identity[0]}" \
+  --version "${artifact_identity[1]}" --dtb "${artifact_identity[2]}" \
+  --pin "$kernel_pin"
+mapfile -t kernel_files < <(python3 - "$kernel_pin" <<'PY'
 import json, sys
 pin = json.load(open(sys.argv[1], encoding="utf-8"))
 for item in pin["packages"]:
@@ -77,5 +91,5 @@ cp -- "$image" "$headers" "$destination/"
   dpkg-scanpackages --multiversion . /dev/null > Packages
   gzip -n -k Packages
 )
-python3 "$root/iso/arm64_iso.py" verify-repository "$destination"
+python3 "$root/iso/arm64_iso.py" verify-repository "$destination" --pin "$kernel_pin"
 echo "Downloaded pinned ARM64 dependency closure to $destination"

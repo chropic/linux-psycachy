@@ -1,0 +1,7 @@
+0569e6c08888204c22ea47fb164987552fcd1c28a5af36a1cf79cf87c3a41e72  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/ordered-usb-candidate.patch
+3bb43b70da13e8d0de91bffafd21f3ace35d162ad679ef83eba8f9706ba479f8  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/0001-usb-dwc3-qcom-skip-phy-management.patch
+617bdca1b9429809b61104f10419b274407ea7866b90b57d8711a4000c5d858f  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/0002-usb-dwc3-qcom-eusb2-wake-irq-map.patch
+020c77eb566572ef2b70b18aea11a94e063f180da6511f7fda93c0b799d60bdf  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume.patch
+21fd94a37f22c9f46c57462db18d8a4f320e16c3a1177b8cbcc3c46e336c1045  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq.patch
+81e98508745ac57f1ddc476844b7f312f479681bcd9757a6227629ddb333e112  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/0006-arm64-dts-hamoa-usb1-ss0-noc-clocks.patch
+0569e6c08888204c22ea47fb164987552fcd1c28a5af36a1cf79cf87c3a41e72  /tmp/luna-sp12-usb-r2-candidate-20261113/patches/series/ordered-usb-candidate.patch

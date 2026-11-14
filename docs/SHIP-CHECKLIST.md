@@ -8,21 +8,32 @@ research, prior plans, and procedures are retained under `docs/archive/`.
 
 ## Current state
 
-- **AMD64 ISO and Secure Boot:** the last verified ISO was v2,
-  `b9b7cb320651ab562312bab8f059ee7a53c253e7d52488bb604a66f6782bd474`; its
-  payload was removed at the user's request. The owner kernel and DKMS module
+- **AMD64 ISO and Secure Boot:** the reconstructed candidate ISO is
+  `output/amd64-iso-reconstructed-20261113/psycachy-ubuntu-26.10-desktop-amd64.iso`,
+  SHA-256 `73610dc5848d48a9379177fce5af8bae43cd089a7f4223ec163fa6a96f55be9e`
+  (8,052,146,176 bytes). The user ran the root-only builder. Its log verifies
+  the signed Canonical base ISO, pinned kernel package pair, local-only 282-
+  entry package closure, 280 Ubuntu archive packages, preservation of the
+  base EFI files and casper kernel, and the UEFI boot record; the standalone
+  ISO checksum and package-pair verifier pass. Build evidence is under
+  `output/amd64-iso-reconstructed-20261113/`. The owner kernel and DKMS module
   certificates on B550I match the reviewed fingerprints
   `83b6a49f...f4e2da` and `98509200...942717`, and both are enrolled. The
   pinned package module signer is a separate identity
   `a653ce20...019809`. The exact pinned image config has
   `CONFIG_MODULE_SIG_FORCE=y`; the candidate must also pass runtime
-  `module.sig_enforce=Y` under integrity lockdown. The Secure Boot
-  trial verifier checks the signed kernel bytes, exact DKMS module signatures,
-  enrollment, lockdown, and runtime module state. Focused tests pass, but the
-  AMD64 ISO has not been rebuilt: the local output filesystem has 6.2 GiB free,
-  below the builder's 14 GiB floor, and the offline closure checker requires
-  root. Retained output remains preserved. The disposable trial lifecycle has
-  not run, and NVIDIA hardware behavior remains unqualified.
+  `module.sig_enforce=Y` under integrity lockdown. Focused tests pass, but the
+  disposable trial lifecycle and NVIDIA hardware behavior remain unqualified.
+  Root free space was 108,596,908,032 bytes after this ISO build. Two
+  temporary sparse-disk extraction files used for installer receipt review
+  were later removed. The latest build-host snapshot at 2026-11-14 00:45 UTC
+  is 108,508,286,976 bytes free on `/` (about 101.1 GiB) and 15,013,953,536
+  bytes free on `/tmp`; root is above the 80 GiB minimum but below the 120 GiB
+  target by 20,340,731,904 bytes (about 18.9 GiB). On `cs-sp12`, root had
+  18,939,600,896 bytes free after native-QEMU scratch cleanup. A further
+  project-storage audit was stopped at the user's request; the remaining
+  `phase0-work/output` VM trees were not retired without full reference and
+  backing-chain checks. Recheck before the next full build.
 - **ARM64 installer:** refreshed v4
   (`7669c1bcfeccffb9b86af2958ae5607cac9dc5b55b3fa77e467b304f7143af27`)
   passed signed-source, package closure, EFI/live-payload, UEFI metadata, and
@@ -44,6 +55,191 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   protected-disk writes. The QEMU details and evidence are in the
   [continuation report](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md)
   and [stop handoff](archive/validation/unattended-luna-stop-handoff-20261112.md).
+- **Refreshed SP12 r2 kernel and installer:** the active 51-entry series now
+  includes the reviewed USB host/eUSB2, Hamoa USB NoC, WCN7850 Bluetooth,
+  Hamoa Iris driver/DTS and context-bank bindings, and Qualcomm timer changes.
+  Two ordered replays from the verified signed CachyOS 7.3.1-1 archive produced
+  the same final tree digest
+  `192c5187bca08d67cb167cf7be77996fdde7f4c3717e19bb200775bf48a161fb`; the
+  manifest SHA-256 is
+  `6040fc283d5afe04ddfa69d1bc418ead62b5de2984b73f42c22e144a6ca74e14`. The
+  corrected config audit, focused compile, targeted binding checks, fresh
+  target-DTB compile, and schema validation passed. The full51 ARM64 package
+  build first hit the `/tmp` tmpfs quota, then succeeded with `TMPDIR=/var/tmp`.
+  Its 8,487-module audit and package checks passed. The image package SHA-256
+  is `a1398ad1445d0a712aece65fbb2aa129a8afece4011e54773b6940616cae40bd`; the
+  headers package SHA-256 is
+  `80139be7bc17a3ab5034f2deafb220bd6373bd33b23ddd8e5032f98bf89dccf3`. The
+  packaged DTB SHA-256 is
+  `274ceb42fb5f831adda4a5c4ef7b7196a4bb5a6ef4a927315149ff4bbf39eb40`, with
+  build ID
+  `sha256:43e6fa05d5ee85e49bfc1d295f0ce77bcba55e1366b39f2cc6240d69783249d0`.
+  The resolved config SHA-256 is
+  `cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957`; the
+  kernel payload SHA-256 is
+  `bf8cf5c425473df49b03dbaf536bcc1b1ef20360d7f511c2a68f59d41c672451`. The
+  clean build log is
+  `archive/validation/artifacts/sp12-r2-final51-20261113/package-build.log`
+  (SHA-256 `5f151f232e3cbdeab86323969f5aab42ef0204048ab8cc5a0cea996a35ba0b6d`);
+  it records 46 non-fatal warnings and no errors. Packages are in
+  `output/sp12-r2-51-packages-20261113/`.
+
+  The refreshed r2 pin at
+  [`config/arm64-iso-kernel-r2.json`](../config/arm64-iso-kernel-r2.json) has
+  SHA-256 `6fb4104b0bc4e8ed3c4211d4cf62331a32436a9b422326542a17533fcbee7c90`;
+  the previous pin is retained in
+  `archive/validation/artifacts/sp12-r2-final51-20261113/pre-final51-arm64-iso-kernel-pin.json`.
+  The final51 installer ISO is
+  `output/sp12-r2-installer-20261113-final51/psycachy-ubuntu-26.10-desktop-arm64.iso`,
+  SHA-256 `2d8b4588a7397aa9a297866fc24cafde45fd867eecc05fa377c1c71b5d42abb1`
+  (5,074,714,624 bytes). Its Canonical-signed base, embedded pin and package
+  pair, 120-package offline repository, unchanged Ubuntu live kernel/initrd,
+  ISO checksum, and UEFI boot entry passed verification. QEMU attempt 5
+  reached early live setup but had no block or screen progress for about 20
+  minutes under single-thread TCG; it was stopped before writes, and both
+  QCOWs plus the sentinel passed post-stop checks. Attempt 6 reached the disk
+  chooser but virtual input did not register; it stopped with zero target,
+  sentinel, and ISO writes, and both QCOWs plus the sentinel passed post-stop
+  checks. Attempt 7 selected only disposable serial
+  `psycachy-arm64-linux` and accepted its exact `ERASE` guard. It is now at
+  “Setting up the system”. At 00:01 UTC on 2026-11-14, QMP reports
+  12,066,911,744 target write bytes across 48,844 operations, no failed writes,
+  and zero writes to the sentinel and installer ISO. Physical
+  qualification remains open. See the
+  [51-entry source and DT report](archive/validation/sp12-r2-source-dt-schema-validation-20261113.md),
+  [51-entry replay](archive/validation/sp12-r2-source-replay-20261113-final-51-patch-series.json),
+  and historical [49-entry coverage report](archive/validation/sp12-r2-source-coverage-20261113.md).
+  The historical 37-entry source series passed
+  two complete sequential replays from authenticated CachyOS 7.3.1 source. Its
+  final patch-series tree SHA-256 is
+  `f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e`, and
+  manifest SHA-256 is
+  `46528c8cfe61e1fb068fb4d1394de121bb9a1ce080db1287a1cb68492dc79cc2`. The
+  clean final37 ARM64 package build passed package, required-module, signing
+  certificate, config, DTB hash, and build-ID checks. The image package SHA-256
+  is `424986a27154c49c1fccf8784ede2195ada23035e2624dbca1ce91e992a9344b`, and
+  headers package SHA-256 is
+  `8509b45755f53fd9465409e398997b59075cf897bada74dae6aca36121fa8703`. Its
+  packaged DTB SHA-256 is
+  `ec0d4d44dfd495b5c771780fc990fa6ec8c1f617faedb174509b043f87a5da69`, with
+  build ID
+  `sha256:5ec821abf77f1ff32e2b38787b9e709bddebd918530c5ca25422f109ded5cdc9`.
+  Camera support remains required and its CAMSS/CCI/D-PHY/sensor/board source
+  closure is present in final37; config, DT, schema, and module/package checks
+  passed. Physical enumeration, capture, and privacy-LED operation remain
+  unqualified. Root free space immediately before the package build was
+  132,098,420,736 bytes (about 123.0 GiB).
+
+  The earlier final37 pin is retained separately; the active r2 pin now
+  matches the final51 package pair, config, signing certificate, kernel
+  payload, DTB, and patch manifest. The existing v4 pin remains unchanged at SHA-256
+  `76292a7674b0443c9140445fff3791fbc969da7df7ceb0a5fb70d9153445edbd`.
+  A rootless installer ISO built from the Canonical-signed Ubuntu ARM64 base
+  with a 120-package offline closure. Its SHA-256 is
+  `f990d6308f9342dd5208ebe18c4ce5e9cb876ca418048e887d4894982841c037`
+  (5,074,714,624 bytes). The embedded pin, identity, package bundle, full
+  offline repository, live kernel/initrd, and UEFI boot record were checked.
+  The build caught and fixed a final manifest check that defaulted to the v4
+  pin; the added regression test and full static suite pass. The latest suite
+  log, after the VM display/input fix, is
+  `archive/validation/artifacts/sp12-r2-installer-20261113/static-check-post-vm-input-fix.log`
+  (SHA-256 `4bfc524de000da8c9304e26fa9d68ad12910334a31e6ecd1209675e28f7f6141`).
+
+  Four earlier network-disabled ARM64 QEMU `virt` installer attempts used
+  read-only media and separate sparse target/read-only sentinel disks. The
+  first three stopped before the disk chooser: the first remained in early
+  setup, the second reached a visible login but had no input devices, and the
+  third kept the desktop on a second display that VNC did not expose. Their
+  post-stop QCOW and sentinel checks passed. The fourth uses one virtio display
+  plus keyboard/tablet. It selected only the disposable disk with serial
+  `psycachy-arm64-linux`, accepted the exact-serial `ERASE` prompt, and passed
+  language, keyboard, test-user, and timezone setup. Curtin reported the base
+  image install completed at the Ubuntu completion screen. The in-target
+  receipt confirms both pinned packages at version `7.3.1-1psycachy2`, the
+  target `dpkg --audit` check, staged boot/ESP payload comparisons, and
+  installer fallback checks completed. Curtin reported `cmd-install: SUCCESS`;
+  the `ischroot -t` and kdump hook messages were nonfatal in this run. After
+  clean shutdown, both QCOW checks and the read-only sentinel verification
+  passed, with zero sentinel and ISO writes. A detached-media boot then reached
+  the `psycachy-test` login on `ttyAMA0` through UEFI. It used GRUB's default
+  `7.3.0-9-generic` entry; GRUB did not list the installed r2 candidate. The VM
+  shut down cleanly and both post-boot QCOW checks plus the sentinel hash/read
+  check passed. This proves only the generic fallback boot without media; r2
+  runtime identity and DT build-ID exposure remain open. See the attempt-4
+  [installer and boot evidence](archive/validation/artifacts/sp12-r2-installer-20261113/attempt-4/).
+  This is generic QEMU evidence, not SP12
+  emulation. Attempt 5 stopped in early live setup without any block writes;
+  both QCOWs checked clean and the sentinel still matches. Attempt 6 stopped
+  at the selector without any writes; its post-stop QCOW checks and sentinel
+  hash passed. The user is
+  onsite and reports SP12, Apple HDD, and a native ARM64 host available. The
+  Apple HDD currently holds the private live ISO and remains untouched. The
+  B550I still has no separate blank installation target. Tailscale SSH to
+  `cs-sp12` is available; its native ARM64 rootless live-builder dry-run
+  passed with the exact final51 package pair, signed base, pinned support
+  checkout, and four machine-file hashes. The ESP is mounted read-only and
+  35,856,236,544 bytes remain free, above the builder's 24 GiB minimum.
+  `xorriso` was fetched from Ubuntu's arm64 archive and unpacked under `/var/tmp`
+  without a system package install. The native `--apply` build passed on SP12;
+  its 4,810,534,912-byte private ISO has SHA-256
+  `099fb8b9afa7e7a28f500db8c203e278a94847701e895b7299478c9bc3a3ea47`, and
+  its checksum sidecar matched. Builder validation confirmed the signed base,
+  package manifest, kernel/modules/DTB, initramfs, live layer, non-autoinstall
+  GRUB entry, unchanged base install layers, and unchanged physical ESP/NVRAM.
+  The build log and metadata are retained at
+  `archive/validation/artifacts/sp12-r2-final51-20261113/native-arm64-build.log`
+  and `private-live-buildinfo.json`. SP12 root free space after the build is
+  18,940,235,776 bytes. The exact command and script are retained at
+  `archive/validation/artifacts/sp12-r2-final51-20261113/native-arm64-build-command.txt`
+  and `run-native-build.sh`. Attempt 7 later reached the Ubuntu installation
+  completion screen at 00:04:52 UTC. After the ISO was ejected and Enter was
+  sent at Ubuntu's removal prompt, the guest reached systemd poweroff and QEMU
+  exited. Target and sentinel QCOW checks passed; the sentinel hash matched its
+  pre-run value and the installer ISO recorded zero writes.
+
+  A no-media boot was attempted from the installed disk using a temporary
+  QCOW overlay, with networking disabled. UEFI loaded its saved Ubuntu boot
+  entry and started `shimaa64.efi`; the display became inactive, serial output
+  stopped after the shim handoff, and target reads stopped at 77,785,600 bytes.
+  No OS login appeared after about five minutes. The ACPI powerdown request
+  received no guest response, so QEMU was stopped through QMP. The installed
+  base, overlay, and sentinel QCOW checks passed, and the sentinel hash remained
+  unchanged. This is not a detached-media boot pass; generic QEMU `virt` also
+  does not emulate SP12 hardware. The exact r2 runtime kernel and DT build ID,
+  native live-media boot, physical B550I/SP12 qualification, and attribution/
+  redistribution review remain open. A native ARM64 host QEMU TCG attempt
+  reached the private GRUB “Try SP12 Ubuntu 26.10” entry but did not show a live
+  desktop or login; ISO reads stalled at about 200 MB and there were no writes.
+  That VM had no network or hard disks and was stopped after six minutes. It
+  confirms UEFI/GRUB only. Evidence is retained under
+  `archive/validation/artifacts/sp12-r2-final51-20261113/`.
+  The user explicitly directed a push to the configured public GitHub remote
+  on 2026-11-14. That push does not resolve the open source attribution,
+  license, DCO, copyright, or redistribution questions; keep them visible as
+  release blockers.
+  Preserve the v4 artifacts and fallback.
+  The active 51-entry `targets/sp121-arm64/inputs.json` still reports source
+  replay and DT schema validation passed, with package qualification pending.
+  Its bytes remain unchanged because they are bound into the package and DTB
+  identities; current package status is recorded here. See the
+  [r2 source/config/DT/package report](archive/validation/sp12-r2-config-dt-final-20261113.md),
+  [per-patch replay](archive/validation/sp12-r2-source-replay-20261113-final-37-patch-series.json),
+  [overlay provenance](../targets/sp121-arm64/provenance/r2-overlay/README.md),
+  [storage cleanup](archive/validation/storage-reclamation-20261113.md),
+  and [implementation item I-4](IMPLEMENTATION-QUEUE.md#i-4-refresh-sp12-r2-kernel-inputs-identity-config-and-dtb-evidence).
+- **Repository static verification:** `bash tests/static-check.sh` passes with
+  the SP12 live-builder, kernel-identity, DTB build-ID, config-audit, and
+  module-audit suites in the standard entrypoint. The root-only `mokutil` check
+  was skipped. The 37-patch manifest run is captured at
+  `docs/archive/validation/artifacts/sp12-r2-final37-20261113/static-check.log`
+  (SHA-256 `0c03c2b86c9fcc6ba5d50532b4c4efe734fbc5e1fd941777670e3d9c5468fbd4`).
+  The final51 run is captured at
+  `docs/archive/validation/artifacts/sp12-r2-final51-20261113/static-check.log`
+  (SHA-256 `ee91dd03c4878de3997089cc149af6da6bbb5024f29d4006ed4711b8e059a111`);
+  the root-only `mokutil` check was skipped. The earlier
+  focused changed-behavior suites are captured in
+  `output/focused-check-20261113-r2-final2.log` (SHA-256
+  `0862da65af6f58c5e9b07e4f4fef237c032378c0f9252a6b044604907a7896b0`).
 - **SP12 live media:** The corrected private ARM64 ISO was built from the
   Canonical-signed base with pinned kernel packages and local-only machine
   support. Its SHA-256 is
@@ -61,16 +257,19 @@ research, prior plans, and procedures are retained under `docs/archive/`.
   `output/.unattended-luna-20261111210910Z/qemu-hosting/sp12-live-qualification-20261112/live-boot-corrected-user-output-20261112.txt`
   (SHA-256 `5ba013301ca2f8dbf7008c198996d8dd797fcbf4b381db242939f891fa58cd27`).
 
-  In the live `lsblk` output, internal `/dev/sda1` and `/dev/sda2` had no mount
-  points. The USB was `/dev/sdb` mounted at `/cdrom`; its residual `sdb3` ext4
-  partition appeared but was unmounted and untouched. The user reports that the
-  subsequent read-only recovery inspection closed the terminal without visible
-  output. No live recovery checksum result was captured, so this gate remains
-  open. A prior installed-system preflight verified the internal recovery
-  manifest and recorded active payload hashes, but that does not qualify the
-  live rescue route. Earlier installed-system speaker tests were silent with
-  both WSA endpoints `UNATTACHED`; the corrected live result does not by itself
-  identify why installed and live audio differ. The internal root/ESP and
+  In the corrected live `lsblk` output, internal `/dev/sda1` and `/dev/sda2`
+  had no mount points. The USB was `/dev/sdb` mounted at `/cdrom`; its residual
+  `sdb3` ext4 partition appeared but was unmounted and untouched. The user now
+  reports successful completion of the read-only recovery inspection: expected
+  root/ESP UUIDs, read-only mounts, recovery checksums, unchanged active
+  payload hashes, and a valid empty marker were observed. Record this as
+  **passed (operator-reported)**. The original command log is not attached or
+  present in the available local attachments/output, so its hash and raw
+  output remain pending; restore-and-boot qualification remains open. A prior
+  installed-system preflight also verified the internal recovery manifest.
+  Earlier installed-system speaker tests were silent with both WSA endpoints
+  `UNATTACHED`; the corrected live result does not by itself identify why
+  installed and live audio differ. The internal root/ESP and
   recovery-panel route remain unchanged. See the
   [live qualification procedure](archive/validation/sp12-live-qualification-20261112.md)
   and [takeover report](archive/validation/luna-takeover-20261112.md). The image
@@ -257,22 +456,27 @@ blocking gate; no provisioning or repair was attempted.
 ### 2.1 ARM64 installer lifecycle
 
 - ARM64 v3 reached the custom selector and installed the pinned kernel pair in
-  a disposable QEMU 11.1.3 VM. Its late command then failed because the package
-  DTB was present under `/usr/lib/linux-image-$release/qcom/` but the boot-sync
-  helper required `/boot/dtb-$release`. The installer now copies the packaged
-  DTB to that expected path after refusing mismatches. Candidate v4 passed
-  artifact checks and a disposable x86_64 QEMU install reached its completion
-  screen, then stopped before restart and no-media boot. A separate COW clone
-  booted the generic kernel to userspace; the pinned 7.3.1 candidate reached
+  a disposable QEMU 11.1.3 VM. Its late command failed because the package DTB
+  was under `/usr/lib/linux-image-$release/qcom/` while the boot-sync helper
+  required `/boot/dtb-$release`. The installer now stages the packaged DTB at
+  that path and refuses mismatches. Candidate v4 passed artifact checks and a
+  disposable x86_64 QEMU install reached its completion screen, then stopped
+  before restart and no-media boot. A separate COW clone booted the generic
+  kernel to userspace; the pinned 7.3.1 candidate reached
   `systemd-tmpfiles-setup-dev.service` and stalled after `/dev/vda2` was
-  detected. Package hooks and rollback remain untested. Two SP12 TCG retries
-  did not reach the selector. See the
-  [QEMU continuation](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#2026-11-12-arm64-v3-installer-dtb-path-failure-and-v4-retry).
-- Reach the disk selector; verify it lists only eligible disks, requires an
-  explicit choice and typed `ERASE`, and generates a partition plan for only
-  the chosen disposable disk.
-- Complete the offline installation. Verify the pinned ARM64 kernel and DTB,
-  boot-sync hooks, ESP copies, and removable fallback files.
+  detected. Post-install package-update and rollback hooks remain untested. The historical final37
+  r2 ISO passed its pin, package, offline-closure, live-payload, and UEFI
+  checks. Attempt 4 reached the success screen, passed the package receipt and
+  post-stop QCOW/sentinel checks, then booted the default Ubuntu generic kernel
+  from detached media. GRUB did not list the installed r2 candidate. The first
+  three r2 VM attempts stopped before selection; their post-stop QCOW and
+  sentinel checks passed. A refreshed final51 ISO and its installer VM run
+  remain pending. See the
+  [QEMU continuation](archive/validation/unattended-luna-phase1-installers-phase2-20261111.md#2026-11-12-arm64-v3-installer-dtb-path-failure-and-v4-retry)
+  and [r2 unattended handoff](archive/validation/luna-r2-unattended-handoff-20261113.md).
+- After install completion and post-stop checks, verify the pinned ARM64
+  kernel, static DTB, boot-sync hook files, ESP copies, and removable fallback
+  files. Generic QEMU cannot validate the SP12 DTB at runtime.
 - In the disposable installed target, exercise the package-update hook with a
   kernel package change. Verify the new kernel/DTB/initrd reach the ESP,
   rollback restores a bootable fallback, and the recovery checksum is updated

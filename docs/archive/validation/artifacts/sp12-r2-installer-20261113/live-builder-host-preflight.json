@@ -1,0 +1,37 @@
+{
+  "checked_at_utc": "2026-11-13T12:30:33.326125+00:00",
+  "host_architecture": "x86_64",
+  "effective_uid": 1000,
+  "rootless_builder_preflight": "passed",
+  "missing_tools": [
+    "lsinitramfs",
+    "unmkinitramfs"
+  ],
+  "apply_mode": "not attempted; requires native ARM64, root, isolated mount and network namespaces",
+  "source_checkout": "pinned source checkout and machine-file hashes validated in /var/tmp; private files are local-only",
+  "initial_missing_host_tools": [
+    "lsinitramfs",
+    "unmkinitramfs"
+  ],
+  "staged_tool_packages": [
+    {
+      "filename": "initramfs-tools-bin_0.151ubuntu3_amd64.deb",
+      "sha256": "46d60e7a5aa689470e015baf3782d9cc6b223b09fc98d575613568af246b65e7",
+      "bytes": 24442
+    },
+    {
+      "filename": "initramfs-tools-core_0.151ubuntu3_all.deb",
+      "sha256": "8002e3f6fd4011b54c0b92caae0b40909f5b73b193fa53d3d1ffcea852eabcbf",
+      "bytes": 50254
+    },
+    {
+      "filename": "initramfs-tools_0.151ubuntu3_all.deb",
+      "sha256": "f75c6bcc3c603d4b5803f3239cfd8ab0b2514422e60d949732905c881222bbbb",
+      "bytes": 8434
+    }
+  ],
+  "staging_location": "/var/tmp/sp12-r2-live-preflight",
+  "host_packages_installed": false,
+  "dry_run": "passed; Canonical signature, r2 package pair, build metadata, private support commit/files validated",
+  "dry_run_no_mounts_or_output_files": true
+}

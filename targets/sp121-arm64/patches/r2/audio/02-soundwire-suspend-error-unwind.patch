@@ -1,0 +1,19 @@
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index 8c96941..71f8b2e 100644
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -1807,12 +1807,14 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
+ 		ret = sdw_bus_prep_clk_stop(&ctrl->bus);
+ 		if (ret < 0 && ret != -ENODATA) {
+ 			dev_err(dev, "prepare clock stop failed %d", ret);
++			enable_irq(ctrl->irq);
+ 			return ret;
+ 		}
+ 
+ 		ret = sdw_bus_clk_stop(&ctrl->bus);
+ 		if (ret < 0 && ret != -ENODATA) {
+ 			dev_err(dev, "bus clock stop failed %d", ret);
++			enable_irq(ctrl->irq);
+ 			return ret;
+ 		}
+ 	}

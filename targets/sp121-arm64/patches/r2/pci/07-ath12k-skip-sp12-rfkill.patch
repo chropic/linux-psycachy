@@ -1,0 +1,13 @@
+--- a/drivers/net/wireless/ath/ath12k/core.c
++++ b/drivers/net/wireless/ath/ath12k/core.c
+@@ -77,6 +77,10 @@
+ 	struct ath12k *ar;
+ 	int ret = 0, i;
+ 
++	/* Surface Pro 12in has a non-functional hardware rfkill switch. */
++	if (of_device_is_compatible(ab->dev->of_node, "microsoft,surface-pro-12in"))
++		return 0;
++
+ 	if (!(ab->target_caps.sys_cap_info & WMI_SYS_CAP_INFO_RFKILL))
+ 		return 0;
+ 

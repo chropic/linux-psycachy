@@ -1,0 +1,6 @@
+# Candidate additions after the current 37-entry r2 series
+0001-usb-dwc3-qcom-skip-phy-management.patch
+0002-usb-dwc3-qcom-eusb2-wake-irq-map.patch
+0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume.patch
+0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq.patch
+0006-arm64-dts-hamoa-usb1-ss0-noc-clocks.patch

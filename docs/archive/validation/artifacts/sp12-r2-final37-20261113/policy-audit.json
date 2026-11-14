@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "architecture": "arm64",
+  "config_path": "/var/tmp/psycachy-sp121-build.ecvvhl2f/config/.config",
+  "config_sha256": "cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957",
+  "checks": [
+    {
+      "symbol": "CONFIG_MODULE_SIG",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_MODULE_SIG_ALL",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_MODULE_SIG_FORCE",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_SECURITY_LOCKDOWN_LSM",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_SECURITY_LOCKDOWN_LSM_EARLY",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_LOCK_DOWN_KERNEL_FORCE_NONE",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_FILE",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_SIG",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_SIG_FORCE",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_DEBUG",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_DEBUGFS",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_HANDOVER_ENABLE_DEFAULT",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_JUMP",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE_MEMFD",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_LIVEUPDATE_TEST",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_MEMBLOCK_KHO_SCRATCH",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_TEST_KEXEC_HANDOVER",
+      "expected": "n",
+      "actual": "n",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_BPF_UNPRIV_DEFAULT_OFF",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_KEXEC_IMAGE_VERIFY_SIG",
+      "expected": "y",
+      "actual": "y",
+      "passed": true
+    },
+    {
+      "symbol": "CONFIG_RPMB",
+      "expected": [
+        "m",
+        "y"
+      ],
+      "actual": "m",
+      "passed": true
+    }
+  ],
+  "findings": []
+}

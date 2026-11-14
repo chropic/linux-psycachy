@@ -1,0 +1,50 @@
+{
+  "attempt": 1,
+  "vm_type": "generic AArch64 QEMU virt with TCG; not SP12 hardware emulation",
+  "network": "disabled",
+  "installer_media": "read-only",
+  "qemu_status": "running",
+  "qemu_command": "qemu-system-aarch64 -name psycachy-arm64-iso-test-serial -machine virt,accel=tcg,gic-version=3 -cpu max -smp 4 -m 8192 -drive if=pflash,format=raw,readonly=on,file=/usr/share/AAVMF/AAVMF_CODE.no-secboot.fd -drive if=pflash,format=raw,file=/var/tmp/sp12-r2-installer-vm-20261113/vars.fd -drive if=none,id=linuxdisk,format=qcow2,file=/var/tmp/sp12-r2-installer-vm-20261113/linux.qcow2 -device virtio-blk-device,drive=linuxdisk,serial=psycachy-arm64-linux -drive if=none,id=otherdisk,format=qcow2,readonly=on,file=/var/tmp/sp12-r2-installer-vm-20261113/other.qcow2 -device virtio-blk-device,drive=otherdisk,serial=psycachy-arm64-other -drive if=none,id=installer,media=cdrom,readonly=on,file=/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso -device virtio-scsi-device,id=scsi0 -device scsi-cd,drive=installer,bus=scsi0.0 -boot order=d,menu=on -nic none -device ramfb -device virtio-gpu-pci -display none -vnc 127.0.0.1:4 -serial tcp:127.0.0.1:4455,server=on,wait=on -monitor tcp:127.0.0.1:4454,server=on,wait=off",
+  "block_counters": {
+    "linuxdisk": {
+      "rd_bytes": "9887744",
+      "wr_bytes": "0",
+      "rd_operations": "285",
+      "wr_operations": "0",
+      "flush_operations": "0",
+      "wr_total_time_ns": "0",
+      "rd_total_time_ns": "2414100",
+      "flush_total_time_ns": "0",
+      "rd_merged": "0",
+      "wr_merged": "0",
+      "idle_time_ns": "778111967652"
+    },
+    "otherdisk": {
+      "rd_bytes": "9887744",
+      "wr_bytes": "0",
+      "rd_operations": "285",
+      "wr_operations": "0",
+      "flush_operations": "0",
+      "wr_total_time_ns": "0",
+      "rd_total_time_ns": "4312490",
+      "flush_total_time_ns": "0",
+      "rd_merged": "0",
+      "wr_merged": "0",
+      "idle_time_ns": "778057451136"
+    },
+    "installer": {
+      "rd_bytes": "727334912",
+      "wr_bytes": "0",
+      "rd_operations": "1690",
+      "wr_operations": "0",
+      "flush_operations": "0",
+      "wr_total_time_ns": "0",
+      "rd_total_time_ns": "1777833157",
+      "flush_total_time_ns": "0",
+      "rd_merged": "0",
+      "wr_merged": "0",
+      "idle_time_ns": "633729265100"
+    }
+  },
+  "observation": "Live-system early setup remains visible; no disk chooser or erase confirmation was observed."
+}

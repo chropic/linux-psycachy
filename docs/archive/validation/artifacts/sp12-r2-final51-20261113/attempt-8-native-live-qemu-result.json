@@ -1,0 +1,45 @@
+{
+  "observed_at_utc": "2026-11-14T00:37:16Z",
+  "host": "cs-sp12, aarch64",
+  "qemu": "QEMU 11.0.3",
+  "acceleration": "TCG software emulation; /dev/kvm was absent",
+  "resources": {
+    "virtual_cpus": 2,
+    "memory_bytes": 6442450944,
+    "process_priority": "nice 10"
+  },
+  "iso": {
+    "path": "/var/tmp/sp12-r2-final51-build/output/private-sp12-r2-final51.iso",
+    "size_bytes": 4810534912,
+    "sha256": "099fb8b9afa7e7a28f500db8c203e278a94847701e895b7299478c9bc3a3ea47",
+    "attached_read_only": true
+  },
+  "isolation": {
+    "network": "none",
+    "virtual_hard_disks": 0,
+    "physical_storage_attached": false
+  },
+  "boot_observation": {
+    "uefi_cdrom_boot": true,
+    "grub_version": "2.14",
+    "grub_entry": "Try SP12 Ubuntu 26.10 (private local live)",
+    "grub_countdown_reached_zero": true,
+    "result": "GRUB handed off to the live entry, but no live desktop or login was observed. The framebuffer was inactive/black and the serial log stopped at the GRUB handoff.",
+    "installer_iso_read_bytes": 199979008,
+    "installer_iso_write_bytes": 0,
+    "runtime_seconds_approx": 360,
+    "host_qemu_cpu_percent_at_stop": 98.5
+  },
+  "shutdown": {
+    "acpi_powerdown_requested": true,
+    "guest_reacted": false,
+    "qemu_stopped_by": "HMP quit after the guest did not respond"
+  },
+  "artifacts": [
+    "attempt-8-native-live-serial.log",
+    "attempt-8-native-live-boot.png",
+    "attempt-8-native-live-boot-current.png",
+    "attempt-8-native-live-qemu-command.txt"
+  ],
+  "limitation": "This was ARM64 QEMU virt using TCG, not a physical SP12 boot and not KVM acceleration. It confirms UEFI and the private GRUB live entry only; live OS startup, Wi-Fi/audio, suspend, and SP12 runtime DT build-ID remain unverified."
+}

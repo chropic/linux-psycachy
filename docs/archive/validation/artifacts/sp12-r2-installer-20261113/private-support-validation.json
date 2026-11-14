@@ -1,0 +1,40 @@
+{
+  "checked_at_utc": "2026-11-13T12:12:12.415868+00:00",
+  "status": "passed",
+  "support_source_repository": "https://github.com/harrisonvanderbyl/surface-pro-12-inch-linux.git",
+  "support_source_commit": "ea0f07e66beea95898d96fbeb6daa472f4735af3",
+  "machine_files": {
+    "usr/lib/firmware/ath12k/WCN7850/hw2.0/board.bin": "0ef5f6f3cb124f33c6de52371819ccd7c13763ceb86d476a178fd56e4cdc26a3",
+    "usr/lib/firmware/qcom/x1e80100/X1P42100-Microsoft-Surface-Pro-12in-tplg.bin": "89b731f3f98fc2b84699bca39a56e390925a44a26d5aea80382cf617e00c08d8",
+    "usr/share/alsa/ucm2/Qualcomm/x1e80100/MICROSOFT-Surface-Pro-12in.conf": "171acda75bba76cc47bd258de7cfabe9474382c76e994e8c8164496b00bb50d1",
+    "usr/share/alsa/ucm2/Qualcomm/x1e80100/Surface12in-HiFi.conf": "76eec2a1f34b9bea9c36c76a75de24c83d8840f73c57dadf1ed397bb5063edaa"
+  },
+  "redistribute_machine_files": false,
+  "source_policy": {
+    "firmware_platform": {
+      "repository": "https://github.com/harrisonvanderbyl/surface-pro-12-inch-linux.git",
+      "commit": "ea0f07e66beea95898d96fbeb6daa472f4735af3",
+      "redistributable": false
+    },
+    "audio_topology": {
+      "repository": "https://github.com/linux-msm/audioreach-topology.git",
+      "commit": "d7a5e9d80ad18a7a6844eeb32cacbdeea0e7e677",
+      "tag": "v1.0.4",
+      "output_sha256": "89b731f3f98fc2b84699bca39a56e390925a44a26d5aea80382cf617e00c08d8",
+      "redistributable": false
+    },
+    "wifi_board": {
+      "repository": "https://github.com/qca/qca-swiss-army-knife.git",
+      "commit": "6df4dae3e2f5e4c2903f3cafd40996fc1b3639ce",
+      "extractor_sha256": "fdcc8dc9628d67e500d496a1de22e82e136ddeaec32669ea1b3add93f2980652",
+      "output_sha256": "0ef5f6f3cb124f33c6de52371819ccd7c13763ceb86d476a178fd56e4cdc26a3",
+      "redistributable": false
+    },
+    "alsa_ucm": {
+      "repository": "https://github.com/alsa-project/alsa-ucm-conf.git",
+      "commit": "c68dcb174f432234dd224a3dc5270fa1f4856afd",
+      "tag": "v1.2.16.1",
+      "output_sha256": "76eec2a1f34b9bea9c36c76a75de24c83d8840f73c57dadf1ed397bb5063edaa"
+    }
+  }
+}

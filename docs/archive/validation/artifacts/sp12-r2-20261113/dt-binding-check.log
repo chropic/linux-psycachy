@@ -1,0 +1,9 @@
+make: Entering directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'
+make[1]: Entering directory '/var/tmp/sp12-config-audit-20261113/config'
+  SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+  CHKDT   /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/Documentation/devicetree/bindings
+  LINT    /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/Documentation/devicetree/bindings
+  STYLE   /var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1/Documentation/devicetree/bindings
+  DTC [C] Documentation/devicetree/bindings/media/i2c/ovti,ov02e10.example.dtb
+make[1]: Leaving directory '/var/tmp/sp12-config-audit-20261113/config'
+make: Leaving directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'

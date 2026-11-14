@@ -1,0 +1,11 @@
+--- a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-09-13 21:13:53.991413195 +0200
++++ b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-09-13 21:14:24.131982741 +0200
+@@ -1090,7 +1090,7 @@
+ };
+ 
+ &lpass_vamacro {
+-	qcom,dmic-sample-rate = <4800000>;
++	qcom,dmic-sample-rate = <2400000>;
+ 
+ 	vdd-micb-supply = <&vreg_l1b_1p8>;
+ 

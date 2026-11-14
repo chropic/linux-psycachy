@@ -1,0 +1,6 @@
+edd4d36c1e692dc9a9392a8949f4e4575cffca2a882e91ccd5a6e1d06603b632  /tmp/luna-sp12-usb-r2-candidate-20261113/source/drivers/usb/dwc3/core.c
+82c48ef3569277368f13c61ff30cbd602d3f30c487a53cec019e4b717a51d9eb  /tmp/luna-sp12-usb-r2-candidate-20261113/source/drivers/usb/dwc3/core.h
+fc54307af6fd791b22e7450b666af34d5d623c783cbe791e506a6d469208ac3d  /tmp/luna-sp12-usb-r2-candidate-20261113/source/drivers/usb/dwc3/dwc3-qcom.c
+096f05462bad4069b94d1495cd9c16191ab36af024941a505115dd99c0d3bb7a  /tmp/luna-sp12-usb-r2-candidate-20261113/source/drivers/usb/dwc3/glue.h
+0fc59da7cad1b50f97e0850ac46eb74f781abb2bb29dd62893e718f42b762379  /tmp/luna-sp12-usb-r2-candidate-20261113/source/drivers/usb/dwc3/host.c
+089f5df35daf44a5d75578538b27e06bc20f1068279bc87f7b8f3233d36b2f23  /tmp/luna-sp12-usb-r2-candidate-20261113/source/arch/arm64/boot/dts/qcom/hamoa.dtsi

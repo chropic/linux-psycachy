@@ -1,0 +1,11 @@
+PSYCACHY_ARM64_EFI_CODE=/usr/share/AAVMF/AAVMF_CODE.no-secboot.fd \
+
+PSYCACHY_ARM64_EFI_VARS=/usr/share/AAVMF/AAVMF_VARS.fd \
+
+PSYCACHY_VM_DISPLAY=8 PSYCACHY_VM_MONITOR_PORT=4485 PSYCACHY_VM_ACCEL=tcg \
+
+PSYCACHY_VM_MEMORY=8192 PSYCACHY_VM_CPUS=4 \
+
+bash tests/arm64-iso-vm.sh run /var/tmp/sp12-r2-installer-vm-20261113-final51-attempt5 \
+
+output/sp12-r2-installer-20261113-final51/psycachy-ubuntu-26.10-desktop-arm64.iso

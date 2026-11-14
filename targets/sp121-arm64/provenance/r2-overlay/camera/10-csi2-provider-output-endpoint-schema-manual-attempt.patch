@@ -1,0 +1,15 @@
+diff --git a/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
+--- a/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,x1e80100-csi2-phy.yaml
+@@ -59,10 +59,9 @@
+               data-lanes:
++                description: The sensor-side input endpoint carries the lane mapping; the PHY output endpoint only links to CAMSS.
+                 minItems: 1
+                 maxItems: 4
+               lane-polarities:
+                 minItems: 1
+                 maxItems: 5
+               bus-type:
+                 const: 4
+-            required:
+-              - data-lanes

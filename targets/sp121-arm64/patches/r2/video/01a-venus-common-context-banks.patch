@@ -1,0 +1,195 @@
+The VPU issues DMA through several SMMU streams, and the hardware does
+not give every stream the same addressable range. The non-pixel stream
+cannot address the low 600MB of IOVA space, while the pixel stream can
+address the full range:
+    +-----------------------------------------------------------+
+    | non-pixel stream addressable range (600 MB - 3.5 GB)      |
+    | 0x25800000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+    | pixel stream addressable range (0 - 3.5 GB)               |
+    | 0x00000000 - 0xe0000000                                   |
+    +-----------------------------------------------------------+
+A single "iommus" property on the video-codec node puts every stream in
+one IOMMU domain sharing one IOVA allocator, so nothing restricts a
+non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
+that boundary the hardware faults, which shows up as unhandled SMMU page
+faults and spontaneous reboots:
+https://gitlab.freedesktop.org/drm/msm/-/work_items/100
+
+Given that the address range restriction is for specific VPU stream, it
+should be ideally be moved to that stream. To achieve the same, a subset
+of streams is now represented as subnodes, so that each can be
+associated with its respective addressable range. The design was
+discussed and agreed by mainatiners here
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
+
+In the past, this limitation was addressed with an iommu-map approach,
+with the iris driver dynamically creating the devices. That approach was
+later concluded to be a hack to avoid having subnodes, and was NAKed by
+the iommu maintainers. It was discussed in detail here:
+https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+
+"iommu-ranges" on the subnode describes the *allowed* IOVA range that
+stream is allowed to use, so the IOVA is allocated from the specified
+range only. Define all the possible subnodes so as to describe all the
+VPU hardware iommu interfaces, both secure as well as non secure.
+
+address-cells, size-cells and dma-ranges declares the 1:1 DMA
+translation into the parent.
+
+The parent "iommus" is kept as an alternative via "oneOf", so platforms
+that have not been converted to subnodes still validate. New platforms
+should use the subnode form.
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+---
+ .../bindings/media/qcom,sc7180-venus.yaml          | 15 ----
+ .../bindings/media/qcom,venus-common.yaml          | 97 ++++++++++++++++++++++
+ 2 files changed, 97 insertions(+), 15 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml b/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
+index b21bed314848480b82153e49602f0b19e08e7335..bfd8b1ad473128c974bce84639cb0aff59d8c2cc 100644
+--- a/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
++++ b/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
+@@ -91,21 +91,6 @@ properties:
+     deprecated: true
+     additionalProperties: false
+ 
+-  video-firmware:
+-    type: object
+-    additionalProperties: false
+-
+-    description: |
+-      Firmware subnode is needed when the platform does not
+-      have TrustZone.
+-
+-    properties:
+-      iommus:
+-        maxItems: 1
+-
+-    required:
+-      - iommus
+-
+ required:
+   - compatible
+   - power-domain-names
+diff --git a/Documentation/devicetree/bindings/media/qcom,venus-common.yaml b/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
+index 0be2f9119e78233928d23af86836ac294aa769ee..6c205077bea4d729335d7a5690a57bc1bb43ed9f 100644
+--- a/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
++++ b/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
+@@ -50,6 +50,93 @@ properties:
+     minItems: 1
+     maxItems: 4
+ 
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 1
++
++  dma-ranges:
++    maxItems: 1
++
++  non-pixel:
++    type: object
++    description:
++      Context bank for VPU non-pixel buffers, including compressed and internal buffers.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++      iommu-ranges:
++        maxItems: 1
++    required:
++      - iommus
++      - iommu-ranges
++
++  pixel:
++    type: object
++    description:
++      Context bank for VPU pixel buffers containing uncompressed video data.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++    required:
++      - iommus
++
++  video-firmware:
++    type: object
++    description:
++      Context bank for the VPU firmware processing domain.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++    required:
++      - iommus
++
++  secure-non-pixel:
++    type: object
++    description:
++      Context bank for VPU secure non-pixel buffers.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++      iommu-ranges:
++        maxItems: 1
++    required:
++      - iommus
++      - iommu-ranges
++
++  secure-pixel:
++    type: object
++    description:
++      Context bank for VPU secure pixel buffers containing uncompressed video data.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++    required:
++      - iommus
++
++  secure-bitstream:
++    type: object
++    description:
++      Context bank for VPU secure bitstream buffers containing compressed video data.
++    additionalProperties: false
++
++    properties:
++      iommus:
++        maxItems: 1
++    required:
++      - iommus
++
+ required:
+   - reg
+   - clocks
+@@ -58,4 +145,14 @@ required:
+   - memory-region
+   - power-domains
+ 
++oneOf:
++  - required:
++      - iommus
++  - required:
++      - '#address-cells'
++      - '#size-cells'
++      - dma-ranges
++      - non-pixel
++      - pixel
++
+ additionalProperties: true
+
+-- 
+2.34.1
+
+

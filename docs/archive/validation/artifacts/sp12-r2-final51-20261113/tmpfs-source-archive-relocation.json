@@ -1,0 +1,41 @@
+{
+  "date": "2026-11-13",
+  "source_directory": "/tmp/psycachy-sp121-build.kMZzg65B",
+  "retained_directory": "/var/tmp/sp12-r2-51-validation-20261113/authenticated-source",
+  "files": [
+    {
+      "name": "cachyos-7.3.1-1.tar.gz",
+      "size_bytes": 269676681,
+      "allocated_blocks_512_bytes": 526720,
+      "sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f"
+    },
+    {
+      "name": "cachyos-7.3.1-1.tar.gz.asc",
+      "sha256": "34ce8d06bdcb784ef450a2bb6d49763a15f8725eb15d79f9b36da4703a89d948"
+    },
+    {
+      "name": "key.asc",
+      "sha256": "33fe90b5188545e7013fab56573419755ac35b7b50f50680c256b4927aac4fe9"
+    },
+    {
+      "name": "signer-keyring.gpg",
+      "sha256": "9922c628bc15c0e7df05c7d1d9356a61a087ffd43acec2f31a2639c649cbcd7d"
+    },
+    {
+      "name": "signature-status.txt",
+      "sha256": "c7f3097c7d041ea46d16780f6e46e95adb2d7d490490a929243b2d59c7d10939"
+    }
+  ],
+  "signer_fingerprint": "E8B9AA39F054E30E8290D492C3C4820857F654FE",
+  "preflight": {
+    "signature_and_checksum_verified_by_active_build": true,
+    "gpgv_reverified_after_copy": true,
+    "copied_files_byte_for_byte_verified": true,
+    "source_files_had_no_open_handles": true,
+    "source_files_single_link": true,
+    "build_script_uses_archive_only_through_extraction": true
+  },
+  "tmpfs_available_bytes_after_retirement": 6375636992,
+  "root_available_bytes_after_copy": 126356606976,
+  "status": "authenticated-inputs-retained-and-temporary-copies-retired"
+}

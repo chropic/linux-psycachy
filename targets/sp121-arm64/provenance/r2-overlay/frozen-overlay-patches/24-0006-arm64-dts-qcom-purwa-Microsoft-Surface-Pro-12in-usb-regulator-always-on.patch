@@ -1,0 +1,18 @@
+--- a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-10-16 15:48:31.621932767 +0200
++++ b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-10-16 15:51:56.992148928 +0200
+@@ -755,6 +755,7 @@
+ 			regulator-allow-set-load;
+ 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+ 						   RPMH_REGULATOR_MODE_HPM>;
++			regulator-always-on;
+ 		};
+ 
+ 		vreg_l3j_0p8: ldo3 {
+@@ -765,6 +766,7 @@
+ 			regulator-allow-set-load;
+ 			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+ 						   RPMH_REGULATOR_MODE_HPM>;
++			regulator-always-on;
+ 		};
+ 	};
+ 

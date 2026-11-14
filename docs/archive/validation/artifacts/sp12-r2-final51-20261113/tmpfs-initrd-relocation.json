@@ -1,0 +1,20 @@
+{
+  "date": "2026-11-13",
+  "source_path": "/tmp/luna-main-initrd.cpio",
+  "retained_path": "/var/tmp/sp12-live-builder-layer-retention-20261010/luna-main-initrd.cpio",
+  "retained_manifest": "/var/tmp/sp12-live-builder-layer-retention-20261010/SHA256SUMS",
+  "size_bytes": 204617580,
+  "allocated_blocks_512_bytes": 399648,
+  "sha256": "1d06005d9d16d5aacc072e45ab0186520861d18a6911d09809b4b09249b66d83",
+  "preflight": {
+    "single_link_regular_file": true,
+    "open_handles_before_copy_and_retirement": "none",
+    "project_reference_search": "no references found in docs, iso, targets, tools, tests, or output",
+    "copy_sha256_verified": true,
+    "copy_cmp_verified": true,
+    "destination_previously_absent": true
+  },
+  "tmpfs_available_bytes_after_retirement": 6957584384,
+  "root_available_bytes_after_retirement": 126627991552,
+  "status": "relocated-verified-and-source-retired"
+}

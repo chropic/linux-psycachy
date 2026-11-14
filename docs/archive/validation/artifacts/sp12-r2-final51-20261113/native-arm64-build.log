@@ -1,0 +1,43 @@
+gpgv: Signature made Thu Oct 15 03:38:45 2026 MDT
+gpgv:                using RSA key 843938DF228D22F7B3742BC0D94AA3F0EFE21092
+gpgv: Good signature from "Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>"
+Scratch directory: /var/tmp/sp12-r2-final51-build/output/sp12-live-build.rvcdjl1y
+Generating casper initramfs with the pinned SP12 modules...
+Parallel mksquashfs: Using 4 processors
+Creating 4.0 filesystem on /var/tmp/sp12-r2-final51-build/output/sp12-live-build.rvcdjl1y/generated/minimal.standard.live.sp12.squashfs, block size 131072.
+
+Exportable Squashfs 4.0 filesystem, zstd compressed, data block size 131072
+	compressed data, compressed metadata, compressed fragments,
+	compressed xattrs, compressed ids
+	duplicates are removed
+Filesystem size 184018.14 Kbytes (179.71 Mbytes)
+	25.78% of uncompressed filesystem size (713748.61 Kbytes)
+Inode table size 97293 bytes (95.01 Kbytes)
+	26.08% of uncompressed inode table size (373097 bytes)
+Directory table size 114298 bytes (111.62 Kbytes)
+	40.65% of uncompressed directory table size (281164 bytes)
+Number of duplicate files found 545
+Number of inodes 11172
+Number of files 9674
+Number of fragments 2923
+Number of symbolic links 1
+Number of device nodes 0
+Number of fifo nodes 0
+Number of socket nodes 0
+Number of directories 1497
+Number of hard-links 0
+Number of ids (unique uids + gids) 1
+Number of uids 1
+	root (0)
+Number of gids 1
+	root (0)
+
+No problems found. 1 free sectors (512 bytes) available in 1
+segments, the largest of which is 1 (512 bytes) in size.
+Build evidence retained: /var/tmp/sp12-r2-final51-build/output/sp12-live-build.rvcdjl1y validated=True
+PASS: pinned base, package manifest, kernel/modules/DTB, initramfs and live layer
+PASS: non-autoinstall live GRUB entry and unchanged base install layers
+PASS: physical ESP, NVRAM and ESP mount state unchanged
+EXPERIMENTAL TEST IMAGE: /var/tmp/sp12-r2-final51-build/output/private-sp12-r2-final51.iso
+SHA256: 099fb8b9afa7e7a28f500db8c203e278a94847701e895b7299478c9bc3a3ea47
+Live Wi-Fi/audio and suspend remain unverified until physical boot.

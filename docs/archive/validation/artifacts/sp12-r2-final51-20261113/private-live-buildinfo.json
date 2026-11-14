@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "private-local-testing-only-do-not-publish",
+  "distribution": "private-local-testing-only-do-not-publish",
+  "base_iso_sha256": "9242a38c47eb53a5beb153c249d4843e4366f8955e9b972663e4ab7989311e9f",
+  "base_pin_sha256": "00119c1f70218b4068a02275bdb326e7faf2012ac597a77cacabb3596c6309de",
+  "kernel_pin_sha256": "6fb4104b0bc4e8ed3c4211d4cf62331a32436a9b422326542a17533fcbee7c90",
+  "kernel_release": "7.3.1-psycachy-sp121-r2",
+  "kernel_payload_sha256": "bf8cf5c425473df49b03dbaf536bcc1b1ef20360d7f511c2a68f59d41c672451",
+  "image_package_sha256": "a1398ad1445d0a712aece65fbb2aa129a8afece4011e54773b6940616cae40bd",
+  "headers_package_sha256": "80139be7bc17a3ab5034f2deafb220bd6373bd33b23ddd8e5032f98bf89dccf3",
+  "package_verification_sha256": "1d8a89b189d9032acd9335f7991595a7e3cc9f726025724ff950bb99b67ebc3a",
+  "build_metadata_sha256": "66461e933d2424b97ed2b71fc9644038af7531183316ed49db3fed347f3f8cb0",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "source_tree_sha256": "634c6a56274e4d8d2bc69fa9edfe67b00300b3d29065f6f07373290cf93a1a0c",
+  "resolved_config_sha256": "cd8938fa6fb20bb3b7b7a131b105f5c83f9463776a18c33fe1e6dc62028d1957",
+  "policy_fragment_sha256": "7dc082b99dd8066f364b3777a9a6a63cd2d73623facafa5d991295bd3b70bbdb",
+  "module_signing_certificate_sha256": "24f03bfcb4bee61148a912a2a167d405ffffa011eb2ac17520eefd425f5dbdff",
+  "dtb_path": "qcom/x1p42100-microsoft-sp12in.dtb",
+  "dtb_sha256": "274ceb42fb5f831adda4a5c4ef7b7196a4bb5a6ef4a927315149ff4bbf39eb40",
+  "module_names": [
+    "overlay",
+    "isofs",
+    "usb_storage",
+    "uas",
+    "xhci_plat_hcd",
+    "phy_qcom_qmp_combo",
+    "phy_qcom_snps_femto_v2",
+    "ufs_qcom",
+    "phy_qcom_qmp_ufs",
+    "pinctrl_x1e80100",
+    "gcc_x1e80100",
+    "qnoc_x1e80100",
+    "qcom_rpmh_regulator",
+    "msm",
+    "panel_edp",
+    "ath12k",
+    "ath12k_wifi7",
+    "snd_soc_x1e80100",
+    "qcom_q6v5_pas"
+  ],
+  "initrd_sha256": "8132fe57c006640422b025e9ab774951707dba1707c6f98eab596ecdfa93b86b",
+  "live_layer": "minimal.standard.live.sp12.squashfs",
+  "live_layer_sha256": "c76f112f91aca3e3fb245903af5486ae7ddb480ab8105006a1153fcaa38039a5",
+  "live_layer_manifest_sha256": "699f1f35b6b411b84ba1a480de4c09d2482359b246ef5f92114b12dfe9986a8a",
+  "grub_fdt_module_sha256": "93a9dda6e94e7086ea1463b41c834f30e041efbc7d2151720cc572a07672168c",
+  "live_grub_sha256": "ed41a5cd4afd7c32dd6f59d3d69fe82e15b00a86c5b2ed8375e90e9e04c7b7a8",
+  "private_machine_support": true,
+  "private_support_source_commit": "ea0f07e66beea95898d96fbeb6daa472f4735af3",
+  "private_support_sources": {
+    "firmware_platform": {
+      "repository": "https://github.com/harrisonvanderbyl/surface-pro-12-inch-linux.git",
+      "commit": "ea0f07e66beea95898d96fbeb6daa472f4735af3",
+      "redistributable": false
+    },
+    "audio_topology": {
+      "repository": "https://github.com/linux-msm/audioreach-topology.git",
+      "commit": "d7a5e9d80ad18a7a6844eeb32cacbdeea0e7e677",
+      "tag": "v1.0.4",
+      "output_sha256": "89b731f3f98fc2b84699bca39a56e390925a44a26d5aea80382cf617e00c08d8",
+      "redistributable": false
+    },
+    "wifi_board": {
+      "repository": "https://github.com/qca/qca-swiss-army-knife.git",
+      "commit": "6df4dae3e2f5e4c2903f3cafd40996fc1b3639ce",
+      "extractor_sha256": "fdcc8dc9628d67e500d496a1de22e82e136ddeaec32669ea1b3add93f2980652",
+      "output_sha256": "0ef5f6f3cb124f33c6de52371819ccd7c13763ceb86d476a178fd56e4cdc26a3",
+      "redistributable": false
+    },
+    "alsa_ucm": {
+      "repository": "https://github.com/alsa-project/alsa-ucm-conf.git",
+      "commit": "c68dcb174f432234dd224a3dc5270fa1f4856afd",
+      "tag": "v1.2.16.1",
+      "output_sha256": "76eec2a1f34b9bea9c36c76a75de24c83d8840f73c57dadf1ed397bb5063edaa"
+    }
+  },
+  "private_support_file_hashes": {
+    "usr/lib/firmware/ath12k/WCN7850/hw2.0/board.bin": "0ef5f6f3cb124f33c6de52371819ccd7c13763ceb86d476a178fd56e4cdc26a3",
+    "usr/lib/firmware/qcom/x1e80100/X1P42100-Microsoft-Surface-Pro-12in-tplg.bin": "89b731f3f98fc2b84699bca39a56e390925a44a26d5aea80382cf617e00c08d8",
+    "usr/share/alsa/ucm2/Qualcomm/x1e80100/MICROSOFT-Surface-Pro-12in.conf": "171acda75bba76cc47bd258de7cfabe9474382c76e994e8c8164496b00bb50d1",
+    "usr/share/alsa/ucm2/Qualcomm/x1e80100/Surface12in-HiFi.conf": "76eec2a1f34b9bea9c36c76a75de24c83d8840f73c57dadf1ed397bb5063edaa"
+  },
+  "script_sha256": "e3c23c362d6c926985b6ca6ad16110e1545e6cb1f6fa8069e35c387b8cc168c6"
+}

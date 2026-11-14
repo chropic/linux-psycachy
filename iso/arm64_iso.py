@@ -57,6 +57,10 @@ def validate_pin_pair(pin):
             or ".." in pathlib.PurePosixPath(dtb_path).parts
             or not re.fullmatch(r"[0-9a-f]{64}", dtb_digest)):
         raise ValueError("ARM64 kernel pin has an invalid DTB path or hash")
+    build_id = pin.get("dtb_build_id")
+    if build_id is not None and (not isinstance(build_id, str)
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", build_id)):
+        raise ValueError("ARM64 kernel pin has an invalid DTB build ID")
     return pin
 
 

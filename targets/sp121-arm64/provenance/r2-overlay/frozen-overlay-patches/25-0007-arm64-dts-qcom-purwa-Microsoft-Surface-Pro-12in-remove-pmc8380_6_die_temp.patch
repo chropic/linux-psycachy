@@ -1,0 +1,10 @@
+--- a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-09-04 21:41:55.126721432 +0200
++++ b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts	2026-09-04 21:42:22.842834941 +0200
+@@ -22,6 +22,7 @@
+ 
+ /delete-node/ &pmc8380_6;
+ /delete-node/ &pmc8380_6_thermal;
++/delete-node/ &pmc8380_6_die_temp;
+ 
+ / {
+ 	model = "Surface Pro 12in 1st Edition";

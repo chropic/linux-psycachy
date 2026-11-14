@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "target": "sp121-arm64",
+  "status": "verified-package-structure",
+  "kernel_release": "7.3.1-psycachy-sp121-r2",
+  "package_version": "7.3.1-1psycachy2",
+  "architecture": "arm64",
+  "image_package": {
+    "name": "linux-image-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+    "sha256": "424986a27154c49c1fccf8784ede2195ada23035e2624dbca1ce91e992a9344b",
+    "size_bytes": 136172520
+  },
+  "headers_package": {
+    "name": "linux-headers-7.3.1-psycachy-sp121-r2_7.3.1-1psycachy2_arm64.deb",
+    "sha256": "8509b45755f53fd9465409e398997b59075cf897bada74dae6aca36121fa8703",
+    "size_bytes": 11467152
+  },
+  "dtb": {
+    "path": "qcom/x1p42100-microsoft-sp12in.dtb",
+    "packaged_location": "usr/lib/linux-image-7.3.1-psycachy-sp121-r2/qcom/x1p42100-microsoft-sp12in.dtb",
+    "sha256": "ec0d4d44dfd495b5c771780fc990fa6ec8c1f617faedb174509b043f87a5da69",
+    "fdt_magic_valid": true,
+    "build_id": "sha256:5ec821abf77f1ff32e2b38787b9e709bddebd918530c5ca25422f109ded5cdc9"
+  },
+  "dependencies_verified": [
+    "kmod",
+    "linux-base"
+  ],
+  "headers_tools_verified": [
+    "scripts/asn1_compiler:AArch64-ELF",
+    "scripts/basic/fixdep:AArch64-ELF",
+    "scripts/gendwarfksyms/gendwarfksyms:AArch64-ELF",
+    "scripts/insert-sys-cert:AArch64-ELF",
+    "scripts/ipe/polgen/polgen:AArch64-ELF",
+    "scripts/kallsyms:AArch64-ELF",
+    "scripts/mod/modpost:AArch64-ELF",
+    "scripts/selinux/mdp/mdp:AArch64-ELF",
+    "scripts/sign-file:AArch64-ELF",
+    "scripts/sorttable:AArch64-ELF",
+    "scripts/tracepoint-update:AArch64-ELF",
+    "tools/bpf/resolve_btfids/resolve_btfids:AArch64-ELF"
+  ]
+}

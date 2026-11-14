@@ -1,0 +1,469 @@
+Successfully created target bundle in /var/tmp/psycachy-arm64-iso.L09y1TiQ/kernel-bundle for 7.3.1-psycachy-sp121-r2
+Verified ARM64 offline repository with 120 packages.
+Ign:1 file:/var/tmp/psycachy-arm64-offline.iDLGNbjy/repo ./ InRelease
+Ign:2 file:/var/tmp/psycachy-arm64-offline.iDLGNbjy/repo ./ Release
+Get:3 file:/var/tmp/psycachy-arm64-offline.iDLGNbjy/repo ./ Packages
+Reading package lists...
+NOTE: This is only a simulation!
+      apt-get needs root privileges for real execution.
+      Keep also in mind that locking is deactivated,
+      so don't depend on the relevance to the real current situation!
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following additional packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+Suggested packages:
+  binutils-doc gprofng-gui binutils-gold bzip2-doc clang-22-doc wasi-libc
+  cpp-doc gcc-15-locales cpp-15-doc debconf-doc debconf-kde-helper
+  debconf-utils libgtk3-perl libnet-ldap-perl libterm-readline-gnu-perl
+  whiptail | dialog apt debsig-verify debian-keyring debian-tag2upload-keyring
+  gcc-15-doc gcc-multilib manpages-dev autoconf automake libtool flex bison
+  gdb gcc-doc gdb-aarch64-linux-gnu libc-devtools glibc-doc locales libnss-nis
+  sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq | gnupg sqv | sqopv
+  | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq | gpgv sensible-utils git
+  bzr gdbm-l10n krb5-doc krb5-user libstdc++-15-doc llvm-22-doc make-doc ed
+  diffutils-doc perl-doc libterm-readline-gnu-perl
+  | libterm-readline-perl-perl libtap-harness-archive-perl ncompress
+  tar-scripts tar-doc
+Recommended packages:
+  llvm-22-dev python3 clang-tools-22 apt | apt-utils debconf-i18n fakeroot
+  gnupg | sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq gpgv | sqv
+  | sqopv | rsopv | sopv | gosop | pgpainless-cli | gpgv-sq
+  libalgorithm-merge-perl manpages manpages-dev libclang-rt-22-dev
+  ca-certificates libfile-fcntllock-perl liblocale-gettext-perl krb5-locales
+  publicsuffix libsasl2-modules selinux-utils upki initramfs-tools
+  | dracut-core binfmt-support | systemd netbase
+The following NEW packages will be installed:
+  binutils binutils-aarch64-linux-gnu binutils-common build-essential bzip2
+  clang-22 cpp cpp-15 cpp-15-aarch64-linux-gnu cpp-aarch64-linux-gnu debconf
+  dpkg dpkg-dev g++ g++-15 g++-15-aarch64-linux-gnu g++-aarch64-linux-gnu gcc
+  gcc-15 gcc-15-aarch64-linux-gnu gcc-15-base gcc-16-base
+  gcc-aarch64-linux-gnu kmod libacl1 libasan8 libatomic1 libbinutils libbpf1
+  libbrotli1 libbsd0 libbz2-1.0 libc-dev-bin libc-gconv-modules-extra libc6
+  libc6-dev libcc1-0 libclang-common-22-dev libclang-cpp22 libclang1-22
+  libcom-err2 libcrypt1 libctf-nobfd0 libctf0 libcurl4t64 libdb5.3t64
+  libdpkg-perl libdw1t64 libdwarves1 libedit2 libelf1t64 libffi8 libgc1
+  libgcc-15-dev libgcc-s1 libgdbm-compat4t64 libgdbm6t64 libgmp10 libgomp1
+  libgprofng0 libgssapi-krb5-2 libhwasan0 libidn2-0 libisl23 libitm1
+  libjansson4 libk5crypto3 libkeyutils1 libkmod2 libkrb5-3 libkrb5support0
+  libldap-common libldap2 libllvm22 liblsan0 liblzma5 libmd0 libmpc3 libmpfr6
+  libnghttp2-14 libobjc-15-dev libobjc4 libpcre2-8-0 libperl5.42 libpfm4
+  libpsl5t64 libsasl2-2 libsasl2-modules-db libselinux1 libsframe3
+  libssh2-1t64 libssl4 libstdc++-15-dev libstdc++6 libtinfo6 libtsan2
+  libubsan1 libunistring5 libupki-openssl1 libxml2-16 libzstd1 linux-base
+  linux-headers-7.3.1-psycachy-sp121-r2 linux-image-7.3.1-psycachy-sp121-r2
+  linux-libc-dev lld-22 llvm-22 llvm-22-linker-tools llvm-22-runtime
+  lto-disabled-list make openssl-provider-legacy pahole patch perl perl-base
+  perl-modules-5.42 tar xz-utils zlib1g
+0 upgraded, 120 newly installed, 0 to remove and 0 not upgraded.
+Inst gcc-16-base (16.2.0-3ubuntu1 localhost [arm64])
+Conf gcc-16-base (16.2.0-3ubuntu1 localhost [arm64])
+Inst libc-gconv-modules-extra (2.44-1ubuntu2.1 localhost [arm64])
+Conf libc-gconv-modules-extra (2.44-1ubuntu2.1 localhost [arm64])
+Inst libc6 (2.44-1ubuntu2.1 localhost [arm64]) []
+Inst libgcc-s1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgcc-s1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libc6 (2.44-1ubuntu2.1 localhost [arm64])
+Inst libbz2-1.0 (1.0.8-6build2 localhost [arm64])
+Conf libbz2-1.0 (1.0.8-6build2 localhost [arm64])
+Inst liblzma5 (5.8.3-1ubuntu1 localhost [arm64])
+Conf liblzma5 (5.8.3-1ubuntu1 localhost [arm64])
+Inst libmd0 (1.2.0-2 localhost [arm64])
+Conf libmd0 (1.2.0-2 localhost [arm64])
+Inst libpcre2-8-0 (10.46-1ubuntu1 localhost [arm64])
+Conf libpcre2-8-0 (10.46-1ubuntu1 localhost [arm64])
+Inst libselinux1 (3.11-2.1 localhost [arm64])
+Conf libselinux1 (3.11-2.1 localhost [arm64])
+Inst libzstd1 (1.5.7+dfsg-4 localhost [arm64])
+Conf libzstd1 (1.5.7+dfsg-4 localhost [arm64])
+Inst zlib1g (1:1.3.dfsg+really1.3.2-3ubuntu1.1 localhost [arm64])
+Conf zlib1g (1:1.3.dfsg+really1.3.2-3ubuntu1.1 localhost [arm64])
+Inst libacl1 (2.4.0-1 localhost [arm64])
+Conf libacl1 (2.4.0-1 localhost [arm64])
+Inst tar (1.35+dfsg-5ubuntu1 localhost [arm64])
+Conf tar (1.35+dfsg-5ubuntu1 localhost [arm64])
+Inst dpkg (1.23.7ubuntu2 localhost [arm64])
+Conf dpkg (1.23.7ubuntu2 localhost [arm64])
+Inst libcrypt1 (1:4.5.2+20251210-1 localhost [arm64])
+Conf libcrypt1 (1:4.5.2+20251210-1 localhost [arm64])
+Inst perl-base (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf perl-base (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst debconf (1.5.92 localhost [all])
+Inst openssl-provider-legacy (4.0.3-1ubuntu1 localhost [arm64]) []
+Inst libssl4 (4.0.3-1ubuntu1 localhost [arm64])
+Inst libkmod2 (34.2-2ubuntu3 localhost [arm64])
+Inst kmod (34.2-2ubuntu3 localhost [arm64])
+Inst bzip2 (1.0.8-6build2 localhost [arm64])
+Inst perl-modules-5.42 (5.42.3-1ubuntu0.1 localhost [all])
+Inst libdb5.3t64 (5.3.28+dfsg2-11 localhost [arm64])
+Inst libgdbm6t64 (1.26-1build1 localhost [arm64])
+Inst libgdbm-compat4t64 (1.26-1build1 localhost [arm64])
+Inst libperl5.42 (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst perl (5.42.3-1ubuntu0.1 localhost [arm64])
+Inst xz-utils (5.8.3-1ubuntu1 localhost [arm64])
+Inst libsframe3 (2.47-6ubuntu1 localhost [arm64])
+Inst binutils-common (2.47-6ubuntu1 localhost [arm64])
+Inst libbinutils (2.47-6ubuntu1 localhost [arm64])
+Inst libstdc++6 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgprofng0 (2.47-6ubuntu1 localhost [arm64])
+Inst libctf-nobfd0 (2.47-6ubuntu1 localhost [arm64])
+Inst libctf0 (2.47-6ubuntu1 localhost [arm64])
+Inst libjansson4 (2.15.1-1 localhost [arm64])
+Inst binutils-aarch64-linux-gnu (2.47-6ubuntu1 localhost [arm64])
+Inst binutils (2.47-6ubuntu1 localhost [arm64])
+Inst libc-dev-bin (2.44-1ubuntu2.1 localhost [arm64])
+Inst linux-libc-dev (7.3.0-10.10 localhost [arm64])
+Inst libc6-dev (2.44-1ubuntu2.1 localhost [arm64])
+Inst gcc-15-base (15.3.0-4ubuntu1 localhost [arm64])
+Inst libgmp10 (2:6.3.0+dfsg-5ubuntu2 localhost [arm64])
+Inst libisl23 (0.28-1 localhost [arm64])
+Inst libmpfr6 (4.2.2-3 localhost [arm64])
+Inst libmpc3 (1.3.1-3 localhost [arm64])
+Inst cpp-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst cpp-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst cpp-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst cpp (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst libcc1-0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgomp1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libitm1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libatomic1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libasan8 (16.2.0-3ubuntu1 localhost [arm64])
+Inst liblsan0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libtsan2 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libubsan1 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libhwasan0 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libgcc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst gcc-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst gcc (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst libstdc++-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-15 (15.3.0-4ubuntu1 localhost [arm64])
+Inst g++-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst g++ (4:15.2.0-5ubuntu1 localhost [arm64])
+Inst make (4.4.1-3 localhost [arm64])
+Inst libdpkg-perl (1.23.7ubuntu2 localhost [all])
+Inst patch (2.8-2build1 localhost [arm64])
+Inst lto-disabled-list (84 localhost [all])
+Inst dpkg-dev (1.23.7ubuntu2 localhost [all])
+Inst build-essential (12.12ubuntu5 localhost [arm64])
+Inst libbsd0 (0.12.2-3 localhost [arm64])
+Inst libtinfo6 (6.6+20260608-2 localhost [arm64])
+Inst libedit2 (3.1-20260512-1 localhost [arm64])
+Inst libffi8 (3.8.0-2 localhost [arm64])
+Inst libxml2-16 (2.15.4+dfsg-1 localhost [arm64])
+Inst libllvm22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libclang-cpp22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libgc1 (1:8.2.12-1 localhost [arm64])
+Inst libobjc4 (16.2.0-3ubuntu1 localhost [arm64])
+Inst libobjc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Inst libclang-common-22-dev (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst llvm-22-linker-tools (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libclang1-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst clang-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst libelf1t64 (0.196-1 localhost [arm64])
+Inst libbpf1 (1:1.6.3-1ubuntu1 localhost [arm64])
+Inst libbrotli1 (1.2.0-4ubuntu0.1 localhost [arm64])
+Inst libcom-err2 (1.47.4-1 localhost [arm64])
+Inst libkrb5support0 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libk5crypto3 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libkeyutils1 (1.6.3-6ubuntu3 localhost [arm64])
+Inst libkrb5-3 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libgssapi-krb5-2 (1.22.1-3ubuntu2 localhost [arm64])
+Inst libunistring5 (1.4.2-1 localhost [arm64])
+Inst libidn2-0 (2.3.8-5 localhost [arm64])
+Inst libsasl2-modules-db (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Inst libsasl2-2 (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Inst libldap-common (2.6.13+dfsg-1ubuntu3 localhost [all])
+Inst libldap2 (2.6.13+dfsg-1ubuntu3 localhost [arm64])
+Inst libnghttp2-14 (1.70.0-1 localhost [arm64])
+Inst libpsl5t64 (0.23.3-1 localhost [arm64])
+Inst libssh2-1t64 (1.11.1-6 localhost [arm64])
+Inst libupki-openssl1 (1.0.0~beta.3+repack-0ubuntu2 localhost [arm64])
+Inst libcurl4t64 (8.20.0-2ubuntu11.1 localhost [arm64])
+Inst libdw1t64 (0.196-1 localhost [arm64])
+Inst libdwarves1 (1.31-2ubuntu1 localhost [arm64])
+Inst libpfm4 (4.13.0+git106-g3e4031b-1ubuntu1 localhost [arm64])
+Inst linux-base (4.17ubuntu1 localhost [all])
+Inst llvm-22-runtime (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst llvm-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst lld-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Inst pahole (1.31-2ubuntu1 localhost [arm64])
+Inst linux-headers-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Inst linux-image-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Conf debconf (1.5.92 localhost [all])
+Conf openssl-provider-legacy (4.0.3-1ubuntu1 localhost [arm64])
+Conf libssl4 (4.0.3-1ubuntu1 localhost [arm64])
+Conf libkmod2 (34.2-2ubuntu3 localhost [arm64])
+Conf kmod (34.2-2ubuntu3 localhost [arm64])
+Conf bzip2 (1.0.8-6build2 localhost [arm64])
+Conf perl-modules-5.42 (5.42.3-1ubuntu0.1 localhost [all])
+Conf libdb5.3t64 (5.3.28+dfsg2-11 localhost [arm64])
+Conf libgdbm6t64 (1.26-1build1 localhost [arm64])
+Conf libgdbm-compat4t64 (1.26-1build1 localhost [arm64])
+Conf libperl5.42 (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf perl (5.42.3-1ubuntu0.1 localhost [arm64])
+Conf xz-utils (5.8.3-1ubuntu1 localhost [arm64])
+Conf libsframe3 (2.47-6ubuntu1 localhost [arm64])
+Conf binutils-common (2.47-6ubuntu1 localhost [arm64])
+Conf libbinutils (2.47-6ubuntu1 localhost [arm64])
+Conf libstdc++6 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgprofng0 (2.47-6ubuntu1 localhost [arm64])
+Conf libctf-nobfd0 (2.47-6ubuntu1 localhost [arm64])
+Conf libctf0 (2.47-6ubuntu1 localhost [arm64])
+Conf libjansson4 (2.15.1-1 localhost [arm64])
+Conf binutils-aarch64-linux-gnu (2.47-6ubuntu1 localhost [arm64])
+Conf binutils (2.47-6ubuntu1 localhost [arm64])
+Conf libc-dev-bin (2.44-1ubuntu2.1 localhost [arm64])
+Conf linux-libc-dev (7.3.0-10.10 localhost [arm64])
+Conf libc6-dev (2.44-1ubuntu2.1 localhost [arm64])
+Conf gcc-15-base (15.3.0-4ubuntu1 localhost [arm64])
+Conf libgmp10 (2:6.3.0+dfsg-5ubuntu2 localhost [arm64])
+Conf libisl23 (0.28-1 localhost [arm64])
+Conf libmpfr6 (4.2.2-3 localhost [arm64])
+Conf libmpc3 (1.3.1-3 localhost [arm64])
+Conf cpp-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf cpp-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf cpp-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf cpp (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf libcc1-0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgomp1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libitm1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libatomic1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libasan8 (16.2.0-3ubuntu1 localhost [arm64])
+Conf liblsan0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libtsan2 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libubsan1 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libhwasan0 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libgcc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf gcc-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf gcc (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf libstdc++-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-15-aarch64-linux-gnu (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-15 (15.3.0-4ubuntu1 localhost [arm64])
+Conf g++-aarch64-linux-gnu (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf g++ (4:15.2.0-5ubuntu1 localhost [arm64])
+Conf make (4.4.1-3 localhost [arm64])
+Conf libdpkg-perl (1.23.7ubuntu2 localhost [all])
+Conf patch (2.8-2build1 localhost [arm64])
+Conf lto-disabled-list (84 localhost [all])
+Conf dpkg-dev (1.23.7ubuntu2 localhost [all])
+Conf build-essential (12.12ubuntu5 localhost [arm64])
+Conf libbsd0 (0.12.2-3 localhost [arm64])
+Conf libtinfo6 (6.6+20260608-2 localhost [arm64])
+Conf libedit2 (3.1-20260512-1 localhost [arm64])
+Conf libffi8 (3.8.0-2 localhost [arm64])
+Conf libxml2-16 (2.15.4+dfsg-1 localhost [arm64])
+Conf libllvm22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libclang-cpp22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libgc1 (1:8.2.12-1 localhost [arm64])
+Conf libobjc4 (16.2.0-3ubuntu1 localhost [arm64])
+Conf libobjc-15-dev (15.3.0-4ubuntu1 localhost [arm64])
+Conf libclang-common-22-dev (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf llvm-22-linker-tools (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libclang1-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf clang-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf libelf1t64 (0.196-1 localhost [arm64])
+Conf libbpf1 (1:1.6.3-1ubuntu1 localhost [arm64])
+Conf libbrotli1 (1.2.0-4ubuntu0.1 localhost [arm64])
+Conf libcom-err2 (1.47.4-1 localhost [arm64])
+Conf libkrb5support0 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libk5crypto3 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libkeyutils1 (1.6.3-6ubuntu3 localhost [arm64])
+Conf libkrb5-3 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libgssapi-krb5-2 (1.22.1-3ubuntu2 localhost [arm64])
+Conf libunistring5 (1.4.2-1 localhost [arm64])
+Conf libidn2-0 (2.3.8-5 localhost [arm64])
+Conf libsasl2-modules-db (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Conf libsasl2-2 (2.1.28+dfsg1-11ubuntu2 localhost [arm64])
+Conf libldap-common (2.6.13+dfsg-1ubuntu3 localhost [all])
+Conf libldap2 (2.6.13+dfsg-1ubuntu3 localhost [arm64])
+Conf libnghttp2-14 (1.70.0-1 localhost [arm64])
+Conf libpsl5t64 (0.23.3-1 localhost [arm64])
+Conf libssh2-1t64 (1.11.1-6 localhost [arm64])
+Conf libupki-openssl1 (1.0.0~beta.3+repack-0ubuntu2 localhost [arm64])
+Conf libcurl4t64 (8.20.0-2ubuntu11.1 localhost [arm64])
+Conf libdw1t64 (0.196-1 localhost [arm64])
+Conf libdwarves1 (1.31-2ubuntu1 localhost [arm64])
+Conf libpfm4 (4.13.0+git106-g3e4031b-1ubuntu1 localhost [arm64])
+Conf linux-base (4.17ubuntu1 localhost [all])
+Conf llvm-22-runtime (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf llvm-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf lld-22 (1:22.1.8-1ubuntu1 localhost [arm64])
+Conf pahole (1.31-2ubuntu1 localhost [arm64])
+Conf linux-headers-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+Conf linux-image-7.3.1-psycachy-sp121-r2 (7.3.1-1psycachy2 localhost [arm64])
+ARM64 offline repository contains a resolvable package dependency closure.
+Verified ARM64 offline repository with 120 packages.
+Staged ARM64 offline repository at /var/tmp/psycachy-arm64-iso.L09y1TiQ/payload/repository with symlinks dereferenced.
+Verified ARM64 offline repository with 120 packages.
+embedded
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       1 files restored (   763b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/grub-source.cfg'
+Enabled autoinstall on 1 ARM64 GRUB kernel entries.
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  117g free
+Volume id    : 'Ubuntu 26.10 arm64'
+Drive current: -outdev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is blank
+Media summary: 0 sessions, 0 data blocks, 0 data,  117g free
+xorriso : WARNING : -volid text problematic as automatic mount point name
+xorriso : WARNING : -volid text does not comply to ISO 9660 / ECMA 119 rules
+xorriso : NOTE : Replayed 14 boot related commands
+xorriso : UPDATE :       1 files added in 1 seconds
+Added to ISO image: file '/autoinstall.yaml'='/home/charlie/Documents/ChatGPT/linux-psycachy 2/iso/arm64-autoinstall.yaml'
+xorriso : UPDATE :       1 files added in 1 seconds
+Added to ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/grub.cfg'
+xorriso : UPDATE :     164 files added in 1 seconds
+Added to ISO image: directory '/psycachy'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/payload'
+xorriso : NOTE : Copying to System Area: 32768 bytes from file '--interval:imported_iso:0s-15s:zero_mbrpt,zero_gpt:/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+xorriso : UPDATE : Writing:      57344s    2.3%   fifo 100%  buf  50%
+xorriso : UPDATE : Writing:     172032s    6.9%   fifo 100%  buf  50%  847.4xD 
+xorriso : UPDATE : Writing:     376832s   15.2%   fifo 100%  buf  50%  302.7xD 
+xorriso : UPDATE : Writing:     491520s   19.8%   fifo 100%  buf  50%  169.5xD 
+xorriso : UPDATE : Writing:     617952s   24.9%   fifo  99%  buf  50%  186.8xD 
+xorriso : UPDATE : Writing:     770048s   31.1%   fifo 100%  buf  50%  224.8xD 
+xorriso : UPDATE : Writing:     917504s   37.0%   fifo 100%  buf  50%  217.9xD 
+xorriso : UPDATE : Writing:    1097728s   44.3%   fifo 100%  buf  50%  266.3xD 
+xorriso : UPDATE : Writing:    1261568s   50.9%   fifo 100%  buf  50%  242.1xD 
+xorriso : UPDATE : Writing:    1417216s   57.2%   fifo 100%  buf  50%  230.0xD 
+xorriso : UPDATE : Writing:    1638400s   66.1%   fifo 100%  buf  50%  326.8xD 
+xorriso : UPDATE : Writing:    1859584s   75.0%   fifo 100%  buf  50%  326.7xD 
+xorriso : UPDATE : Writing:    2031014s   82.0%   fifo   0%  buf  50%  253.2xD 
+xorriso : UPDATE : Writing:    2127974s   85.9%   fifo   0%  buf  50%  143.3xD 
+xorriso : UPDATE : Writing:    2236416s   90.3%   fifo  92%  buf  50%  160.2xD 
+xorriso : UPDATE : Writing:    2441216s   98.5%   fifo 100%  buf  50%  302.6xD 
+ISO image produced: 2477687 sectors
+Written to medium : 2477856 sectors at LBA 32
+Writing to '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso' completed successfully.
+
+xorriso : NOTE : Re-assessing -outdev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso'
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be replaced by new boot image
+Drive current: -dev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  112g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     518 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2243584 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/iso-arm64-inputs-20261110/ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2246822 data blocks, 4388m data,  112g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       3 files restored (4301.8k) in 1 seconds = 3.2xD
+Extracted from ISO image: file '/EFI/boot'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/efi-source'
+xorriso : UPDATE :       1 files restored ( 25734k) in 1 seconds = 19.0xD
+Extracted from ISO image: file '/casper/vmlinuz'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/vmlinuz-source'
+xorriso : UPDATE :       1 files restored ( 140.0m) in 1 seconds = 106.0xD
+Extracted from ISO image: file '/casper/initrd'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/initrd-source'
+xorriso : UPDATE :       1 files restored (   763b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/grub-source.cfg'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  112g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       3 files restored (4301.8k) in 1 seconds = 3.2xD
+Extracted from ISO image: file '/EFI/boot'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/efi-result'
+xorriso : UPDATE :       1 files restored ( 25734k) in 1 seconds = 19.0xD
+Extracted from ISO image: file '/casper/vmlinuz'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/vmlinuz-result'
+xorriso : UPDATE :       1 files restored ( 140.0m) in 1 seconds = 106.0xD
+Extracted from ISO image: file '/casper/initrd'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/initrd-result'
+xorriso : UPDATE :       1 files restored (   774b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/boot/grub/grub.cfg'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/grub-result.cfg'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Copying of file objects from ISO image to disk filesystem is: Enabled
+xorriso : NOTE : Loading ISO image tree from LBA 0
+xorriso : UPDATE :     684 nodes read in 1 seconds
+libisofs: NOTE : Found hidden El-Torito image for EFI.
+libisofs: NOTE : EFI image start and load size: 2474631 * 2048 , 12288 * 512
+libisofs: NOTE : Roughly estimated EFI image size: 6291456 bytes
+xorriso : NOTE : Detected El-Torito boot information which currently is set to be discarded
+Drive current: -indev '/home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso'
+Media current: stdio file, overwriteable
+Media status : is written , is appendable
+Boot record  : El Torito , MBR protective-msdos-label cyl-align-off GPT
+Media summary: 1 session, 2477687 data blocks, 4839m data,  112g free
+Volume id    : 'Ubuntu 26.10 arm64'
+xorriso : UPDATE :       1 files restored (   282b) in 1 seconds = 0.0xD
+Extracted from ISO image: file '/autoinstall.yaml'='/var/tmp/psycachy-arm64-iso.L09y1TiQ/autoinstall-result.yaml'
+xorriso 1.5.6 : RockRidge filesystem manipulator, libburnia project.
+
+Built /home/charlie/Documents/ChatGPT/linux-psycachy 2/output/sp12-r2-installer-20261113-final/psycachy-ubuntu-26.10-desktop-arm64.iso

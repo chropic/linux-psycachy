@@ -1,0 +1,8 @@
+make: Entering directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'
+make[1]: Entering directory '/var/tmp/sp12-config-audit-20261113/config'
+/bin/sh: 1: cd: can't cd to /home/charlie/Documents/ChatGPT/linux-psycachy
+/bin/sh: 1: cd: can't cd to /home/charlie/Documents/ChatGPT/linux-psycachy
+  DESCEND bpf/resolve_btfids
+  CC [M]  drivers/media/i2c/ov02c10.o
+make[1]: Leaving directory '/var/tmp/sp12-config-audit-20261113/config'
+make: Leaving directory '/var/tmp/sp12-overlay-cachyos-audit-20261112/source/cachyos-7.3.1-1'

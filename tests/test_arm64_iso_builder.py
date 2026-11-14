@@ -22,10 +22,40 @@ class Arm64IsoBuilderTests(unittest.TestCase):
         builder = (ROOT / "iso/build-arm64.sh").read_text()
         self.assertIn("pin=$media/config/arm64-iso-kernel.json", installer)
         self.assertIn('[[ -f $pin ]] || die', installer)
-        self.assertIn(
-            '"$root/config/arm64-iso-kernel.json" "$payload/config/"',
-            builder,
-        )
+        self.assertIn('identity_tool=$media/iso/kernel_identity.py', installer)
+        self.assertIn('--artifact-pin "$pin" --field kernel_release', installer)
+        self.assertIn('--artifact-pin "$pin" --field debian_version', installer)
+        self.assertIn("arm64-kernel-identity.json", builder)
+        self.assertIn("arm64-iso-kernel.json", builder)
+        self.assertIn("--stage-if-matching", builder)
+        self.assertIn("kernel_identity.py", builder)
+        self.assertIn('kernel_pin=${PSYCACHY_ARM64_KERNEL_PIN:-$root/config/arm64-iso-kernel.json}', builder)
+        self.assertIn('--pin "$kernel_pin"', builder)
+        self.assertIn('verify-repository "$repo" --pin "$kernel_pin"', builder)
+
+    def test_package_downloader_passes_selected_artifact_identity_to_bundle(self):
+        downloader = (ROOT / "iso/arm64-download-packages.sh").read_text()
+        self.assertIn('kernel_pin=${3:-$root/config/arm64-iso-kernel.json}', downloader)
+        self.assertIn('--pin "$kernel_pin"', downloader)
+        self.assertIn('--release "${artifact_identity[0]}"', downloader)
+        self.assertIn('--version "${artifact_identity[1]}"', downloader)
+        self.assertIn('--dtb "${artifact_identity[2]}"', downloader)
+
+    def test_offline_checker_and_live_builder_accept_a_separate_r2_pin(self):
+        checker = (ROOT / "iso/arm64-check-offline-packages.sh").read_text()
+        live_builder = (ROOT / "iso/build-sp12-live.py").read_text()
+        self.assertIn('kernel_pin=${2:-$root/config/arm64-iso-kernel.json}', checker)
+        self.assertIn('verify-repository "$repo" --pin "$kernel_pin"', checker)
+        self.assertIn("parser.add_argument('--kernel-pin'", live_builder)
+        self.assertIn("module_signing_certificate, args.kernel_pin)", live_builder)
+
+    def test_kernel_pin_accepts_valid_optional_build_id_and_rejects_invalid(self):
+        pin = ARM64_ISO.load_json(ROOT / "config/arm64-iso-kernel.json")
+        pin["dtb_build_id"] = "sha256:" + "a" * 64
+        self.assertEqual(ARM64_ISO.validate_pin_pair(pin)["dtb_build_id"], pin["dtb_build_id"])
+        pin["dtb_build_id"] = "not-a-build-id"
+        with self.assertRaisesRegex(ValueError, "invalid DTB build ID"):
+            ARM64_ISO.validate_pin_pair(pin)
 
     def test_grub_autoinstall_is_inserted_before_separator_once(self):
         source = (

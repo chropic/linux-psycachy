@@ -1,0 +1,10 @@
+gpgv: Signature made Thu Oct 15 03:38:45 2026 MDT
+gpgv:                using RSA key 843938DF228D22F7B3742BC0D94AA3F0EFE21092
+gpgv: Good signature from "Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>"
+DRY RUN: signed Ubuntu 26.10 ARM64 base: 9242a38c47eb53a5beb153c249d4843e4366f8955e9b972663e4ab7989311e9f
+Pinned SP12 kernel release: 7.3.1-psycachy-sp121-r2
+Pinned kernel package pair verified: a1398ad1445d0a712aece65fbb2aa129a8afece4011e54773b6940616cae40bd
+Private machine support: True
+Base ISO: /var/tmp/sp12-installer-2610/inputs/ubuntu-26.10-desktop-arm64.iso
+Output: /var/tmp/sp12-r2-final51-build/output/private-sp12-r2-final51.iso
+No mounts or output files created. Add --apply to build.

@@ -8,6 +8,12 @@ root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
 # shellcheck source=config/source-pin.sh
 . "$root/config/source-pin.sh"
 target_dir="$root/targets/sp121-arm64"
+identity="$root/config/arm64-kernel-identity.json"
+identity_field() { python3 "$root/tools/kernel_identity.py" --identity "$identity" --field "$1"; }
+kernel_version=$(identity_field kernel_version)
+localversion=$(identity_field localversion)
+debian_version=$(identity_field debian_version)
+expected_release=$(identity_field kernel_release)
 output=${1:?output directory is required}
 jobs=${2:?job count is required}
 die() { echo "error: $*" >&2; exit 1; }
@@ -28,7 +34,7 @@ fi
 [[ ! -e $output && ! -L $output ]] || die 'SP12 build output must not already exist'
 [[ ${TMPDIR:-/tmp} != *[[:space:]]* ]] || die 'TMPDIR must not contain whitespace for the kernel build system'
 
-for command in curl gpg gpgv git make python3 sha256sum tar clang-22 ld.lld-22 flex bison m4 gawk pahole pkg-config dpkg-deb dpkg-query dpkg-buildpackage dpkg-checkbuilddeps dh aarch64-linux-gnu-gcc fakeroot cpio rsync; do
+for command in curl gpg gpgv git make python3 sha256sum tar clang-22 ld.lld-22 llvm-objcopy-22 modinfo flex bison m4 gawk pahole pkg-config dpkg-deb dpkg-query dpkg-buildpackage dpkg-checkbuilddeps dh aarch64-linux-gnu-gcc fakeroot cpio rsync; do
   command -v "$command" >/dev/null || die "missing required command: $command"
 done
 for package in libssl-dev:arm64 libdw-dev:arm64 libelf-dev:arm64 zlib1g-dev:arm64 libc6-dev-arm64-cross; do
@@ -74,7 +80,7 @@ grep -q "^\\[GNUPG:\\] VALIDSIG $SIGNER " "$work/signature-status.txt" || die 's
 
 tar -xzf "$archive" -C "$work"
 source_dir="$work/$RELEASE"
-[[ -f $source_dir/Makefile && $(make -s -C "$source_dir" kernelversion) == "$KERNEL_VERSION" ]] || die 'source version mismatch'
+[[ -f $source_dir/Makefile && $(make -s -C "$source_dir" kernelversion) == "$kernel_version" ]] || die 'source version mismatch'
 
 # Apply SP12 platform patches (from inputs.json)
 mapfile -t patches < <(python3 - "$target_dir/inputs.json" <<'PY'
@@ -83,7 +89,6 @@ for entry in json.load(open(sys.argv[1], encoding="utf-8"))["series"]:
     print(entry["path"])
 PY
 )
-[[ ${#patches[@]} == 10 ]] || die 'unexpected SP12 patch count'
 for patch in "${patches[@]}"; do
   git -C "$source_dir" apply --check --no-index "$target_dir/$patch"
   git -C "$source_dir" apply --no-index "$target_dir/$patch"
@@ -98,8 +103,6 @@ for packaging_patch in \
   git -C "$source_dir" apply --check --no-index "$packaging_patch"
   git -C "$source_dir" apply --no-index "$packaging_patch"
 done
-
-python3 "$root/tools/hash-source-tree.py" "$source_dir" > "$work/source-tree.sha256"
 
 # Kbuild passes PWD to recursive host-tool recipes. Keep it rooted in the
 # whitespace-free temporary source tree even when the checkout path has spaces.
@@ -126,7 +129,7 @@ PY
   echo 'Imported approved config; Kconfig resolved only CONFIG_DRM_MSM_VALIDATE_XML=n as an explicit unset comment.'
 else
   cp "$target_dir/config.seed" "$work/config/.config"
-  "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION '-psycachy-sp121' --disable LOCALVERSION_AUTO
+  "$source_dir/scripts/config" --file "$work/config/.config" --set-str LOCALVERSION "$localversion" --disable LOCALVERSION_AUTO
   cp -- "$target_dir/policy.fragment" "$work/policy.fragment"
   (cd "$source_dir" && KCONFIG_CONFIG="$work/config/.config" \
     scripts/kconfig/merge_config.sh -m "$work/config/.config" "$work/policy.fragment")
@@ -150,14 +153,28 @@ python3 "$root/tools/audit-sp121-config.py" "$audit_config" \
   --output "$work/config-audit.json"
 
 release=$(KCONFIG_NOSILENTUPDATE=1 make -s -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 kernelrelease)
-[[ $release == "$KERNEL_VERSION-psycachy-sp121" ]] || die "unexpected ARM64 kernel release: $release"
+[[ $release == "$expected_release" ]] || die "unexpected ARM64 kernel release: $release"
 config_sha256_after_prepare=$(sha256sum "$work/config/.config")
 config_sha256_after_prepare=${config_sha256_after_prepare%% *}
 [[ $config_sha256_after_prepare == "$resolved_config_sha256" ]] || \
   die "ARM64 config changed during kernel release preparation: $config_sha256_after_prepare"
 
+# Bind the target DTS to its exact pre-injection build inputs before Kbuild
+# compiles any DTBs. Injection is confined to this disposable source tree.
+dtb_build_id=$(python3 "$root/tools/sp12_dtb_build_id.py" inject \
+  --source-root "$source_dir" \
+  --input-manifest "$target_dir/inputs.json" --repo-root "$target_dir" \
+  --resolved-config "$work/config/.config" --identity "$identity" \
+  --config-seed "$target_dir/config.seed" \
+  --source-archive-sha256 "$SOURCE_SHA256" \
+  --record "$work/dtb-build-id.json")
+python3 - "$work/dtb-build-id.json" > "$work/source-tree.sha256" <<'PY'
+import json, sys
+print(json.load(open(sys.argv[1], encoding="utf-8"))["inputs"]["source_tree_sha256_before_injection"])
+PY
+
 # Build kernel packages (bindeb-pkg for ARM64)
-pkg_version="${KERNEL_VERSION}-1psycachy1"
+pkg_version="$debian_version"
 pkg_revision="${pkg_version#*-}"
 timestamp=${KBUILD_BUILD_TIMESTAMP:-$(date -u +'%Y-%m-%d %H:%M:%S +0000')}
 export KBUILD_BUILD_TIMESTAMP="$timestamp"
@@ -166,6 +183,11 @@ export KBUILD_BUILD_VERSION="$pkg_revision"
 # Pre-compile payloads in parallel, then package serially to avoid DTB installation race
 KCONFIG_NOSILENTUPDATE=1 make -C "$source_dir" O="$work/config" ARCH=arm64 LLVM=-22 -j"$jobs" \
   Image modules dtbs vmlinuz.efi
+
+# Require the camera/media and separate SP12 PHY modules from the exact ARM64
+# candidate build tree, in addition to checking ELF architecture and vermagic.
+python3 "$root/tools/audit-arm64-modules.py" \
+  --tree "$work/config" --release "$release" --output "$work/module-audit.json" --jobs "$jobs"
 
 config_sha256_after_compile=$(sha256sum "$work/config/.config")
 config_sha256_after_compile=${config_sha256_after_compile%% *}
@@ -187,11 +209,15 @@ config_sha256_after_package=${config_sha256_after_package%% *}
 # Comprehensive package audit and verification
 python3 "$root/tools/verify-arm64-packages.py" "$work" \
   --release "$release" \
+  --version "$pkg_version" \
+  --expected-dtb-build-id "$dtb_build_id" \
   --output-report "$work/package-verification.json"
 
-images=("$work"/linux-image-*psycachy-sp121_*.deb)
-headers=("$work"/linux-headers-*psycachy-sp121_*.deb)
-[[ ${#images[@]} == 1 && ${#headers[@]} == 1 ]] || die 'expected exactly one image and one headers package'
+image_name=$(python3 "$root/tools/kernel_identity.py" --field package_filenames | python3 -c 'import json,sys; print(json.load(sys.stdin)["image"])')
+headers_name=$(python3 "$root/tools/kernel_identity.py" --field package_filenames | python3 -c 'import json,sys; print(json.load(sys.stdin)["headers"])')
+images=("$work/$image_name")
+headers=("$work/$headers_name")
+[[ -f ${images[0]} && -f ${headers[0]} ]] || die 'built package filenames differ from ARM64 kernel identity'
 
 # Copy packages and verification report to output
 mkdir -p -- "$(dirname -- "$output")"
@@ -201,6 +227,7 @@ for package in "${images[@]}" "${headers[@]}"; do
   cp -- "$package" "$output/"
 done
 cp -- "$work/package-verification.json" "$output/"
+cp -- "$work/dtb-build-id.json" "$output/"
 cp -- "$work/policy-audit.json" "$work/source-tree.sha256" "$output/"
 if [[ -n $approved_config ]]; then
   cp -- "$work/approved-config.config" "$output/arm64-candidate.config"
@@ -211,6 +238,7 @@ if [[ $resolved_config_sha256 != "$config_sha256" ]]; then
   cp -- "$work/config/.config" "$output/kconfig-resolved.config"
 fi
 cp -- "$work/config-audit.json" "$output/config-audit.json"
+cp -- "$work/module-audit.json" "$output/module-audit.json"
 if [[ -f $work/config/certs/signing_key.x509 ]]; then
   cp -- "$work/config/certs/signing_key.x509" "$output/module-signing-cert.x509"
 fi
@@ -222,8 +250,10 @@ fi
   echo "source=$RELEASE"
   echo "source_sha256=$SOURCE_SHA256"
   printf 'source_tree_sha256='; cat "$work/source-tree.sha256"
+  echo "dtb_build_id=$dtb_build_id"
   echo "config_sha256=$config_sha256"
   echo "kconfig_resolved_config_sha256=$resolved_config_sha256"
+  printf 'module_audit_sha256='; sha256sum "$output/module-audit.json" | cut -d ' ' -f 1
   printf 'policy_fragment_sha256='; sha256sum "$target_dir/policy.fragment" | cut -d ' ' -f 1
   if [[ -n $approved_config ]]; then
     echo 'config_input=approved-file'

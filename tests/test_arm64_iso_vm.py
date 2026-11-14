@@ -65,8 +65,10 @@ class Arm64IsoVmHarnessTests(unittest.TestCase):
         self.assertIn("virt,accel=tcg,gic-version=3", args)
         self.assertIn("media=cdrom,readonly=on", args)
         self.assertIn("readonly=on", args)
+        self.assertIn("virtio-keyboard-pci", args)
+        self.assertIn("virtio-tablet-pci", args)
         self.assertIn("virtio-gpu-pci", args)
-        self.assertIn("ramfb", args)
+        self.assertNotIn("ramfb", args)
         self.assertIn("-nic\nnone", args)
         self.assertIn(str(self.iso), args)
 

@@ -78,9 +78,14 @@ class Sp12LiveBuilderTests(unittest.TestCase):
             hash_by_name = {item["filename"]: item["sha256"] for item in pin["packages"]}
             hash_by_name[certificate.name] = pin["module_signing_certificate_sha256"]
             with mock.patch.object(BUILDER, "sha", side_effect=lambda path: hash_by_name[pathlib.Path(path).name]), \
-                    mock.patch.object(BUILDER, "verify_arm64_packages", return_value=package_report):
+                    mock.patch.object(BUILDER, "verify_arm64_packages", return_value=package_report) as verify_packages:
                 validated_pin, report, validated_metadata = BUILDER.validate_kernel_inputs(
                     packages, verification, build_metadata, certificate)
+            verify_packages.assert_called_once_with(
+                packages, expected_release=pin["kernel_release"],
+                expected_dtb=pin["dtb_path"],
+                expected_version=pin["debian_version"],
+                expected_dtb_build_id=pin.get("dtb_build_id"))
             self.assertEqual(validated_pin["kernel_release"], pin["kernel_release"])
             self.assertEqual(report, package_report)
             self.assertEqual(validated_metadata, metadata)

@@ -8,20 +8,33 @@ import importlib.util
 import json
 import os
 import pathlib
+import re
 import shutil
 import sys
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tools"))
+from kernel_identity import load_identity
+
 VERIFY_SCRIPT = ROOT / "tools/verify-arm64-packages.py"
 SPEC = importlib.util.spec_from_file_location("verify_arm64_packages", VERIFY_SCRIPT)
 VERIFY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFY)
 verify_arm64_packages = VERIFY.verify_arm64_packages
+IDENTITY = load_identity()
 
 
 def sha256_file(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def verify_pinned_dtb_hash(verification_report: dict, pin: dict) -> str:
+    actual = verification_report.get("dtb", {}).get("sha256")
+    expected = pin.get("dtb_sha256")
+    if actual != expected:
+        raise ValueError("Packaged DTB checksum differs from ARM64 ISO pin")
+    return actual
 
 
 def verify_iso_kernel_pin(packages_dir: pathlib.Path, pin_path: pathlib.Path | None = None) -> dict:
@@ -30,6 +43,10 @@ def verify_iso_kernel_pin(packages_dir: pathlib.Path, pin_path: pathlib.Path | N
     pin = json.loads(pathlib.Path(pin_path).read_text(encoding="utf-8"))
     if pin.get("schema_version") != 1 or pin.get("architecture") != "arm64":
         raise ValueError("Unsupported ARM64 ISO kernel pin")
+    pinned_build_id = pin.get("dtb_build_id")
+    if pinned_build_id is not None and (not isinstance(pinned_build_id, str)
+            or not re.fullmatch(r"sha256:[0-9a-f]{64}", pinned_build_id)):
+        raise ValueError("ARM64 ISO pin has an invalid DTB build ID")
     packages = pin.get("packages", [])
     expected = {entry["filename"]: entry["sha256"] for entry in packages}
     expected_names = {
@@ -52,13 +69,15 @@ def verify_iso_kernel_pin(packages_dir: pathlib.Path, pin_path: pathlib.Path | N
 def bundle_target(
     packages_dir: pathlib.Path,
     bundle_output: pathlib.Path,
-    kernel_release: str = "7.3.1-psycachy-sp121",
+    kernel_release: str = IDENTITY["kernel_release"],
     dtb_path: str = "qcom/x1p42100-microsoft-sp12in.dtb",
+    package_version: str = IDENTITY["debian_version"],
+    pin_path: pathlib.Path | None = None,
 ) -> dict:
     if bundle_output.exists():
         raise FileExistsError(f"Bundle output directory already exists: {bundle_output}")
 
-    pin = verify_iso_kernel_pin(packages_dir)
+    pin = verify_iso_kernel_pin(packages_dir, pin_path)
     if pin["kernel_release"] != kernel_release or pin["dtb_path"] != dtb_path:
         raise ValueError("Requested ARM64 ISO bundle differs from its pinned kernel or DTB")
 
@@ -67,7 +86,10 @@ def bundle_target(
         packages_dir=packages_dir,
         expected_release=kernel_release,
         expected_dtb=dtb_path,
+        expected_version=package_version,
+        expected_dtb_build_id=pin.get("dtb_build_id"),
     )
+    verify_pinned_dtb_hash(verification_report, pin)
 
     images = sorted(packages_dir.glob("linux-image-*_*.deb"))
     headers = sorted(packages_dir.glob("linux-headers-*_*.deb"))
@@ -97,7 +119,10 @@ def bundle_target(
         "kernel_release": kernel_release,
         "package_version": verification_report["package_version"],
         "architecture": "arm64",
-        "kernel_pin_sha256": sha256_file(ROOT / "config/arm64-iso-kernel.json"),
+        "kernel_pin_sha256": sha256_file(
+            pathlib.Path(pin_path) if pin_path is not None
+            else ROOT / "config/arm64-iso-kernel.json"
+        ),
         "dtb_path": dtb_path,
         "dtb_sha256": verification_report["dtb"]["sha256"],
         "files": {
@@ -105,6 +130,9 @@ def bundle_target(
             "linux-headers.deb": verification_report["headers_package"]["sha256"],
         },
     }
+    dtb_build_id = verification_report["dtb"].get("build_id")
+    if dtb_build_id is not None:
+        bundle_manifest["dtb_build_id"] = dtb_build_id
     (bundle_output / "bundle-manifest.json").write_text(
         json.dumps(bundle_manifest, indent=2) + "\n"
     )
@@ -123,8 +151,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("packages_dir", type=pathlib.Path, help="Directory containing built deb packages")
     parser.add_argument("--output", required=True, type=pathlib.Path, help="Target bundle output directory")
-    parser.add_argument("--release", default="7.3.1-psycachy-sp121", help="Kernel release")
+    parser.add_argument("--release", default=IDENTITY["kernel_release"], help="Kernel release")
+    parser.add_argument("--version", default=IDENTITY["debian_version"], help="Debian package version")
     parser.add_argument("--dtb", default="qcom/x1p42100-microsoft-sp12in.dtb", help="Relative DTB path")
+    parser.add_argument("--pin", type=pathlib.Path,
+                        help="ARM64 ISO artifact pin; defaults to the active kernel pin")
     args = parser.parse_args()
 
     try:
@@ -133,6 +164,8 @@ def main():
             bundle_output=args.output,
             kernel_release=args.release,
             dtb_path=args.dtb,
+            package_version=args.version,
+            pin_path=args.pin,
         )
         print(f"Successfully created target bundle in {args.output} for {args.release}")
     except Exception as exc:

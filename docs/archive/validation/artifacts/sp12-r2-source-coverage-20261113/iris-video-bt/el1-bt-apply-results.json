@@ -1,0 +1,60 @@
+{
+  "baseline_tree_sha256": "f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e",
+  "candidate_tree": "/var/tmp/sp12-final37-iris-el1-bt-candidate-20261113",
+  "candidate_tree_sha256": "fe401dced96e9a64315f593cd07141133f058d61d26e8f3a030b00fb02ad5478",
+  "results": [
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0002-iommu-of_iommu-Add-support-for-iommu-ranges-on-a-device-node.patch",
+      "patch_sha256": "09167da47080bac348e1b896a7ca4acb34e16697183da8a38f437b4fb6b1393a",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    },
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0003-media-iris-Add-non-pixel-and-pixel-context-bank-devices.patch",
+      "patch_sha256": "0e45ebcfc581b543dba325afebf39402b4bccfcfaa67c838580147070da3da64",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    },
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0004-media-iris-Route-buffers-to-the-matching-context-bank-device.patch",
+      "patch_sha256": "6767b9761ba036b26476cdef2542549571534067e1a527bc7758fe74eadb5659",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    },
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0005-media-iris-Skip-DMA-mask-setup-when-the-core-device-has-no-IOMMU.patch",
+      "patch_sha256": "7b1eae848eb485769613a2319b23fe1d8390f49a87727c10d319836280ac18be",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    },
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/video/0008-arm64-dts-qcom-hamoa-Add-Iris-context-bank-subnodes.patch",
+      "patch_sha256": "2831956d97d92bf5781f04edb03318accf2bfb525ce800df0001645011e885b7",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    },
+    {
+      "patch": "/tmp/luna-overlay-source-audit-20261112/sys-kernel/vanilla-kernel/files/other/0008-Bluetooth-hci_qca-Drop-unused-event-during-BT-on.patch",
+      "patch_sha256": "e4ca052e5046370ce92e3a4532b4e750cc04268c39c39a3dd1130fbf1d1d34fb",
+      "check_exit": 0,
+      "check_output": "",
+      "apply_exit": 0,
+      "apply_output": ""
+    }
+  ],
+  "outputs": {
+    "iris_video_patch": "/var/tmp/sp12-final37-iris-video-camera-audit-20261113/outputs/iris-context-bank-el1.patch",
+    "bluetooth_patch": "/var/tmp/sp12-final37-iris-video-camera-audit-20261113/outputs/bluetooth-wcn7850-hci-qca.patch",
+    "combined_patch": "/var/tmp/sp12-final37-iris-video-camera-audit-20261113/outputs/el1-iris-and-bluetooth-candidate.patch"
+  }
+}

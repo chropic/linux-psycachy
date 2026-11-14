@@ -1,3 +1,2 @@
-# Exact release selected for the ESP fallback payload.
-KVER=7.3.1-psycachy-sp121
-DTB=/boot/dtb-7.3.1-psycachy-sp121
+# Installed from the kernel identity selected by the ARM64 installer.
+# The installer writes KVER and DTB from the verified package release.

@@ -1,0 +1,47 @@
+V4L2_CID_ANALOGUE_GAIN is advertised as 0..0x1fff, but the control is not
+monotonic over that range. Measured on raw Bayer from the CSI-2 receiver
+at fixed exposure, on a Surface Pro 11, taking signal as the frame mean
+minus the black level:
+
+  register    requested    measured
+      1024          8x        7.55
+      1536         12x       11.09
+      1984       15.5x       14.23
+      2047      15.99x       13.71
+      2048         16x        7.54
+      4096         32x        7.58
+      8191         64x       14.28
+
+Up to 0x7c0 the control tracks. At 0x800 the gain halves, and above that it
+wanders: 0x1000 behaves as 0x400 did, 0x1800 as 0x600, 0x1fff as 0x7ff. An
+autoexposure loop that raises its request and gets back less signal cannot
+converge, and 0x800 in particular costs a full stop against 0x7ff.
+
+0x07c0 is what ov13b10 and ov08x40 use, and 1984/128 is 15.5x, the usual
+analogue ceiling for these parts. I have no datasheet for the ov13858; the
+value is the one its siblings use and the one the measurements agree with.
+
+This does not make pictures brighter, since 0x7c0 and 0x1fff reach the same
+gain. It stops the driver claiming range that is not there.
+
+Signed-off-by: Sergey Lebedev <lsa.uz@pm.me>
+---
+Tested on a Surface Pro 11 (Intel Lunar Lake, IPU7) with libcamera's
+software ISP. Image quality is unchanged: over three runs, mean luma
+85.6/85.6/86.2 against 87.9 before, matching 14.23x against 14.28x.
+
+ drivers/media/i2c/ov13858.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/i2c/ov13858.c b/drivers/media/i2c/ov13858.c
+--- a/drivers/media/i2c/ov13858.c
++++ b/drivers/media/i2c/ov13858.c
+@@ -63,7 +63,7 @@
+ /* Analog gain control */
+ #define OV13858_REG_ANALOG_GAIN		0x3508
+ #define OV13858_ANA_GAIN_MIN		0
+-#define OV13858_ANA_GAIN_MAX		0x1fff
++#define OV13858_ANA_GAIN_MAX		0x07c0
+ #define OV13858_ANA_GAIN_STEP		1
+ #define OV13858_ANA_GAIN_DEFAULT	0x80
+ 

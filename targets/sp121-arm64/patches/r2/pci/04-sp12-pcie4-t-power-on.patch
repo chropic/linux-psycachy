@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
+index 0314b22..6be12ac 100644
+--- a/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
++++ b/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dts
+@@ -854,6 +854,7 @@
+ &pcie4_port0 {
+ 	reset-gpios = <&tlmm 146 GPIO_ACTIVE_LOW>;
+ 	wake-gpios = <&tlmm 148 GPIO_ACTIVE_LOW>;
++	t-power-on-us = <80>;
+ 
+ 	wifi@0 {
+ 		compatible = "pci17cb,1107";

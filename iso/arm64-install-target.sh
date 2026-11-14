@@ -9,16 +9,14 @@ target=/target
 media=/cdrom/psycachy
 pin=$media/config/arm64-iso-kernel.json
 [[ -f $pin ]] || die "pinned ARM64 ISO configuration is missing: $pin"
-release=$(python3 - "$pin" <<'PY'
-import json, sys
-print(json.load(open(sys.argv[1], encoding="utf-8"))["kernel_release"])
-PY
-)
-version=$(python3 - "$pin" <<'PY'
-import json, sys
-print(json.load(open(sys.argv[1], encoding="utf-8"))["debian_version"])
-PY
-)
+identity_tool=$media/iso/kernel_identity.py
+[[ -f $identity_tool ]] || die 'ARM64 artifact identity resolver is missing'
+identity_args=()
+if [[ -f $media/config/arm64-kernel-identity.json ]]; then
+  identity_args=(--identity "$media/config/arm64-kernel-identity.json")
+fi
+release=$(python3 "$identity_tool" "${identity_args[@]}" --artifact-pin "$pin" --field kernel_release)
+version=$(python3 "$identity_tool" "${identity_args[@]}" --artifact-pin "$pin" --field debian_version)
 repo=$media/repository
 [[ -d $target && -d $repo ]] || die 'installer target or pinned offline repository is missing'
 python3 "$media/iso/arm64_iso.py" verify-repository "$repo"
@@ -121,6 +119,24 @@ for pair in \
   source=${pair%%:*}; destination=${pair#*:}
   cmp -s "$source" "$destination" || die "ESP payload differs from target: ${destination#"$target"}"
 done
+
+# Curtin may install the kernel packages without leaving a GRUB menu that
+# lists the new candidate. Regenerate the target menu after all kernel and
+# initramfs payloads are present, then require both r2 and Ubuntu fallback
+# entries before reporting a successful install.
+curtin in-target --target="$target" -- update-grub
+grub_cfg=$target/boot/grub/grub.cfg
+[[ -f $grub_cfg && ! -L $grub_cfg ]] || die 'target GRUB configuration is missing after update-grub'
+grep -Fq "vmlinuz-$release" "$grub_cfg" || die 'SP12 candidate GRUB entry is missing after update-grub'
+fallback_entry=0
+for image in "$target"/boot/vmlinuz-*-generic; do
+  [[ -f $image ]] || continue
+  if grep -Fq "${image##*/}" "$grub_cfg"; then
+    fallback_entry=1
+    break
+  fi
+done
+(( fallback_entry == 1 )) || die 'Ubuntu generic fallback GRUB entry is missing after update-grub'
 
 [[ -z $(dpkg --root="$target" --audit) ]] || die 'target dpkg reports unfinished package operations'
 # Keep an installer receipt but discard the large package closure from target.

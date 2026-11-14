@@ -1,0 +1,10 @@
+0001-usb-dwc3-qcom-skip-phy-management check: passed
+0001-usb-dwc3-qcom-skip-phy-management apply: passed
+0002-usb-dwc3-qcom-eusb2-wake-irq-map check: passed
+0002-usb-dwc3-qcom-eusb2-wake-irq-map apply: passed
+0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume check: passed
+0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume apply: passed
+0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq check: passed
+0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq apply: passed
+0006-arm64-dts-hamoa-usb1-ss0-noc-clocks check: passed
+0006-arm64-dts-hamoa-usb1-ss0-noc-clocks apply: passed

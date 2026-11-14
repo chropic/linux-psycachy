@@ -15,11 +15,14 @@ import tempfile
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from deb_dependencies import dependency_names_for_arch
+from kernel_identity import load_identity, validate_package_record
+from sp12_dtb_build_id import read_dtb_build_id, verify_dtb_build_id
 
 
 FDT_MAGIC = 0xD00DFEED
 ELF_MACHINE_AARCH64 = 183
-EXPECTED_PACKAGE_VERSION = "7.3.1-1psycachy1"
+IDENTITY = load_identity()
+EXPECTED_PACKAGE_VERSION = IDENTITY["debian_version"]
 
 
 def read_deb_control(deb_path: pathlib.Path) -> dict:
@@ -126,8 +129,10 @@ def extract_file_from_deb(deb_path: pathlib.Path, target_relative_path: str, des
 
 def verify_arm64_packages(
     packages_dir: pathlib.Path,
-    expected_release: str = "7.3.1-psycachy-sp121",
+    expected_release: str = IDENTITY["kernel_release"],
     expected_dtb: str = "qcom/x1p42100-microsoft-sp12in.dtb",
+    expected_version: str = EXPECTED_PACKAGE_VERSION,
+    expected_dtb_build_id: str | None = None,
 ) -> dict:
     images = sorted(packages_dir.glob("linux-image-*_*.deb"))
     headers = sorted(packages_dir.glob("linux-headers-*_*.deb"))
@@ -162,10 +167,21 @@ def verify_arm64_packages(
     hdr_version = hdr_control.get("Version")
     if not img_version or img_version != hdr_version:
         raise ValueError(f"Version mismatch: image={img_version}, headers={hdr_version}")
-    if img_version != EXPECTED_PACKAGE_VERSION:
+    if img_version != expected_version:
         raise ValueError(
-            f"Package version must be {EXPECTED_PACKAGE_VERSION}, found {img_version}"
+            f"Package version must be {expected_version}, found {img_version}"
         )
+    identity = dict(IDENTITY)
+    identity["kernel_release"] = expected_release
+    identity["debian_version"] = expected_version
+    identity["package_names"] = {
+        "image": f"linux-image-{expected_release}",
+        "headers": f"linux-headers-{expected_release}",
+    }
+    validate_package_record(identity, "image", img_control.get("Package"), img_version,
+                            img_control.get("Architecture"))
+    validate_package_record(identity, "headers", hdr_control.get("Package"), hdr_version,
+                            hdr_control.get("Architecture"))
 
     # 4. Dependency checks
     img_depends = dependency_names_for_arch(img_control.get("Depends", ""), "arm64")
@@ -196,6 +212,9 @@ def verify_arm64_packages(
         if magic != FDT_MAGIC:
             raise ValueError(f"Invalid FDT magic in packaged DTB: expected 0x{FDT_MAGIC:08x}, got 0x{magic:08x}")
         dtb_sha256 = hashlib.sha256(dtb_bytes).hexdigest()
+        dtb_build_id = read_dtb_build_id(dtb_bytes)
+        if expected_dtb_build_id is not None:
+            dtb_build_id = verify_dtb_build_id(dtb_bytes, expected_dtb_build_id)
 
     # 6. Headers package verification
     hdr_contents = list_deb_contents(headers_pkg)
@@ -268,13 +287,17 @@ def verify_arm64_packages(
             for path in sorted(executable_elfs)
         ],
     }
+    if dtb_build_id is not None:
+        report["dtb"]["build_id"] = dtb_build_id
     return report
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("packages_dir", type=pathlib.Path, help="Directory containing built deb packages")
-    parser.add_argument("--release", default="7.3.1-psycachy-sp121", help="Expected kernel release")
+    parser.add_argument("--release", default=IDENTITY["kernel_release"], help="Expected kernel release")
+    parser.add_argument("--version", default=EXPECTED_PACKAGE_VERSION, help="Expected Debian package version")
+    parser.add_argument("--expected-dtb-build-id", help="Expected sha256:<digest> DTB build-input ID")
     parser.add_argument("--dtb", default="qcom/x1p42100-microsoft-sp12in.dtb", help="Expected relative DTB path")
     parser.add_argument("--output-report", type=pathlib.Path, help="Path to write JSON verification report")
     args = parser.parse_args()
@@ -284,7 +307,8 @@ def main():
         sys.exit(1)
 
     try:
-        report = verify_arm64_packages(args.packages_dir, args.release, args.dtb)
+        report = verify_arm64_packages(args.packages_dir, args.release, args.dtb, args.version,
+                                       args.expected_dtb_build_id)
         if args.output_report:
             args.output_report.write_text(json.dumps(report, indent=2) + "\n")
         print(f"Verified SP12 ARM64 packages in {args.packages_dir}: {args.release} (arm64)")

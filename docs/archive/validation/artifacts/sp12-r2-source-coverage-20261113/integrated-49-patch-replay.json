@@ -1,0 +1,1013 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "created_utc": "2026-11-13T15:41:21.526992+00:00",
+  "source_archive_sha256": "3dba29aa8e7dcda43aee6898e4c66dfbfd997eb5d902510b0faeacc696ddfb3f",
+  "source_signer": "E8B9AA39F054E30E8290D492C3C4820857F654FE",
+  "base_tree_sha256": "dc272061b7eea961aac2112c46dc140d778a7de3bbff7dff8d1068c571631ffa",
+  "manifest_path": "targets/sp121-arm64/inputs.r2-coverage-candidate.json",
+  "manifest_sha256": "3f6258a4e06821f2c60cf0c4f2724bb21d911885a5deb1d7c1b9bd98aa5cfe5b",
+  "previous_manifest_sha256": "46528c8cfe61e1fb068fb4d1394de121bb9a1ce080db1287a1cb68492dc79cc2",
+  "patch_count": 49,
+  "source_root": "/var/tmp/sp12-final37-iris-el1-bt-candidate-20261113",
+  "final_tree_sha256": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e",
+  "runs": [
+    {
+      "name": "integrated-49-entry-replay-1",
+      "status": "passed",
+      "patches": [
+        {
+          "order": 1,
+          "id": "volume-gpio-correction",
+          "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+          "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4295092b38202c17b0625301d5382078844e34f47e419953ac468142e9d01d99",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 2,
+          "id": "surface-rtc-driver",
+          "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+          "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "28e24b32eb2a968c2644dc642562a19fa460654815ae144a54fc169efd85d183",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 3,
+          "id": "sp12-rtc-registration",
+          "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+          "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "d74956aaa8688819f1409982f3deb0731b588b9ef1964cee7ccf921f43ad1fd3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 4,
+          "id": "sp12-suspend-quirk",
+          "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+          "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ebaa2d5f1039d7bcb4c0a067702d71acff26a62ecb31965a2e773fc562630419",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 5,
+          "id": "surface-usb-eusb2-binding",
+          "path": "patches/r2/usb-phy/01-dt-bindings-phy-eusb2.patch",
+          "sha256": "27614db572139fe5a0fbfdfcef6a246fa13eda57d64324f3f4ce21cbfdc2315c",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1ecaa09f9b6e08bd9a3b23313683f098057512b69e41fed96a324ad119a2f74b",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 6,
+          "id": "surface-phy-attribute-type",
+          "path": "patches/r2/usb-phy/02-phy-attributes-type.patch",
+          "sha256": "4a8217907e9913a71194645e7c9082e2353127b93f10cc3ea7b198c5455ed2ff",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "46b514c11ad7f5878089b38f2458963a2c169b5a828f8a262a064dc931cd0c69",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 7,
+          "id": "qcom-uniphy-pcie-type-enum-namespace",
+          "path": "patches/r2/usb-phy/02a-phy-qcom-uniphy-enum-collision-fix.patch",
+          "sha256": "8cc4a29e2e2840f1bbed7060793f26e3ee4bc63b66423e1d2f292bdbefea3fcf",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "efde5032d0a94d08094c7c1f675aacc1f02648e3b4b47f4f13fa7886f503027f",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 8,
+          "id": "surface-snps-eusb2-type",
+          "path": "patches/r2/usb-phy/03-phy-snps-eusb2-type.patch",
+          "sha256": "df804fea8c2c4e21052b74a06cc54c4e367b11dff21d3357c3a9bcc2d2e117bb",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "98af999b66ae8f230e8c0333e77fa81760a94d1c5f2b2325f3dca70db072312a",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 9,
+          "id": "qmp-combo-dp-only-runtime-pm",
+          "path": "patches/r2/usb-phy/04-qmp-combo-dp-only-pm-guard.patch",
+          "sha256": "5a3f0ae80bb66214abf229b755cbc4d7dab083387a37125cbcd3442f63230551",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "061199a06d41106eefc8096e0af3ba41f55ed7246fb7ac320bae4ad5ab3eff16",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 10,
+          "id": "sp12-platform-dts-prerequisites",
+          "path": "patches/r2/platform/05-sp12-platform-dts-prerequisites.patch",
+          "sha256": "0b103645a046931a72bde4c492f348df52a2327ab71862fcfb6578afa6a83912",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "66fd66075450b6991125c440bd23382cfbcf9d3e9862f8631a2b10df9fc7b370",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 11,
+          "id": "displayport-audio",
+          "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+          "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "0231aa69a0654947d6a27f439f57cf19f608472f7d7c709cd4dcd917496d8b10",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 12,
+          "id": "charge-limit-nvmem",
+          "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+          "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2cebb2a872b739920abecea2ff71135a31da10e412e3605745e517eb5333dfe8",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 13,
+          "id": "camera-csi2-dphy-provider",
+          "path": "patches/r2/camera/01-csi2-dphy-provider.patch",
+          "sha256": "b859073c5a94b71afc6af3011db9e90209a3359d65302e7aeffab37646c3ac4b",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "13c8d9cf24a4854410a5fc63c6880c7b1077d3cbbe6b009a60d0e09580683138",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 14,
+          "id": "camera-camss-phy-api",
+          "path": "patches/r2/camera/02-camss-phy-api-and-subdevice-population.patch",
+          "sha256": "75f41b52769b42c370b1f4423b6bffbccce94150b51b1e4ffcc6bbc7da4de5b7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ccc0ec57cdacc88356aefbac078e668d8741791266b0b1c28bca98ade28d6283",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 15,
+          "id": "camera-x1p-camss-driver",
+          "path": "patches/r2/camera/03-x1p-camss-driver.patch",
+          "sha256": "ceebdd4af7facb71c3788e046fb071ec6ce603936b8e05f0ee1847aa69fe94dc",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1d760936c2bd9c24986ab81918b48ea923355b562aa2d80e3e1c42f38f80bd44",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 16,
+          "id": "camera-cci-hamoa-purwa-phy-wiring",
+          "path": "patches/r2/camera/04-cci-hamoa-purwa-camss-phy-wiring.patch",
+          "sha256": "eb2cb81a0c73ad0cf893688db41ce98f7a393da8fea184cfaab08c8bc3e73f8d",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "eea450e3cd9e4b065c0f06ca6fdf1d504301e77d1aee364b7ab66b0aa7c450f3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 17,
+          "id": "camss-unused-local-variable-cleanup",
+          "path": "patches/r2/camera/04a-camss-unused-locals-cleanup.patch",
+          "sha256": "2a883fc612bb6eae5f2855923a3060531e06404a2c672619b055e51814d75e4e",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "f611583d27f8a024ce6b2f0b690c100a8d144d8aeeddf55cd5351d3549ec6886",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 18,
+          "id": "camera-ov13858-ov02c10-drivers",
+          "path": "patches/r2/camera/05-ov13858-ov02c10-sensor-drivers.patch",
+          "sha256": "42fe77078300db5d854b3bee9172e7eeaf5f87ecbe50be192cb45c42477de7f3",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b4ea2c4abed703693dc4ed8be635390cb17396dac1b63c8c944e9e67b5152dd5",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 19,
+          "id": "ov02c10-selection-callback-api-rebase",
+          "path": "patches/r2/camera/05a-ov02c10-get-selection-api.patch",
+          "sha256": "46c822a422eddb40398cc4b0fe18b03ad82e2ee2fd851dae1aaadbc47b3d5556",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2bc24ea3b8d4ef4ba8f77a8891a71fb99de42f3f76ba39674093d4dab1ec740f",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 20,
+          "id": "camera-sp12-sensor-csi-endpoints",
+          "path": "patches/r2/camera/06-sp12-sensor-and-csi-endpoints.patch",
+          "sha256": "fc4a78a6f10ac217c4851b7b919f799b805c1bd0bbe1238386478a3a82d1793a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fcedd671157939fdb790196cae6fd8f68a17fdd88ce8d6a48682a18b35b8952d",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 21,
+          "id": "camera-sp12-afvdd-clock-fix",
+          "path": "patches/r2/camera/07-sp12-afvdd-clock-correction.patch",
+          "sha256": "501a79b96b2e19bd196a93f8da21945892a839edfdf2ddc7866d5048b3f1bda7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fb2cd02fd7144f3a54b49d77f4e7a5cb765057a8009e03aec29750640d7ce3a1",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 22,
+          "id": "camera-bindings-kconfig",
+          "path": "patches/r2/camera/08-local-camera-bindings-kconfig.patch",
+          "sha256": "722d97fe09b98f1a65de9a33441aaad0fcdec19f24d4e55af13e7cc900587f18",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b5c49e39b420c264766324a7c699e873cf45a482588beea10491dfeffcace31e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 23,
+          "id": "camera-assigned-clock-parents-binding",
+          "path": "patches/r2/camera/09-ov02e10-assigned-clock-parents-schema.patch",
+          "sha256": "165137e70208a44249b411c034c9e1269d71e4e2c9877dfb25e12a108060ea58",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "66f1b02008d4457c5cefd4ec758438258898c5fa45aa3045cf92b044ee62d5ff",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 24,
+          "id": "camera-csi2-provider-output-endpoint-schema",
+          "path": "patches/r2/camera/10-csi2-provider-output-endpoint-schema.patch",
+          "sha256": "f152788e306d8cf21df0cb2e352ab502ed3b0b3569b00f627790091f203c7855",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ec1468241cfec4ddf9604752d14b686ba9094c8d9b63745c8e9dd8c34cc23b26",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 25,
+          "id": "soundwire-irq-clock-order",
+          "path": "patches/r2/audio/01-soundwire-irq-clock-order.patch",
+          "sha256": "b9096e5b7cb9883d1f76fd271dd24729117b42d1020c65977c880dee9e881347",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b4b184452073679ad3de3a0e366547ac489587cb4a6c445f0e6c4ce70beb07db",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 26,
+          "id": "soundwire-suspend-error-unwind",
+          "path": "patches/r2/audio/02-soundwire-suspend-error-unwind.patch",
+          "sha256": "066e43af8fca58482755ce255ca621a524ce13b12024098d17775b3be05d14c0",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4b8251f3b869800d02b07e3da26f0f87ad91416914ec1ea2b4c5da3398dcfcdd",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 27,
+          "id": "pci-force-enable-link-state",
+          "path": "patches/r2/pci/01-force-enable-link-state.patch",
+          "sha256": "5630cfce4228d61c1d51721a901ab3de92509750876cf6d5ff171d29ac87f996",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "7df8e46c31dedc1b9019a0503fe752234fbb4684ff0a6290abfc8fbd455b8f66",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 28,
+          "id": "pci-aspm-enabled-state-mask",
+          "path": "patches/r2/pci/02-aspm-enabled-state-mask.patch",
+          "sha256": "dc14df10c68234c58c989bef6b0a6064d2ca56ce743da794bd219d5950e90f40",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "18fa57e1c5055c343e920bf81ad7f17346e709eba3748a6693aacabecfa0950b",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 29,
+          "id": "wcn7850-disable-ltr",
+          "path": "patches/r2/pci/03-wcn7850-disable-ltr.patch",
+          "sha256": "85e9fee5ca4e2f2e34e5f78f9340fad45c77b4898cbd7f0dcd9f29d831eddc36",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "af7d6ca29db25d5605e83c2a5475fcc42834756892840f2fcbb65178828dccb7",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 30,
+          "id": "sp12-pcie4-t-power-on",
+          "path": "patches/r2/pci/04-sp12-pcie4-t-power-on.patch",
+          "sha256": "c909ee1fbc26e33e668fa6d18f6cec51982a5754bada5904251637144798e604",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fc2b7d1c0216350bac8f4ec4b417bcaee8b880b158c917b5faf57150f5c39a9e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 31,
+          "id": "hamoa-pcie-opp-tables",
+          "path": "patches/r2/pci/05-hamoa-pcie-opp-tables.patch",
+          "sha256": "fa4109ca8cce5690767dded3d6ff16b4c1de14768026eacbd57292adeac7d6ae",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "6cb16af1e33f30a5278effd2f55cffbf9b6a16abd39a39fa8a1684f0b818ffc3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 32,
+          "id": "ath12k-aspm-api-adaptation",
+          "path": "patches/r2/pci/06-ath12k-aspm-api.patch",
+          "sha256": "619d3da2c931f3bc18530db685be8653a8ba4a423045c215cdb914c6f7ddbb43",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2245ff6e70098d55b5b7137f0b19417815bd8863a2a72f693c8a199ac73ef113",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 33,
+          "id": "ath12k-sp12-rfkill",
+          "path": "patches/r2/pci/07-ath12k-skip-sp12-rfkill.patch",
+          "sha256": "9c7518b30be80933ac635a17c2dadbb6409f42542bc964a08648b7a2ac967755",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "6fb6525101790e6e2bacf8fcc10ef466bc1a4559a170ccba70e3697bd4200807",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 34,
+          "id": "arm64-kexec-signature-force",
+          "path": "patches/07-kexec-signature-force-arm64.patch",
+          "sha256": "b5d362252fc7c8d7ed4962f709dbc1f3709d5133bd0635ae84256e1cd35a69f1",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "04be78500a6ce9af3622598429b45ce31c81e21d2d7a3448c9df6cc700de6940",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 35,
+          "id": "rpmb-core-serialize-teardown",
+          "path": "patches/08-rpmb-core-serialize-teardown.patch",
+          "sha256": "f557cb4ab5b83eabd2a67f4c190be66a8d62b70b68c5ffcbc08b5c278bcc77ae",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4a46e391fbbda2d6d0b126ac7bd6c0270543c6724200f052b2b0e26e78832dc5",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 36,
+          "id": "ufs-rpmb-lifetime",
+          "path": "patches/09-ufs-rpmb-lifetime.patch",
+          "sha256": "c93d0f2ecfb870eb1f1a6f71da03357dd380afb6d2e32f2a73274e7f0071b28a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "5b0b7120c484c2b5a3b6f8b82bafe20ab2b36d009d9f4cfc65471537262a90cc",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 37,
+          "id": "ufs-rpmb-drop-unregistered-bus",
+          "path": "patches/10-ufs-rpmb-drop-unregistered-bus.patch",
+          "sha256": "3684292933c426ab616eb25846571ae95786a668dda746fe7b1c52036986f938",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 38,
+          "id": "usb-dwc3-skip-phy-management",
+          "path": "patches/r2/usb/0001-usb-dwc3-qcom-skip-phy-management.patch",
+          "sha256": "3bb43b70da13e8d0de91bffafd21f3ace35d162ad679ef83eba8f9706ba479f8",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4a0febb3b39f9e435c0a3cd4fc4630b8a9992667d236f6f94a2c4910b52e32b2",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 39,
+          "id": "usb-dwc3-eusb2-wake-irq-map",
+          "path": "patches/r2/usb/0002-usb-dwc3-qcom-eusb2-wake-irq-map.patch",
+          "sha256": "617bdca1b9429809b61104f10419b274407ea7866b90b57d8711a4000c5d858f",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2d22adb1f959089f0d087a937cf3e0c3cda3d8f81ec6302856555adae3ea5e7a",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 40,
+          "id": "usb-dwc3-wake-irq-failed-resume",
+          "path": "patches/r2/usb/0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume.patch",
+          "sha256": "020c77eb566572ef2b70b18aea11a94e063f180da6511f7fda93c0b799d60bdf",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4c1ecbd9947faca505a1ad6721fe177bf4a08012f9b83a05c1cbf27013e31017",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 41,
+          "id": "usb-dwc3-wake-irq-runtime-pm",
+          "path": "patches/r2/usb/0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq.patch",
+          "sha256": "21fd94a37f22c9f46c57462db18d8a4f320e16c3a1177b8cbcc3c46e336c1045",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2230d54ddaef7cb2e9adb7ea7c06c8097372bbbb2fb6d27f990d40c916b32513",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 42,
+          "id": "usb-hamoa-usb1-ss0-noc-clocks",
+          "path": "patches/r2/usb/0006-arm64-dts-hamoa-usb1-ss0-noc-clocks.patch",
+          "sha256": "81e98508745ac57f1ddc476844b7f312f479681bcd9757a6227629ddb333e112",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4635dc231209adb7e13bbfcfbf320f52c844dc0cfdf5c07586b8a9802a8ebe49",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 43,
+          "id": "video-iommu-ranges",
+          "path": "patches/r2/video/01-iommu-of_iommu-ranges.patch",
+          "sha256": "09167da47080bac348e1b896a7ca4acb34e16697183da8a38f437b4fb6b1393a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "a942053d4a3643b842ba8217482f0dac223456cc757c46136d71aac8ad670f55",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 44,
+          "id": "iris-context-bank-devices",
+          "path": "patches/r2/video/02-iris-context-bank-devices.patch",
+          "sha256": "0e45ebcfc581b543dba325afebf39402b4bccfcfaa67c838580147070da3da64",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "371fa6af749bbced36f11dc6240e98da5b7a05c2c0624b6cba1e8d7ba4243890",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 45,
+          "id": "iris-buffer-context-bank-routing",
+          "path": "patches/r2/video/03-iris-route-buffers-context-bank.patch",
+          "sha256": "6767b9761ba036b26476cdef2542549571534067e1a527bc7758fe74eadb5659",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "0b5d16035f32606b78229d0abbb426cdd32f4e3e24496fb082b95882822e81e7",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 46,
+          "id": "iris-parent-dma-mask-no-iommu",
+          "path": "patches/r2/video/04-iris-skip-parent-dma-mask-without-iommu.patch",
+          "sha256": "7b1eae848eb485769613a2319b23fe1d8390f49a87727c10d319836280ac18be",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "3cda46824c322ccae937aa615bb5b83bfb15fd5c32284a18bf408b839561cd0e",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 47,
+          "id": "hamoa-iris-context-bank-dts",
+          "path": "patches/r2/video/05-hamoa-iris-context-bank-dts.patch",
+          "sha256": "2831956d97d92bf5781f04edb03318accf2bfb525ce800df0001645011e885b7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "42c690ad7c9d2fcccf6b49a5afa11ff639783460533ea6eb705c42b45a3b50e7",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 48,
+          "id": "wcn7850-hci-qca-drop-unused-event",
+          "path": "patches/r2/bluetooth/01-wcn7850-drop-unused-event.patch",
+          "sha256": "e4ca052e5046370ce92e3a4532b4e750cc04268c39c39a3dd1130fbf1d1d34fb",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "04d4c0f676fa16e62456c1f464a3cb2d0093089aca6142dc579304ab9bf684ac",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 49,
+          "id": "arm-arch-timer-park-stopped",
+          "path": "patches/r2/suspend/01-arm-arch-timer-park-stopped.patch",
+          "sha256": "601f591f755cd0bc4fc6a5ae4e5b4b0d58ccbb522b94a9123516668f8237b663",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e",
+          "state_digest_source": "computed for this replay"
+        }
+      ]
+    },
+    {
+      "name": "integrated-49-entry-replay-2",
+      "status": "passed",
+      "patches": [
+        {
+          "order": 1,
+          "id": "volume-gpio-correction",
+          "path": "patches/01-0008-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-correct-gpios-vol.patch",
+          "sha256": "f55b28fddb3ba849d13984f1742e3894ea12440c7519cd6b92ae52aabaebff77",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4295092b38202c17b0625301d5382078844e34f47e419953ac468142e9d01d99",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 2,
+          "id": "surface-rtc-driver",
+          "path": "patches/02-0002-rtc-surface-port-reference-driver.patch",
+          "sha256": "2e8c5b1bfe1bd305d395b5a6309e9ae99727e0f06f311dfe16fd0cbc71468348",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "28e24b32eb2a968c2644dc642562a19fa460654815ae144a54fc169efd85d183",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 3,
+          "id": "sp12-rtc-registration",
+          "path": "patches/03-0003-surface-register-sp12-rtc.patch",
+          "sha256": "e4fe9aa0e60dd410afb67eca5d6296d8abb1b6c1a2e8e97ce82ded9331ed0af2",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "d74956aaa8688819f1409982f3deb0731b588b9ef1964cee7ccf921f43ad1fd3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 4,
+          "id": "sp12-suspend-quirk",
+          "path": "patches/04-0004-surface-scope-sp12-suspend-workaround.patch",
+          "sha256": "47ba490df51449fc08376257cab855e63be3c0fe6ddd1b5bfdd1c00bafeac214",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ebaa2d5f1039d7bcb4c0a067702d71acff26a62ecb31965a2e773fc562630419",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 5,
+          "id": "surface-usb-eusb2-binding",
+          "path": "patches/r2/usb-phy/01-dt-bindings-phy-eusb2.patch",
+          "sha256": "27614db572139fe5a0fbfdfcef6a246fa13eda57d64324f3f4ce21cbfdc2315c",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1ecaa09f9b6e08bd9a3b23313683f098057512b69e41fed96a324ad119a2f74b",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 6,
+          "id": "surface-phy-attribute-type",
+          "path": "patches/r2/usb-phy/02-phy-attributes-type.patch",
+          "sha256": "4a8217907e9913a71194645e7c9082e2353127b93f10cc3ea7b198c5455ed2ff",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "46b514c11ad7f5878089b38f2458963a2c169b5a828f8a262a064dc931cd0c69",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 7,
+          "id": "qcom-uniphy-pcie-type-enum-namespace",
+          "path": "patches/r2/usb-phy/02a-phy-qcom-uniphy-enum-collision-fix.patch",
+          "sha256": "8cc4a29e2e2840f1bbed7060793f26e3ee4bc63b66423e1d2f292bdbefea3fcf",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "efde5032d0a94d08094c7c1f675aacc1f02648e3b4b47f4f13fa7886f503027f",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 8,
+          "id": "surface-snps-eusb2-type",
+          "path": "patches/r2/usb-phy/03-phy-snps-eusb2-type.patch",
+          "sha256": "df804fea8c2c4e21052b74a06cc54c4e367b11dff21d3357c3a9bcc2d2e117bb",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "98af999b66ae8f230e8c0333e77fa81760a94d1c5f2b2325f3dca70db072312a",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 9,
+          "id": "qmp-combo-dp-only-runtime-pm",
+          "path": "patches/r2/usb-phy/04-qmp-combo-dp-only-pm-guard.patch",
+          "sha256": "5a3f0ae80bb66214abf229b755cbc4d7dab083387a37125cbcd3442f63230551",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "061199a06d41106eefc8096e0af3ba41f55ed7246fb7ac320bae4ad5ab3eff16",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 10,
+          "id": "sp12-platform-dts-prerequisites",
+          "path": "patches/r2/platform/05-sp12-platform-dts-prerequisites.patch",
+          "sha256": "0b103645a046931a72bde4c492f348df52a2327ab71862fcfb6578afa6a83912",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "66fd66075450b6991125c440bd23382cfbcf9d3e9862f8631a2b10df9fc7b370",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 11,
+          "id": "displayport-audio",
+          "path": "patches/05-0010-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-displayport-audio.patch",
+          "sha256": "4f0f995982af689c51e49c8c677ac500e6b2ad4cd2b0802dc8cab89240a6bd86",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "0231aa69a0654947d6a27f439f57cf19f608472f7d7c709cd4dcd917496d8b10",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 12,
+          "id": "charge-limit-nvmem",
+          "path": "patches/06-0011-arm64-dts-qcom-purwa-Microsoft-Surface-Pro-12in-add-charge-limit-nvmem.patch",
+          "sha256": "bdbf1db73128888efd80904a6b1cd8180df84392d9e28dd8bad8e2d22559ce87",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2cebb2a872b739920abecea2ff71135a31da10e412e3605745e517eb5333dfe8",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 13,
+          "id": "camera-csi2-dphy-provider",
+          "path": "patches/r2/camera/01-csi2-dphy-provider.patch",
+          "sha256": "b859073c5a94b71afc6af3011db9e90209a3359d65302e7aeffab37646c3ac4b",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "13c8d9cf24a4854410a5fc63c6880c7b1077d3cbbe6b009a60d0e09580683138",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 14,
+          "id": "camera-camss-phy-api",
+          "path": "patches/r2/camera/02-camss-phy-api-and-subdevice-population.patch",
+          "sha256": "75f41b52769b42c370b1f4423b6bffbccce94150b51b1e4ffcc6bbc7da4de5b7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ccc0ec57cdacc88356aefbac078e668d8741791266b0b1c28bca98ade28d6283",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 15,
+          "id": "camera-x1p-camss-driver",
+          "path": "patches/r2/camera/03-x1p-camss-driver.patch",
+          "sha256": "ceebdd4af7facb71c3788e046fb071ec6ce603936b8e05f0ee1847aa69fe94dc",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1d760936c2bd9c24986ab81918b48ea923355b562aa2d80e3e1c42f38f80bd44",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 16,
+          "id": "camera-cci-hamoa-purwa-phy-wiring",
+          "path": "patches/r2/camera/04-cci-hamoa-purwa-camss-phy-wiring.patch",
+          "sha256": "eb2cb81a0c73ad0cf893688db41ce98f7a393da8fea184cfaab08c8bc3e73f8d",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "eea450e3cd9e4b065c0f06ca6fdf1d504301e77d1aee364b7ab66b0aa7c450f3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 17,
+          "id": "camss-unused-local-variable-cleanup",
+          "path": "patches/r2/camera/04a-camss-unused-locals-cleanup.patch",
+          "sha256": "2a883fc612bb6eae5f2855923a3060531e06404a2c672619b055e51814d75e4e",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "f611583d27f8a024ce6b2f0b690c100a8d144d8aeeddf55cd5351d3549ec6886",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 18,
+          "id": "camera-ov13858-ov02c10-drivers",
+          "path": "patches/r2/camera/05-ov13858-ov02c10-sensor-drivers.patch",
+          "sha256": "42fe77078300db5d854b3bee9172e7eeaf5f87ecbe50be192cb45c42477de7f3",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b4ea2c4abed703693dc4ed8be635390cb17396dac1b63c8c944e9e67b5152dd5",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 19,
+          "id": "ov02c10-selection-callback-api-rebase",
+          "path": "patches/r2/camera/05a-ov02c10-get-selection-api.patch",
+          "sha256": "46c822a422eddb40398cc4b0fe18b03ad82e2ee2fd851dae1aaadbc47b3d5556",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2bc24ea3b8d4ef4ba8f77a8891a71fb99de42f3f76ba39674093d4dab1ec740f",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 20,
+          "id": "camera-sp12-sensor-csi-endpoints",
+          "path": "patches/r2/camera/06-sp12-sensor-and-csi-endpoints.patch",
+          "sha256": "fc4a78a6f10ac217c4851b7b919f799b805c1bd0bbe1238386478a3a82d1793a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fcedd671157939fdb790196cae6fd8f68a17fdd88ce8d6a48682a18b35b8952d",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 21,
+          "id": "camera-sp12-afvdd-clock-fix",
+          "path": "patches/r2/camera/07-sp12-afvdd-clock-correction.patch",
+          "sha256": "501a79b96b2e19bd196a93f8da21945892a839edfdf2ddc7866d5048b3f1bda7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fb2cd02fd7144f3a54b49d77f4e7a5cb765057a8009e03aec29750640d7ce3a1",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 22,
+          "id": "camera-bindings-kconfig",
+          "path": "patches/r2/camera/08-local-camera-bindings-kconfig.patch",
+          "sha256": "722d97fe09b98f1a65de9a33441aaad0fcdec19f24d4e55af13e7cc900587f18",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b5c49e39b420c264766324a7c699e873cf45a482588beea10491dfeffcace31e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 23,
+          "id": "camera-assigned-clock-parents-binding",
+          "path": "patches/r2/camera/09-ov02e10-assigned-clock-parents-schema.patch",
+          "sha256": "165137e70208a44249b411c034c9e1269d71e4e2c9877dfb25e12a108060ea58",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "66f1b02008d4457c5cefd4ec758438258898c5fa45aa3045cf92b044ee62d5ff",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 24,
+          "id": "camera-csi2-provider-output-endpoint-schema",
+          "path": "patches/r2/camera/10-csi2-provider-output-endpoint-schema.patch",
+          "sha256": "f152788e306d8cf21df0cb2e352ab502ed3b0b3569b00f627790091f203c7855",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "ec1468241cfec4ddf9604752d14b686ba9094c8d9b63745c8e9dd8c34cc23b26",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 25,
+          "id": "soundwire-irq-clock-order",
+          "path": "patches/r2/audio/01-soundwire-irq-clock-order.patch",
+          "sha256": "b9096e5b7cb9883d1f76fd271dd24729117b42d1020c65977c880dee9e881347",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "b4b184452073679ad3de3a0e366547ac489587cb4a6c445f0e6c4ce70beb07db",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 26,
+          "id": "soundwire-suspend-error-unwind",
+          "path": "patches/r2/audio/02-soundwire-suspend-error-unwind.patch",
+          "sha256": "066e43af8fca58482755ce255ca621a524ce13b12024098d17775b3be05d14c0",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4b8251f3b869800d02b07e3da26f0f87ad91416914ec1ea2b4c5da3398dcfcdd",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 27,
+          "id": "pci-force-enable-link-state",
+          "path": "patches/r2/pci/01-force-enable-link-state.patch",
+          "sha256": "5630cfce4228d61c1d51721a901ab3de92509750876cf6d5ff171d29ac87f996",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "7df8e46c31dedc1b9019a0503fe752234fbb4684ff0a6290abfc8fbd455b8f66",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 28,
+          "id": "pci-aspm-enabled-state-mask",
+          "path": "patches/r2/pci/02-aspm-enabled-state-mask.patch",
+          "sha256": "dc14df10c68234c58c989bef6b0a6064d2ca56ce743da794bd219d5950e90f40",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "18fa57e1c5055c343e920bf81ad7f17346e709eba3748a6693aacabecfa0950b",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 29,
+          "id": "wcn7850-disable-ltr",
+          "path": "patches/r2/pci/03-wcn7850-disable-ltr.patch",
+          "sha256": "85e9fee5ca4e2f2e34e5f78f9340fad45c77b4898cbd7f0dcd9f29d831eddc36",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "af7d6ca29db25d5605e83c2a5475fcc42834756892840f2fcbb65178828dccb7",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 30,
+          "id": "sp12-pcie4-t-power-on",
+          "path": "patches/r2/pci/04-sp12-pcie4-t-power-on.patch",
+          "sha256": "c909ee1fbc26e33e668fa6d18f6cec51982a5754bada5904251637144798e604",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "fc2b7d1c0216350bac8f4ec4b417bcaee8b880b158c917b5faf57150f5c39a9e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 31,
+          "id": "hamoa-pcie-opp-tables",
+          "path": "patches/r2/pci/05-hamoa-pcie-opp-tables.patch",
+          "sha256": "fa4109ca8cce5690767dded3d6ff16b4c1de14768026eacbd57292adeac7d6ae",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "6cb16af1e33f30a5278effd2f55cffbf9b6a16abd39a39fa8a1684f0b818ffc3",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 32,
+          "id": "ath12k-aspm-api-adaptation",
+          "path": "patches/r2/pci/06-ath12k-aspm-api.patch",
+          "sha256": "619d3da2c931f3bc18530db685be8653a8ba4a423045c215cdb914c6f7ddbb43",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2245ff6e70098d55b5b7137f0b19417815bd8863a2a72f693c8a199ac73ef113",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 33,
+          "id": "ath12k-sp12-rfkill",
+          "path": "patches/r2/pci/07-ath12k-skip-sp12-rfkill.patch",
+          "sha256": "9c7518b30be80933ac635a17c2dadbb6409f42542bc964a08648b7a2ac967755",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "6fb6525101790e6e2bacf8fcc10ef466bc1a4559a170ccba70e3697bd4200807",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 34,
+          "id": "arm64-kexec-signature-force",
+          "path": "patches/07-kexec-signature-force-arm64.patch",
+          "sha256": "b5d362252fc7c8d7ed4962f709dbc1f3709d5133bd0635ae84256e1cd35a69f1",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "04be78500a6ce9af3622598429b45ce31c81e21d2d7a3448c9df6cc700de6940",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 35,
+          "id": "rpmb-core-serialize-teardown",
+          "path": "patches/08-rpmb-core-serialize-teardown.patch",
+          "sha256": "f557cb4ab5b83eabd2a67f4c190be66a8d62b70b68c5ffcbc08b5c278bcc77ae",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4a46e391fbbda2d6d0b126ac7bd6c0270543c6724200f052b2b0e26e78832dc5",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 36,
+          "id": "ufs-rpmb-lifetime",
+          "path": "patches/09-ufs-rpmb-lifetime.patch",
+          "sha256": "c93d0f2ecfb870eb1f1a6f71da03357dd380afb6d2e32f2a73274e7f0071b28a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "5b0b7120c484c2b5a3b6f8b82bafe20ab2b36d009d9f4cfc65471537262a90cc",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 37,
+          "id": "ufs-rpmb-drop-unregistered-bus",
+          "path": "patches/10-ufs-rpmb-drop-unregistered-bus.patch",
+          "sha256": "3684292933c426ab616eb25846571ae95786a668dda746fe7b1c52036986f938",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "f7d05945e58b3ac688caa240734525bafbdd246aa9a0c6d00ad87645a902893e",
+          "state_digest_source": "prior verified 37-entry replay; prefix identity unchanged"
+        },
+        {
+          "order": 38,
+          "id": "usb-dwc3-skip-phy-management",
+          "path": "patches/r2/usb/0001-usb-dwc3-qcom-skip-phy-management.patch",
+          "sha256": "3bb43b70da13e8d0de91bffafd21f3ace35d162ad679ef83eba8f9706ba479f8",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4a0febb3b39f9e435c0a3cd4fc4630b8a9992667d236f6f94a2c4910b52e32b2",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 39,
+          "id": "usb-dwc3-eusb2-wake-irq-map",
+          "path": "patches/r2/usb/0002-usb-dwc3-qcom-eusb2-wake-irq-map.patch",
+          "sha256": "617bdca1b9429809b61104f10419b274407ea7866b90b57d8711a4000c5d858f",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2d22adb1f959089f0d087a937cf3e0c3cda3d8f81ec6302856555adae3ea5e7a",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 40,
+          "id": "usb-dwc3-wake-irq-failed-resume",
+          "path": "patches/r2/usb/0004-usb-dwc3-qcom-balance-wake-irq-on-failed-resume.patch",
+          "sha256": "020c77eb566572ef2b70b18aea11a94e063f180da6511f7fda93c0b799d60bdf",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4c1ecbd9947faca505a1ad6721fe177bf4a08012f9b83a05c1cbf27013e31017",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 41,
+          "id": "usb-dwc3-wake-irq-runtime-pm",
+          "path": "patches/r2/usb/0005-usb-dwc3-qcom-balance-runtime-pm-wake-irq.patch",
+          "sha256": "21fd94a37f22c9f46c57462db18d8a4f320e16c3a1177b8cbcc3c46e336c1045",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "2230d54ddaef7cb2e9adb7ea7c06c8097372bbbb2fb6d27f990d40c916b32513",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 42,
+          "id": "usb-hamoa-usb1-ss0-noc-clocks",
+          "path": "patches/r2/usb/0006-arm64-dts-hamoa-usb1-ss0-noc-clocks.patch",
+          "sha256": "81e98508745ac57f1ddc476844b7f312f479681bcd9757a6227629ddb333e112",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "4635dc231209adb7e13bbfcfbf320f52c844dc0cfdf5c07586b8a9802a8ebe49",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 43,
+          "id": "video-iommu-ranges",
+          "path": "patches/r2/video/01-iommu-of_iommu-ranges.patch",
+          "sha256": "09167da47080bac348e1b896a7ca4acb34e16697183da8a38f437b4fb6b1393a",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "a942053d4a3643b842ba8217482f0dac223456cc757c46136d71aac8ad670f55",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 44,
+          "id": "iris-context-bank-devices",
+          "path": "patches/r2/video/02-iris-context-bank-devices.patch",
+          "sha256": "0e45ebcfc581b543dba325afebf39402b4bccfcfaa67c838580147070da3da64",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "371fa6af749bbced36f11dc6240e98da5b7a05c2c0624b6cba1e8d7ba4243890",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 45,
+          "id": "iris-buffer-context-bank-routing",
+          "path": "patches/r2/video/03-iris-route-buffers-context-bank.patch",
+          "sha256": "6767b9761ba036b26476cdef2542549571534067e1a527bc7758fe74eadb5659",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "0b5d16035f32606b78229d0abbb426cdd32f4e3e24496fb082b95882822e81e7",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 46,
+          "id": "iris-parent-dma-mask-no-iommu",
+          "path": "patches/r2/video/04-iris-skip-parent-dma-mask-without-iommu.patch",
+          "sha256": "7b1eae848eb485769613a2319b23fe1d8390f49a87727c10d319836280ac18be",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "3cda46824c322ccae937aa615bb5b83bfb15fd5c32284a18bf408b839561cd0e",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 47,
+          "id": "hamoa-iris-context-bank-dts",
+          "path": "patches/r2/video/05-hamoa-iris-context-bank-dts.patch",
+          "sha256": "2831956d97d92bf5781f04edb03318accf2bfb525ce800df0001645011e885b7",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "42c690ad7c9d2fcccf6b49a5afa11ff639783460533ea6eb705c42b45a3b50e7",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 48,
+          "id": "wcn7850-hci-qca-drop-unused-event",
+          "path": "patches/r2/bluetooth/01-wcn7850-drop-unused-event.patch",
+          "sha256": "e4ca052e5046370ce92e3a4532b4e750cc04268c39c39a3dd1130fbf1d1d34fb",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "04d4c0f676fa16e62456c1f464a3cb2d0093089aca6142dc579304ab9bf684ac",
+          "state_digest_source": "computed for this replay"
+        },
+        {
+          "order": 49,
+          "id": "arm-arch-timer-park-stopped",
+          "path": "patches/r2/suspend/01-arm-arch-timer-park-stopped.patch",
+          "sha256": "601f591f755cd0bc4fc6a5ae4e5b4b0d58ccbb522b94a9123516668f8237b663",
+          "check": "passed",
+          "apply": "passed",
+          "source_tree_sha256_after": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e",
+          "state_digest_source": "computed for this replay"
+        }
+      ]
+    }
+  ],
+  "reset_checks": {
+    "initial_final49_sha256": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e",
+    "replay1_to_pristine_sha256": "dc272061b7eea961aac2112c46dc140d778a7de3bbff7dff8d1068c571631ffa",
+    "replay2_final_sha256": "1e7654eeb4a5c2523c0e365971f7b299dc28536db82a84055670a7c14f6ae58e"
+  }
+}

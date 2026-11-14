@@ -1,0 +1,27 @@
+Subject: [SP12 r2 local] media: qcom: remove unused CAMSS locals
+Base: authenticated CachyOS 7.3.1-1 source after the camera port.
+Reason: the first complete ARM64 compile reported unused local declarations in
+csiphy_stream_on() and camss_parse_ports(). Remove only those unused variables.
+No upstream authorship or sign-off is claimed.
+
+---
+--- a/drivers/media/platform/qcom/camss/camss-csiphy.c
++++ b/drivers/media/platform/qcom/camss/camss-csiphy.c
+@@ -332,7 +332,6 @@
+ 	struct device *dev = csiphy->camss->dev;
+ 	u8 num_lanes = lncfg->num_data;
+ 	s64 link_freq;
+-	int i;
+ 	int ret;
+ 
+ 	dphy_cfg = &dphy_opts.mipi_dphy;
+--- a/drivers/media/platform/qcom/camss/camss.c
++++ b/drivers/media/platform/qcom/camss/camss.c
+@@ -4962,7 +4962,6 @@
+ 
+ 	fwnode_graph_for_each_endpoint(fwnode, ep) {
+ 		struct camss_async_subdev *csd;
+-		struct fwnode_handle *remote;
+ 
+ 		if (!fwnode_device_is_available(ep))
+ 			continue;

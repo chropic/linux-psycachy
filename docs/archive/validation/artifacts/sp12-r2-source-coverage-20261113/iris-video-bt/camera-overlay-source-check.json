@@ -1,0 +1,119 @@
+[
+  {
+    "path": "0001-media-qcom-camss-vfe-Eliminate-ever-expanding-src_pad_code-switch-logic.patch",
+    "sha256": "503caccc10c23842fae2d4e47a557f96d00a9268b00404c7df80ddb04f10bc04",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/platform/qcom/camss/camss-vfe.c:340\nerror: drivers/media/platform/qcom/camss/camss-vfe.c: patch does not apply",
+    "reverse_exit": 0,
+    "reverse_output": "",
+    "result": "reverse-check-pass (semantics already present exactly)"
+  },
+  {
+    "path": "0002-media-qcom-camss-Add-support-for-x1p42100-CAMSS.patch",
+    "sha256": "332f2ec80885149d6476138ecc790deff04eb819e89370099ca0626932bea451",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/platform/qcom/camss/camss-vfe.c:1997\nerror: drivers/media/platform/qcom/camss/camss-vfe.c: patch does not apply\nerror: patch failed: drivers/media/platform/qcom/camss/camss.c:36\nerror: drivers/media/platform/qcom/camss/camss.c: patch does not apply\nerror: patch failed: drivers/media/platform/qcom/camss/camss.h:97\nerror: drivers/media/platform/qcom/camss/camss.h: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/media/platform/qcom/camss/camss.c:36\nerror: drivers/media/platform/qcom/camss/camss.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0003-media-qcom-camss-Drop-legacy-PHY-descriptions-from-x.patch",
+    "sha256": "0216c6b31270ac3a3c4c459844cb343b0228e19e58446949690ff1d532c25546",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/platform/qcom/camss/camss.c:3944\nerror: drivers/media/platform/qcom/camss/camss.c: patch does not apply",
+    "reverse_exit": 0,
+    "reverse_output": "",
+    "result": "reverse-check-pass (semantics already present exactly)"
+  },
+  {
+    "path": "0004-i2c-qcom-cci-Select-pinctrl-states-during-runtime-PM.patch",
+    "sha256": "8bf86167fbd823a4c9c34c6dc237690643dd94785ea88b2bb0c1dcdf15b939e7",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/i2c/busses/i2c-qcom-cci.c:10\nerror: drivers/i2c/busses/i2c-qcom-cci.c: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/i2c/busses/i2c-qcom-cci.c:490\nerror: drivers/i2c/busses/i2c-qcom-cci.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0005-arm64-dts-qcom-hamoa-Add-CCI-definitions.patch",
+    "sha256": "fbf41ad732b007272d9015eacaee417cced4a447f2482b104009b12a22fb4b5f",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: arch/arm64/boot/dts/qcom/hamoa.dtsi:5551\nerror: arch/arm64/boot/dts/qcom/hamoa.dtsi: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: arch/arm64/boot/dts/qcom/hamoa.dtsi:5551\nerror: arch/arm64/boot/dts/qcom/hamoa.dtsi: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0006-arm64-dts-qcom-hamoa-Add-CAMSS-block-defintion.patch",
+    "sha256": "127de4d23c88251d142f57c3c4674ff4c8b8a2abe38d1f6e68dcfd42f9579d11",
+    "forward_exit": 0,
+    "forward_output": "",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: arch/arm64/boot/dts/qcom/hamoa.dtsi:5632\nerror: arch/arm64/boot/dts/qcom/hamoa.dtsi: patch does not apply",
+    "result": "forward-check-pass (candidate appears missing; inspect semantics/order)"
+  },
+  {
+    "path": "0007-arm64-dts-qcom-purwa-Add-CAMSS-block-defintion.patch",
+    "sha256": "10995c14073800133f902d87c26ab181ce549df7db67d1b79aa9ce50c1180229",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: arch/arm64/boot/dts/qcom/purwa.dtsi:19\nerror: arch/arm64/boot/dts/qcom/purwa.dtsi: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: arch/arm64/boot/dts/qcom/purwa.dtsi:19\nerror: arch/arm64/boot/dts/qcom/purwa.dtsi: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0008-media-i2c-ov13858-Add-regulator-clock-and-reset-GPIO-handling.patch",
+    "sha256": "fe59f23a7478e4fdc1b11245627feb13cdb437941bd4de5dc3f30553c811d427",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov13858.c:3\nerror: drivers/media/i2c/ov13858.c: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/media/i2c/ov13858.c:1031\nerror: drivers/media/i2c/ov13858.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0009-media-i2c-ov13858-cap-analogue-gain-at-15.5x.patch",
+    "sha256": "a0a678a0e93f191e2514f5a2e4e66911b60e10eeff5d61a53bccc90a75737b17",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov13858.c:63\nerror: drivers/media/i2c/ov13858.c: patch does not apply",
+    "reverse_exit": 0,
+    "reverse_output": "",
+    "result": "reverse-check-pass (semantics already present exactly)"
+  },
+  {
+    "path": "0010-media-i2c-ov13858-Add-device-tree-support.patch",
+    "sha256": "12b115707cf05b79a205c60e7e890132642045b7cd13f933e79302e75625f857",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov13858.c:1765\nerror: drivers/media/i2c/ov13858.c: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/media/i2c/ov13858.c:1765\nerror: drivers/media/i2c/ov13858.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0011-media-i2c-ov02c10-improve-default-exposure-setting.patch",
+    "sha256": "d63c3549d6276d7678404e5b802e5dab96912e1ded9d7ada86eabd8fd00425ab",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov02c10.c:34\nerror: drivers/media/i2c/ov02c10.c: patch does not apply",
+    "reverse_exit": 0,
+    "reverse_output": "",
+    "result": "reverse-check-pass (semantics already present exactly)"
+  },
+  {
+    "path": "0012-media-i2c-ov02c10-add-get_selection.patch",
+    "sha256": "0755dc9f958d31d4728e3cd904af53ca5046ff8554f81122059f5a0449ce232a",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov02c10.c:757\nerror: drivers/media/i2c/ov02c10.c: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/media/i2c/ov02c10.c:757\nerror: drivers/media/i2c/ov02c10.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  },
+  {
+    "path": "0013-media-i2c-ov02c10-Fix-sensor-power-sequencing.patch",
+    "sha256": "92ea10b0fdb691753ae9d99137d8c23f4c481c9fcabec13ff81c320e26e06d8a",
+    "forward_exit": 1,
+    "forward_output": "error: patch failed: drivers/media/i2c/ov02c10.c:661\nerror: drivers/media/i2c/ov02c10.c: patch does not apply",
+    "reverse_exit": 1,
+    "reverse_output": "error: patch failed: drivers/media/i2c/ov02c10.c:683\nerror: drivers/media/i2c/ov02c10.c: patch does not apply",
+    "result": "both-checks-fail (rebased/superseded/context conflict; inspect content)"
+  }
+]
